@@ -1,24 +1,44 @@
-# README
+# TDL App - Vue Prototype
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This is intended as a testbed for the client **AND** server side logic. The code
+here will be thrown away, but should be useful for rapid prototyping and testing
+out various UI options.
 
-Things you may want to cover:
+## Requirements
 
-* Ruby version
+### Windows
 
-* System dependencies
+* Docker Desktop for Windows
 
-* Configuration
+See: https://docs.docker.com/docker-for-windows/install/
 
-* Database creation
+### Mac OS X
 
-* Database initialization
+* Docker Desktop for Mac
 
-* How to run the test suite
+See: https://docs.docker.com/docker-for-mac/install/
 
-* Services (job queues, cache servers, search engines, etc.)
+### Linux
 
-* Deployment instructions
+* Docker (specific to distro)
+* Docker Compose
 
-* ...
+See: https://docs.docker.com/compose/install/
+
+## Build
+
+`docker-compose build`
+
+## Setup
+
+Create: `docker-compose run web rails db:create db:migrate db:seed`
+
+Recreate: `docker-compose run web rails db:drop db:create db:migrate db:seed`
+
+## Running Locally
+
+Interactive console: `docker-compose run web rails c`
+
+Specs: `docker-compose run web rspec spec`
+
+Server: `docker-compose up`
