@@ -13,3 +13,8 @@
  *= require_tree .
  *= require_self
  */
+
+* { background-color: black; color: #0f0 }
+marquee {
+  background-color: yellowgreen;
+}
