@@ -4,7 +4,7 @@
     <h3>{{ title.taskList }}</h3>
     <ul class="list-group tasklistPane" >
     <li class="list-group-item" v-for="(task,index) in tasks" v-show="task.completed != true">
-    <input type="checkbox" :id="'incompleted-task-id-' + index " v-model="task.completed"> <label :for="'incompleted-task-id-' + index ">{{task.description}}</label>
+    <input type="checkbox" :id="'incompleted-task-id-' + index " v-model="task.completed" v-on:change="taskCompleted(index)"> <label :for="'incompleted-task-id-' + index ">{{task.title}}</label>
     <div class="btn-group pull-right">
     <button class="btn btn-success btn-xs" @click="editTaskIndex = index"><i class="fa fa-pencil" aria-hidden="true"></i></button>
     <button class="btn btn-danger btn-xs" @click="deleteTask(index)"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
@@ -18,7 +18,7 @@
 
     <li class="list-group-item" v-if="editTaskIndex > -1">
     <div class="has-success">
-    <input type="text" class="form-control" placeholder="Exit and hit enter" v-model="tasks[editTaskIndex].description" @keyup.enter="editTaskIndex = -1 , edited()" @keyup.enter="edited">
+    <input type="text" class="form-control" placeholder="Exit and hit enter" v-model="tasks[editTaskIndex].title" @keyup.enter="edited(editTaskIndex), editTaskIndex = -1" @keyup.enter="edited">
     </div>
     </li>
     </ul>
@@ -28,7 +28,7 @@
     <h3>{{ title.completedTasks }}</h3>
     <ul class="list-group" >
     <li class="list-group-item" v-for="(task,index) in completeTasks">
-    <input type="checkbox" :id="'completed-task-id-' + index " v-model="task.completed"> <label :for="'completed-task-id-' + index ">{{task.description}}</label>
+    <input type="checkbox" :id="'completed-task-id-' + index " v-model="task.completed" v-on:change="taskUndoCompleted(index)"> <label :for="'completed-task-id-' + index ">{{task.title}}</label>
 
     </li>
     </ul>

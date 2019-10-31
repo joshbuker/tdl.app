@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
-  resources :tasks, only: [:create, :update, :destroy]
+  resources :tasks, except: [:new, :edit], defaults: { format: :json }
 
-  post '/' => 'application#index', as: 'fuck_you'
   get ':title' => 'application#index'
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
