@@ -18,3 +18,11 @@
 marquee {
   background-color: yellowgreen;
 }
+
+#appRoot{
+    min-height: 100vh;
+
+    .task-list{
+        padding-top: 95px;
+    }
+}

@@ -29,7 +29,15 @@ module TdlVuePrototype
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
 
-    # Don't generate system test files.
-    config.generators.system_tests = nil
+    # Configure rails generators
+    config.generators do |g|
+      g.test_framework :rspec
+      g.fixture_replacement :factory_bot
+      g.helper = false
+      g.assets = false
+      g.view_specs = false
+      g.controller_specs = false
+      g.skip_routes = true
+    end
   end
 end

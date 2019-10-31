@@ -1,10 +1,13 @@
 div style='display: block; text-align:center;'
-  = form_with model: Task.new, url: fuck_you_path do |f|
+  = form_with model: Task.new, url: tasks_path, remote: true do |f|
     = f.text_field :title, placeholder: 'Your Task'
-    = f.submit 'Search'
+    = f.submit 'Create'
   - if @tasks.present?
     ul
       - @tasks.each do |task|
         li = task.title
   - else
     h1 No Tasks found bro
+= javascript_pack_tag 'task_list'
+
+div id="hello" {{message}}
