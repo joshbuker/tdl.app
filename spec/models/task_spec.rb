@@ -8,7 +8,8 @@ RSpec.describe Task do
   end
 
   context 'associations' do
-    # TODO: Add tests or remove placeholder
+    it { is_expected.to have_many(:prereqs) }
+    it { is_expected.to have_many(:postreqs) }
   end
 
   context 'validations' do
