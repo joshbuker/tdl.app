@@ -3,8 +3,10 @@ import App from '../app.vue'
 
 // import 'bootstrap'
 // import 'font-awesome/fonts'
+import toastr from 'toastr'
 import '../stylesheets/bootstrap'
 import '../stylesheets/font-awesome'
+import '../stylesheets/toastr'
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
@@ -35,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
       deleteTask(index){
         this.tasks.splice(index,1);
         toastr.error('Task deleted');
+        console.log(toastr);
       },
       edited(){
         toastr.success('Task updated !!!')
