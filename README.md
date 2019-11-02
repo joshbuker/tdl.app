@@ -43,7 +43,7 @@ Specs: `docker-compose run web rspec spec`
 
 Server: `docker-compose up`
 
-## Running locally sans Docker
+## Running Locally sans Docker
 
 #### Required Packages:
 * rvm
