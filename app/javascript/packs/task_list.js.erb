@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message)
         });
       },
-      taskCompleted(index){
-        axios.patch('<%= tasks_url %>/' + String(this.tasks[index].id) + '/complete').
+      taskCompleted(task){
+        axios.patch('<%= tasks_url %>/' + String(task.id) + '/complete').
         then(response => {
           toastr.success('Completed task!');
         }).
