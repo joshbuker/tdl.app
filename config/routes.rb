@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  resources :tasks, except: [:new, :edit], defaults: { format: :json }
+  resources :tasks, except: [:new, :edit], defaults: { format: :json } do
+    patch 'complete' => 'tasks#mark_task_complete'
+    patch 'incomplete' => 'tasks#mark_task_incomplete'
+  end
 
   get ':title' => 'application#index'
 

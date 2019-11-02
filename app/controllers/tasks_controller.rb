@@ -1,12 +1,12 @@
 class TasksController < ApiController
-  before_action :set_task, only: [:update, :destroy]
+  before_action :set_task, except: [:index, :create]
 
   def index
     tasks = Task.all.order(:id => :asc).map do |task|
       {
         id: task.id,
         title: task.title,
-        completed: false
+        completed: task.completed
       }
     end
 
@@ -28,6 +28,18 @@ class TasksController < ApiController
     render json: @task.to_json
   end
 
+  def mark_task_complete
+    @task.update!(completed: true)
+
+    render json: @task.to_json
+  end
+
+  def mark_task_incomplete
+    @task.update!(completed: false)
+
+    render json: @task.to_json
+  end
+
   def destroy
     @task.destroy!
 
@@ -37,7 +49,8 @@ class TasksController < ApiController
 private
 
   def set_task
-    @task = Task.find(params[:id])
+    task_id = params[:task_id] || params[:id]
+    @task = Task.find(task_id)
   end
 
   def task_params
