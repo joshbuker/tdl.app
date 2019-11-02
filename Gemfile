@@ -57,6 +57,8 @@ group :development do
   gem 'bundler-audit'
   # Mediocre static code analysis
   gem 'brakeman'
+  # Sweet baby jesus, my new favorite gem right here
+  gem 'html2slim'
 end
 
 group :test do
