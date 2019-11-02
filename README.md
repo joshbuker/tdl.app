@@ -42,3 +42,11 @@ Interactive console: `docker-compose run web rails c`
 Specs: `docker-compose run web rspec spec`
 
 Server: `docker-compose up`
+
+## Running locally sans Docker
+
+#### Required Packages:
+* rvm
+* nvm
+* yarn
+* postgresql
