@@ -14,15 +14,5 @@
  *= require_self
  */
 
-* { background-color: black; color: #0f0 }
-marquee {
-  background-color: yellowgreen;
-}
-
-#appRoot{
-    min-height: 100vh;
-
-    .task-list{
-        padding-top: 95px;
-    }
-}
+html, .container-fluid { background-color: black; color: #0f0 }
+label { color: black; }
