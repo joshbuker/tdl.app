@@ -29,12 +29,22 @@ class TasksController < ApiController
   end
 
   def mark_task_complete
+    if @task.completed?
+      render json: { error: 'Already marked as complete' }, status: :unprocessable_entity
+      return
+    end
+
     @task.update!(completed: true)
 
     render json: @task.to_json
   end
 
   def mark_task_incomplete
+    unless @task.completed?
+      render json: { error: 'Already marked as incomplete' }, status: :unprocessable_entity
+      return
+    end
+
     @task.update!(completed: false)
 
     render json: @task.to_json
