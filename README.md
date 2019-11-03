@@ -61,3 +61,4 @@ Server: `docker-compose up`
 * yarn install --check-files
 * rails db:create db:migrate db:seed
 * rspec spec
+* rails s
