@@ -50,3 +50,14 @@ Server: `docker-compose up`
 * nvm
 * yarn
 * postgresql
+
+#### Procedure:
+* rvm install 2.6.5
+* rvm use
+* nvm install 13.0.1
+* nvm use 13.0.1
+* gem install bundler
+* bundle install
+* yarn install --check-files
+* rails db:create db:migrate db:seed
+* rspec spec
