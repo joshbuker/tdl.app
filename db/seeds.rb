@@ -6,5 +6,13 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 10.times do |n|
-  Task.create!(title: "Task #{n}")
+  task = Task.create!(title: "Task #{n}")
+  3.times do |m|
+    subtask = Task.create!(title: "Set #{n} Subtask #{m}")
+    Rule.create!(pre: task, post: subtask)
+    2.times do |k|
+      subsub = Task.create!(title: "Set #{n} Subset #{m} Subtask #{k}")
+      Rule.create!(pre: subtask, post: subsub)
+    end
+  end
 end
