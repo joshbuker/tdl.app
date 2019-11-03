@@ -14,6 +14,17 @@
  *= require_self
  */
 
-html, .container-fluid { background-color: black; color: #0f0 }
+html, .container-fluid {
+  background-color: black;
+  color: #0f0;
+}
 label { color: black; margin-left: 9px; }
-li { color: black; }
+li { color: black; background-color: transparent !important; }
+li > label { color: white; }
+ul {
+  background-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(9,9,121,1) 51%, rgba(0,0,0,1) 100%);
+  border-radius: 10px;
+  border-style: groove;
+  border-width: 2px;
+  border-color: yellow;
+}
