@@ -8,8 +8,10 @@ RSpec.describe Task do
   end
 
   context 'associations' do
-    it { is_expected.to have_many(:prereqs) }
-    it { is_expected.to have_many(:postreqs) }
+    it { is_expected.to have_many(:pre_rules) }
+    it { is_expected.to have_many(:post_rules) }
+    it { is_expected.to have_many(:prereqs).through(:pre_rules) }
+    it { is_expected.to have_many(:postreqs).through(:post_rules) }
   end
 
   context 'validations' do

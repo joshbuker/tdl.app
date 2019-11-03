@@ -3,11 +3,7 @@ class TasksController < ApiController
 
   def index
     tasks = Task.search(params[:title]).order(:id => :asc).map do |task|
-      {
-        id: task.id,
-        title: task.title,
-        completed: task.completed
-      }
+      task.to_tree
     end
 
     render json: tasks.to_json

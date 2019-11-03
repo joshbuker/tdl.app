@@ -15,4 +15,5 @@
  */
 
 html, .container-fluid { background-color: black; color: #0f0 }
-label { color: black; }
+label { color: black; margin-left: 9px; }
+li { color: black; }
