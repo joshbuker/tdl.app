@@ -28,7 +28,7 @@
             h3
               | {{ title.completedTasks }}
           ul.list-group
-            li.list-group-item[v-for="(task,index) in completeTasks"]
+            li.list-group-item[v-for="(task,index) in tasks" v-show="task.completed == true"]
               |  <input type="checkbox" :id="'completed-task-id-' + index " v-model="task.completed" @change="taskUndoCompleted(task)">
               label[:for="'completed-task-id-' + index "]
                 | {{task.title}}
