@@ -9,4 +9,12 @@ class Task < ApplicationRecord
   validates :title,
     presence: true,
     uniqueness: { case_sensitive: false }
+
+  def self.search(title)
+    if title.present?
+      where('title iLIKE :title', title: "%#{title}%")
+    else
+      all
+    end
+  end
 end
