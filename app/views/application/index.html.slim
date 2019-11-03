@@ -5,7 +5,7 @@
         marquee[direction="right" scrollamount="15" behavior="alternate"]
           h3
             | {{ title.taskList }}
-        marquee[direction="right" scrollamount="15" behavior="alternate"]
+        marquee[direction="right" scrollamount="1" behavior="alternate"]
           |  <input type="text" class="form-control" placeholder="Search for tasks..." v-model="search">
         ul.list-group.tasklistPane
           li.list-group-item[v-for="(task,index) in tasks" v-show="task.completed != true"]
