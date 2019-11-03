@@ -5,6 +5,8 @@
         marquee[direction="right" scrollamount="15" behavior="alternate"]
           h3
             | {{ title.taskList }}
+        marquee[direction="right" scrollamount="15" behavior="alternate"]
+          |  <input type="text" class="form-control" placeholder="Search for tasks..." v-model="search">
         ul.list-group.tasklistPane
           li.list-group-item[v-for="(task,index) in tasks" v-show="task.completed != true"]
             |  <input type="checkbox" :id="'incompleted-task-id-' + index " v-model="task.completed" @change="taskCompleted(task)">

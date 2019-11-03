@@ -2,7 +2,7 @@ class TasksController < ApiController
   before_action :set_task, except: [:index, :create]
 
   def index
-    tasks = Task.all.order(:id => :asc).map do |task|
+    tasks = Task.search(params[:title]).order(:id => :asc).map do |task|
       {
         id: task.id,
         title: task.title,
