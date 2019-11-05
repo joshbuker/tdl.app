@@ -4,61 +4,64 @@ This is intended as a testbed for the client **AND** server side logic. The code
 here will be thrown away, but should be useful for rapid prototyping and testing
 out various UI options.
 
-## Requirements
+## Running locally bare-metal
 
-### Windows
+### Requirements
 
-* Docker Desktop for Windows
+* [RVM](https://rvm.io/rvm/install)
+* [NVM](https://github.com/nvm-sh/nvm#install--update-script)
+* [Yarn](https://yarnpkg.com/en/docs/install)
+* [PostgreSQL](https://www.postgresql.org/download)
 
-See: https://docs.docker.com/docker-for-windows/install/
+### Build
 
-### Mac OS X
+* `rvm install 2.6.5`
+* `rvm use`
+* `nvm install 13.0.1`
+* `nvm use`
+* `gem install bundler`
+* `bundle install`
+* `yarn install --check-files`
 
-* Docker Desktop for Mac
+### Setup
 
-See: https://docs.docker.com/docker-for-mac/install/
+* Create: `rails db:create db:migrate db:seed`
+* Recreate: `rails db:drop db:create db:migrate db:seed`
 
-### Linux
+### Running Locally
 
-* Docker (specific to distro)
-* Docker Compose
+* Interactive console: `rails c`
+* Specs: `rspec spec`
+* Server: `rails s`
 
-See: https://docs.docker.com/compose/install/
+## Running locally via Docker
 
-## Build
+### Requirements
 
-`docker-compose build`
+#### Windows
 
-## Setup
+* [Docker Desktop for Windows](https://docs.docker.com/docker-for-windows/install/)
 
-Create: `docker-compose run web rails db:create db:migrate db:seed`
+#### Mac OS X
 
-Recreate: `docker-compose run web rails db:drop db:create db:migrate db:seed`
+* [Docker Desktop for Mac](https://docs.docker.com/docker-for-mac/install/)
 
-## Running Locally
+#### Linux
 
-Interactive console: `docker-compose run web rails c`
+* [Docker Engine](https://docs.docker.com/install/#server)
+* [Docker Compose](https://docs.docker.com/compose/install/)
 
-Specs: `docker-compose run web rspec spec`
+### Build
 
-Server: `docker-compose up`
+* `docker-compose build`
 
-## Running Locally sans Docker
+### Setup
 
-#### Required Packages:
-* rvm
-* nvm
-* yarn
-* postgresql
+* Create: `docker-compose run web rails db:create db:migrate db:seed`
+* Recreate: `docker-compose run web rails db:drop db:create db:migrate db:seed`
 
-#### Procedure:
-* rvm install 2.6.5
-* rvm use
-* nvm install 13.0.1
-* nvm use 13.0.1
-* gem install bundler
-* bundle install
-* yarn install --check-files
-* rails db:create db:migrate db:seed
-* rspec spec
-* rails s
+### Running Locally
+
+* Interactive console: `docker-compose run web rails c`
+* Specs: `docker-compose run web rspec spec`
+* Server: `docker-compose up`
