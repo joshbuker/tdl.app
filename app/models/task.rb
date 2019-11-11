@@ -1,4 +1,6 @@
 class Task < ApplicationRecord
+  belongs_to :list
+
   has_many :pre_rules,
     class_name: 'Rule',
     foreign_key: :post_id,

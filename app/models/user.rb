@@ -1,4 +1,9 @@
 class User < ApplicationRecord
+  has_many :lists
+
+  has_many :tasks,
+    through: :lists
+
   validates :given_name, :family_name, :email,
     presence: true
 

@@ -8,7 +8,8 @@ RSpec.describe User do
   end
 
   context 'associations' do
-    # TODO: Add tests or remove placeholder
+    it { is_expected.to have_many(:lists) }
+    it { is_expected.to have_many(:tasks).through(:lists) }
   end
 
   context 'validations' do

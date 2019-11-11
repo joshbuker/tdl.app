@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_06_073327) do
+ActiveRecord::Schema.define(version: 2019_11_06_074623) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "lists", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.integer "order", default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["title"], name: "index_lists_on_title", unique: true
+    t.index ["user_id"], name: "index_lists_on_user_id"
+  end
 
   create_table "rules", force: :cascade do |t|
     t.bigint "pre_id"
@@ -29,6 +39,8 @@ ActiveRecord::Schema.define(version: 2019_11_06_073327) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "completed", default: false, null: false
+    t.bigint "list_id", null: false
+    t.index ["list_id"], name: "index_tasks_on_list_id"
     t.index ["title"], name: "index_tasks_on_title", unique: true
   end
 
@@ -42,4 +54,6 @@ ActiveRecord::Schema.define(version: 2019_11_06_073327) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "lists", "users"
+  add_foreign_key "tasks", "lists"
 end
