@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_06_074623) do
+ActiveRecord::Schema.define(version: 2019_11_11_050503) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,24 @@ ActiveRecord::Schema.define(version: 2019_11_06_074623) do
     t.index ["pre_id"], name: "index_rules_on_pre_id"
   end
 
+  create_table "taggings", force: :cascade do |t|
+    t.bigint "tag_id", null: false
+    t.bigint "task_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+    t.index ["task_id"], name: "index_taggings_on_task_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.string "color", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_tags_on_user_id"
+  end
+
   create_table "tasks", force: :cascade do |t|
     t.string "title", null: false
     t.datetime "created_at", precision: 6, null: false
@@ -55,5 +73,8 @@ ActiveRecord::Schema.define(version: 2019_11_06_074623) do
   end
 
   add_foreign_key "lists", "users"
+  add_foreign_key "taggings", "tags"
+  add_foreign_key "taggings", "tasks"
+  add_foreign_key "tags", "users"
   add_foreign_key "tasks", "lists"
 end
