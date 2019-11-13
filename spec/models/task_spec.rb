@@ -8,6 +8,7 @@ RSpec.describe Task do
   end
 
   context 'associations' do
+    it { is_expected.to belong_to(:list) }
     it { is_expected.to have_many(:pre_rules) }
     it { is_expected.to have_many(:post_rules) }
     it { is_expected.to have_many(:prereqs).through(:pre_rules) }

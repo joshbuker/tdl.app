@@ -11,4 +11,9 @@ RSpec.describe Rule do
     it { is_expected.to belong_to(:pre) }
     it { is_expected.to belong_to(:post) }
   end
+
+  context 'validations' do
+    it { is_expected.to validate_uniqueness_of(:pre).scoped_to(:post_id) }
+    it { is_expected.to validate_uniqueness_of(:post).scoped_to(:pre_id) }
+  end
 end

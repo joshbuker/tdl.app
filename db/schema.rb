@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_01_045546) do
+ActiveRecord::Schema.define(version: 2019_11_11_050503) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "lists", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.integer "order", default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["title"], name: "index_lists_on_title", unique: true
+    t.index ["user_id"], name: "index_lists_on_user_id"
+  end
 
   create_table "rules", force: :cascade do |t|
     t.bigint "pre_id"
@@ -24,12 +34,47 @@ ActiveRecord::Schema.define(version: 2019_11_01_045546) do
     t.index ["pre_id"], name: "index_rules_on_pre_id"
   end
 
+  create_table "taggings", force: :cascade do |t|
+    t.bigint "tag_id", null: false
+    t.bigint "task_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+    t.index ["task_id"], name: "index_taggings_on_task_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.string "color", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_tags_on_user_id"
+  end
+
   create_table "tasks", force: :cascade do |t|
     t.string "title", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "completed", default: false, null: false
+    t.bigint "list_id", null: false
+    t.index ["list_id"], name: "index_tasks_on_list_id"
     t.index ["title"], name: "index_tasks_on_title", unique: true
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "username", null: false
+    t.string "given_name", null: false
+    t.string "family_name", null: false
+    t.string "email", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["username"], name: "index_users_on_username", unique: true
+  end
+
+  add_foreign_key "lists", "users"
+  add_foreign_key "taggings", "tags"
+  add_foreign_key "taggings", "tasks"
+  add_foreign_key "tags", "users"
+  add_foreign_key "tasks", "lists"
 end

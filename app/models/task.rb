@@ -1,4 +1,11 @@
 class Task < ApplicationRecord
+  belongs_to :list
+
+  has_one :user, through: :list
+
+  has_many :taggings,
+    dependent: :destroy
+
   has_many :pre_rules,
     class_name: 'Rule',
     foreign_key: :post_id,
@@ -7,6 +14,9 @@ class Task < ApplicationRecord
     class_name: 'Rule',
     foreign_key: :pre_id,
     dependent: :destroy
+
+  has_many :tags,
+    through: :taggings
 
   has_many :prereqs,
     class_name: 'Task',

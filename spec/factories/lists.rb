@@ -1,7 +1,7 @@
 FactoryBot.define do
-  factory :task do
-    list
-
+  factory :list do
+    user
     title { Faker::Company.bs }
+    order { 0 }
   end
 end
