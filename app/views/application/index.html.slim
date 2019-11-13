@@ -1,6 +1,22 @@
 #appRoot
   .container-fluid
     .row
+      - @user = User.first
+      ul style="background-image: none; padding-right: 15px;"
+        - @user.tags.each do |tag|
+          li style="color: grey;"
+            span style="color: #{tag.color};" = tag.title
+            span<>
+              | (Tasks:
+            = tag.tasks.size
+            span )
+        li style="color: grey;"
+          span style="color: white;" No Tags
+          span<>
+            | (Tasks:
+          = @user.tasks.select{ |task| task.tags.empty? }.size
+          span )
+    .row
       .col-md-6
         marquee[direction="right" scrollamount="15" behavior="alternate"]
           h3
