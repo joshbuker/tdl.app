@@ -7,4 +7,8 @@ class ApplicationController < ActionController::Base
   def index
     render template: 'application/index'
   end
+
+  def old_prototype
+    render template: 'application/index_old_prototype'
+  end
 end

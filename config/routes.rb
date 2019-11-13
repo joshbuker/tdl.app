@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   end
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  get 'old-prototype' => 'application#old_prototype'
   root to: 'application#index'
   # match '*path', to: 'application#index', format: false, via: :get
 end

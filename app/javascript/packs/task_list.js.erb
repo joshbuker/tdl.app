@@ -1,8 +1,6 @@
 import Vue from 'vue/dist/vue.esm'
 import App from '../app.vue'
 
-// import 'bootstrap'
-// import 'font-awesome/fonts'
 import toastr from 'toastr'
 import axios from 'axios'
 import '../stylesheets/bootstrap'
@@ -14,99 +12,9 @@ import '../stylesheets/toastr'
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
-    el:'#appRoot',
-    data:{
-      title:{
-        taskList: 'Task List',
-        completedTasks: 'Completed Tasks'
-      },
-      tasks: [],
-      search: '',
-      editTaskIndex: -1
-    },
-    methods:{
-      addTask(){
-        axios.post('<%= tasks_url %>', {
-          title: this.$refs.newTask.value
-        }).
-        then(response => {
-          this.tasks.push(response.data);
-          this.$refs.newTask.value = '';
-          toastr.success('Added new task!');
-        }).
-        catch(e => {
-          toastr.error(e.message)
-        });
-      },
-      deleteTask(index){
-        axios.delete('<%= tasks_url %>/' + String(this.tasks[index].id)).
-        then(response => {
-          this.tasks.splice(index,1);
-          toastr.success('Task deleted!');
-        }).
-        catch(e => {
-          toastr.error(e.message)
-        })
-      },
-      edited(index){
-        axios.patch('<%= tasks_url %>/' + String(this.tasks[index].id), {
-          title: this.tasks[index].title
-        }).
-        then(response => {
-          toastr.success('Task updated!')
-        }).
-        catch(e => {
-          toastr.error(e.message)
-        });
-      },
-      taskCompleted(task){
-        axios.patch('<%= tasks_url %>/' + String(task.id) + '/complete').
-        then(response => {
-          toastr.success('Completed task!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
-      },
-      taskUndoCompleted(task){
-        axios.patch('<%= tasks_url %>/' + String(task.id) + '/incomplete').
-        then(response => {
-          toastr.success('Undid task completion!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
-      },
-      searchForTasks(){
-        axios.get(
-          '<%= tasks_url %>/search/' + String(this.search)
-        ).
-        then(response => {
-          this.tasks = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
-      }
-    },
-    computed: {
-      completeTasks: function(){
-        return this.tasks.filter(task =>  task.completed);
-      }
-    },
-    watch: {
-      search: function(newSearch, oldSearch){
-        this.searchForTasks();
-      }
-    },
-    created: function() {
-      axios.get('<%= tasks_url %>').
-      then(response => {
-        this.tasks = response.data;
-      }).
-      catch(e => {
-        toastr.error(e.message);
-      });
+    el:'main#root',
+    data: {
+      title: 'Hello World'
     }
   })
 })
