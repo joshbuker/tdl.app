@@ -1,0 +1,86 @@
+@import './variables'
+
+.app-header
+  left: 0
+  right: 0
+  top: 0
+  height: $app-header-height
+  padding: 14px $app-header-control-h-gap
+  display: flex
+  position: fixed
+  align-items: center
+  justify-content: space-between
+  background-color: $card-bg-color
+  box-shadow: 0 0 20px 0 rgba(0,0,0,.1)
+  z-index: $app-header-z-index
+
+.app-header__controls
+  flex: 1 1
+  display: flex
+  align-items: center
+  justify-content: flex-start
+
+.app-header__controls > *
+  margin-top: 0
+  margin-bottom: 0
+
+.app-header__controls--start > :nth-child(n)
+  margin-right: $app-header-control-h-gap
+
+.app-header__controls--end > :nth-child(n)
+  margin-left: $app-header-control-h-gap
+
+.app-header__controls--end
+  justify-content: flex-end
+
+.app-header__control-button
+  color: $text-secondary-1-color
+  height: $app-header-icon-size
+  padding: 0
+  vertical-align: middle
+  background: none
+  border: none
+  border-radius: 50%
+  transition: box-shadow $animation-speed-medium, color $animation-speed-medium
+
+.app-header__new-task-button
+  height: $app-header-new-task-button-height
+  padding: 0 .5em
+  margin: 0
+  border: none
+  border-radius: $app-header-new-task-button-border-radius
+  background-image: none
+  background-color: $action-color
+  box-shadow: $pane-box-shadow-strong
+  color: $card-bg-color
+  line-height: $app-header-new-task-button-height
+  white-space: nowrap
+  -webkit-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  user-select: none
+  transition: $animation-speed-focus-ring box-shadow, $animation-speed-medium background-color
+  .app-header__new-task-button__icon
+    padding-right: .25em
+    display: inline-block
+    vertical-align: top
+  .app-header__new-task-button__text
+    margin-right: 1em
+
+.app-header__search-button
+  top: 0
+  right: $text-field-padding-h-header-search-theme
+  width: $app-header-icon-size
+  height: $app-header-icon-size
+  padding: 0
+  margin: 0
+  background: none
+  border: 0
+  border-radius: 50%
+  color: $text-secondary-1-color
+  position: absolute
+  transition: box-shadow $animation-speed-medium, color $animation-speed-medium
+
+.app-body
+  margin-top: 64px
+  padding: 10px
