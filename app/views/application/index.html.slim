@@ -1,27 +1,36 @@
+- @user = User.first
 main#root
   header.app-header
     .app-header__controls.app-header__controls--start
       button.app-header__control-button
-        svg width='36' height='36' viewBox='0 0 36 36'
-          title Toggle menu
-          g transform='translate(0 -1)' fill='none' fill-rule='evenodd'
-            path d='M0 0h36v36H0z'
-            rect fill='currentColor' x='6' y='8' width='24' height='3' rx='.893'
-            rect fill='currentColor' x='6' y='17' width='24' height='3' rx='.893'
-            rect fill='currentColor' x='6' y='26' width='24' height='3' rx='.893'
+        = render 'bars_svg'
       button.app-header__new-task-button
-        svg.app-header__new-task-button__icon width='36' height='36' viewBox='0 0 36 36'
-          g stroke='currentColor' stroke-width='2'
-            line x1='18' y1='11' x2='18' y2='25'
-            line x1='11' y1='18' x2='25' y2='18'
+        = render 'plus_svg'
         span.app-header__new-task-button__text New
     .app-header__controls.app-header__controls--end
       button.app-header__search-button
-        svg width='36' height='36' viewBox='0 0 36 36'
-          title Search
-          path d='M20.5 22.621l2.146-1.8L28 27.2 25.853 29 20.5 22.621zm-3.479-.618c3.327 0 6.022-2.688 6.022-6.001 0-3.314-2.695-6.002-6.022-6.002C13.695 10 11 12.688 11 16.002c0 3.313 2.695 6.001 6.021 6.001zm0 2c-4.43 0-8.021-3.582-8.021-8.001C9 11.582 12.591 8 17.021 8c4.43 0 8.022 3.582 8.022 8.002 0 4.419-3.592 8.001-8.022 8.001z' fill-rule='nonzero' fill='currentColor'
+        = render 'search_svg'
   .app-body
-    p
-      | {{ title }}
+    .app-body__controls.container
+      .app-body__controls__select.row
+        .col-sm
+          h3 Lists
+        .col-sm
+          h3.active Tags
+      .app-body__controls__lists
+        ul
+          - @user.lists.each do |list|
+            - if list.title == 'Action Pending'
+              li.active = list.title
+            - else
+              li = list.title
+      .app-body__controls__tags
+        ul
+          - @user.tags.each do |tag|
+            li
+              span style="color: #{tag.color};" = tag.title
+          li
+            span style="color: white;" No Tags
+    section.app-body__tasks
 
 = javascript_pack_tag 'task_list'

@@ -84,3 +84,45 @@
 .app-body
   margin-top: 64px
   padding: 10px
+
+.app-body__controls
+  left: 0
+  top: $app-header-height
+  bottom: 0
+  width: $app-sidebar-width
+  position: fixed
+  flex: 0 0 $app-sidebar-width
+  background-color: $card-bg-color
+  box-shadow: $pane-box-shadow
+  color: $nav-link-color
+  transform: translateX(calc($app-sidebar-width*-1))
+  // opacity: 0
+  transition-property: opacity,transform
+  transition-duration: $sidebar-category-in-out-transition-speed
+  z-index: $app-sidebar-z-index
+
+.app-body__controls__select
+  border-bottom-style: solid
+  border-width: 1px
+  border-color: #898989
+  h3
+    margin-top: 10px
+    text-align: center
+
+.app-body__controls__lists,
+.app-body__controls__tags
+  margin-top: 10px
+  ul
+    background-color: #222
+    border-radius: 5px
+  li
+    color: #898989
+
+.app-body__controls__lists
+  display: none
+
+.app-body__controls__tags
+  // display: none
+
+.active
+  color: $action-color !important
