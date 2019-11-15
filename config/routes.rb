@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
   get 'tasks/search' => 'tasks#index'
   get 'tasks/search/:title' => 'tasks#index'
+  get 'tasks/today' => 'tasks#today'
+  get 'tasks/tomorrow' => 'tasks#tomorrow'
+  get 'tasks/upcoming' => 'tasks#upcoming'
+  get 'tasks/someday' => 'tasks#someday'
 
   resources :tasks, except: [:show, :new, :edit], defaults: { format: :json } do
     patch 'complete' => 'tasks#mark_task_complete'

@@ -95,7 +95,7 @@
   background-color: $card-bg-color
   box-shadow: $pane-box-shadow
   color: $nav-link-color
-  transform: translateX(calc($app-sidebar-width*-1))
+  // transform: translateX(calc(#{$app-sidebar-width}*-1))
   // opacity: 0
   transition-property: opacity,transform
   transition-duration: $sidebar-category-in-out-transition-speed
@@ -126,3 +126,6 @@
 
 .active
   color: $action-color !important
+
+.app-body__tasks
+  margin-left: $app-sidebar-width

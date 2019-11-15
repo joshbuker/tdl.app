@@ -3,6 +3,7 @@ import App from '../app.vue'
 
 import ListControls from "../components/ListControls.vue";
 import TagControls from "../components/TagControls.vue";
+import TasksDocket from "../components/TasksDocket.vue";
 
 import toastr from 'toastr'
 import axios from 'axios'
@@ -20,8 +21,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
     el:'main#root',
     data: {
+      title: {
+        today: 'Today',
+        tomorrow: 'Tomorrow',
+        upcoming: 'Upcoming',
+        someday: 'Someday'
+      },
       lists: [],
-      tags: []
+      tags: [],
+      today: [],
+      tomorrow: [],
+      upcoming: [],
+      someday: []
     },
     created: function() {
       // Lists
@@ -40,10 +51,43 @@ document.addEventListener('DOMContentLoaded', () => {
       catch(e => {
         toastr.error(e.message);
       });
+      // Today
+      axios.get('<%= tasks_url %>/today').
+      then(response => {
+        this.today = response.data;
+      }).
+      catch(e => {
+        toastr.error(e.message);
+      });
+      // Tomorrow
+      axios.get('<%= tasks_url %>/tomorrow').
+      then(response => {
+        this.tomorrow = response.data;
+      }).
+      catch(e => {
+        toastr.error(e.message);
+      });
+      // Upcoming
+      axios.get('<%= tasks_url %>/upcoming').
+      then(response => {
+        this.upcoming = response.data;
+      }).
+      catch(e => {
+        toastr.error(e.message);
+      });
+      // Someday
+      axios.get('<%= tasks_url %>/someday').
+      then(response => {
+        this.someday = response.data;
+      }).
+      catch(e => {
+        toastr.error(e.message);
+      });
     },
     components: {
       ListControls,
-      TagControls
+      TagControls,
+      TasksDocket
     }
   })
 })

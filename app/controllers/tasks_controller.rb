@@ -1,9 +1,50 @@
 class TasksController < ApiController
-  before_action :set_task, except: [:index, :create]
+  before_action :set_task, except: [:index, :today, :tomorrow, :upcoming, :someday, :create]
 
   def index
     tasks = Task.search(params[:title]).order(:id => :asc).map do |task|
       task.to_tree
+    end
+
+    render json: tasks.to_json
+  end
+
+  def today
+    tasks = Task.today.map do |task|
+      {
+        title: task.title
+      }
+    end
+
+    render json: tasks.to_json
+  end
+
+  def tomorrow
+    tasks = Task.tomorrow.map do |task|
+      {
+        title: task.title
+      }
+    end
+
+    render json: tasks.to_json
+  end
+
+  def upcoming
+    tasks = Task.upcoming.map do |task|
+      {
+        title: task.title
+      }
+    end
+
+    render json: tasks.to_json
+  end
+
+  # This is when I plan on making this DRY
+  def someday
+    tasks = Task.someday.map do |task|
+      {
+        title: task.title
+      }
     end
 
     render json: tasks.to_json

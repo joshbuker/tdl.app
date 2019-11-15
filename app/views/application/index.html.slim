@@ -21,5 +21,11 @@ main#root
       .app-body__controls__tags
         tag-controls :tags="tags"
     section.app-body__tasks
+      .container
+        .row
+          tasks-docket.col-sm :tasks="today" :title="title.today"
+          tasks-docket.col-sm :tasks="tomorrow" :title="title.tomorrow"
+          tasks-docket.col-sm :tasks="upcoming" :title="title.upcoming"
+          tasks-docket.col-sm :tasks="someday" :title="title.someday"
 
 = javascript_pack_tag 'task_list'
