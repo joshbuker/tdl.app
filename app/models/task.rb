@@ -31,6 +31,32 @@ class Task < ApplicationRecord
     presence: true,
     uniqueness: { case_sensitive: false }
 
+  scope :today, -> {
+    where(remind_me_at: nil).or(
+      Task.where(
+        'remind_me_at <= ?', Time.current.end_of_day
+      )
+    )
+  }
+
+  scope :tomorrow, -> {
+    where(
+      remind_me_at: 1.day.from_now.beginning_of_day..1.day.from_now.end_of_day
+    )
+  }
+
+  scope :upcoming, -> {
+    where(
+      remind_me_at: 2.days.from_now.beginning_of_day..31.days.from_now.end_of_day
+    )
+  }
+
+  scope :someday, -> {
+    where(
+      'remind_me_at > ?', 31.days.from_now.end_of_day
+    )
+  }
+
   def self.search(title)
     if title.present?
       where('title iLIKE :title', title: "%#{title}%")
