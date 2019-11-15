@@ -1,5 +1,6 @@
 <template>
   <ul>
+    <li>All Tasks</li>
     <li v-for="list in lists">
       {{ list.title }}
     </li>
