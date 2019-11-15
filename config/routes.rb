@@ -7,6 +7,9 @@ Rails.application.routes.draw do
     patch 'incomplete' => 'tasks#mark_task_incomplete'
   end
 
+  resources :lists, only: [:index], defaults: { format: :json }
+  resources :tags, only: [:index], defaults: { format: :json }
+
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   get 'old-prototype' => 'application#old_prototype'
   root to: 'application#index'

@@ -1,6 +1,9 @@
 import Vue from 'vue/dist/vue.esm'
 import App from '../app.vue'
 
+import ListControls from "../components/ListControls.vue";
+import TagControls from "../components/TagControls.vue";
+
 import toastr from 'toastr'
 import axios from 'axios'
 import '../stylesheets/bootstrap'
@@ -9,13 +12,38 @@ import '../stylesheets/toastr'
 import '../stylesheets/task_list'
 
 <% Rails.application.default_url_options[:host] = 'localhost:3000' %>
+<% tags_url = Rails.application.routes.url_helpers.tags_url %>
 <% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
+<% lists_url = Rails.application.routes.url_helpers.lists_url %>
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
     el:'main#root',
     data: {
-      title: 'Hello World'
+      lists: [],
+      tags: []
+    },
+    created: function() {
+      // Lists
+      axios.get('<%= lists_url %>').
+      then(response => {
+        this.lists = response.data;
+      }).
+      catch(e => {
+        toastr.error(e.message);
+      });
+      // Tags
+      axios.get('<%= tags_url %>').
+      then(response => {
+        this.tags = response.data;
+      }).
+      catch(e => {
+        toastr.error(e.message);
+      });
+    },
+    components: {
+      ListControls,
+      TagControls
     }
   })
 })
