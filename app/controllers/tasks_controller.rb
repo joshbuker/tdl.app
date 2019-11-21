@@ -10,7 +10,7 @@ class TasksController < ApiController
   end
 
   def today
-    tasks = Task.today.map do |task|
+    tasks = Task.today.next_up.map do |task|
       {
         title: task.title
       }
@@ -20,7 +20,7 @@ class TasksController < ApiController
   end
 
   def tomorrow
-    tasks = Task.tomorrow.map do |task|
+    tasks = Task.tomorrow.next_up.map do |task|
       {
         title: task.title
       }
@@ -30,7 +30,7 @@ class TasksController < ApiController
   end
 
   def upcoming
-    tasks = Task.upcoming.map do |task|
+    tasks = Task.upcoming.next_up.map do |task|
       {
         title: task.title
       }
@@ -41,7 +41,7 @@ class TasksController < ApiController
 
   # This is when I plan on making this DRY
   def someday
-    tasks = Task.someday.map do |task|
+    tasks = Task.someday.next_up.map do |task|
       {
         title: task.title
       }
