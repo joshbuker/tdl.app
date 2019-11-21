@@ -33,7 +33,7 @@ class Task < ApplicationRecord
 
   scope :today, -> {
     where(remind_me_at: nil).or(
-      Task.where(
+      self.where(
         'remind_me_at <= ?', Time.current.end_of_day
       )
     )
