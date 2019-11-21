@@ -57,6 +57,11 @@ class Task < ApplicationRecord
     )
   }
 
+  scope :next_up, -> {
+    includes(:pre_rules).
+    where(rules: { id: nil })
+  }
+
   def self.search(title)
     if title.present?
       where('title iLIKE :title', title: "%#{title}%")
