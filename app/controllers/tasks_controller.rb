@@ -1,5 +1,6 @@
 class TasksController < ApiController
-  before_action :set_task, except: [:index, :today, :tomorrow, :upcoming, :someday, :create]
+  before_action :set_task, only: [:update, :destroy, :mark_task_complete, :mark_task_incomplete]
+  before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday]
 
   def index
     tasks = Task.search(params[:title]).order(:id => :asc).map do |task|
@@ -10,7 +11,7 @@ class TasksController < ApiController
   end
 
   def today
-    tasks = Task.today.next_up.map do |task|
+    tasks = @tasks.today.next_up.map do |task|
       {
         title: task.title
       }
@@ -20,7 +21,7 @@ class TasksController < ApiController
   end
 
   def tomorrow
-    tasks = Task.tomorrow.next_up.map do |task|
+    tasks = @tasks.tomorrow.next_up.map do |task|
       {
         title: task.title
       }
@@ -30,7 +31,7 @@ class TasksController < ApiController
   end
 
   def upcoming
-    tasks = Task.upcoming.next_up.map do |task|
+    tasks = @tasks.upcoming.next_up.map do |task|
       {
         title: task.title
       }
@@ -41,7 +42,7 @@ class TasksController < ApiController
 
   # This is when I plan on making this DRY
   def someday
-    tasks = Task.someday.next_up.map do |task|
+    tasks = @tasks.someday.next_up.map do |task|
       {
         title: task.title
       }
@@ -98,6 +99,14 @@ private
   def set_task
     task_id = params[:task_id] || params[:id]
     @task = Task.find(task_id)
+  end
+
+  def set_tasks
+    if current_user.present?
+      @tasks = current_user.tasks
+    else
+      @tasks = Task.all
+    end
   end
 
   def task_params

@@ -9,6 +9,13 @@ main#root
     .app-header__controls.app-header__controls--end
       button.app-header__search-button
         = render 'search_svg'
+      - if current_user
+        span = current_user&.username
+        = button_to 'Logout', logout_path, method: :post
+      - else
+        = form_with url: login_path, method: :post, local: true do |f|
+          = f.text_field :username, placeholder: 'Username'
+          = f.submit 'Login'
   .app-body
     .app-body__controls.container
       .app-body__controls__select.row

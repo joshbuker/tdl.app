@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   get 'tasks/upcoming' => 'tasks#upcoming'
   get 'tasks/someday' => 'tasks#someday'
 
+  post 'login' => 'sessions#create'
+  post 'logout' => 'sessions#destroy'
+
   resources :tasks, except: [:show, :new, :edit], defaults: { format: :json } do
     patch 'complete' => 'tasks#mark_task_complete'
     patch 'incomplete' => 'tasks#mark_task_incomplete'
