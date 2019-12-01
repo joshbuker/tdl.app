@@ -5,7 +5,6 @@
         {{ tag.title }}
       </span>
     </li>
-    <li><span style="color: white;">No Tags</span></li>
   </ul>
 </template>
 

@@ -6,6 +6,8 @@ class ListsController < ApiController
       { title: list.title }
     end
 
+    lists.unshift({ title: 'All Tasks' })
+
     render json: lists.to_json
   end
 

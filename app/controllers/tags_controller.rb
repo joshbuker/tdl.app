@@ -9,6 +9,11 @@ class TagsController < ApiController
       }
     end
 
+    tags.push({
+      title: 'No Tags',
+      color: 'white'
+    })
+
     render json: tags.to_json
   end
 
