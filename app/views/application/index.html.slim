@@ -14,12 +14,14 @@
       .app-body__controls.container
         .app-body__controls__select.row
           .col-sm
-            h3 Lists
+            h3
+              button style='border:none;background-color:white;' v-bind:class="{ active: controls == 'lists' }" v-on:click="controls = 'lists'" Lists
           .col-sm
-            h3 Tags
-        .app-body__controls__lists
+            h3
+              button style='border:none;background-color:white;' v-bind:class="{ active: controls == 'tags' }" v-on:click="controls = 'tags'" Tags
+        .app-body__controls__lists v-show="controls == 'lists'"
           list-controls :lists='lists'
-        .app-body__controls__tags
+        .app-body__controls__tags v-show="controls == 'tags'"
           tag-controls :tags='tags'
       section.app-body__tasks
         .container
