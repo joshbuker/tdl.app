@@ -1,7 +1,7 @@
 <template>
-  <ul>
-    <li v-for="tag in tags">
-      <span v-bind:style="{ color: tag.color }">
+  <ul class="list-group">
+    <li v-for="tag in tags" class="list-group-item list-group-item-action" v-bind:style="{ 'background-color': tag.color }">
+      <span>
         {{ tag.title }}
       </span>
     </li>

@@ -59,6 +59,23 @@
           .modal-footer
             button.btn.btn-secondary[type="button" data-dismiss="modal"]
               | Cancel
+    #editTaskModal.modal.fade[tabindex="-1" role="dialog" aria-labelledby="editTaskModalLabel" aria-hidden="true"]
+      .modal-dialog[role="document"]
+        .modal-content[@setCurrentTask='setCurrentTask($event)']
+          .modal-header
+            h5#editTaskModalLabel.modal-title
+              | Edit Task
+            button.close[type="button" data-dismiss="modal" aria-label="Close"]
+              span[aria-hidden="true"]
+                | ×
+          .modal-body
+            div[v-if="currentTask != null"]
+              | {{ currentTask.title }}
+            div[v-else]
+              p Hi
+          .modal-footer
+            button.btn.btn-secondary[type="button" data-dismiss="modal"]
+              | Cancel
 
   = javascript_pack_tag 'task_list'
 - else

@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
       tomorrow: [],
       upcoming: [],
       someday: [],
-      controls: 'lists'
+      controls: 'lists',
+      currentTask: null
     },
     methods: {
       addTask(){
@@ -57,6 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
         catch(e => {
           toastr.error(e.message);
         });
+      },
+      setCurrentTask(task){
+        this.currentTask = task;
       }
     },
     created: function() {
