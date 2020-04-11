@@ -7,15 +7,20 @@ import TasksDocket from "../components/TasksDocket.vue";
 
 import toastr from 'toastr'
 import axios from 'axios'
+import bootstrap from 'bootstrap'
+import $ from 'jquery'
 import '../stylesheets/bootstrap'
 import '../stylesheets/font-awesome'
 import '../stylesheets/toastr'
-import '../stylesheets/task_list'
+// import '../stylesheets/task_list'
 
 <% Rails.application.default_url_options[:host] = 'localhost:3000' %>
 <% tags_url = Rails.application.routes.url_helpers.tags_url %>
 <% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
 <% lists_url = Rails.application.routes.url_helpers.lists_url %>
+
+const token = $('meta[name="csrf-token"]').attr('content');
+console.log(token);
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
@@ -34,6 +39,25 @@ document.addEventListener('DOMContentLoaded', () => {
       upcoming: [],
       someday: [],
       controls: 'lists'
+    },
+    methods: {
+      addTask(){
+        axios.post('<%= tasks_url %>', {
+          title: this.$refs.newTask.value,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.today.push(response.data);
+          this.$refs.newTask.value = '';
+          $('#createTaskModal').modal('hide');
+          toastr.success('Added new task!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      }
     },
     created: function() {
       // Lists

@@ -53,6 +53,7 @@ class TasksController < ApiController
 
   def create
     task = Task.new(task_params)
+    task.list = current_user&.lists&.find_by(title: 'Inbox')
     task.save!
 
     render json: task.to_json

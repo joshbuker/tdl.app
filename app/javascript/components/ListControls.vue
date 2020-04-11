@@ -1,6 +1,6 @@
 <template>
-  <ul>
-    <li v-for="list in lists">
+  <ul class="nav flex-column">
+    <li v-for="list in lists" class="nav-item">
       {{ list.title }}
     </li>
   </ul>

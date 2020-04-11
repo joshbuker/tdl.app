@@ -21,12 +21,11 @@ export default {
 
 <style>
 .tasks-docket {
-  background-color: rgba(255,255,255,0.5) !important; /* Gotta rub in the privledge */
-  margin: 24px;
-  border-radius:10px;
+  background-color: rgba(255,255,255,0.5) !important;
+  border-radius: 10px;
 }
 .tasks-docket > h3 {
   text-align: center;
-  margin-top:8px;
+  margin-top: 8px;
 }
 </style>
