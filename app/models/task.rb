@@ -1,7 +1,6 @@
 class Task < ApplicationRecord
   belongs_to :list
-
-  has_one :user, through: :list
+  belongs_to :user
 
   has_many :taggings,
     dependent: :destroy
@@ -29,7 +28,9 @@ class Task < ApplicationRecord
 
   validates :title,
     presence: true,
-    uniqueness: { case_sensitive: false, scope: :list }
+    uniqueness: { case_sensitive: false, scope: :user_id }
+
+  validate :list_and_task_owner_match
 
   scope :today, -> {
     where(remind_me_at: nil).or(
@@ -91,5 +92,11 @@ class Task < ApplicationRecord
 
   def to_json
     self.to_hash.to_json
+  end
+
+  def list_and_task_owner_match
+    return unless list.is_a?(List)
+    return if user == list&.user
+    errors.add(:base, 'List and Task must belong to the same user.')
   end
 end

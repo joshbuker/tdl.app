@@ -48,13 +48,25 @@ priority = athix.tags.find_by(title: 'Priority')
 # TODO: Make this more realistic
 
 10.times do |n|
-  task = Task.create!(title: "Task #{n}", list: inbox)
+  task = Task.create!(
+    title: "Task #{n}",
+    list: inbox,
+    user: athix
+  )
   Tagging.create!(task: task, tag: priority)
   3.times do |m|
-    subtask = Task.create!(title: "Set #{n} Subtask #{m}", list: inbox)
+    subtask = Task.create!(
+      title: "Set #{n} Subtask #{m}",
+      list: inbox,
+      user: athix
+    )
     Rule.create!(pre: task, post: subtask)
     2.times do |k|
-      subsub = Task.create!(title: "Set #{n} Subset #{m} Subtask #{k}", list: inbox)
+      subsub = Task.create!(
+        title: "Set #{n} Subset #{m} Subtask #{k}",
+        list: inbox,
+        user: athix
+      )
       Rule.create!(pre: subtask, post: subsub)
     end
   end

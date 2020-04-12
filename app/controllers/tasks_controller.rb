@@ -12,7 +12,7 @@ class TasksController < ApiController
 
   def today
     if @tasks.any?
-      tasks = @tasks.today.next_up.order(:id => :asc).map do |task|
+      tasks = @tasks.includes(:tags, :list).today.next_up.order(:id => :asc).map do |task|
         task.to_hash
       end
     else
@@ -24,7 +24,7 @@ class TasksController < ApiController
 
   def tomorrow
     if @tasks.any?
-      tasks = @tasks.tomorrow.next_up.order(:id => :asc).map do |task|
+      tasks = @tasks.includes(:tags, :list).tomorrow.next_up.order(:id => :asc).map do |task|
         task.to_hash
       end
     else
@@ -36,7 +36,7 @@ class TasksController < ApiController
 
   def upcoming
     if @tasks.any?
-      tasks = @tasks.upcoming.next_up.order(:id => :asc).map do |task|
+      tasks = @tasks.includes(:tags, :list).upcoming.next_up.order(:id => :asc).map do |task|
         task.to_hash
       end
     else
@@ -49,7 +49,7 @@ class TasksController < ApiController
   # This is when I plan on making this DRY
   def someday
     if @tasks.any?
-      tasks = @tasks.someday.next_up.order(:id => :asc).map do |task|
+      tasks = @tasks.includes(:tags, :list).someday.next_up.order(:id => :asc).map do |task|
         task.to_hash
       end
     else
@@ -60,10 +60,9 @@ class TasksController < ApiController
   end
 
   def search
-    tasks = Task.joins(:list).
-      includes(:tags).
+    tasks = Task.includes(:tags, :list).
       search(params[:title]).
-      merge(List.where(user: current_user))
+      where(user: current_user)
     tasks = tasks.map do |task|
       task.to_hash
     end
@@ -74,6 +73,7 @@ class TasksController < ApiController
   def create
     task = Task.new(task_params)
     task.list = current_user&.lists&.find_by(title: 'Inbox')
+    task.user = current_user
     task.save!
 
     render json: task.to_json

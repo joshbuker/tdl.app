@@ -2,7 +2,7 @@
   <div class="tasks-docket bg-light">
     <h3 class="text-center pt-2">{{ title }}</h3>
     <hr>
-    <ul class="list-group">
+    <ul class="list-group overflow-auto" style="max-height: 75vh">
       <li v-for="(task, index) in tasks" class="list-group-item list-group-item-action"
           :task='task' :index='index' :key='task.title'
           data-toggle='modal' data-target='#taskDetailModal'
