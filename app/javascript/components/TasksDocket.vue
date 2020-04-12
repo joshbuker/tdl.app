@@ -3,7 +3,10 @@
     <h3 class="text-center pt-2">{{ title }}</h3>
     <hr>
     <ul class="list-group">
-      <li v-for="task in tasks" class="list-group-item list-group-item-action" data-toggle='modal' data-target='#editTaskModal' @click="setCurrentTask(task)">
+      <li v-for="(task, index) in tasks" class="list-group-item list-group-item-action"
+          :task='task' :index='index' :key='task.title'
+          data-toggle='modal' data-target='#taskDetailModal'
+          @click="showDetailModal(task)">
         {{ task.title }}
       </li>
     </ul>
@@ -19,8 +22,8 @@ export default {
     title: String
   },
   methods: {
-    setCurrentTask(task) {
-      this.$emit('setCurrentTask', task)
+    showDetailModal(task) {
+      this.$emit('clicked-show-detail', task)
     }
   }
 };

@@ -71,14 +71,20 @@ class Task < ApplicationRecord
   end
 
   def to_tree
-    results = {
-      id: id,
-      title: title,
-      completed: completed,
-    }
+    results = self.to_hash
 
     results.merge!({ postreqs: postreqs.map{ |post| post.to_tree } }) if postreqs.any?
 
     results
+  end
+
+  def to_hash
+    {
+      id: id,
+      title: title,
+      completed: completed,
+      list_title: list.title,
+      tags: tags.map{ |tag| { title: tag.title, color: tag.color, text_color: tag.text_color } }
+    }
   end
 end

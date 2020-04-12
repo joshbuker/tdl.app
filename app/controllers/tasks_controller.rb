@@ -12,9 +12,7 @@ class TasksController < ApiController
 
   def today
     tasks = @tasks.today.next_up.order(:id => :asc).map do |task|
-      {
-        title: task.title
-      }
+      task.to_hash
     end
 
     render json: tasks.to_json
@@ -22,9 +20,7 @@ class TasksController < ApiController
 
   def tomorrow
     tasks = @tasks.tomorrow.next_up.order(:id => :asc).map do |task|
-      {
-        title: task.title
-      }
+      task.to_hash
     end
 
     render json: tasks.to_json
@@ -32,9 +28,7 @@ class TasksController < ApiController
 
   def upcoming
     tasks = @tasks.upcoming.next_up.order(:id => :asc).map do |task|
-      {
-        title: task.title
-      }
+      task.to_hash
     end
 
     render json: tasks.to_json
@@ -43,9 +37,7 @@ class TasksController < ApiController
   # This is when I plan on making this DRY
   def someday
     tasks = @tasks.someday.next_up.order(:id => :asc).map do |task|
-      {
-        title: task.title
-      }
+      task.to_hash
     end
 
     render json: tasks.to_json

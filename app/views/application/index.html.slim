@@ -37,13 +37,13 @@
                   | Tree
           .row
             .col-sm-3
-              tasks-docket :tasks='today' :title='title.today'
+              tasks-docket :tasks='today' :title='title.today' @clicked-show-detail='setCurrentTask'
             .col-sm-3
-              tasks-docket :tasks='tomorrow' :title='title.tomorrow'
+              tasks-docket :tasks='tomorrow' :title='title.tomorrow' @clicked-show-detail='setCurrentTask'
             .col-sm-3
-              tasks-docket :tasks='upcoming' :title='title.upcoming'
+              tasks-docket :tasks='upcoming' :title='title.upcoming' @clicked-show-detail='setCurrentTask'
             .col-sm-3
-              tasks-docket :tasks='someday' :title='title.someday'
+              tasks-docket :tasks='someday' :title='title.someday' @clicked-show-detail='setCurrentTask'
     #createTaskModal.modal.fade[tabindex="-1" role="dialog" aria-labelledby="createTaskModalLabel" aria-hidden="true"]
       .modal-dialog[role="document"]
         .modal-content
@@ -65,21 +65,21 @@
           .modal-footer
             button.btn.btn-secondary[type="button" data-dismiss="modal"]
               | Cancel
-    #editTaskModal.modal.fade[tabindex="-1" role="dialog" aria-labelledby="editTaskModalLabel" aria-hidden="true"]
+    #taskDetailModal.modal.fade[tabindex="-1" role="dialog" aria-labelledby="taskDetailModalLabel" aria-hidden="true"]
       .modal-dialog[role="document"]
-        .modal-content[@setCurrentTask='setCurrentTask($event)']
+        .modal-content
           .modal-header
-            h5#editTaskModalLabel.modal-title
+            h5#taskDetailModalLabel.modal-title
               | Task Details
             button.close[type="button" data-dismiss="modal" aria-label="Close"]
               span[aria-hidden="true"]
                 | ×
           .modal-body
-            input.form-control type='text' value='Task Title Here'
+            input.form-control type='text' v-model='currentTask.title'
             hr
-            button.btn.btn-sm.btn-success.rounded-pill
-              | @Home
-            button.btn.btn-sm.btn-outline-secondary.rounded-pill.ml-2 style='border-style: dashed;'
+            button.btn.btn-sm.rounded-pill.mr-2 v-for='tag in currentTask.tags' v-bind:style="{ 'background-color': tag.color, 'border-color': tag.text_color, 'color': tag.text_color }"
+              | {{ tag.title }}
+            button.btn.btn-sm.btn-outline-secondary.rounded-pill style='border-style: dashed;'
               | Add Tag
             hr
             .row
@@ -92,7 +92,7 @@
                 .shadow.rounded.p-3.text-center
                   i.fa.fa-tasks aria-hidden='true'
                   br
-                  | Action Pending
+                  | {{ currentTask.list_title }}
             hr
             h5 Remind me about this
             hr
