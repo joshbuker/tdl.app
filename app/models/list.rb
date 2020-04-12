@@ -5,7 +5,7 @@ class List < ApplicationRecord
 
   validates :title,
     presence: true,
-    uniqueness: { case_sensitive: false }
+    uniqueness: { case_sensitive: false, scope: :user_id }
 
   validates :order,
     presence: true

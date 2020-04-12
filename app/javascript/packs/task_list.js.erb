@@ -9,6 +9,7 @@ import toastr from 'toastr'
 import axios from 'axios'
 import bootstrap from 'bootstrap'
 import $ from 'jquery'
+import _ from 'lodash'
 import '../stylesheets/bootstrap'
 import '../stylesheets/font-awesome'
 import '../stylesheets/toastr'
@@ -37,20 +38,22 @@ document.addEventListener('DOMContentLoaded', () => {
       tomorrow: [],
       upcoming: [],
       someday: [],
+      search: [],
       controls: 'lists',
-      currentTask: {}
+      currentTask: {},
+      newTask: ''
     },
     methods: {
       addTask(){
         axios.post('<%= tasks_url %>', {
-          title: this.$refs.newTask.value,
+          title: this.newTask,
           credentials: 'same-origin',
           'X-CSRF-Token': token,
           'authenticity_token': token
         }).
         then(response => {
           this.today.push(response.data);
-          this.$refs.newTask.value = '';
+          this.newTask = '';
           $('#createTaskModal').modal('hide');
           toastr.success('Added new task!');
         }).
@@ -58,8 +61,67 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
+      markTaskComplete(task){
+        axios.patch('<%= tasks_url %>/' + String(task.id) + '/complete').
+        then(response => {
+          this.currentTask = {};
+          $('#taskDetailModal').modal('hide');
+          toastr.success('Completed task!');
+          this.refreshTaskLists();
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      refreshTaskLists(){
+        // Today
+        axios.get('<%= tasks_url %>/today').
+        then(response => {
+          this.today = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+        // Tomorrow
+        axios.get('<%= tasks_url %>/tomorrow').
+        then(response => {
+          this.tomorrow = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+        // Upcoming
+        axios.get('<%= tasks_url %>/upcoming').
+        then(response => {
+          this.upcoming = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+        // Someday
+        axios.get('<%= tasks_url %>/someday').
+        then(response => {
+          this.someday = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      searchForTasks(){
+        axios.post('<%= tasks_url %>/search', {
+          title: this.newTask,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.search = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
       setCurrentTask: function (task) {
-        console.log(task);
         app.currentTask = task;
       }
     },
@@ -80,43 +142,20 @@ document.addEventListener('DOMContentLoaded', () => {
       catch(e => {
         toastr.error(e.message);
       });
-      // Today
-      axios.get('<%= tasks_url %>/today').
-      then(response => {
-        this.today = response.data;
-      }).
-      catch(e => {
-        toastr.error(e.message);
-      });
-      // Tomorrow
-      axios.get('<%= tasks_url %>/tomorrow').
-      then(response => {
-        this.tomorrow = response.data;
-      }).
-      catch(e => {
-        toastr.error(e.message);
-      });
-      // Upcoming
-      axios.get('<%= tasks_url %>/upcoming').
-      then(response => {
-        this.upcoming = response.data;
-      }).
-      catch(e => {
-        toastr.error(e.message);
-      });
-      // Someday
-      axios.get('<%= tasks_url %>/someday').
-      then(response => {
-        this.someday = response.data;
-      }).
-      catch(e => {
-        toastr.error(e.message);
-      });
+      // Task Lists
+      this.refreshTaskLists();
+      // Set newTask Debouncer
+      this.debouncedSearch = _.debounce(this.searchForTasks, 100)
     },
     components: {
       ListControls,
       TagControls,
       TasksDocket
+    },
+    watch: {
+      newTask: function(newValue, oldValue) {
+        this.debouncedSearch();
+      }
     }
   })
 })

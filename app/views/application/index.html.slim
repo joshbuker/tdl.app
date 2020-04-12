@@ -54,14 +54,13 @@
               span[aria-hidden="true"]
                 | ×
           .modal-body
-            | <input type="text" class="form-control" placeholder="Task title" ref="newTask" @keyup.enter="addTask">
+            | <input type="text" class="form-control" placeholder="Task title" v-model="newTask" @keyup.enter="addTask">
             hr
-            h3 Possible Matches
-            ul.list-group
-              li.list-group-item.list-group-item-action Task 1
-              li.list-group-item.list-group-item-action Other Task
-              li.list-group-item.list-group-item-action Pineapple
-              li.list-group-item.list-group-item-action TODO: This
+            h3
+              | Possible Matches - {{ search.length }}
+            ul.list-group.overflow-auto style='max-height: 500px;'
+              li.list-group-item.list-group-item-action v-for='task in search'
+                | {{ task.title }}
           .modal-footer
             button.btn.btn-secondary[type="button" data-dismiss="modal"]
               | Cancel
@@ -100,7 +99,11 @@
             hr
             h5 Notes
           .modal-footer
-            button.btn.btn-secondary[type="button" data-dismiss="modal"]
+            button.btn.btn-primary @click='markTaskComplete(currentTask)'
+              | Mark as Complete
+            button.btn.btn-danger
+              | Delete
+            button.btn.btn-secondary type='button' data-dismiss='modal'
               | Cancel
 
   = javascript_pack_tag 'task_list'

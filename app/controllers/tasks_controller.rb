@@ -11,24 +11,36 @@ class TasksController < ApiController
   end
 
   def today
-    tasks = @tasks.today.next_up.order(:id => :asc).map do |task|
-      task.to_hash
+    if @tasks.any?
+      tasks = @tasks.today.next_up.order(:id => :asc).map do |task|
+        task.to_hash
+      end
+    else
+      tasks = []
     end
 
     render json: tasks.to_json
   end
 
   def tomorrow
-    tasks = @tasks.tomorrow.next_up.order(:id => :asc).map do |task|
-      task.to_hash
+    if @tasks.any?
+      tasks = @tasks.tomorrow.next_up.order(:id => :asc).map do |task|
+        task.to_hash
+      end
+    else
+      tasks = []
     end
 
     render json: tasks.to_json
   end
 
   def upcoming
-    tasks = @tasks.upcoming.next_up.order(:id => :asc).map do |task|
-      task.to_hash
+    if @tasks.any?
+      tasks = @tasks.upcoming.next_up.order(:id => :asc).map do |task|
+        task.to_hash
+      end
+    else
+      tasks = []
     end
 
     render json: tasks.to_json
@@ -36,7 +48,23 @@ class TasksController < ApiController
 
   # This is when I plan on making this DRY
   def someday
-    tasks = @tasks.someday.next_up.order(:id => :asc).map do |task|
+    if @tasks.any?
+      tasks = @tasks.someday.next_up.order(:id => :asc).map do |task|
+        task.to_hash
+      end
+    else
+      tasks = []
+    end
+
+    render json: tasks.to_json
+  end
+
+  def search
+    tasks = Task.joins(:list).
+      includes(:tags).
+      search(params[:title]).
+      merge(List.where(user: current_user))
+    tasks = tasks.map do |task|
       task.to_hash
     end
 

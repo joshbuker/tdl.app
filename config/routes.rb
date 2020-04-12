@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  get 'tasks/search' => 'tasks#index'
-  get 'tasks/search/:title' => 'tasks#index'
+  post 'tasks/search' => 'tasks#search'
+  get 'tasks/search/:title' => 'tasks#search'
   get 'tasks/today' => 'tasks#today'
   get 'tasks/tomorrow' => 'tasks#tomorrow'
   get 'tasks/upcoming' => 'tasks#upcoming'

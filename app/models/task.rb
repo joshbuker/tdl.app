@@ -29,7 +29,7 @@ class Task < ApplicationRecord
 
   validates :title,
     presence: true,
-    uniqueness: { case_sensitive: false }
+    uniqueness: { case_sensitive: false, scope: :list }
 
   scope :today, -> {
     where(remind_me_at: nil).or(
@@ -58,15 +58,16 @@ class Task < ApplicationRecord
   }
 
   scope :next_up, -> {
+    where(completed: false).
     includes(:pre_rules).
     where(rules: { id: nil })
   }
 
   def self.search(title)
     if title.present?
-      where('title iLIKE :title', title: "%#{title}%")
+      where('tasks.title iLIKE :title', title: "%#{title}%")
     else
-      all
+      none
     end
   end
 
@@ -86,5 +87,9 @@ class Task < ApplicationRecord
       list_title: list.title,
       tags: tags.map{ |tag| { title: tag.title, color: tag.color, text_color: tag.text_color } }
     }
+  end
+
+  def to_json
+    self.to_hash.to_json
   end
 end

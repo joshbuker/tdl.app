@@ -5,4 +5,9 @@ void_xxx = User.create!(
   email: 'username@void.xxx'
 )
 
+List.create!(
+  user: void_xxx,
+  title: 'Inbox'
+)
+
 # TODO: Do some seeds
