@@ -93,3 +93,7 @@
             - [ ] Ideally multiselect for batch-complete/delete
                 - [ ] Add all as post
                 - [ ] Ideally select, click-and-drag
+
+Have a distinction between hard pre/post requisites and soft (this MUST be done,
+or I would LIKE this to be done before/after). Automatically drop stale soft
+requirements over time?
