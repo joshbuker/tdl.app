@@ -15,6 +15,8 @@ Rails.application.routes.draw do
     get 'postreqs' => 'tasks#postreqs'
     patch 'complete' => 'tasks#mark_task_complete'
     patch 'incomplete' => 'tasks#mark_task_incomplete'
+    patch 'pre' => 'tasks#add_prerequisite'
+    patch 'post' => 'tasks#add_postrequisite'
   end
 
   resources :lists, only: [:index], defaults: { format: :json }

@@ -30,7 +30,7 @@ class Task < ApplicationRecord
     presence: true,
     uniqueness: { case_sensitive: false, scope: :user_id }
 
-  validate :list_and_task_owner_match
+  validate :list_and_task_owner_match, :prereqs_before_self
 
   scope :today, -> {
     where(remind_me_at: nil).or(
@@ -195,5 +195,11 @@ class Task < ApplicationRecord
     return unless list.is_a?(List)
     return if user == list&.user
     errors.add(:base, 'List and Task must belong to the same user.')
+  end
+
+  def prereqs_before_self
+    return # Disabled for now
+    return unless completed? && prereqs.where(completed: false).any?
+    errors.add(:completed, 'You must complete all prereqs first!')
   end
 end

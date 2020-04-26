@@ -65,6 +65,42 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
+      addPrerequisite(task){
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/pre', {
+          pre_task_id: task.id,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshTaskLists();
+          this.currentPrereqs.push(response.data);
+          this.newTask = '';
+          $('#addPrerequisiteModal').modal('hide');
+          toastr.success('Added prerequisite!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      addPostrequisite(task){
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/post', {
+          post_task_id: task.id,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshTaskLists();
+          this.currentPostreqs.push(response.data);
+          this.newTask = '';
+          $('#addPostrequisiteModal').modal('hide');
+          toastr.success('Added postrequisite!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
       markTaskComplete(task){
         axios.patch('<%= tasks_url %>/' + String(task.id) + '/complete').
         then(response => {

@@ -2,7 +2,7 @@ class TasksController < ApiController
   before_action :set_task,
     only: [
       :update, :destroy, :mark_task_complete, :mark_task_incomplete, :prereqs,
-      :postreqs
+      :postreqs, :add_prerequisite, :add_postrequisite
     ]
   before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday]
 
@@ -101,6 +101,22 @@ class TasksController < ApiController
     results = @task.postreqs.map(&:to_hash)
 
     render json: results.to_json
+  end
+
+  def add_prerequisite
+    prereq = Task.find_by(id: params[:pre_task_id])
+
+    Rule.create!(pre: prereq, post: @task)
+
+    render json: prereq.to_json
+  end
+
+  def add_postrequisite
+    postreq = Task.find_by(id: params[:post_task_id])
+
+    Rule.create!(pre: @task, post: postreq)
+
+    render json: postreq.to_json
   end
 
   def mark_task_complete
