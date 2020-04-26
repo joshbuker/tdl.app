@@ -44,6 +44,7 @@ end
 
 inbox = athix.lists.find_by(title: 'Inbox')
 priority = athix.tags.find_by(title: 'Priority')
+career = athix.tags.find_by(title: 'Career')
 
 # TODO: Make this more realistic
 
@@ -54,6 +55,7 @@ priority = athix.tags.find_by(title: 'Priority')
     user: athix
   )
   Tagging.create!(task: task, tag: priority)
+  Tagging.create!(task: task, tag: career) if [true, false].sample
   3.times do |m|
     subtask = Task.create!(
       title: "Set #{n} Subtask #{m}",
@@ -61,6 +63,7 @@ priority = athix.tags.find_by(title: 'Priority')
       user: athix
     )
     Rule.create!(pre: task, post: subtask)
+    Tagging.create!(task: subtask, tag: career) if [true, false].sample
     2.times do |k|
       subsub = Task.create!(
         title: "Set #{n} Subset #{m} Subtask #{k}",
@@ -68,6 +71,7 @@ priority = athix.tags.find_by(title: 'Priority')
         user: athix
       )
       Rule.create!(pre: subtask, post: subsub)
+      Tagging.create!(task: subsub, tag: career) if [true, false].sample
     end
   end
 end

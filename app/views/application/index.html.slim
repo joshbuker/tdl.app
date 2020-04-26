@@ -18,9 +18,9 @@
                 h3.text-left
                   button style='border:none;background-color:white;' v-bind:class="{ active: controls == 'tags' }" v-on:click="controls = 'tags'" Tags
             .app-body__controls__lists v-show="controls == 'lists'"
-              list-controls :lists='lists'
+              list-controls :lists='lists' @clicked-list='setCurrentList'
             .app-body__controls__tags v-show="controls == 'tags'"
-              tag-controls :tags='tags'
+              tag-controls :tags='tags' @clicked-tag='setCurrentTag'
         section.col-md-9.ml-sm-auto.col-lg-10.pt-3.px-4
           .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pb-2.mb-3.border-bottom
             h1.h2

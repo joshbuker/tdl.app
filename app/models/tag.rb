@@ -9,6 +9,8 @@ class Tag < ApplicationRecord
   validates :title, :color,
     presence: true
 
+  validate :reserved_title
+
   # TODO: Validate that color is a hex color code
 
   def text_color(light: '#ffffff', dark: '#000000')
@@ -24,5 +26,12 @@ class Tag < ApplicationRecord
     # Perceived midpoint for grey is higher than 128. (around 186)
     midpoint = 152
     (greyscale > midpoint) ? dark : light
+  end
+
+private
+
+  def reserved_title
+    return unless title == 'No Tags'
+    errors.add(:title, 'This tag name is reserved, sorry!')
   end
 end

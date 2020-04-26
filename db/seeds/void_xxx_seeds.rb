@@ -12,22 +12,24 @@ inbox = List.create!(
 
 # TODO: Do some seeds
 
-10000.times do |n|
-  puts n
+task_count = 10_000
+rule_count = (task_count.to_f * 1.5).to_i
+
+task_count.times do |n|
+  puts "Creating task #{n}" if n + 1 % 100 == 0
   task = Task.create!(
     title: "Task #{n}",
     list: inbox,
     user: void_xxx
   )
-  next unless n > 1
-  if [true, false].sample
-    loop do
-      random_task = Task.where.not(id: task.id).where(user: void_xxx).order(Arel.sql('RANDOM()')).first
-      rule = Rule.new(pre: task, post: random_task)
-      if rule.valid?
-        rule.save!
-        break
-      end
-    end
+end
+
+rule_count.times do |n|
+  puts "Creating rule #{n}" if n + 1 % 100 == 0
+  loop do
+    random_tasks = Task.where(user: void_xxx).order(Arel.sql('RANDOM()')).first(2)
+    rule = Rule.new(pre: random_tasks.first, post: random_tasks.second)
+    rule.save! and break if rule.valid?
+    puts 'invalid rule!'
   end
 end

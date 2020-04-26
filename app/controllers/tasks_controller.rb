@@ -139,10 +139,35 @@ private
   end
 
   def set_tasks
+    # FIXME: Refactor evil if/else chain into Task scope/class method
     if current_user.present?
-      @tasks = current_user.tasks
+      if params[:limiter_type].present? && params[:limiter_value].present?
+        if params[:limiter_type] == 'list'
+          if params[:limiter_value] == 'All Tasks'
+            @tasks = current_user.tasks
+          else
+            @tasks = current_user.tasks.by_list(
+              params[:limiter_value],
+              current_user
+            )
+          end
+        elsif params[:limiter_type] == 'tag'
+          if params[:limiter_value] == 'No Tags'
+            @tasks = current_user.tasks.tagless
+          else
+            @tasks = current_user.tasks.by_tag(
+              params[:limiter_value],
+              current_user
+            )
+          end
+        else
+          @tasks = Task.none
+        end
+      else
+        @tasks = current_user.tasks
+      end
     else
-      @tasks = Task.all
+      @tasks = Task.none
     end
   end
 

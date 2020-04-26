@@ -43,7 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
       currentTask: {},
       currentPrereqs: [],
       currentPostreqs: [],
-      newTask: ''
+      newTask: '',
+      limiterType: null,
+      limiterValue: null
     },
     methods: {
       addTask(){
@@ -77,7 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       refreshTaskLists(){
         // Today
-        axios.get('<%= tasks_url %>/today').
+        axios.post('<%= tasks_url %>/today', {
+          limiter_type: this.limiterType,
+          limiter_value: this.limiterValue,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
         then(response => {
           this.today = response.data;
         }).
@@ -85,7 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
         // Tomorrow
-        axios.get('<%= tasks_url %>/tomorrow').
+        axios.post('<%= tasks_url %>/tomorrow', {
+          limiter_type: this.limiterType,
+          limiter_value: this.limiterValue,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
         then(response => {
           this.tomorrow = response.data;
         }).
@@ -93,7 +107,13 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
         // Upcoming
-        axios.get('<%= tasks_url %>/upcoming').
+        axios.post('<%= tasks_url %>/upcoming', {
+          limiter_type: this.limiterType,
+          limiter_value: this.limiterValue,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
         then(response => {
           this.upcoming = response.data;
         }).
@@ -101,7 +121,13 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
         // Someday
-        axios.get('<%= tasks_url %>/someday').
+        axios.post('<%= tasks_url %>/someday', {
+          limiter_type: this.limiterType,
+          limiter_value: this.limiterValue,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
         then(response => {
           this.someday = response.data;
         }).
@@ -147,6 +173,16 @@ document.addEventListener('DOMContentLoaded', () => {
         catch(e => {
           toastr.error(e.message);
         });
+      },
+      setCurrentList: function(list) {
+        app.limiterType = 'list';
+        app.limiterValue = list.title;
+        app.refreshTaskLists();
+      },
+      setCurrentTag: function(tag) {
+        app.limiterType = 'tag';
+        app.limiterValue = tag.title;
+        app.refreshTaskLists();
       }
     },
     created: function() {

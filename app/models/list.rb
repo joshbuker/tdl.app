@@ -9,4 +9,13 @@ class List < ApplicationRecord
 
   validates :order,
     presence: true
+
+  validate :reserved_title
+
+  private
+
+  def reserved_title
+    return unless title == 'All Tasks'
+    errors.add(:title, 'This list name is reserved, sorry!')
+  end
 end

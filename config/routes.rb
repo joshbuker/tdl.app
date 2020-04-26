@@ -1,10 +1,11 @@
 Rails.application.routes.draw do
   post 'tasks/search' => 'tasks#search'
   get 'tasks/search/:title' => 'tasks#search'
-  get 'tasks/today' => 'tasks#today'
-  get 'tasks/tomorrow' => 'tasks#tomorrow'
-  get 'tasks/upcoming' => 'tasks#upcoming'
-  get 'tasks/someday' => 'tasks#someday'
+  # FIXME: Using post to allow passing params outside of URL
+  post 'tasks/today' => 'tasks#today'
+  post 'tasks/tomorrow' => 'tasks#tomorrow'
+  post 'tasks/upcoming' => 'tasks#upcoming'
+  post 'tasks/someday' => 'tasks#someday'
 
   post 'login' => 'sessions#create'
   post 'logout' => 'sessions#destroy'

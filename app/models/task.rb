@@ -58,8 +58,6 @@ class Task < ApplicationRecord
     )
   }
 
-  # NOTE: It's a long story
-  # scope :forgive_me_father, -> {
   scope :next_up, -> {
     query = self # I like abstraction and I cannot lie
     return none unless query.any?
@@ -94,6 +92,30 @@ class Task < ApplicationRecord
   def self.search(title)
     if title.present?
       where('tasks.title iLIKE :title', title: "%#{title}%")
+    else
+      none
+    end
+  end
+
+  def self.by_list(list_name, user)
+    raise ArgumentError, 'Must provide a user' unless user.is_a?(User)
+    if list_name.present?
+      list = user.lists.find_by(title: list_name)
+      return none if list.nil?
+      includes(:list).
+      where(list_id: list.id)
+    else
+      none
+    end
+  end
+
+  def self.by_tag(tag_name, user)
+    raise ArgumentError, 'Must provide a user' unless user.is_a?(User)
+    if tag_name.present?
+      tag = user.tags.find_by(title: tag_name)
+      return none if tag.nil?
+      includes(:tags).
+      where(tags: { id: tag.id })
     else
       none
     end
