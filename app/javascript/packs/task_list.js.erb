@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
       search: [],
       controls: 'lists',
       currentTask: {},
+      currentPrereqs: [],
+      currentPostreqs: [],
       newTask: ''
     },
     methods: {
@@ -121,8 +123,30 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
+      selectFromSearch: function(task) {
+        this.setCurrentTask(task);
+        $('#createTaskModal').modal('hide');
+        this.newTask = '';
+        $('#taskDetailModal').modal('show');
+      },
       setCurrentTask: function (task) {
         app.currentTask = task;
+        // Fetch pres
+        axios.get('<%= tasks_url %>/' + String(task.id) + '/prereqs').
+        then(response => {
+          app.currentPrereqs = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+        // Fetch posts
+        axios.get('<%= tasks_url %>/' + String(task.id) + '/postreqs').
+        then(response => {
+          app.currentPostreqs = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
       }
     },
     created: function() {

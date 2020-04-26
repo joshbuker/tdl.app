@@ -86,6 +86,11 @@ class Task < ApplicationRecord
     where("#{table_name}.id IN (#{sql})")
   }
 
+  scope :tagless, -> {
+    includes(:tags).
+    where(tags: { id: nil })
+  }
+
   def self.search(title)
     if title.present?
       where('tasks.title iLIKE :title', title: "%#{title}%")

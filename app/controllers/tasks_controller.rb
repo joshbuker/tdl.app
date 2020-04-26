@@ -1,5 +1,9 @@
 class TasksController < ApiController
-  before_action :set_task, only: [:update, :destroy, :mark_task_complete, :mark_task_incomplete]
+  before_action :set_task,
+    only: [
+      :update, :destroy, :mark_task_complete, :mark_task_incomplete, :prereqs,
+      :postreqs
+    ]
   before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday]
 
   def index
@@ -85,6 +89,18 @@ class TasksController < ApiController
     @task.update!(task_params)
 
     render json: @task.to_json
+  end
+
+  def prereqs
+    results = @task.prereqs.map(&:to_hash)
+
+    render json: results.to_json
+  end
+
+  def postreqs
+    results = @task.postreqs.map(&:to_hash)
+
+    render json: results.to_json
   end
 
   def mark_task_complete

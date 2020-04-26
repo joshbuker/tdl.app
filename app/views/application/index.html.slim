@@ -59,7 +59,7 @@
             h3
               | Possible Matches - {{ search.length }}
             ul.list-group.overflow-auto style='max-height: 500px;'
-              li.list-group-item.list-group-item-action v-for='task in search'
+              li.list-group-item.list-group-item-action v-for='task in search' @click='selectFromSearch(task)'
                 | {{ task.title }}
           .modal-footer
             button.btn.btn-secondary[type="button" data-dismiss="modal"]
@@ -95,7 +95,19 @@
             hr
             h5 Remind me about this
             hr
-            h5 Sub tasks
+            h5 Prerequisites
+            ul.list-group
+              li.list-group-item.list-group-item-action (v-for='task in currentPrereqs' :key='task.title' @click='setCurrentTask(task)')
+                | {{ task.title }}
+            p v-if='currentPrereqs.length == 0'
+              em No prerequisites.
+            hr
+            h5 Postrequisites
+            ul.list-group v-if='currentPostreqs.length > 0'
+              li.list-group-item.list-group-item-action (v-for='task in currentPostreqs' :key='task.title' @click='setCurrentTask(task)')
+                | {{ task.title }}
+            p v-if='currentPostreqs.length == 0'
+              em No postrequisites.
             hr
             h5 Notes
           .modal-footer

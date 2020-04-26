@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   post 'logout' => 'sessions#destroy'
 
   resources :tasks, except: [:show, :new, :edit], defaults: { format: :json } do
+    get 'prereqs' => 'tasks#prereqs'
+    get 'postreqs' => 'tasks#postreqs'
     patch 'complete' => 'tasks#mark_task_complete'
     patch 'incomplete' => 'tasks#mark_task_incomplete'
   end

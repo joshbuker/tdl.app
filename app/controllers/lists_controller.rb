@@ -3,10 +3,16 @@ class ListsController < ApiController
 
   def index
     lists = @lists.map do |list|
-      { title: list.title }
+      {
+        title: list.title,
+        task_count: list.tasks.size
+      }
     end
 
-    lists.unshift({ title: 'All Tasks' })
+    lists.unshift({
+      title: 'All Tasks',
+      task_count: current_user.tasks.size
+    })
 
     render json: lists.to_json
   end

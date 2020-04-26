@@ -6,14 +6,16 @@ class TagsController < ApiController
       {
         title: tag.title,
         color: tag.color,
-        text_color: tag.text_color
+        text_color: tag.text_color,
+        task_count: tag.tasks.size
       }
     end
 
     tags.push({
       title: 'No Tags',
       color: 'white',
-      text_color: 'black'
+      text_color: 'black',
+      task_count: current_user.tasks.tagless.size
     })
 
     render json: tags.to_json
