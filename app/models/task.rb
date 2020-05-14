@@ -183,7 +183,7 @@ class Task < ApplicationRecord
       title: title,
       completed: completed,
       list_title: list.title,
-      tags: tags.map{ |tag| { title: tag.title, color: tag.color, text_color: tag.text_color } }
+      tags: tags.reload.map{ |tag| { title: tag.title, color: tag.color, text_color: tag.text_color } }
     }
   end
 
