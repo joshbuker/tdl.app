@@ -9,7 +9,7 @@
           @click="showDetailModal(task)">
         {{ task.title }}
         <span>
-          <span v-for='tag in task.tags' class="badge badge-secondary badge-pill ml-1" v-bind:style="{ 'background-color': tag.color, 'color': tag.text_color }">{{ tag.title }}</span>
+          <span v-for='tag in task.tags' class="badge badge-secondary badge-pill ml-1 border border-dark" v-bind:style="{ 'background-color': tag.color, 'color': tag.text_color }">&nbsp;</span>
         </span>
       </li>
     </ul>
