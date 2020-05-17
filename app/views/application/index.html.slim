@@ -37,13 +37,13 @@
                   | Tree
           .row
             .col-sm-3
-              tasks-docket :tasks='today' :title='title.today' @clicked-show-detail='setCurrentTask'
+              tasks-docket :tasks='today' :title='title.today' @clicked-show-detail='setCurrentTask' @created-quick-task='createQuickTask'
             .col-sm-3
-              tasks-docket :tasks='tomorrow' :title='title.tomorrow' @clicked-show-detail='setCurrentTask'
+              tasks-docket :tasks='tomorrow' :title='title.tomorrow' @clicked-show-detail='setCurrentTask' @created-quick-task='createQuickTask'
             .col-sm-3
-              tasks-docket :tasks='upcoming' :title='title.upcoming' @clicked-show-detail='setCurrentTask'
+              tasks-docket :tasks='upcoming' :title='title.upcoming' @clicked-show-detail='setCurrentTask' @created-quick-task='createQuickTask'
             .col-sm-3
-              tasks-docket :tasks='someday' :title='title.someday' @clicked-show-detail='setCurrentTask'
+              tasks-docket :tasks='someday' :title='title.someday' @clicked-show-detail='setCurrentTask' @created-quick-task='createQuickTask'
     #createTaskModal.modal.fade[tabindex="-1" role="dialog" aria-labelledby="createTaskModalLabel" aria-hidden="true"]
       .modal-dialog[role="document"]
         .modal-content

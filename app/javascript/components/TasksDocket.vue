@@ -1,7 +1,7 @@
 <template>
-  <div class="tasks-docket bg-light">
+  <div class="tasks-docket bg-light mb-2">
     <h3 class="text-center pt-2">{{ title }}</h3>
-    <hr>
+    <hr class="mb-0">
     <ul class="list-group overflow-auto" style="max-height: 75vh">
       <li v-for="(task, index) in tasks" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
           :task='task' :index='index' :key='task.title'
@@ -13,8 +13,17 @@
         </span>
       </li>
     </ul>
+    <p v-if="tasks.length == 0" class="text-center text-muted mt-3">
+      <strong>Nothing yet!</strong>
+    </p>
     <!-- find a way to create a modal per task and just toggle that modal
          directly rather than using a centralized "current task" variable? -->
+    <div class="input-group p-2 border-top">
+      <input type="text" placeholder="Click to add new task" class="form-control" v-model="quickNewTask" @keyup.enter="createQuickTask">
+      <button class="btn btn-outline-primary badge-pill ml-1" @click="createQuickTask">
+        <i class="fa fa-arrow-up"></i>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -24,7 +33,18 @@ export default {
     tasks: Array,
     title: String
   },
+  data: function() {
+    return {
+      quickNewTask: ''
+    }
+  },
   methods: {
+    createQuickTask() {
+      if (this.quickNewTask != '') {
+        this.$emit('created-quick-task', this.title, this.quickNewTask);
+        this.quickNewTask = '';
+      };
+    },
     showDetailModal(task) {
       this.$emit('clicked-show-detail', task);
     }

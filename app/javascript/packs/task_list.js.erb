@@ -210,6 +210,22 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
+      createQuickTask: function (taskTime, taskTitle) {
+        axios.post('<%= tasks_url %>', {
+          title: taskTitle,
+          time: taskTime,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          app.refreshTaskLists();
+          toastr.success('Added new task!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
       setCurrentList: function(list) {
         app.limiterType = 'list';
         app.limiterValue = list.title;

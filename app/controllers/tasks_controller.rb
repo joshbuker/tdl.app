@@ -78,6 +78,16 @@ class TasksController < ApiController
     task = Task.new(task_params)
     task.list = current_user&.lists&.find_by(title: 'Inbox')
     task.user = current_user
+    case params[:time]
+    when 'Today'
+      task.remind_me_at = Time.current
+    when 'Tomorrow'
+      task.remind_me_at = 1.day.from_now
+    when 'Upcoming'
+      task.remind_me_at = 2.weeks.from_now
+    when 'Someday'
+      task.remind_me_at = 2.months.from_now
+    end
     task.save!
 
     render json: task.to_json
