@@ -28,6 +28,15 @@ class Tag < ApplicationRecord
     (greyscale > midpoint) ? dark : light
   end
 
+  def to_hash
+    {
+      id: id,
+      title: title,
+      color: color,
+      text_color: text_color
+    }
+  end
+
 private
 
   def reserved_title

@@ -17,6 +17,8 @@ Rails.application.routes.draw do
     patch 'incomplete' => 'tasks#mark_task_incomplete'
     patch 'pre' => 'tasks#add_prerequisite'
     patch 'post' => 'tasks#add_postrequisite'
+    patch 'tags' => 'tasks#update_tags'
+    patch 'list' => 'tasks#update_list'
   end
 
   resources :lists, only: [:index], defaults: { format: :json }

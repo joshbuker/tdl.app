@@ -74,11 +74,13 @@
               span[aria-hidden="true"]
                 | ×
           .modal-body
-            input.form-control type='text' v-model='currentTask.title'
+            h5
+              | {{ currentTask.title }}
+            input.form-control type='text' v-model='editTask' v-bind:placeholder='currentTask.title'
             hr
             button.btn.btn-sm.rounded-pill.mr-2 v-for='tag in currentTask.tags' v-bind:style="{ 'background-color': tag.color, 'border-color': tag.text_color, 'color': tag.text_color }"
               | {{ tag.title }}
-            button.btn.btn-sm.btn-outline-secondary.rounded-pill style='border-style: dashed;'
+            button.btn.btn-sm.btn-outline-secondary.rounded-pill style='border-style: dashed;' data-toggle='modal' data-target='#addTagsModal'
               | Add Tag
             hr
             .row
@@ -88,7 +90,7 @@
                   br
                   | Share Task
               .col-sm-6
-                .shadow.rounded.p-3.text-center
+                .shadow.rounded.p-3.text-center data-toggle='modal' data-target='#updateListModal'
                   i.fa.fa-tasks aria-hidden='true'
                   br
                   | {{ currentTask.list_title }}
@@ -157,7 +159,7 @@
             button.close[type="button" data-dismiss="modal" aria-label="Close"]
               span[aria-hidden="true"]
                 | ×
-          .modal-body style='min-height: 80vh;'
+          .modal-body
             h5
               | {{ currentTask.title }}
             | <input type="text" class="form-control" placeholder="Task title" v-model="newTask">
@@ -167,6 +169,48 @@
             ul.list-group.overflow-auto style='max-height: 60vh;'
               li.list-group-item.list-group-item-action v-for='task in search' @click='addPostrequisite(task)'
                 | {{ task.title }}
+    #addTagsModal.modal.fade[tabindex="-1" role="dialog" aria-labelledby="addTagsModalLabel" aria-hidden="true"]
+      .modal-dialog[role="document"]
+        .modal-content
+          .modal-header
+            h5#addTagsModalLabel.modal-title
+              | Add Tags
+            button.close[type="button" data-dismiss="modal" aria-label="Close"]
+              span[aria-hidden="true"]
+                | ×
+          .modal-body
+            h5
+              | {{ currentTask.title }}
+            hr
+            select(v-model='currentTags' multiple class='form-control list-group')
+              option.list-group-item(v-for="tag in tags")
+                | {{ tag.title }}
+          .modal-footer
+            button.btn.btn-primary @click='updateTags(currentTask)'
+              | Save Tags
+            button.btn.btn-secondary type='button' data-dismiss='modal'
+              | Cancel
+    #updateListModal.modal.fade[tabindex="-1" role="dialog" aria-labelledby="updateListModalLabel" aria-hidden="true"]
+      .modal-dialog[role="document"]
+        .modal-content
+          .modal-header
+            h5#updateListModalLabel.modal-title
+              | Change List
+            button.close[type="button" data-dismiss="modal" aria-label="Close"]
+              span[aria-hidden="true"]
+                | ×
+          .modal-body
+            h5
+              | {{ currentTask.title }}
+            hr
+            select(v-model='currentList' class='form-control list-group')
+              option.list-group-item(v-for="list in lists")
+                | {{ list.title }}
+          .modal-footer
+            button.btn.btn-primary @click='updateList(currentTask)'
+              | Save List
+            button.btn.btn-secondary type='button' data-dismiss='modal'
+              | Cancel
   = javascript_pack_tag 'task_list'
 - else
   main#root.wrapper

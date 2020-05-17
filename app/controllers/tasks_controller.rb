@@ -1,8 +1,10 @@
 class TasksController < ApiController
+  # TODO: Make this except instead of only
   before_action :set_task,
     only: [
       :update, :destroy, :mark_task_complete, :mark_task_incomplete, :prereqs,
-      :postreqs, :add_prerequisite, :add_postrequisite
+      :postreqs, :add_prerequisite, :add_postrequisite, :update_tags,
+      :update_list
     ]
   before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday]
 
@@ -127,6 +129,40 @@ class TasksController < ApiController
     Rule.create!(pre: @task, post: postreq)
 
     render json: postreq.to_json
+  end
+
+  def update_tags
+    unless params[:tag_titles].is_a?(Array)
+      render json: { error: 'Invalid Tags!' }, status: :unprocessable_entity
+      return
+    end
+
+    tags = []
+
+    params[:tag_titles].each do |tag_title|
+      if tag = current_user.tags.find_by(title: tag_title)
+        tags << tag
+      end
+    end
+
+    @task.tags = tags
+    @task.save!
+
+    render json: @task.tags.map(&:to_hash).to_json
+  end
+
+  def update_list
+    list = current_user&.lists&.find_by(title: params[:list_title])
+
+    unless list.is_a?(List)
+      render json: { error: 'Invalid List!' }, status: :unprocessable_entity
+      return
+    end
+
+    @task.list = list
+    @task.save!
+
+    render json: @task.list.title.to_json
   end
 
   def mark_task_complete

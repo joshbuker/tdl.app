@@ -43,7 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
       currentTask: {},
       currentPrereqs: [],
       currentPostreqs: [],
+      currentTags: [],
+      currentList: '',
       newTask: '',
+      editTask: '',
       limiterType: null,
       limiterValue: null
     },
@@ -170,6 +173,22 @@ document.addEventListener('DOMContentLoaded', () => {
         catch(e => {
           toastr.error(e.message);
         });
+        // Lists
+        axios.get('<%= lists_url %>').
+        then(response => {
+          this.lists = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+        // Tags
+        axios.get('<%= tags_url %>').
+        then(response => {
+          this.tags = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
       },
       searchForTasks(){
         axios.post('<%= tasks_url %>/search', {
@@ -193,6 +212,9 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       setCurrentTask: function (task) {
         app.currentTask = task;
+        app.currentTags = task.tags.map( function(tag) { return tag.title } );
+        app.currentList = task.list_title;
+        app.editTask = '';
         // Fetch pres
         axios.get('<%= tasks_url %>/' + String(task.id) + '/prereqs').
         then(response => {
@@ -235,26 +257,46 @@ document.addEventListener('DOMContentLoaded', () => {
         app.limiterType = 'tag';
         app.limiterValue = tag.title;
         app.refreshTaskLists();
+      },
+      updateTags: function() {
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/tags', {
+          tag_titles: this.currentTags,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshTaskLists();
+          this.currentTask.tags = response.data;
+          this.currentTags = this.currentTask.tags.map( function(tag) { return tag.title } );
+          $('#addTagsModal').modal('hide');
+          toastr.success('Updated tags!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      updateList: function() {
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/list', {
+          list_title: this.currentList,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshTaskLists();
+          this.currentTask.list_title = response.data;
+          this.currentList = this.currentTask.list_title;
+          $('#updateListModal').modal('hide');
+          toastr.success('Updated list!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
       }
     },
     created: function() {
-      // Lists
-      axios.get('<%= lists_url %>').
-      then(response => {
-        this.lists = response.data;
-      }).
-      catch(e => {
-        toastr.error(e.message);
-      });
-      // Tags
-      axios.get('<%= tags_url %>').
-      then(response => {
-        this.tags = response.data;
-      }).
-      catch(e => {
-        toastr.error(e.message);
-      });
-      // Task Lists
+      // Refresh everything
       this.refreshTaskLists();
       // Set newTask Debouncer
       this.debouncedSearch = _.debounce(this.searchForTasks, 100)
