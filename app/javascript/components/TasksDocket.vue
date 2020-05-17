@@ -8,9 +8,11 @@
           data-toggle='modal' data-target='#taskDetailModal'
           @click="showDetailModal(task)">
         {{ task.title }}
-        <span>
-          <span v-for='tag in task.tags' class="badge badge-secondary badge-pill ml-1 border border-dark" v-bind:style="{ 'background-color': tag.color, 'color': tag.text_color }">&nbsp;</span>
-        </span>
+        <div><!-- Group tags together visually -->
+          <span v-for='tag in task.tags' class="badge badge-secondary badge-pill ml-1 border border-dark" v-bind:style="{ 'background-color': tag.color, 'color': tag.text_color }">
+            &nbsp;
+          </span>
+        </div>
       </li>
     </ul>
     <p v-if="tasks.length == 0" class="text-center text-muted mt-3">

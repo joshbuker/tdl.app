@@ -8,15 +8,15 @@
           = link_to 'Logout', logout_path, method: :post, class: 'nav-link'
     .container-fluid
       .row
-        nav.col-md-2.d-none.d-md-block.bg-light.sidebar
+        nav.col-lg-2.col-md-3.d-none.d-md-block.bg-light.sidebar
           .sidebar-sticky
             .row
               .col-sm
                 h3.text-right
-                  button style='border:none;background-color:white;' v-bind:class="{ active: controls == 'lists' }" v-on:click="controls = 'lists'" Lists
+                  span style='border:none;background-color:white;cursor:pointer;' v-bind:class="{ active: controls == 'lists' }" v-on:click="controls = 'lists'" Lists
               .col-sm
                 h3.text-left
-                  button style='border:none;background-color:white;' v-bind:class="{ active: controls == 'tags' }" v-on:click="controls = 'tags'" Tags
+                  span style='border:none;background-color:white;cursor:pointer;' v-bind:class="{ active: controls == 'tags' }" v-on:click="controls = 'tags'" Tags
             .app-body__controls__lists v-show="controls == 'lists'"
               list-controls :lists='lists' @clicked-list='setCurrentList'
             .app-body__controls__tags v-show="controls == 'tags'"
@@ -36,13 +36,13 @@
                 button.btn.btn-sm.btn-outline-light
                   | Tree
           .row
-            .col-sm-3
+            .col-12.col-xl-3
               tasks-docket :tasks='today' :title='title.today' @clicked-show-detail='setCurrentTask' @created-quick-task='createQuickTask'
-            .col-sm-3
+            .col-12.col-xl-3
               tasks-docket :tasks='tomorrow' :title='title.tomorrow' @clicked-show-detail='setCurrentTask' @created-quick-task='createQuickTask'
-            .col-sm-3
+            .col-12.col-xl-3
               tasks-docket :tasks='upcoming' :title='title.upcoming' @clicked-show-detail='setCurrentTask' @created-quick-task='createQuickTask'
-            .col-sm-3
+            .col-12.col-xl-3
               tasks-docket :tasks='someday' :title='title.someday' @clicked-show-detail='setCurrentTask' @created-quick-task='createQuickTask'
     #createTaskModal.modal.fade[tabindex="-1" role="dialog" aria-labelledby="createTaskModalLabel" aria-hidden="true"]
       .modal-dialog[role="document"]
