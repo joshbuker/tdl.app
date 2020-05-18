@@ -76,7 +76,7 @@
           .modal-body
             h5
               | {{ currentTask.title }}
-            input.form-control type='text' v-model='editTask' v-bind:placeholder='currentTask.title'
+            input.form-control type='text' v-model='editTask' v-bind:placeholder='currentTask.title' @keyup.enter='updateTask'
             hr
             button.btn.btn-sm.rounded-pill.mr-2 v-for='tag in currentTask.tags' v-bind:style="{ 'background-color': tag.color, 'border-color': tag.text_color, 'color': tag.text_color }"
               | {{ tag.title }}
