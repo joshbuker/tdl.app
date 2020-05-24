@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentTags: [],
       currentList: '',
       newTask: '',
+      newList: '',
       editTask: '',
       limiterType: null,
       limiterValue: null
@@ -243,6 +244,22 @@ document.addEventListener('DOMContentLoaded', () => {
         then(response => {
           app.refreshTaskLists();
           toastr.success('Added new task!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      createList: function() {
+        axios.post('<%= lists_url %>', {
+          title: this.newList,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.lists.push(response.data);
+          this.newList = '';
+          toastr.success('Added new list!');
         }).
         catch(e => {
           toastr.error(e.message);

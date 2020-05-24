@@ -19,6 +19,7 @@
                   span style='border:none;background-color:white;cursor:pointer;' v-bind:class="{ active: controls == 'tags' }" v-on:click="controls = 'tags'" Tags
             .app-body__controls__lists v-show="controls == 'lists'"
               list-controls :lists='lists' @clicked-list='setCurrentList'
+              input.form-control.mt-2.mb-2 type='text' v-model='newList' placeholder='Create new list' @keyup.enter='createList'
             .app-body__controls__tags v-show="controls == 'tags'"
               tag-controls :tags='tags' @clicked-tag='setCurrentTag'
         section.col-md-9.ml-sm-auto.col-lg-10.pt-3.px-4

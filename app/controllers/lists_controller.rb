@@ -17,6 +17,17 @@ class ListsController < ApiController
     render json: lists.to_json
   end
 
+  def create
+    list = List.new(list_params)
+    list.user = current_user
+
+    list.save!
+
+    render json: { title: list.title, task_count: 0 }
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
 private
 
   def set_lists
@@ -25,5 +36,9 @@ private
     else
       @lists = list.all
     end
+  end
+
+  def list_params
+    params.require(:list).permit(:title)
   end
 end

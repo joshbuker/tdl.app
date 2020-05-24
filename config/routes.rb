@@ -21,7 +21,7 @@ Rails.application.routes.draw do
     patch 'list' => 'tasks#update_list'
   end
 
-  resources :lists, only: [:index], defaults: { format: :json }
+  resources :lists, only: [:index, :create], defaults: { format: :json }
   resources :tags, only: [:index], defaults: { format: :json }
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
