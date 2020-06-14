@@ -13,9 +13,9 @@
 - [ ] Secure Login
 - [X] Create a task
 - [ ] Edit a task
-  - [ ] Edit Title
-  - [ ] Add/remove tags
-  - [ ] Select list
+  - [X] Edit Title
+  - [X] Add/remove tags
+  - [X] Select list
   - [ ] Add/edit notes
 - [X] Complete a task
 - [ ] Delete a task

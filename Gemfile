@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+git_source(:github) { |repo| "git@github.com:#{repo}.git" }
 
 ruby '2.6.5'
 
@@ -24,9 +24,6 @@ gem 'jbuilder', '~> 2.7'
 
 # Better views
 gem 'slim-rails'
-
-# Vue Form Stuff
-gem 'vue-rails-form-builder', github: 'athix/vue-rails-form-builder'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
