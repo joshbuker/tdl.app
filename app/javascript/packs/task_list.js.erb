@@ -8,12 +8,18 @@ import TasksDocket from "../components/TasksDocket.vue";
 import toastr from 'toastr'
 import axios from 'axios'
 import bootstrap from 'bootstrap'
+import { Datetime } from 'vue-datetime'
 import $ from 'jquery'
 import _ from 'lodash'
 import '../stylesheets/bootstrap'
 import '../stylesheets/font-awesome'
 import '../stylesheets/toastr'
 // import '../stylesheets/task_list'
+import 'vue-datetime/dist/vue-datetime.css'
+
+Vue.use(Datetime)
+
+Vue.component('datetime', Datetime);
 
 <% Rails.application.default_url_options[:host] = 'localhost:3000' %>
 <% tags_url = Rails.application.routes.url_helpers.tags_url %>
@@ -322,6 +328,22 @@ document.addEventListener('DOMContentLoaded', () => {
           this.refreshTaskLists();
           this.currentTask.notes = response.data;
           toastr.success('Updated notes!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      updateRemindMeAt: function() {
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/remind-me-at', {
+          remind_me_at: this.currentTask.remind_me_at,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshTaskLists();
+          this.currentTask.remind_me_at = response.data;
+          toastr.success('Updated remind me at!');
         }).
         catch(e => {
           toastr.error(e.message);

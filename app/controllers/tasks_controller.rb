@@ -4,7 +4,7 @@ class TasksController < ApiController
     only: [
       :update, :destroy, :mark_task_complete, :mark_task_incomplete, :prereqs,
       :postreqs, :add_prerequisite, :add_postrequisite, :update_tags,
-      :update_list, :update_notes
+      :update_list, :update_notes, :update_remind_me_at
     ]
   before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday]
 
@@ -170,6 +170,13 @@ class TasksController < ApiController
     @task.save!
 
     render json: @task.notes.to_json
+  end
+
+  def update_remind_me_at
+    @task.remind_me_at = params[:remind_me_at]
+    @task.save!
+
+    render json: @task.remind_me_at.to_json
   end
 
   def mark_task_complete

@@ -97,6 +97,7 @@
                   | {{ currentTask.list_title }}
             hr
             h5 Remind me about this
+            datetime v-model='currentTask.remind_me_at' type='datetime' use12-hour='true' title='Remind Me At' @close='updateRemindMeAt'
             hr
             h5.pb-1
               | Prerequisites

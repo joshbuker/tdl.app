@@ -18,8 +18,13 @@
   - [X] Add/remove tags
   - [X] Select list
   - [X] Add/edit notes
-  - [ ] Edit Remind Me At
+  - [X] Edit Remind Me At
+  - [X] Add pres/posts
+  - [ ] Remove pres/posts
 - [X] Complete a task
 - [ ] Undo task completion
 - [ ] Delete a task
+- [ ] Delete a list
+- [ ] Create a tag
+- [ ] Delete a tag
 - [ ] Clear completed tasks (delete where completed: true)

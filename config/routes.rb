@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     patch 'tags' => 'tasks#update_tags'
     patch 'list' => 'tasks#update_list'
     patch 'notes' => 'tasks#update_notes'
+    patch 'remind-me-at' => 'tasks#update_remind_me_at'
   end
 
   resources :lists, only: [:index, :create], defaults: { format: :json }

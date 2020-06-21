@@ -184,6 +184,7 @@ class Task < ApplicationRecord
       completed: completed,
       list_title: list.title,
       notes: notes,
+      remind_me_at: remind_me_at,
       tags: tags.reload.map{ |tag| { title: tag.title, color: tag.color, text_color: tag.text_color } }
     }
   end
