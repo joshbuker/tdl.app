@@ -17,6 +17,8 @@
   - [X] Add/remove tags
   - [X] Select list
   - [ ] Add/edit notes
+  - [ ] Edit Remind Me At
 - [X] Complete a task
+- [ ] Undo task completion
 - [ ] Delete a task
 - [ ] Clear completed tasks (delete where completed: true)

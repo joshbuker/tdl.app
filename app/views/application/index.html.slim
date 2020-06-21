@@ -125,6 +125,7 @@
               em No postrequisites.
             hr
             h5 Notes
+            textarea.form-control v-model='currentTask.notes' placeholder='Write some notes...' @change='updateNotes'
           .modal-footer
             button.btn.btn-primary @click='markTaskComplete(currentTask)'
               | Mark as Complete

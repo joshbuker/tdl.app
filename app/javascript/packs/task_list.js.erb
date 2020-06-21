@@ -311,6 +311,22 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
+      updateNotes: function() {
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/notes', {
+          notes: this.currentTask.notes,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshTaskLists();
+          this.currentTask.notes = response.data;
+          toastr.success('Updated notes!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
       updateTask: function() {
         axios.patch('<%= tasks_url %>/' + String(this.currentTask.id), {
           title: this.editTask,
