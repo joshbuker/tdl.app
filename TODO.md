@@ -11,12 +11,13 @@
 ## Alpha Release Features
 
 - [ ] Secure Login
+- [ ] Secure API Endpoints
 - [X] Create a task
 - [ ] Edit a task
   - [X] Edit Title
   - [X] Add/remove tags
   - [X] Select list
-  - [ ] Add/edit notes
+  - [X] Add/edit notes
   - [ ] Edit Remind Me At
 - [X] Complete a task
 - [ ] Undo task completion
