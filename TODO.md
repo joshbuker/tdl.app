@@ -13,14 +13,14 @@
 - [ ] Secure Login
 - [ ] Secure API Endpoints
 - [X] Create a task
-- [ ] Edit a task
+- [X] Edit a task
   - [X] Edit Title
   - [X] Add/remove tags
   - [X] Select list
   - [X] Add/edit notes
   - [X] Edit Remind Me At
   - [X] Add pres/posts
-  - [ ] Remove pres/posts
+  - [X] Remove pres/posts
 - [X] Complete a task
 - [ ] Undo task completion
 - [ ] Delete a task

@@ -111,6 +111,36 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
+      removePrerequisite(task){
+        axios.delete('<%= tasks_url %>/' + String(this.currentTask.id) + '/pre/' + task.id, {
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshTaskLists();
+          this.currentPrereqs = response.data;
+          toastr.success('Removed prerequisite!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      removePostrequisite(task){
+        axios.delete('<%= tasks_url %>/' + String(this.currentTask.id) + '/post/' + task.id, {
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshTaskLists();
+          this.currentPostreqs = response.data;
+          toastr.success('Removed postrequisite!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
       markTaskComplete(task){
         axios.patch('<%= tasks_url %>/' + String(task.id) + '/complete').
         then(response => {

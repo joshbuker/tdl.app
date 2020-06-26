@@ -1,11 +1,8 @@
 class TasksController < ApiController
   # TODO: Make this except instead of only
-  before_action :set_task,
-    only: [
-      :update, :destroy, :mark_task_complete, :mark_task_incomplete, :prereqs,
-      :postreqs, :add_prerequisite, :add_postrequisite, :update_tags,
-      :update_list, :update_notes, :update_remind_me_at
-    ]
+  before_action :set_task, except: [
+    :index, :today, :tomorrow, :upcoming, :someday, :search, :create
+  ]
   before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday]
 
   def index
@@ -123,12 +120,34 @@ class TasksController < ApiController
     render json: prereq.to_json
   end
 
+  def remove_prerequisite
+    prereq = Task.find_by(id: params[:pre_task_id])
+    rule = Rule.find_by(pre: prereq, post: @task)
+
+    rule.destroy!
+
+    updated_pres = @task.prereqs.map(&:to_hash)
+
+    render json: updated_pres.to_json
+  end
+
   def add_postrequisite
     postreq = Task.find_by(id: params[:post_task_id])
 
     Rule.create!(pre: @task, post: postreq)
 
     render json: postreq.to_json
+  end
+
+  def remove_postrequisite
+    postreq = Task.find_by(id: params[:post_task_id])
+    rule = Rule.find_by(pre: @task, post: postreq)
+
+    rule.destroy!
+
+    updated_posts = @task.postreqs.map(&:to_hash)
+
+    render json: updated_posts.to_json
   end
 
   def update_tags
