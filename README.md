@@ -1,8 +1,6 @@
-# TDL App - Vue Prototype
+# TDL App
 
-This is intended as a testbed for the client **AND** server side logic. The code
-here will be thrown away, but should be useful for rapid prototyping and testing
-out various UI options.
+The one TDL App to rule them all.
 
 ## Running locally bare-metal
 
