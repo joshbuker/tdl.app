@@ -1,12 +1,10 @@
 class ListsController < ApiController
-  before_action :set_lists
+  before_action :set_lists, only: [:index]
+  before_action :set_list, only: [:destroy]
 
   def index
     lists = @lists.map do |list|
-      {
-        title: list.title,
-        task_count: list.tasks.size
-      }
+      list.to_hash
     end
 
     lists.unshift({
@@ -23,18 +21,29 @@ class ListsController < ApiController
 
     list.save!
 
-    render json: { title: list.title, task_count: 0 }
+    render json: list.to_json
   rescue ActiveRecord::RecordInvalid => e
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
+  def destroy
+    @list.destroy!
+
+    head :ok
+  end
+
 private
+
+  def set_list
+    list_id = params[:list_id] || params[:id]
+    @list = List.find(list_id)
+  end
 
   def set_lists
     if current_user.present?
       @lists = current_user.lists
     else
-      @lists = list.all
+      @lists = List.none
     end
   end
 

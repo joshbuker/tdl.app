@@ -18,7 +18,7 @@
                 h3.text-left
                   span style='border:none;background-color:white;cursor:pointer;' v-bind:class="{ active: controls == 'tags' }" v-on:click="controls = 'tags'" Tags
             .app-body__controls__lists v-show="controls == 'lists'"
-              list-controls :lists='lists' @clicked-list='setCurrentList'
+              list-controls :lists='lists' @clicked-list='setCurrentList' @clicked-delete-list='deleteList'
               input.form-control.mt-2.mb-2 type='text' v-model='newList' placeholder='Create new list' @keyup.enter='createList'
             .app-body__controls__tags v-show="controls == 'tags'"
               tag-controls :tags='tags' @clicked-tag='setCurrentTag'
@@ -29,6 +29,8 @@
             .btn-toolbar.mb-2.mb-md-0
               button.btn.btn-sm.btn-primary data-toggle='modal' data-target='#createTaskModal'
                 | Create Task
+              button.btn.btn-sm.btn-secondary.ml-2 @click='clearCompleted'
+                | Clear completed
               .btn-group.ml-2.mr-2
                 button.btn.btn-sm.btn-outline-light.active
                   | Schedule
@@ -132,9 +134,11 @@
             h5 Notes
             textarea.form-control v-model='currentTask.notes' placeholder='Write some notes...' @change='updateNotes'
           .modal-footer
-            button.btn.btn-primary @click='markTaskComplete(currentTask)'
+            button.btn.btn-primary @click='markTaskComplete(currentTask)' v-if='currentTask.completed === false'
               | Mark as Complete
-            button.btn.btn-danger
+            button.btn.btn-primary(@click='markTaskIncomplete(currentTask)' v-else)
+              | Mark as Incomplete
+            button.btn.btn-danger @click='deleteTask(currentTask)'
               | Delete
             button.btn.btn-secondary type='button' data-dismiss='modal'
               | Cancel

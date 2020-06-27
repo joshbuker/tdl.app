@@ -5,7 +5,10 @@
       @click='limitByList(list)'
       v-bind:class="selectedList == list.title ? 'active' : ''">
       {{ list.title }}
-      <span class="badge badge-secondary badge-pill">{{ list.task_count }}</span>
+      <div>
+        <span class="badge badge-secondary badge-pill">{{ list.task_count }}</span>
+        <span class="badge badge-danger badge-pill" @click.stop='deleteList(list)'>x</span>
+      </div>
     </li>
   </ul>
 </template>
@@ -24,6 +27,9 @@ export default {
     limitByList(list) {
       this.$emit('clicked-list', list);
       this.selectedList = list.title;
+    },
+    deleteList(list) {
+      this.$emit('clicked-delete-list', list);
     }
   }
 };

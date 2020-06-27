@@ -22,9 +22,9 @@
   - [X] Add pres/posts
   - [X] Remove pres/posts
 - [X] Complete a task
-- [ ] Undo task completion
-- [ ] Delete a task
-- [ ] Delete a list
+- [X] Undo task completion
+- [X] Delete a task
+- [X] Delete a list
 - [ ] Create a tag
 - [ ] Delete a tag
 - [ ] Clear completed tasks (delete where completed: true)

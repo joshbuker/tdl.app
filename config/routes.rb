@@ -25,7 +25,7 @@ Rails.application.routes.draw do
     patch 'remind-me-at' => 'tasks#update_remind_me_at'
   end
 
-  resources :lists, only: [:index, :create], defaults: { format: :json }
+  resources :lists, only: [:index, :create, :destroy], defaults: { format: :json }
   resources :tags, only: [:index], defaults: { format: :json }
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html

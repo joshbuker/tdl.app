@@ -75,6 +75,24 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
+      deleteTask(task) {
+        if(confirm('Are you sure?')) {
+          axios.delete('<%= tasks_url %>/' + task.id, {
+            credentials: 'same-origin',
+            'X-CSRF-Token': token,
+            'authenticity_token': token
+          }).
+          then(response => {
+            this.currentTask = {};
+            $('#taskDetailModal').modal('hide');
+            toastr.success('Deleted task!');
+            this.refreshTaskLists();
+          }).
+          catch(e => {
+            toastr.error(e.message);
+          });
+        }
+      },
       addPrerequisite(task){
         axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/pre', {
           pre_task_id: task.id,
@@ -151,6 +169,18 @@ document.addEventListener('DOMContentLoaded', () => {
           this.currentTask = {};
           $('#taskDetailModal').modal('hide');
           toastr.success('Completed task!');
+          this.refreshTaskLists();
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      markTaskIncomplete(task){
+        axios.patch('<%= tasks_url %>/' + String(task.id) + '/incomplete').
+        then(response => {
+          this.currentTask = {};
+          $('#taskDetailModal').modal('hide');
+          toastr.success('Uncompleted task!');
           this.refreshTaskLists();
         }).
         catch(e => {
@@ -305,6 +335,22 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
+      deleteList: function(list) {
+        if(confirm('Are you sure?')) {
+          axios.delete('<%= lists_url %>/' + list.id, {
+            credentials: 'same-origin',
+            'X-CSRF-Token': token,
+            'authenticity_token': token
+          }).
+          then(response => {
+            this.refreshTaskLists();
+            toastr.success('Deleted list!');
+          }).
+          catch(e => {
+            toastr.error(e.message);
+          });
+        }
+      },
       setCurrentList: function(list) {
         app.limiterType = 'list';
         app.limiterValue = list.title;
@@ -399,6 +445,11 @@ document.addEventListener('DOMContentLoaded', () => {
         catch(e => {
           toastr.error(e.message);
         });
+      },
+      clearCompleted: function() {
+        if(confirm('Are you sure?')) {
+          alert('TODO');
+        }
       }
     },
     created: function() {
