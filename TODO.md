@@ -27,4 +27,4 @@
 - [X] Delete a list
 - [ ] Create a tag
 - [ ] Delete a tag
-- [ ] Clear completed tasks (delete where completed: true)
+- [X] Clear completed tasks (delete where completed: true)

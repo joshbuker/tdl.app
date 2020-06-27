@@ -448,7 +448,18 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       clearCompleted: function() {
         if(confirm('Are you sure?')) {
-          alert('TODO');
+          axios.post('<%= tasks_url %>/clear-completed', {
+            credentials: 'same-origin',
+            'X-CSRF-Token': token,
+            'authenticity_token': token
+          }).
+          then(response => {
+            this.refreshTaskLists();
+            toastr.success('Cleared completed tasks!');
+          }).
+          catch(e => {
+            toastr.error(e.message);
+          });
         }
       }
     },

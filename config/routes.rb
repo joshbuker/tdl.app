@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   post 'tasks/upcoming' => 'tasks#upcoming'
   post 'tasks/someday' => 'tasks#someday'
 
+  post 'tasks/clear-completed' => 'tasks#clear_completed'
+
   post 'login' => 'sessions#create'
   post 'logout' => 'sessions#destroy'
 

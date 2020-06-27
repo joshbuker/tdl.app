@@ -1,7 +1,7 @@
 class TasksController < ApiController
   # TODO: Make this except instead of only
   before_action :set_task, except: [
-    :index, :today, :tomorrow, :upcoming, :someday, :search, :create
+    :index, :today, :tomorrow, :upcoming, :someday, :search, :create, :clear_completed
   ]
   before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday]
 
@@ -218,6 +218,17 @@ class TasksController < ApiController
     @task.update!(completed: false)
 
     render json: @task.to_json
+  end
+
+  def clear_completed
+    if current_user.present?
+      current_user.tasks.where(completed: true).destroy_all
+    else
+      head :forbidden
+      return
+    end
+
+    head :ok
   end
 
   def destroy
