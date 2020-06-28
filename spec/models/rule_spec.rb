@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Rule do
   subject { build :rule }
+  let!(:user) { create :user }
+  let!(:list) { create :list, user: user }
 
   it 'has valid factory' do
     expect(subject).to be_valid
@@ -21,16 +23,17 @@ RSpec.describe Rule do
         # A -> B
         # A -> C
         # B -> C (removes A -> C)
-        a = create :task, title: 'a'
-        b = create :task, title: 'b'
-        c = create :task, title: 'c'
+        a = create :task, title: 'a', user: user, list: list
+        b = create :task, title: 'b', user: user, list: list
+        c = create :task, title: 'c', user: user, list: list
         ab = create :rule, pre: a, post: b
-        ac = create :rule, pre: a, post; c
+        ac = create :rule, pre: a, post: c
 
-        expect(ac).to be_present
+        expect(ac).to be_persisted
 
         bc = create :rule, pre: b, post: c
-        expect(ac).not_to be_present
+
+        expect(ac).not_to be_persisted
       end
     end
 
@@ -39,26 +42,28 @@ RSpec.describe Rule do
         # validation
         # A -> B -> C -> D
         # D -> A
-        a = create :task, title: 'a'
-        b = create :task, title: 'b'
-        c = create :task, title: 'c'
-        d = create :task, title: 'd'
+        a = create :task, title: 'a', user: user, list: list
+        b = create :task, title: 'b', user: user, list: list
+        c = create :task, title: 'c', user: user, list: list
+        d = create :task, title: 'd', user: user, list: list
         ab = create :rule, pre: a, post: b
-        bc = create :rule, pre: b, post; c
+        bc = create :rule, pre: b, post: c
         cd = create :rule, pre: c, post: d
+
         expect{create :rule, pre: d, post: a}.to raise_error
       end
     end
 
     describe 'redundant_rule' do
-      if 'prevents redundant rules from being created' do
-        a = create :task, title: 'a'
-        b = create :task, title: 'b'
-        c = create :task, title: 'c'
-        d = create :task, title: 'd'
+      it 'prevents redundant rules from being created' do
+        a = create :task, title: 'a', user: user, list: list
+        b = create :task, title: 'b', user: user, list: list
+        c = create :task, title: 'c', user: user, list: list
+        d = create :task, title: 'd', user: user, list: list
         ab = create :rule, pre: a, post: b
-        bc = create :rule, pre: b, post; c
+        bc = create :rule, pre: b, post: c
         cd = create :rule, pre: c, post: d
+
         expect{create :rule, pre: a, post: d}.to raise_error
       end
     end

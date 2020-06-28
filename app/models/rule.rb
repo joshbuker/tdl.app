@@ -25,6 +25,9 @@ class Rule < ApplicationRecord
     # A -> B -> C -> D
     # D -> A
 
+    return unless pre.present? && post.present?
+    return unless pre.persisted? && post.persisted?
+
     if post.get_all_posts.include?(pre) || pre.get_all_pres.include?(post)
       errors.add(:base, "Candidate prerequisite \"#{pre.title}\" is already a postrequisite of candidate postrequisite \"#{post.title}\"")
     end
@@ -34,6 +37,9 @@ class Rule < ApplicationRecord
     # validation
     # A -> B -> C -> D
     # A -> D
+
+    return unless pre.present? && post.present?
+    return unless pre.persisted? && post.persisted?
 
     if post.get_all_pres.include?(pre) ||  pre.get_all_posts.include?(post)
       errors.add(:base, "Candidate postrequisite \"#{post.title}\" is already a postrequisite of \"#{pre.title}\"")
