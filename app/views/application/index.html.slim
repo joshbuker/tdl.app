@@ -22,6 +22,7 @@
               input.form-control.mt-2.mb-2 type='text' v-model='newList' placeholder='Create new list' @keyup.enter='createList'
             .app-body__controls__tags v-show="controls == 'tags'"
               tag-controls :tags='tags' @clicked-tag='setCurrentTag'
+              input.form-control.mt-2.mb-2 type='text' v-model='newTag' placeholder='Create new tag' @keyup.enter='createTag'
         section.col-md-9.ml-sm-auto.col-lg-10.pt-3.px-4
           .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pb-2.mb-3.border-bottom
             h1.h2.text-white

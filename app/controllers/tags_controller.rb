@@ -3,12 +3,7 @@ class TagsController < ApiController
 
   def index
     tags = @tags.map do |tag|
-      {
-        title: tag.title,
-        color: tag.color,
-        text_color: tag.text_color,
-        task_count: tag.tasks.size
-      }
+      tag.to_hash
     end
 
     tags.push({
@@ -21,6 +16,18 @@ class TagsController < ApiController
     render json: tags.to_json
   end
 
+  def create
+    tag = Tag.new(tag_params)
+    tag.user = current_user
+    tag.randomize_color!
+
+    tag.save!
+
+    render json: tag.to_json
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
 private
 
   def set_tags
@@ -29,5 +36,9 @@ private
     else
       @tags = Tag.all
     end
+  end
+
+  def tag_params
+    params.require(:tag).permit(:title)
   end
 end

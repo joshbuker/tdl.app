@@ -9,6 +9,9 @@ class Tag < ApplicationRecord
   validates :title, :color,
     presence: true
 
+  validates :title,
+    uniqueness: { case_sensitive: false, scope: :user_id }
+
   validate :reserved_title
 
   # TODO: Validate that color is a hex color code
@@ -28,13 +31,22 @@ class Tag < ApplicationRecord
     (greyscale > midpoint) ? dark : light
   end
 
+  def randomize_color!
+    self.color = '#' + Random.bytes(3).unpack1('H*')
+  end
+
   def to_hash
     {
       id: id,
       title: title,
       color: color,
-      text_color: text_color
+      text_color: text_color,
+      task_count: tasks.size
     }
+  end
+
+  def to_json
+    self.to_hash.to_json
   end
 
 private

@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentList: '',
       newTask: '',
       newList: '',
+      newTag: '',
       editTask: '',
       limiterType: null,
       limiterValue: null
@@ -330,6 +331,22 @@ document.addEventListener('DOMContentLoaded', () => {
           this.lists.push(response.data);
           this.newList = '';
           toastr.success('Added new list!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      createTag: function() {
+        axios.post('<%= tags_url %>', {
+          title: this.newTag,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.tags.push(response.data);
+          this.newTag = '';
+          toastr.success('Added new tag!');
         }).
         catch(e => {
           toastr.error(e.message);
