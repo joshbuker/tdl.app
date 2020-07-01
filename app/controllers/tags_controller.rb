@@ -1,5 +1,6 @@
 class TagsController < ApiController
-  before_action :set_tags
+  before_action :set_tags, only: [:index]
+  before_action :set_tag, only: [:destroy]
 
   def index
     tags = @tags.map do |tag|
@@ -28,7 +29,18 @@ class TagsController < ApiController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
+  def destroy
+    @tag.destroy!
+
+    head :ok
+  end
+
 private
+
+  def set_tag
+    tag_id = params[:tag_id] || params[:id]
+    @tag = Tag.find(tag_id)
+  end
 
   def set_tags
     if current_user.present?

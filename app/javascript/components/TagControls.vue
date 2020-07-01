@@ -4,7 +4,10 @@
       <span>
         {{ tag.title }}
       </span>
-      <span class="badge badge-secondary badge-pill">{{ tag.task_count }}</span>
+      <div>
+        <span class="badge badge-secondary badge-pill">{{ tag.task_count }}</span>
+        <span class="badge badge-danger badge-pill" @click.stop='deleteTag(tag)'>x</span>
+      </div>
     </li>
   </ul>
 </template>
@@ -17,6 +20,9 @@ export default {
   methods: {
     limitByTag(tag) {
       this.$emit('clicked-tag', tag);
+    },
+    deleteTag(tag) {
+      this.$emit('clicked-delete-tag', tag);
     }
   }
 };

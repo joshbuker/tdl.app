@@ -28,7 +28,7 @@ Rails.application.routes.draw do
   end
 
   resources :lists, only: [:index, :create, :destroy], defaults: { format: :json }
-  resources :tags, only: [:index, :create], defaults: { format: :json }
+  resources :tags, only: [:index, :create, :destroy], defaults: { format: :json }
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   get 'old-prototype' => 'application#old_prototype'

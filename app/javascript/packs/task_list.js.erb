@@ -368,6 +368,22 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
       },
+      deleteTag: function(tag) {
+        if(confirm('Are you sure?')) {
+          axios.delete('<%= tags_url %>/' + tag.id, {
+            credentials: 'same-origin',
+            'X-CSRF-Token': token,
+            'authenticity_token': token
+          }).
+          then(response => {
+            this.refreshTaskLists();
+            toastr.success('Deleted tag!');
+          }).
+          catch(e => {
+            toastr.error(e.message);
+          });
+        }
+      },
       setCurrentList: function(list) {
         app.limiterType = 'list';
         app.limiterValue = list.title;
