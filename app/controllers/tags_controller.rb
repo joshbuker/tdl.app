@@ -43,11 +43,7 @@ private
   end
 
   def set_tags
-    if current_user.present?
-      @tags = current_user.tags
-    else
-      @tags = Tag.all
-    end
+    @tags = current_user.tags
   end
 
   def tag_params

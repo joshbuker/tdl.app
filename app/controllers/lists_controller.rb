@@ -40,11 +40,7 @@ private
   end
 
   def set_lists
-    if current_user.present?
-      @lists = current_user.lists
-    else
-      @lists = List.none
-    end
+    @lists = current_user.lists
   end
 
   def list_params

@@ -2,7 +2,8 @@ void_xxx = User.create!(
   username: 'void_xxx',
   given_name: 'Kurt',
   family_name: 'Apple',
-  email: 'username@void.xxx'
+  email: 'username@void.xxx',
+  password: 'password'
 )
 
 inbox = List.create!(
@@ -30,6 +31,6 @@ rule_count.times do |n|
     random_tasks = Task.where(user: void_xxx).order(Arel.sql('RANDOM()')).first(2)
     rule = Rule.new(pre: random_tasks.first, post: random_tasks.second)
     rule.save! and break if rule.valid?
-    puts 'invalid rule!'
+    # puts 'invalid rule!'
   end
 end

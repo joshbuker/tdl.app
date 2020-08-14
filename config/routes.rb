@@ -31,7 +31,6 @@ Rails.application.routes.draw do
   resources :tags, only: [:index, :create, :destroy], defaults: { format: :json }
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  get 'old-prototype' => 'application#old_prototype'
-  root to: 'application#index'
-  # match '*path', to: 'application#index', format: false, via: :get
+  root to: 'home#index'
+  # match '*path', to: 'home#index', format: false, via: :get
 end

@@ -11,14 +11,14 @@ default: &default
 
 development:
   <<: *default
-  database: tdl_vue_prototype_development
+  database: tdl_app_development
 
 test:
   <<: *default
-  database: tdl_vue_prototype_test
+  database: tdl_app_test
 
 production:
   <<: *default
-  database: tdl_vue_prototype_production
-  username: tdl_vue_prototype
+  database: tdl_app_production
+  username: tdl_app
   password: <%= ENV['TDL_DATABASE_PASSWORD'] %>

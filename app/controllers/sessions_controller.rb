@@ -1,19 +1,7 @@
 class SessionsController < ApplicationController
-  # NOTE: This doesn't even pretend to be secure. Literally just for testing.
-  def create
-    unless params[:username].present?
-      respond_to do |format|
-        format.html do
-          redirect_to root_path, error: 'You must provide username to login.'
-        end
-        format.json do
-          render json: { error: 'You must provide username to login.' },
-            status: :bad_request
-        end
-      end
-      return
-    end
+  skip_before_action :require_login, except: [:destroy]
 
+  def create
     if current_user
       respond_to do |format|
         format.html do
@@ -27,21 +15,15 @@ class SessionsController < ApplicationController
       return
     end
 
-    user = User.find_by!(username: params[:username])
-    auto_login(user)
-
-    respond_to do |format|
-      format.html { redirect_to root_path }
-      format.json { head :ok }
-    end
-  rescue ActiveRecord::RecordNotFound => e
-    respond_to do |format|
-      format.html do
-        redirect_to root_path, error: e.message
+    if (@user = login(params[:username], params[:password]))
+      respond_to do |format|
+        format.html { redirect_to root_path }
+        format.json { head :ok }
       end
-      format.json do
-        render json: { error: e.message },
-          status: :bad_request
+    else
+      respond_to do |format|
+        format.html { redirect_to root_path, error: 'Failed to login.' }
+        format.json { head :bad_request }
       end
     end
   end

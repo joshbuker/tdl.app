@@ -2,7 +2,8 @@ athix = User.create!(
   username: 'athix',
   given_name: 'Josh',
   family_name: 'Buker',
-  email: 'apate+tdl@nyx.chat'
+  email: 'apate+tdl@nyx.chat',
+  password: 'password'
 )
 
 Struct.new('Tag', :title, :color)

@@ -229,6 +229,14 @@
     nav.navbar.navbar-dark.fixed-top.bg-dark.flex-md-nowrap.p-0.shadow.justify-content-end
       = form_with url: login_path, method: :post, local: true, class: 'form-inline my-2' do |f|
         .form-group
-          = f.text_field :username, placeholder: 'Username', class: 'form-control form-control-dark mr-sm-2', required: true, autofocus: true
+          = f.text_field :username,
+            class: 'form-control form-control-dark mr-sm-2',
+            placeholder: 'Username',
+            required: true,
+            autofocus: true
+          = f.password_field :password,
+            class: 'form-control form-control-dark mr-sm-2',
+            placeholder: 'Password',
+            required: true
         = f.submit 'Login', class: 'btn btn-primary'
   = javascript_pack_tag 'login'
