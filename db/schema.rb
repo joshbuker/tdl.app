@@ -73,6 +73,13 @@ ActiveRecord::Schema.define(version: 2020_06_21_091445) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "crypted_password"
     t.string "salt"
+    t.integer "failed_logins_count", default: 0
+    t.datetime "lock_expires_at"
+    t.string "unlock_token"
+    t.datetime "last_login_at"
+    t.datetime "last_logout_at"
+    t.datetime "last_activity_at"
+    t.string "last_login_from_ip_address"
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
