@@ -1,6 +1,8 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  Rails.application.default_url_options[:host] = 'tdl.app'
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 
