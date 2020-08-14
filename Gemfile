@@ -31,6 +31,9 @@ gem 'slim-rails'
 # User sessions
 gem 'sorcery'
 
+# Keep session data on the server
+gem 'activerecord-session_store'
+
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
 
