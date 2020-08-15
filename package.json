@@ -13,6 +13,7 @@
     "luxon": "^1.24.1",
     "popper.js": "^1.16.0",
     "rails-erb-loader": "^5.5.2",
+    "sass-loader": "^9.0.3",
     "toastr": "^2.1.4",
     "turbolinks": "^5.2.0",
     "vue": "^2.6.10",
