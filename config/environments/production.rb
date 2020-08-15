@@ -2,6 +2,7 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   Rails.application.default_url_options[:host] = 'tdl.app'
+  Rails.application.default_url_options[:protocol] = 'https'
 
   # Code is not reloaded between requests.
   config.cache_classes = true
