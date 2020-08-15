@@ -39,7 +39,7 @@ private
 
   def set_tag
     tag_id = params[:tag_id] || params[:id]
-    @tag = Tag.find(tag_id)
+    @tag = current_user.tags.find(tag_id)
   end
 
   def set_tags

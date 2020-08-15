@@ -241,7 +241,7 @@ private
 
   def set_task
     task_id = params[:task_id] || params[:id]
-    @task = Task.find(task_id)
+    @task = current_user.tasks.find(task_id)
   end
 
   def set_tasks

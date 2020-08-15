@@ -164,7 +164,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       },
       markTaskComplete(task){
-        axios.patch('<%= tasks_url %>/' + String(task.id) + '/complete').
+        axios.patch('<%= tasks_url %>/' + String(task.id) + '/complete', {
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
         then(response => {
           this.currentTask = {};
           $('#taskDetailModal').modal('hide');
@@ -176,7 +180,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       },
       markTaskIncomplete(task){
-        axios.patch('<%= tasks_url %>/' + String(task.id) + '/incomplete').
+        axios.patch('<%= tasks_url %>/' + String(task.id) + '/incomplete', {
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
         then(response => {
           this.currentTask = {};
           $('#taskDetailModal').modal('hide');

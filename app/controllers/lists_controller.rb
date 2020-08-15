@@ -36,7 +36,7 @@ private
 
   def set_list
     list_id = params[:list_id] || params[:id]
-    @list = List.find(list_id)
+    @list = current_user.lists.find(list_id)
   end
 
   def set_lists
