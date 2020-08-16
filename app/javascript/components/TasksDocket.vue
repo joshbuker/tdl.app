@@ -57,8 +57,8 @@ export default {
     showDetailModal(task) {
       this.$emit('clicked-show-detail', task);
     },
-    updateTaskOrder(tasks) {
-      console.log(tasks);
+    updateTaskOrder(event) {
+      console.log(event);
     }
   },
   components: {

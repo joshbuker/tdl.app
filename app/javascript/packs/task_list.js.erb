@@ -75,6 +75,40 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
+      addPreTask(){
+        axios.post('<%= tasks_url %>', {
+          title: this.newTask,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.today.push(response.data);
+          this.newTask = '';
+          toastr.success('Added new task!');
+          this.addPrerequisite(this.today[this.today.length - 1]);
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      addPostTask(){
+        axios.post('<%= tasks_url %>', {
+          title: this.newTask,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.today.push(response.data);
+          this.newTask = '';
+          toastr.success('Added new task!');
+          this.addPostrequisite(this.today[this.today.length - 1]);
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
       deleteTask(task) {
         if(confirm('Are you sure?')) {
           axios.delete('<%= tasks_url %>/' + task.id, {
@@ -103,8 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
         then(response => {
           this.refreshTaskLists();
           this.currentPrereqs.push(response.data);
-          this.newTask = '';
-          $('#addPrerequisiteModal').modal('hide');
           toastr.success('Added prerequisite!');
         }).
         catch(e => {
@@ -121,8 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
         then(response => {
           this.refreshTaskLists();
           this.currentPostreqs.push(response.data);
-          this.newTask = '';
-          $('#addPostrequisiteModal').modal('hide');
           toastr.success('Added postrequisite!');
         }).
         catch(e => {

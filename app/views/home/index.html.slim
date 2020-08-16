@@ -155,7 +155,7 @@
           .modal-body style='min-height: 80vh;'
             h5
               | {{ currentTask.title }}
-            | <input type="text" class="form-control" placeholder="Task title" v-model="newTask">
+            | <input type="text" class="form-control" placeholder="Task title" v-model="newTask" @keyup.enter="addPreTask">
             hr
             h3
               | Possible Matches - {{ search.length }}
@@ -174,7 +174,7 @@
           .modal-body
             h5
               | {{ currentTask.title }}
-            | <input type="text" class="form-control" placeholder="Task title" v-model="newTask">
+            | <input type="text" class="form-control" placeholder="Task title" v-model="newTask" @keyup.enter="addPostTask">
             hr
             h3
               | Possible Matches - {{ search.length }}
