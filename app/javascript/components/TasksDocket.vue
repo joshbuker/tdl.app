@@ -15,11 +15,11 @@
             </span>
           </div>
         </li>
+        <p v-if="tasks.length == 0" class="text-center text-muted mt-3" slot="footer">
+          <strong>Nothing yet!</strong>
+        </p>
       </draggable>
     </ul>
-    <p v-if="tasks.length == 0" class="text-center text-muted mt-3">
-      <strong>Nothing yet!</strong>
-    </p>
     <!-- find a way to create a modal per task and just toggle that modal
          directly rather than using a centralized "current task" variable? -->
     <div class="input-group p-2 border-top">
