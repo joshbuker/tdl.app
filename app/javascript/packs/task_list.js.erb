@@ -324,6 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
         app.currentTags = task.tags.map( function(tag) { return tag.title } );
         app.currentList = task.list_title;
         app.editTask = '';
+        app.newTask = '';
         // Fetch pres
         axios.get('<%= tasks_url %>/' + String(task.id) + '/prereqs').
         then(response => {
