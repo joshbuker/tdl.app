@@ -3,9 +3,7 @@
     nav.navbar.navbar-dark.sticky-top.bg-dark.flex-md-nowrap.p-0
       span.navbar-brand.col-sm-3.col-md-2.mr-0 = current_user&.username
       input.form-control.form-control-dark.w-100 type='text' placeholder='Search' aria-label='Search'
-      ul.navbar-nav.px-3
-        li.nav-item.text-nowrap
-          = link_to 'Logout', logout_path, method: :post, class: 'nav-link'
+      = button_to 'Logout', logout_path, class: 'btn btn-secondary ml-2 mr-2'
     .container-fluid
       .row
         nav.col-lg-2.col-md-3.d-none.d-md-block.bg-light.sidebar
@@ -238,5 +236,5 @@
             class: 'form-control form-control-dark mr-sm-2',
             placeholder: 'Password',
             required: true
-        = f.submit 'Login', class: 'btn btn-primary'
+        = f.submit 'Login', class: 'btn btn-primary mr-sm-2'
   = javascript_pack_tag 'login'
