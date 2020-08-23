@@ -6,7 +6,7 @@ class TasksController < ApiController
   before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday]
 
   def index
-    tasks = Task.search(params[:title]).order(:id => :asc).map do |task|
+    tasks = Task.search(params[:title]).order(order: :asc, id: :asc).map do |task|
       task.to_tree
     end
 
@@ -15,7 +15,7 @@ class TasksController < ApiController
 
   def today
     if @tasks.any?
-      tasks = @tasks.includes(:tags, :list).today.next_up.order(:id => :asc).map do |task|
+      tasks = @tasks.includes(:tags, :list).today.next_up.map do |task|
         task.to_hash
       end
     else
@@ -27,7 +27,7 @@ class TasksController < ApiController
 
   def tomorrow
     if @tasks.any?
-      tasks = @tasks.includes(:tags, :list).tomorrow.next_up.order(:id => :asc).map do |task|
+      tasks = @tasks.includes(:tags, :list).tomorrow.next_up.map do |task|
         task.to_hash
       end
     else
@@ -39,7 +39,7 @@ class TasksController < ApiController
 
   def upcoming
     if @tasks.any?
-      tasks = @tasks.includes(:tags, :list).upcoming.next_up.order(:id => :asc).map do |task|
+      tasks = @tasks.includes(:tags, :list).upcoming.next_up.map do |task|
         task.to_hash
       end
     else
@@ -52,7 +52,7 @@ class TasksController < ApiController
   # This is when I plan on making this DRY
   def someday
     if @tasks.any?
-      tasks = @tasks.includes(:tags, :list).someday.next_up.order(:id => :asc).map do |task|
+      tasks = @tasks.includes(:tags, :list).someday.next_up.map do |task|
         task.to_hash
       end
     else
@@ -198,6 +198,24 @@ class TasksController < ApiController
     render json: @task.remind_me_at.to_json
   end
 
+  def update_order
+    if params[:tag_title].present?
+      tag = @task.tags.find_by(title: params[:tag_title])
+      tagging = Tagging.find_by(tag: tag, task: @task)
+      tagging.order = params[:order]
+
+      tagging.save!
+
+      render json: tagging.order.to_json
+    else
+      @task.order = params[:order]
+
+      @task.save!
+
+      render json: @task.order.to_json
+    end
+  end
+
   def mark_task_complete
     if @task.completed?
       render json: { error: 'Already marked as complete' }, status: :unprocessable_entity
@@ -250,7 +268,7 @@ private
       if params[:limiter_type].present? && params[:limiter_value].present?
         if params[:limiter_type] == 'list'
           if params[:limiter_value] == 'All Tasks'
-            @tasks = current_user.tasks
+            @tasks = current_user.tasks.order(order: :asc, id: :asc)
           else
             @tasks = current_user.tasks.by_list(
               params[:limiter_value],
@@ -259,7 +277,7 @@ private
           end
         elsif params[:limiter_type] == 'tag'
           if params[:limiter_value] == 'No Tags'
-            @tasks = current_user.tasks.tagless
+            @tasks = current_user.tasks.tagless.order(order: :asc, id: :asc)
           else
             @tasks = current_user.tasks.by_tag(
               params[:limiter_value],

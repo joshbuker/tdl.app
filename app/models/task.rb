@@ -103,7 +103,8 @@ class Task < ApplicationRecord
       list = user.lists.find_by(title: list_name)
       return none if list.nil?
       includes(:list).
-      where(list_id: list.id)
+      where(list_id: list.id).
+      order(order: :asc, id: :asc)
     else
       none
     end
@@ -114,8 +115,9 @@ class Task < ApplicationRecord
     if tag_name.present?
       tag = user.tags.find_by(title: tag_name)
       return none if tag.nil?
-      includes(:tags).
-      where(tags: { id: tag.id })
+      includes(:tags, :taggings).
+      where(tags: { id: tag.id }).
+      order('taggings.order, tasks.id')
     else
       none
     end
@@ -180,11 +182,13 @@ class Task < ApplicationRecord
   def to_hash
     {
       id: id,
+      order: order,
       title: title,
       completed: completed,
       list_title: list.title,
       notes: notes,
       remind_me_at: remind_me_at,
+      tag_ordering: taggings.reload.map { |tagging| { title: tagging.tag.title, order: tagging.order } },
       tags: tags.reload.map{ |tag| { title: tag.title, color: tag.color, text_color: tag.text_color } }
     }
   end

@@ -58,7 +58,7 @@ export default {
       this.$emit('clicked-show-detail', task);
     },
     updateTaskOrder(event) {
-      console.log(event);
+      this.$emit('reordered-tasks');
     }
   },
   components: {
