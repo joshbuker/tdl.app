@@ -288,7 +288,7 @@ private
           @tasks = Task.none
         end
       else
-        @tasks = current_user.tasks
+        @tasks = current_user.tasks.order(order: :asc, id: :asc)
       end
     else
       @tasks = Task.none

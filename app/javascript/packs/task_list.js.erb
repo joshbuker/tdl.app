@@ -227,8 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       syncOrdering(){
         var lists = [this.today, this.tomorrow, this.upcoming, this.someday];
-        console.log(this.limiterType);
-        console.log(this.limiterValue);
         for(var list of lists) {
           for(var task of list) {
             var current_order = list.indexOf(task) + 1;
