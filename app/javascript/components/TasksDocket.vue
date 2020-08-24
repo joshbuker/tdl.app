@@ -3,7 +3,7 @@
     <h3 class="text-center pt-2">{{ title }}</h3>
     <hr class="mb-0">
     <ul class="list-group overflow-auto" style="max-height: 75vh">
-      <draggable :list="tasks" group="tasksdocket" @change="updateTaskOrder">
+      <draggable :list="tasks" :options="{delay: 200, touchStartThreshold: 5, delayOnTouchOnly: true}" group="tasksdocket" @change="updateTaskOrder">
         <li v-for="(task, index) in tasks" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             :task='task' :index='index' :key='task.title'
             data-toggle='modal' data-target='#taskDetailModal'
