@@ -5,7 +5,8 @@ class SessionsController < ApplicationController
     if current_user
       respond_to do |format|
         format.html do
-          redirect_to root_path, error: 'You are already logged in.'
+          redirect_to root_path, error: 'You are already logged in.',
+            status: :bad_request
         end
         format.json do
           render json: { error: 'You are already logged in.' },
@@ -22,7 +23,7 @@ class SessionsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { redirect_to root_path, error: 'Failed to login.' }
+        format.html { redirect_to root_path, error: 'Failed to login.', status: :bad_request }
         format.json { head :bad_request }
       end
     end
@@ -38,7 +39,7 @@ class SessionsController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { redirect_to root_path, error: 'Already logged out.' }
+        format.html { redirect_to root_path, error: 'Already logged out.', status: :bad_request }
         format.json { head :bad_request }
       end
     end

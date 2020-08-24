@@ -223,18 +223,22 @@
               | Cancel
   = javascript_pack_tag 'task_list'
 - else
-  main#root.wrapper
-    nav.navbar.navbar-dark.fixed-top.bg-dark.flex-md-nowrap.p-0.shadow.justify-content-end
-      = form_with url: login_path, method: :post, local: true, class: 'form-inline my-2' do |f|
-        .form-group
-          = f.text_field :username,
-            class: 'form-control form-control-dark mr-sm-2',
-            placeholder: 'Username',
-            required: true,
-            autofocus: true
-          = f.password_field :password,
-            class: 'form-control form-control-dark mr-sm-2',
-            placeholder: 'Password',
-            required: true
-        = f.submit 'Login', class: 'btn btn-primary mr-sm-2'
+  main#root
+    v-app
+      v-main
+        v-container.fill-height[fluid]
+          v-row[align="center" justify="center"]
+            v-col[cols="12" sm="8" md="4"]
+              v-card.elevation-12
+                v-toolbar[color="primary" dark flat]
+                  v-toolbar-title
+                    | TDL App
+                v-card-text
+                  v-form
+                    v-text-field[v-model="username" label="Username" name="username" prepend-icon="fa-user" type="text" required autofocus="true"]
+                    v-text-field#password[v-model="password" label="Password" name="password" prepend-icon="fa-lock" type="password" required @keyup.enter="submitForm"]
+                v-card-actions
+                  v-spacer
+                  v-btn[color="primary" @click="submitForm"]
+                    | Login
   = javascript_pack_tag 'login'

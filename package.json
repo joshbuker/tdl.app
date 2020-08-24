@@ -21,11 +21,15 @@
     "vue-loader": "^15.7.1",
     "vue-template-compiler": "^2.6.10",
     "vuedraggable": "^2.24.0",
+    "vuetify": "^2.2.29",
     "webpack": "^4.1.0",
     "weekstart": "^1.0.1"
   },
   "version": "0.1.0",
   "devDependencies": {
+    "deepmerge": "^4.2.2",
+    "fibers": "^5.0.0",
+    "sass": "^1.26.10",
     "webpack-dev-server": "^3.9.0"
   }
 }
