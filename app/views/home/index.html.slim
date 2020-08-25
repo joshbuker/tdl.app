@@ -239,6 +239,9 @@
                     v-text-field#password[v-model="password" label="Password" name="password" prepend-icon="fa-lock" type="password" required @keyup.enter="submitForm"]
                 v-card-actions
                   v-spacer
-                  v-btn[color="primary" @click="submitForm"]
-                    | Login
+                  div v-if='logging_in != true'
+                    v-btn[color="primary" @click="submitForm"]
+                      | Login
+                  div[v-else]
+                    v-progress-circular[indeterminate color='primary']
   = javascript_pack_tag 'login'

@@ -40,10 +40,12 @@ document.addEventListener('DOMContentLoaded', () => {
     vuetify: new Vuetify(),
     data: {
       username: '',
-      password: ''
+      password: '',
+      logging_in: false
     },
     methods: {
       submitForm(){
+        this.logging_in = true;
         axios.post('<%= login_url %>', {
           username: this.username,
           password: this.password,
@@ -57,7 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
           window.location.reload();
         }).
         catch(error => {
+          this.logging_in = false;
           this.password = '';
+          $("input[name='password']").focus();
           toastr.error(error.message);
         })
       }
