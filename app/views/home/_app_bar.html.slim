@@ -1,0 +1,10 @@
+v-app-bar[app clipped-left]
+  v-app-bar-nav-icon v-show='view == 0' @click.stop="drawer = !drawer"
+  v-toolbar-title
+    div v-if='processing != true'
+      = current_user.username
+    div[v-else]
+      v-progress-circular[indeterminate color='primary']
+  v-row[justify="end"]
+    v-btn.mr-3[color='secondary' @click='logout' v-if='processing != true']
+      | Logout

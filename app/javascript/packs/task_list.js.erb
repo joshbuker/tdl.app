@@ -1,5 +1,6 @@
 import Vue from 'vue/dist/vue.esm'
 import App from '../app.vue'
+import Vuetify from 'vuetify'
 
 import ListControls from "../components/ListControls.vue";
 import TagControls from "../components/TagControls.vue";
@@ -17,6 +18,7 @@ import _ from 'lodash'
 // // import '../stylesheets/task_list'
 // import 'vue-datetime/dist/vue-datetime.css'
 
+Vue.use(Vuetify)
 Vue.use(Datetime)
 
 Vue.component('datetime', Datetime);
@@ -27,9 +29,26 @@ Vue.component('datetime', Datetime);
 
 const token = $('meta[name="csrf-token"]').attr('content');
 
+const opts = {
+  icons: {
+    iconfont: 'fa4'
+  },
+  theme: {
+    dark: true,
+    themes: {
+      dark: {
+        primary: "#33cc33"
+      }
+    }
+  }
+}
+
+export default new Vuetify(opts)
+
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
     el:'main#root',
+    vuetify: new Vuetify(),
     data: {
       title: {
         today: 'Today',
@@ -55,7 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
       newTag: '',
       editTask: '',
       limiterType: null,
-      limiterValue: null
+      limiterValue: null,
+      drawer: null
     },
     methods: {
       addTask(){

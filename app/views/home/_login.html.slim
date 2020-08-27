@@ -1,0 +1,24 @@
+main#root
+  v-app
+    v-main
+      v-container.fill-height[fluid]
+        v-row[align="center" justify="center"]
+          v-col[cols="12" sm="8" md="4"]
+            v-card.elevation-12
+              v-toolbar[color="secondary" flat]
+                v-icon.mr-3[color='primary']
+                  | fa-terminal
+                v-toolbar-title
+                  | TDL App
+              v-card-text
+                v-form
+                  v-text-field[v-model="username" label="Username" name="username" prepend-icon="fa-user" type="text" required autofocus]
+                  v-text-field[v-model="password" label="Password" name="password" prepend-icon="fa-lock" type="password" required @keyup.enter="submitForm"]
+              v-card-actions
+                v-spacer
+                div v-if='logging_in != true'
+                  v-btn[color="primary" @click="submitForm"]
+                    | Login
+                div[v-else]
+                  v-progress-circular[indeterminate color='primary']
+= javascript_pack_tag 'login'

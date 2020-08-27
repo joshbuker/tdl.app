@@ -1,0 +1,96 @@
+import Vue from 'vue/dist/vue.esm'
+import App from '../app.vue'
+import Vuetify from 'vuetify'
+import Vuex from 'vuex'
+import draggable from 'vuedraggable';
+
+import toastr from 'toastr'
+import axios from 'axios'
+import bootstrap from 'bootstrap'
+import { Datetime } from 'vue-datetime'
+import $ from 'jquery'
+import _ from 'lodash'
+
+Vue.use(Vuex)
+Vue.use(Vuetify)
+Vue.use(Datetime)
+
+Vue.component('datetime', Datetime);
+
+<% logout_url = Rails.application.routes.url_helpers.logout_url %>
+
+const token = $('meta[name="csrf-token"]').attr('content');
+
+const opts = {
+  icons: {
+    iconfont: 'fa4'
+  },
+  theme: {
+    dark: true,
+    themes: {
+      dark: {
+        primary: "#33cc33"
+      }
+    }
+  }
+}
+
+export default new Vuetify(opts)
+
+const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  mutations: {
+    increment (state) {
+      state.count++
+    }
+  }
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+  const app = new Vue({
+    el:'main#root',
+    vuetify: new Vuetify(),
+    store: store,
+    data: {
+      controls: 0,
+      collapseOnScroll: true,
+      view: 0,
+      edit: false,
+      drawer: null,
+      processing: false,
+      list: null,
+      tags: [],
+      example: '#aa3300'
+    },
+    methods: {
+      deleteList(){
+        alert('Do you like turtles?');
+      },
+      editList(){
+        alert('I do like turtles');
+      },
+      logout(){
+        this.processing = true;
+        axios.post('<%= logout_url %>', {
+          credentials: 'same-origin',
+          dataType: 'json',
+          contentType: 'application/json',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          window.location.reload();
+        }).
+        catch(error => {
+          this.processing = false;
+          toastr.error(error.message);
+        })
+      }
+    },
+    components: {
+      draggable
+    }
+  })
+})
