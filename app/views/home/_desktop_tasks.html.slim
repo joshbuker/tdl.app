@@ -1,0 +1,69 @@
+template[v-if='editControls == true']
+  v-container#main[fluid]
+    v-row
+      v-col
+        v-card.ma-3.pa-6[outlined tile]
+          v-toolbar-title.primary--text
+            | Editing thing
+template[v-else]
+  v-container#main[fluid]
+    v-row
+      v-col
+        v-card.ma-3.pa-6[loading='processing' rounded]
+          v-toolbar-title.primary--text
+            | Today
+          v-divider
+          v-list
+            v-list-item-group
+              v-list-item[v-for="task in today" :key="task.title"]
+                v-list-item-content
+                  v-list-item-title v-touch="{ right: () => alert('Task ' + m + 'marked done') }"
+                    | {{ task.title }}
+                v-chip[v-for='tag in task.tags' :color='tag.color' :key='tag.title']
+                  v-icon[:color='tag.text_color']
+                    | fa-tag
+          v-divider
+          v-text-field.mb-0[label='Create new task' filled rounded append-icon='fa-arrow-up']
+      v-col
+        v-card.ma-3.pa-6[outlined tile]
+          v-toolbar-title.primary--text
+            | Tomorrow
+          v-divider
+          v-list
+            v-list-item-group
+              v-list-item[v-for="task in tomorrow" :key="task.title"]
+                v-list-item-content
+                  v-list-item-title v-touch="{ right: () => alert('Task ' + m + 'marked done') }"
+                    | {{ task.title }}
+          v-divider
+          v-text-field[label='Create new task' filled rounded append-icon='fa-arrow-up']
+      v-col
+        v-card.ma-3.pa-6[outlined tile]
+          v-toolbar-title.primary--text
+            | Upcoming
+          v-divider
+          v-list
+            v-list-item-group
+              v-list-item[v-for="task in upcoming" :key="task.title"]
+                v-list-item-content
+                  v-list-item-title v-touch="{ right: () => alert('Task ' + m + 'marked done') }"
+                    | {{ task.title }}
+                  v-chip[v-for='tag in task.tags' :color='tag.color' :key='tag.title']
+                    v-icon
+                      | fa-tag
+                    | {{ tag.title }}
+          v-divider
+          v-text-field[label='Create new task' filled rounded append-icon='fa-arrow-up']
+      v-col
+        v-card.ma-3.pa-6[outlined tile]
+          v-toolbar-title.primary--text
+            | Someday
+          v-divider
+          v-list
+            v-list-item-group
+              v-list-item[v-for="task in someday" :key="task.title"]
+                v-list-item-content
+                  v-list-item-title v-touch="{ right: () => alert('Task ' + m + 'marked done') }"
+                    | {{ task.title }}
+          v-divider
+          v-text-field[label='Create new task' filled rounded append-icon='fa-arrow-up']

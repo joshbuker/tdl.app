@@ -1,0 +1,16 @@
+v-dialog[v-model='editingTag' persistent]
+  v-card
+    v-card-title.headline Edit Tag Settings
+    v-divider
+    v-card-text
+      p Example Usage:
+      v-chip.mr-3[:color='tagToBeEdited.color' :text-color='textColor(tagToBeEdited.color)' close]
+        | {{ tagToBeEdited.title }}
+      v-chip[:color='tagToBeEdited.color']
+        v-icon[:color='textColor(tagToBeEdited.color)']
+          | fa-tag
+      v-divider
+      v-text-field :placeholder='tagToBeEdited.title'
+      v-color-picker[v-model='tagToBeEdited.color' mode='hexa' light hide-mode-switch]
+    v-card-actions
+      v-btn[@click='resetTagEdit' color='primary'] Close

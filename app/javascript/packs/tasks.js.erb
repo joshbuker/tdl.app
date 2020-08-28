@@ -17,6 +17,9 @@ Vue.use(Datetime)
 
 Vue.component('datetime', Datetime);
 
+<% tags_url = Rails.application.routes.url_helpers.tags_url %>
+<% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
+<% lists_url = Rails.application.routes.url_helpers.lists_url %>
 <% logout_url = Rails.application.routes.url_helpers.logout_url %>
 
 const token = $('meta[name="csrf-token"]').attr('content');
@@ -54,25 +57,195 @@ document.addEventListener('DOMContentLoaded', () => {
     vuetify: new Vuetify(),
     store: store,
     data: {
+      //
+      // UI Tracking
+      //
       controls: 0,
-      collapseOnScroll: true,
-      view: 0,
-      edit: false,
       drawer: null,
-      processing: false,
-      list: null,
+      editControls: false,
+      editingTag: false,
+      tagToBeEdited: {},
+      requestCount: 0,
+      selectedList: null,
+      selectedTag: null,
+      view: 0,
+      //
+      // AJAX variables (TODO: convert to Vuex store)
+      //
+      lists: [],
       tags: [],
-      example: '#aa3300'
+      today: [],
+      tomorrow: [],
+      upcoming: [],
+      someday: []
+    },
+    computed: {
+      allTasksCount() {
+        if(!this.lists) {
+          return 0;
+        }
+
+        return this.lists.reduce(
+          function(total, value) { return total + Number(value.task_count); },
+          0
+        );
+      },
+      limiterType() {
+        if(this.controls == 0) {
+          return 'list';
+        } else {
+          return 'tag';
+        }
+      },
+      limiterValue() {
+        if(this.limiterType == 'list') {
+          return this.selectedList;
+        } else {
+          return this.selectedTag;
+        }
+      },
+      // tagTextColor() {
+      //   if(this.tagToBeEdited && this.tagToBeEdited.color) {
+      //     return this.textColor(this.tagToBeEdited.color);
+      //   } else {
+      //     return '#000000';
+      //   }
+      // },
+      processing() {
+        if(this.requestCount == 0) {
+          return false;
+        } else {
+          return true;
+        }
+      }
     },
     methods: {
-      deleteList(){
+      deleteList() {
         alert('Do you like turtles?');
       },
-      editList(){
+      editList() {
         alert('I do like turtles');
       },
-      logout(){
-        this.processing = true;
+      deleteTag() {
+        alert('Do you like turtles?');
+      },
+      editTag(tag) {
+        this.editingTag = true;
+        this.tagToBeEdited = tag;
+      },
+      resetTagEdit() {
+        this.editingTag = false;
+        this.tagToBeEdited = {};
+      },
+      refreshLists() {
+        axios.get('<%= lists_url %>').
+        then(response => {
+          this.lists = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      refreshTags() {
+        axios.get('<%= tags_url %>').
+        then(response => {
+          this.tags = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      refreshTasks() {
+        // Today
+        axios.post('<%= tasks_url %>/today', {
+          limiter_type: this.limiterType,
+          limiter_value: this.limiterValue,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.today = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+        // Tomorrow
+        axios.post('<%= tasks_url %>/tomorrow', {
+          limiter_type: this.limiterType,
+          limiter_value: this.limiterValue,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.tomorrow = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+        // Upcoming
+        axios.post('<%= tasks_url %>/upcoming', {
+          limiter_type: this.limiterType,
+          limiter_value: this.limiterValue,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.upcoming = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+        // Someday
+        axios.post('<%= tasks_url %>/someday', {
+          limiter_type: this.limiterType,
+          limiter_value: this.limiterValue,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.someday = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      refreshEverything() {
+        this.refreshLists();
+        this.refreshTags();
+        this.refreshTasks();
+      },
+      textColor(backgroundColor) {
+        let dark = '#000000';
+        let light = '#ffffff';
+        // Javascript seems to hate guard clauses like I hate javascript
+        if(!backgroundColor || 0 === backgroundColor.length) {
+          return dark;
+        } else {
+          let input = backgroundColor.replace('#', '');
+          if(input.length != 6) {
+            return dark;
+          } else {
+            let red = parseInt(input.substr(0,2), 16);
+            let green = parseInt(input.substr(2,2), 16);
+            let blue = parseInt(input.substr(4,2), 16);
+            // Luminance values for different hues are not equal.
+            let greyscale = red * 0.299 + green * 0.587 + blue * 0.114;
+            // Perceived midpoint for grey is higher than 128. (around 186)
+            let midpoint = 152;
+            console.log(input);
+            console.log(red);
+            console.log(green);
+            console.log(blue);
+            console.log(greyscale);
+            return (greyscale > midpoint) ? dark : light;
+          }
+        }
+      },
+      logout() {
         axios.post('<%= logout_url %>', {
           credentials: 'same-origin',
           dataType: 'json',
@@ -84,13 +257,35 @@ document.addEventListener('DOMContentLoaded', () => {
           window.location.reload();
         }).
         catch(error => {
-          this.processing = false;
           toastr.error(error.message);
         })
       }
     },
     components: {
       draggable
+    },
+    created: function() {
+      this.refreshEverything();
     }
   })
+
+  // Add a request interceptor
+  axios.interceptors.request.use(function (config) {
+      app.requestCount += 1;
+      return config;
+    }, function (error) {
+      // TODO: Should this do nothing or decrement requestCount?
+      return Promise.reject(error);
+    });
+
+  // Add a response interceptor
+  axios.interceptors.response.use(function (response) {
+      // Any status code that lie within the range of 2xx cause this function to trigger
+      app.requestCount -= 1;
+      return response;
+    }, function (error) {
+      // Any status codes that falls outside the range of 2xx cause this function to trigger
+      app.requestCount -= 1;
+      return Promise.reject(error);
+    });
 })

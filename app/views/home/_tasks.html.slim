@@ -4,41 +4,10 @@ main#root
     = render partial: 'navigation_drawer'
     v-main[no-gutters]
       template v-if='$vuetify.breakpoint.mobile'
-        v-card.pa-4
-          div[v-for='n in 4' :key='n']
-            v-toolbar-title
-              | Group {{ n }}
-            v-spacer
-            v-btn.darken-1[color='primary' fab small]
-              v-icon
-                | fa-plus
-            v-list
-              v-list-item-group
-                v-list-item[v-for="m in 5" :key="m"]
-                  v-list-item-content
-                    v-list-item-title v-touch="{ right: () => alert('Task ' + m + 'marked done') }"
-                      | Task {{ m }}
+        = render partial: 'mobile_tasks'
       template[v-else]
-        template[v-if='edit == true']
-          v-container#main[fluid]
-            v-row
-              v-col
-                v-card.ma-3.pa-6[outlined tile]
-                  v-toolbar-title
-                    | Editing thing
-        template[v-else]
-          v-container#main[fluid]
-            v-row
-              v-col[v-for="n in 4" :key="n"]
-                v-card.ma-3.pa-6[outlined tile]
-                  v-toolbar-title
-                    | Group {{ n }}
-                  v-list
-                    v-list-item-group
-                      v-list-item[v-for="m in 25" :key="m"]
-                        v-list-item-content
-                          v-list-item-title v-touch="{ right: () => alert('Task ' + m + 'marked done') }"
-                            | Task with super long name here {{ m }}
+        = render partial: 'desktop_tasks'
+    = render partial: 'dialogs'
     / v-show='$vuetify.breakpoint.mobile'
     v-bottom-navigation[v-model='view' color='primary' scroll-target='main' hide-on-scroll app]
       v-btn

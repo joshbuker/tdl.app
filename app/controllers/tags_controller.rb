@@ -43,7 +43,7 @@ private
   end
 
   def set_tags
-    @tags = current_user.tags
+    @tags = current_user.tags.order(order: :asc, id: :asc)
   end
 
   def tag_params

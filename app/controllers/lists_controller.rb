@@ -7,10 +7,11 @@ class ListsController < ApiController
       list.to_hash
     end
 
-    lists.unshift({
-      title: 'All Tasks',
-      task_count: current_user.tasks.size
-    })
+    # Generate and calculate this client-side
+    # lists.unshift({
+    #   title: 'All Tasks',
+    #   task_count: current_user.tasks.size
+    # })
 
     render json: lists.to_json
   end
@@ -40,7 +41,7 @@ private
   end
 
   def set_lists
-    @lists = current_user.lists
+    @lists = current_user.lists.order(order: :asc, id: :asc)
   end
 
   def list_params

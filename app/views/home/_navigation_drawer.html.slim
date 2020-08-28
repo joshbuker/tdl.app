@@ -1,5 +1,5 @@
-v-navigation-drawer[v-model="drawer" app clipped v-if='view == 0' width='300px']
-  v-tabs[v-model="controls" fixed-tabs icons-and-text]
+v-navigation-drawer[v-model='drawer' app clipped v-if='view == 0' width='300px']
+  v-tabs[v-model='controls' @change='refreshEverything' fixed-tabs icons-and-text]
     v-tab
       | Lists
       v-icon
@@ -8,103 +8,18 @@ v-navigation-drawer[v-model="drawer" app clipped v-if='view == 0' width='300px']
       | Tags
       v-icon
         | fa-tags
-  .d-flex.align-end.justify-center.mt-5.mb-3
-    template v-if='edit == true'
-      v-btn[small @click='edit = false']
-        v-icon[small left]
-          | fa-check
-        | Done
-    template[v-else]
-      v-btn[small @click='edit = true']
-        v-icon[small left]
-          | fa-pencil
-        | Edit
   template v-if='controls == 0'
-    v-list
-      v-list-item-group[v-model='list' color='primary' mandatory]
-        v-list-item[v-if='edit != true' link]
-          v-list-item-content
-            v-list-item-title
-              | All Tasks
-            v-list-item-subtitle
-              | 3 tasks
-        draggable
-          v-list-item[link]
-            v-list-item-icon v-if='edit == true'
-              v-icon
-                | fa-bars
-            v-list-item-content
-              v-list-item-title
-                | Inbox
-              v-list-item-subtitle
-                | 1 task
-            v-list-item-action v-if='edit == true'
-              v-btn[icon color='primary' @click.stop='editList']
-                v-icon
-                  | fa-pencil
-            v-list-item-action v-if='edit == true'
-              v-btn[icon color='red']
-                v-icon
-                  | fa-trash
-          v-list-item[link]
-            v-list-item-icon v-if='edit == true'
-              v-icon
-                | fa-bars
-            v-list-item-content
-              v-list-item-title
-                | Action Pending
-              v-list-item-subtitle
-                | 2 tasks
-            v-list-item-action v-if='edit == true'
-              v-btn[icon color='primary' @click.stop='editList']
-                v-icon
-                  | fa-pencil
-            v-list-item-action v-if='edit == true'
-              v-btn[icon color='red']
-                v-icon
-                  | fa-trash
-          v-list-item[link v-for='n in 10' :key='n']
-            v-list-item-icon v-if='edit == true'
-              v-icon
-                | fa-bars
-            v-list-item-content
-              v-list-item-title
-                | List {{ n }}
-              v-list-item-subtitle
-                | 2 tasks
-            v-list-item-action v-if='edit == true'
-              v-btn[icon color='primary' @click.stop='editList']
-                v-icon
-                  | fa-pencil
-            v-list-item-action v-if='edit == true'
-              v-btn[icon color='red' @click.stop="deleteList"]
-                v-icon
-                  | fa-trash
-    template v-if='edit == true'
-      v-text-field.mx-4[label='Create new list' filled dense rounded append-icon='fa-arrow-up']
+    = render partial: 'list_controls'
   template[v-else]
-    v-list
-      v-list-item-group[v-model='tags' :multiple='true' color='primary']
-        v-list-item[link]
-          v-list-item-content
-            v-list-item-title
-              | Priority
-        v-list-item[link color='blue']
-          v-list-item-content
-            v-list-item-title
-              | @Home
-        v-list-item[link]
-          v-list-item-content
-            v-list-item-title
-              | No Tags
+    = render partial: 'tag_controls'
   .d-flex.align-end.justify-center.mt-5.mb-7
-    template v-if='edit == true'
-      v-btn[small @click='edit = false']
+    template v-if='editControls == true'
+      v-btn[small @click='editControls = false']
         v-icon[small left]
           | fa-check
         | Done
     template[v-else]
-      v-btn[small @click='edit = true']
+      v-btn[small @click='editControls = true']
         v-icon[small left]
           | fa-pencil
         | Edit
