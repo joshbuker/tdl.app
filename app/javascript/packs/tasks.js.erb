@@ -61,9 +61,20 @@ document.addEventListener('DOMContentLoaded', () => {
       // UI Tracking
       //
       controls: 0,
+      createTaskDialog: false,
+      currentTaskDialog: false,
       drawer: null,
       editControls: false,
-      editingTag: false,
+      editTagDialog: false,
+      editTagTitle: '',
+      editTaskTitle: '',
+      newList: '',
+      newTag: '',
+      newTask: '',
+      newQuickTodayTask: '',
+      newQuickTomorrowTask: '',
+      newQuickUpcomingTask: '',
+      newQuickSomedayTask: '',
       tagToBeEdited: {},
       requestCount: 0,
       selectedList: null,
@@ -72,12 +83,25 @@ document.addEventListener('DOMContentLoaded', () => {
       //
       // AJAX variables (TODO: convert to Vuex store)
       //
+      currentTask: {},
+      currentTags: [],
+      currentPrereqs: [],
+      currentPostreqs: [],
+      currentList: '',
       lists: [],
       tags: [],
+      search: [],
       today: [],
       tomorrow: [],
       upcoming: [],
       someday: []
+    },
+    components: {
+      draggable
+    },
+    created: function() {
+      this.refreshEverything();
+      this.debouncedSearch = _.debounce(this.searchForTasks, 100);
     },
     computed: {
       allTasksCount() {
@@ -120,22 +144,146 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     },
     methods: {
-      deleteList() {
-        alert('Do you like turtles?');
+      addTask(){
+        axios.post('<%= tasks_url %>', {
+          title: this.newTask,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.today.push(response.data);
+          this.newTask = '';
+          $('#createTaskModal').modal('hide');
+          toastr.success('Added new task!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      clearCompleted: function() {
+        if(confirm('This will delete all completed tasks, are you sure?')) {
+          axios.post('<%= tasks_url %>/clear-completed', {
+            credentials: 'same-origin',
+            'X-CSRF-Token': token,
+            'authenticity_token': token
+          }).
+          then(response => {
+            this.refreshEverything();
+            toastr.success('Cleared completed tasks!');
+          }).
+          catch(e => {
+            toastr.error(e.message);
+          });
+        }
+      },
+      createList: function() {
+        axios.post('<%= lists_url %>', {
+          title: this.newList,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.lists.push(response.data);
+          this.newList = '';
+          toastr.success('Added new list!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      createTag: function() {
+        axios.post('<%= tags_url %>', {
+          title: this.newTag,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.tags.push(response.data);
+          this.newTag = '';
+          toastr.success('Added new tag!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      createQuickTask: function (taskTime, taskTitle) {
+        axios.post('<%= tasks_url %>', {
+          title: taskTitle,
+          time: taskTime,
+          limiter_type: this.limiterType,
+          limiter_value: this.limiterValue,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.newQuickTodayTask = '';
+          this.newQuickTomorrowTask = '';
+          this.newQuickUpcomingTask = '';
+          this.newQuickSomedayTask = '';
+          this.refreshTasks();
+          toastr.success('Added new task!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      deleteList: function(list) {
+        if(confirm('This will delete your list and any tasks in it, are you sure?')) {
+          axios.delete('<%= lists_url %>/' + list.id, {
+            headers: {
+              credentials: 'same-origin',
+              'X-CSRF-Token': token,
+              'authenticity_token': token
+            }
+          }).
+          then(response => {
+            this.refreshLists();
+            this.refreshTasks();
+            toastr.success('Deleted list!');
+          }).
+          catch(e => {
+            toastr.error(e.message);
+          });
+        }
+      },
+      deleteTag: function(tag) {
+        if(confirm('This will delete your tag, are you sure?')) {
+          axios.delete('<%= tags_url %>/' + tag.id, {
+            headers: {
+              credentials: 'same-origin',
+              'X-CSRF-Token': token,
+              'authenticity_token': token
+            }
+          }).
+          then(response => {
+            this.refreshTags();
+            this.refreshTasks();
+            toastr.success('Deleted tag!');
+          }).
+          catch(e => {
+            toastr.error(e.message);
+          });
+        }
       },
       editList() {
         alert('I do like turtles');
       },
-      deleteTag() {
-        alert('Do you like turtles?');
-      },
       editTag(tag) {
-        this.editingTag = true;
+        this.editTagDialog = true;
         this.tagToBeEdited = tag;
+        this.editTagTitle = this.tagToBeEdited.title;
       },
       resetTagEdit() {
-        this.editingTag = false;
-        this.tagToBeEdited = {};
+        this.editTagDialog = false;
+        this.tagToBeEdited = {
+          title: 'Placeholder',
+          color: '#000000'
+        };
+        this.editTagTitle = '';
       },
       refreshLists() {
         axios.get('<%= lists_url %>').
@@ -218,16 +366,80 @@ document.addEventListener('DOMContentLoaded', () => {
         this.refreshTags();
         this.refreshTasks();
       },
+      setCurrentTask(task) {
+        this.currentTask = task;
+        this.currentTags = task.tags;
+        this.currentList = task.list_title;
+        this.editTaskTitle = task.title;
+        this.newTask = '';
+        // Fetch pres
+        axios.get('<%= tasks_url %>/' + String(task.id) + '/prereqs').
+        then(response => {
+          this.currentPrereqs = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+        // Fetch posts
+        axios.get('<%= tasks_url %>/' + String(task.id) + '/postreqs').
+        then(response => {
+          this.currentPostreqs = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+        this.currentTaskDialog = true;
+      },
+      syncTaskOrdering(){
+        var lists = [this.today, this.tomorrow, this.upcoming, this.someday];
+        for(var list of lists) {
+          for(var task of list) {
+            var current_order = list.indexOf(task) + 1;
+            // TODO: Handle ordering tagless tasks
+            if(this.limiterType == 'tag') {
+              var tag_order = task.tag_ordering.find( ({ title }) => title == this.limiterValue ).order;
+              if(current_order != tag_order) {
+                axios.patch('<%= tasks_url %>/' + String(task.id) + '/order', {
+                  tag_title: this.limiterValue,
+                  order: current_order,
+                  credentials: 'same-origin',
+                  'X-CSRF-Token': token,
+                  'authenticity_token': token
+                }).
+                then(response => {
+                  toastr.success('Ordering updated');
+                }).
+                catch(e => {
+                  toastr.error(e.message);
+                });
+              }
+            } else {
+              if(current_order != task.order) {
+                axios.patch('<%= tasks_url %>/' + String(task.id) + '/order', {
+                  order: current_order,
+                  credentials: 'same-origin',
+                  'X-CSRF-Token': token,
+                  'authenticity_token': token
+                }).
+                then(response => {
+                  toastr.success('Ordering updated');
+                }).
+                catch(e => {
+                  toastr.error(e.message);
+                });
+              }
+            }
+          }
+        }
+      },
       textColor(backgroundColor) {
-        let dark = '#000000';
-        let light = '#ffffff';
         // Javascript seems to hate guard clauses like I hate javascript
         if(!backgroundColor || 0 === backgroundColor.length) {
-          return dark;
+          return '#000000';
         } else {
-          let input = backgroundColor.replace('#', '');
+          let input = backgroundColor.toString().replace('#', '');
           if(input.length != 6) {
-            return dark;
+            return '#000000';
           } else {
             let red = parseInt(input.substr(0,2), 16);
             let green = parseInt(input.substr(2,2), 16);
@@ -236,14 +448,53 @@ document.addEventListener('DOMContentLoaded', () => {
             let greyscale = red * 0.299 + green * 0.587 + blue * 0.114;
             // Perceived midpoint for grey is higher than 128. (around 186)
             let midpoint = 152;
-            console.log(input);
-            console.log(red);
-            console.log(green);
-            console.log(blue);
-            console.log(greyscale);
-            return (greyscale > midpoint) ? dark : light;
+            return (greyscale > midpoint) ? '#000000' : '#ffffff';
           }
         }
+      },
+      updateTag() {
+        axios.patch('<%= tags_url %>/' + String(this.tagToBeEdited.id), {
+          title: this.editTagTitle,
+          color: this.tagToBeEdited.color,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          if(this.tagToBeEdited.title == this.selectedTag) {
+            this.selectedTag = this.editTagTitle;
+          }
+          this.tagToBeEdited.title = this.editTagTitle;
+          this.editTagTitle = '';
+          this.refreshTags();
+          this.refreshTasks();
+          this.editTagDialog = false;
+          toastr.success('Updated tag!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      searchForTasks() {
+        axios.post('<%= tasks_url %>/search', {
+          title: this.newTask,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.search = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      selectTag(tag) {
+        this.selectedTag = tag.title;
+        if(this.controls == 0) {
+          this.controls = 1;
+        }
+        this.refreshTasks();
       },
       logout() {
         axios.post('<%= logout_url %>', {
@@ -261,11 +512,10 @@ document.addEventListener('DOMContentLoaded', () => {
         })
       }
     },
-    components: {
-      draggable
-    },
-    created: function() {
-      this.refreshEverything();
+    watch: {
+      newTask: function(newValue, oldValue) {
+        this.debouncedSearch();
+      }
     }
   })
 

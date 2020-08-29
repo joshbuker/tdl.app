@@ -1,6 +1,6 @@
 class TagsController < ApiController
   before_action :set_tags, only: [:index]
-  before_action :set_tag, only: [:destroy]
+  before_action :set_tag, only: [:update, :destroy]
 
   def index
     tags = @tags.map do |tag|
@@ -29,6 +29,12 @@ class TagsController < ApiController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
+  def update
+    @tag.update!(tag_params)
+
+    render json: @task.to_json
+  end
+
   def destroy
     @tag.destroy!
 
@@ -47,6 +53,6 @@ private
   end
 
   def tag_params
-    params.require(:tag).permit(:title)
+    params.require(:tag).permit(:title, :color)
   end
 end

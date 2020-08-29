@@ -1,48 +1,20 @@
 v-card.pa-4
-  div
-    v-toolbar-title.primary--text
-      | Today
-    v-divider
-    v-list
-      v-list-item-group
-        v-list-item[v-for="task in today" :key="task.title"]
-          v-list-item-content
-            v-list-item-title v-touch="{ right: () => alert('Task ' + m + 'marked done') }"
-              | {{ task.title }}
-          v-chip[v-for='tag in task.tags' :color='tag.color' :key='tag.title']
-            v-icon[:color='tag.text_color']
-              | fa-tag
-  div
-    v-toolbar-title.primary--text
-      | Tomorrow
-    v-divider
-    v-list
-      v-list-item-group
-        v-list-item[v-for="task in tomorrow" :key="task.title"]
-          v-list-item-content
-            v-list-item-title v-touch="{ right: () => alert('Task ' + m + 'marked done') }"
-              | {{ task.title }}
-  div
-    v-toolbar-title.primary--text
-      | Upcoming
-    v-divider
-    v-list
-      v-list-item-group
-        v-list-item[v-for="task in upcoming" :key="task.title"]
-          v-list-item-content
-            v-list-item-title v-touch="{ right: () => alert('Task ' + m + 'marked done') }"
-              | {{ task.title }}
-            v-chip[v-for='tag in task.tags' :color='tag.color' :key='tag.title']
-              v-icon
-                | fa-tag
-              | {{ tag.title }}
-  div
-    v-toolbar-title.primary--text
-      | Someday
-    v-divider
-    v-list
-      v-list-item-group
-        v-list-item[v-for="task in someday" :key="task.title"]
-          v-list-item-content
-            v-list-item-title v-touch="{ right: () => alert('Task ' + m + 'marked done') }"
-              | {{ task.title }}
+  - %w[today tomorrow upcoming someday].each do |list|
+    div
+      v-toolbar-title.primary--text
+        = list.titleize
+      v-divider
+      v-list
+        v-list-item-group
+          draggable[:list="#{list}" @change='syncTaskOrdering' delay='200' touch-start-threshold='5' delay-on-touch-only='true']
+            v-list-item[v-for="task in #{list}" :key="task.title" @click='setCurrentTask(task)']
+              v-list-item-content
+                v-list-item-title
+                  | {{ task.title }}
+              v-chip[v-for='tag in task.tags' :color='tag.color' :key='tag.title' @click.stop='selectTag(tag)']
+                v-icon[:color='tag.text_color']
+                  | fa-tag
+          v-list-item[v-if="#{list}.length == 0"]
+            v-list-item-content
+              v-list-item-title
+                strong Nothing yet!

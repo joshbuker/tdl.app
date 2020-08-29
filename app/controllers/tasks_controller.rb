@@ -63,9 +63,11 @@ class TasksController < ApiController
   end
 
   def search
-    tasks = Task.includes(:tags, :list).
+    tasks = current_user.tasks.
+      includes(:tags, :list).
       search(params[:title]).
-      where(user: current_user)
+      order(order: :asc, id: :asc)
+
     tasks = tasks.map do |task|
       task.to_hash
     end
@@ -75,9 +77,20 @@ class TasksController < ApiController
 
   def create
     task = Task.new(task_params)
-    task.list = current_user&.lists&.find_by(title: 'Inbox')
+    if params[:limiter_type] == 'list' && params[:limiter_value].present? && params[:limiter_value] != 'All Tasks'
+      task.list = current_user.lists.find_by(title: params[:limiter_value])
+    else
+      task.list = current_user.lists.find_by(title: 'Inbox')
+    end
+
     task.user = current_user
-    case params[:time]
+
+    if params[:limiter_type] == 'tag' && params[:limiter_value].present? && params[:limiter_value] != 'No Tags'
+      tag = current_user.tags.find_by(title: params[:limiter_value])
+      task.tags << tag
+    end
+
+    case params[:time].to_s.titleize
     when 'Today'
       task.remind_me_at = Time.current
     when 'Tomorrow'
@@ -87,6 +100,7 @@ class TasksController < ApiController
     when 'Someday'
       task.remind_me_at = 2.months.from_now
     end
+
     task.save!
 
     render json: task.to_json

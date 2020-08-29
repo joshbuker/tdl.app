@@ -31,7 +31,7 @@ template[v-else]
               v-icon
                 | fa-pencil
           v-list-item-action
-            v-btn[icon color='red' @click.stop="deleteList"]
+            v-btn[icon color='red' @click.stop='deleteList(list)']
               v-icon
                 | fa-trash
-  v-text-field.mx-4[label='Create new list' filled dense rounded append-icon='fa-arrow-up']
+  v-text-field.mx-4[v-model='newList' label='Create new list' append-icon='fa-arrow-up' @keyup.enter='createList' filled dense rounded]

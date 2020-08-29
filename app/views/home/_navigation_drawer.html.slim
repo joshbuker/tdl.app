@@ -8,7 +8,7 @@ v-navigation-drawer[v-model='drawer' app clipped v-if='view == 0' width='300px']
       | Tags
       v-icon
         | fa-tags
-  template v-if='controls == 0'
+  template[v-if='controls == 0']
     = render partial: 'list_controls'
   template[v-else]
     = render partial: 'tag_controls'

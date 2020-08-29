@@ -1,16 +1,54 @@
-v-dialog[v-model='editingTag' persistent]
+v-dialog[v-model='editTagDialog' persistent]
   v-card
     v-card-title.headline Edit Tag Settings
     v-divider
-    v-card-text
+    v-card-text[v-if='tagToBeEdited']
       p Example Usage:
       v-chip.mr-3[:color='tagToBeEdited.color' :text-color='textColor(tagToBeEdited.color)' close]
-        | {{ tagToBeEdited.title }}
+        template[v-if='editTagTitle.length > 0']
+          | {{ editTagTitle }}
+        template[v-else]
+          | {{ tagToBeEdited.title }}
       v-chip[:color='tagToBeEdited.color']
         v-icon[:color='textColor(tagToBeEdited.color)']
           | fa-tag
       v-divider
-      v-text-field :placeholder='tagToBeEdited.title'
+      v-text-field[label='Tag title' :placeholder='tagToBeEdited.title' v-model='editTagTitle' clearable]
       v-color-picker[v-model='tagToBeEdited.color' mode='hexa' light hide-mode-switch]
     v-card-actions
-      v-btn[@click='resetTagEdit' color='primary'] Close
+      v-btn[@click='updateTag' color='primary'] Save
+      v-btn[@click='resetTagEdit' color='secondary'] Cancel
+v-dialog[v-model='createTaskDialog']
+  v-card
+    v-card-title.headline Create new tasks
+    v-divider
+    v-card-text
+      v-text-field[label='Task title' v-model='newTask' @keyup.enter='addTask']
+      hr
+      h3
+        | Possible Matches - {{ search.length }}
+      v-list
+        v-list-item-group
+          v-list-item[v-for='task in search' :key='task.title']
+            v-list-item-content
+              v-list-item-title
+                | {{ task.title }}
+    v-card-actions
+      v-spacer
+      v-btn[@click='createTaskDialog = false' color='secondary'] Close
+v-dialog[v-model='currentTaskDialog']
+  v-card
+    v-card-title.headline Task Details
+    v-divider
+    v-card-text
+      h3.primary--text
+        | {{ currentTask.title }}
+      v-text-field[label='Task title' :placeholder='currentTask.title' v-model='editTaskTitle' clearable]
+      v-select[label='Tags' v-model='currentTags' :items='tags' item-text='title' item-value='title' multiple]
+        template v-slot:selection="{ item, index }"
+          v-chip[:color='item.color' :text-color='item.text_color' :key='item.title']
+            | {{ item.title }}
+      v-select[label='List' v-model='currentList' :items='lists' item-text='title' item-value='title']
+    v-card-actions
+      v-spacer
+      v-btn[@click='currentTaskDialog = false' color='secondary'] Close
