@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   post 'tasks/tomorrow' => 'tasks#tomorrow'
   post 'tasks/upcoming' => 'tasks#upcoming'
   post 'tasks/someday' => 'tasks#someday'
+  post 'tasks/treeview' => 'tasks#treeview'
 
   post 'tasks/clear-completed' => 'tasks#clear_completed'
 
@@ -15,6 +16,7 @@ Rails.application.routes.draw do
   resources :tasks, except: [:show, :new, :edit], defaults: { format: :json } do
     get 'prereqs' => 'tasks#prereqs'
     get 'postreqs' => 'tasks#postreqs'
+    get 'tree-postreqs' => 'tasks#tree_postreqs'
     patch 'complete' => 'tasks#mark_task_complete'
     patch 'incomplete' => 'tasks#mark_task_incomplete'
     patch 'pre' => 'tasks#add_prerequisite'

@@ -84,6 +84,25 @@ class Task < ApplicationRecord
     where("#{table_name}.id IN (#{sql})")
   }
 
+  # TODO: This query might be simple enough to use pure ActiveRecord syntax
+  scope :treeview, -> {
+    query = self # I like abstraction and I cannot lie
+    return none unless query.any?
+    array = query.map(&:id).to_s.gsub(/[\[\]]/, '')
+    sql = <<-SQL
+      SELECT DISTINCT t.id FROM tasks as t
+      -- where not listed as rules post
+      WHERE t.id IN (#{array})
+      AND (
+        NOT EXISTS (
+          SELECT r.post_id FROM rules AS r WHERE r.post_id = t.id
+        )
+      )
+    SQL
+
+    where("#{table_name}.id IN (#{sql})")
+  }
+
   scope :tagless, -> {
     includes(:tags).
     where(tags: { id: nil })
@@ -187,7 +206,7 @@ class Task < ApplicationRecord
       completed: completed,
       list_title: list.title,
       notes: notes,
-      remind_me_at: remind_me_at,
+      remind_me_at: remind_me_at&.strftime('%Y-%m-%d %H:%M'),
       tag_ordering: taggings.reload.map { |tagging| { title: tagging.tag.title, order: tagging.order } },
       tags: tags.reload.map{ |tag| { title: tag.title, color: tag.color, text_color: tag.text_color } }
     }

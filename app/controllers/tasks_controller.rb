@@ -1,7 +1,8 @@
 class TasksController < ApiController
   # TODO: Make this except instead of only
   before_action :set_task, except: [
-    :index, :today, :tomorrow, :upcoming, :someday, :search, :create, :clear_completed
+    :index, :today, :tomorrow, :upcoming, :someday, :treeview, :search, :create,
+    :clear_completed
   ]
   before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday]
 
@@ -62,15 +63,37 @@ class TasksController < ApiController
     render json: tasks.to_json
   end
 
+  def treeview
+    if current_user
+      @tasks = current_user.tasks.
+        includes(:tags, :list).
+        treeview.
+        order(order: :asc, id: :asc)
+    else
+      @tasks = Task.none
+    end
+
+    if @tasks.any?
+      tasks = @tasks.map do |task|
+        if task.postreqs.any?
+          task.to_hash.merge!({ postreqs: [] })
+        else
+          task.to_hash
+        end
+      end
+    else
+      tasks = []
+    end
+
+    render json: tasks.to_json
+  end
+
   def search
     tasks = current_user.tasks.
-      includes(:tags, :list).
+      includes(:tags, :list, :postreqs).
       search(params[:title]).
-      order(order: :asc, id: :asc)
-
-    tasks = tasks.map do |task|
-      task.to_hash
-    end
+      order(order: :asc, id: :asc).
+      map(&:to_hash)
 
     render json: tasks.to_json
   end
@@ -122,6 +145,18 @@ class TasksController < ApiController
 
   def postreqs
     results = @task.postreqs.map(&:to_hash)
+
+    render json: results.to_json
+  end
+
+  def tree_postreqs
+    results = @task.postreqs.map do |task|
+      if task.postreqs.any?
+        task.to_hash.merge!({ postreqs: [] })
+      else
+        task.to_hash
+      end
+    end
 
     render json: results.to_json
   end
@@ -209,7 +244,11 @@ class TasksController < ApiController
     @task.remind_me_at = params[:remind_me_at]
     @task.save!
 
-    render json: @task.remind_me_at.to_json
+    if @task.remind_me_at.present?
+      render json: @task.remind_me_at.strftime('%Y-%m-%d %H:%M').to_json
+    else
+      head :ok
+    end
   end
 
   def update_order

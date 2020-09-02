@@ -17,11 +17,11 @@
     "toastr": "^2.1.4",
     "turbolinks": "^5.2.0",
     "vue": "^2.6.10",
-    "vue-datetime": "^1.0.0-beta.13",
     "vue-loader": "^15.7.1",
     "vue-template-compiler": "^2.6.10",
     "vuedraggable": "^2.24.0",
     "vuetify": "^2.2.29",
+    "vuetify-datetime-picker": "^2.1.1",
     "vuex": "^3.5.1",
     "webpack": "^4.1.0",
     "weekstart": "^1.0.1"

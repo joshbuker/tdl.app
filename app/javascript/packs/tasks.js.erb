@@ -7,15 +7,13 @@ import draggable from 'vuedraggable';
 import toastr from 'toastr'
 import axios from 'axios'
 import bootstrap from 'bootstrap'
-import { Datetime } from 'vue-datetime'
+import DatetimePicker from 'vuetify-datetime-picker'
 import $ from 'jquery'
 import _ from 'lodash'
 
 Vue.use(Vuex)
 Vue.use(Vuetify)
-Vue.use(Datetime)
-
-Vue.component('datetime', Datetime);
+Vue.use(DatetimePicker)
 
 <% tags_url = Rails.application.routes.url_helpers.tags_url %>
 <% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
@@ -60,11 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
       //
       // UI Tracking
       //
+      addPreDialog: false,
+      addPostDialog: false,
       controls: 0,
       createTaskDialog: false,
       currentTaskDialog: false,
       drawer: null,
       editControls: false,
+      editNotes: '',
+      editRemindMeAt: '',
       editTagDialog: false,
       editTagTitle: '',
       editTaskTitle: '',
@@ -76,6 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
       newQuickUpcomingTask: '',
       newQuickSomedayTask: '',
       tagToBeEdited: {},
+      treeActive: [],
+      treeOpen: [],
       requestCount: 0,
       selectedList: null,
       selectedTag: null,
@@ -94,13 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
       today: [],
       tomorrow: [],
       upcoming: [],
-      someday: []
+      someday: [],
+      treeTasks: []
     },
     components: {
       draggable
     },
     created: function() {
       this.refreshEverything();
+      this.refreshTreeTasks();
       this.debouncedSearch = _.debounce(this.searchForTasks, 100);
     },
     computed: {
@@ -147,14 +153,15 @@ document.addEventListener('DOMContentLoaded', () => {
       addTask(){
         axios.post('<%= tasks_url %>', {
           title: this.newTask,
+          limiter_type: this.limiterType,
+          limiter_value: this.limiterValue,
           credentials: 'same-origin',
           'X-CSRF-Token': token,
           'authenticity_token': token
         }).
         then(response => {
-          this.today.push(response.data);
+          this.refreshTasks();
           this.newTask = '';
-          $('#createTaskModal').modal('hide');
           toastr.success('Added new task!');
         }).
         catch(e => {
@@ -277,6 +284,15 @@ document.addEventListener('DOMContentLoaded', () => {
         this.tagToBeEdited = tag;
         this.editTagTitle = this.tagToBeEdited.title;
       },
+      async loadPostreqs(task) {
+        return axios.get('<%= tasks_url %>/' + String(task.id) + '/tree-postreqs').
+        then(response => {
+          task.postreqs = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
       resetTagEdit() {
         this.editTagDialog = false;
         this.tagToBeEdited = {
@@ -361,6 +377,19 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
+      refreshTreeTasks() {
+        axios.post('<%= tasks_url %>/treeview', {
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.treeTasks = response.data;
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
       refreshEverything() {
         this.refreshLists();
         this.refreshTags();
@@ -371,6 +400,8 @@ document.addEventListener('DOMContentLoaded', () => {
         this.currentTags = task.tags;
         this.currentList = task.list_title;
         this.editTaskTitle = task.title;
+        this.editRemindMeAt = ''; // forcibly clear variable because js is dumb
+        this.editRemindMeAt = task.remind_me_at;
         this.newTask = '';
         // Fetch pres
         axios.get('<%= tasks_url %>/' + String(task.id) + '/prereqs').
@@ -452,6 +483,21 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       },
+      updateRemindMeAt() {
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/remind-me-at', {
+          remind_me_at: this.editRemindMeAt,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshTasks();
+          toastr.success('Updated remind me at!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
       updateTag() {
         axios.patch('<%= tags_url %>/' + String(this.tagToBeEdited.id), {
           title: this.editTagTitle,
@@ -470,6 +516,24 @@ document.addEventListener('DOMContentLoaded', () => {
           this.refreshTasks();
           this.editTagDialog = false;
           toastr.success('Updated tag!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      updateTags() {
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/tags', {
+          tag_titles: this.currentTags,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshEverything();
+          this.currentTask.tags = response.data;
+          this.currentTags = this.currentTask.tags.map( function(tag) { return tag.title } );
+          $('#addTagsModal').modal('hide');
+          toastr.success('Updated tags!');
         }).
         catch(e => {
           toastr.error(e.message);

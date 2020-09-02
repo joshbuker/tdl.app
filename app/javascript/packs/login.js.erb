@@ -5,14 +5,10 @@ import Vuetify from 'vuetify'
 import toastr from 'toastr'
 import axios from 'axios'
 import bootstrap from 'bootstrap'
-import { Datetime } from 'vue-datetime'
 import $ from 'jquery'
 import _ from 'lodash'
 
 Vue.use(Vuetify)
-Vue.use(Datetime)
-
-Vue.component('datetime', Datetime);
 
 const token = $('meta[name="csrf-token"]').attr('content');
 
@@ -44,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
       logging_in: false
     },
     methods: {
-      submitForm(){
+      submitForm() {
         this.logging_in = true;
         axios.post('<%= login_url %>', {
           username: this.username,

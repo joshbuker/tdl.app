@@ -1,5 +1,5 @@
 v-app-bar[app clipped-left]
-  v-app-bar-nav-icon v-show='view == 0' @click.stop="drawer = !drawer"
+  v-app-bar-nav-icon v-show='view == 0 || view == 1' @click.stop="drawer = !drawer"
   v-toolbar-title.mr-3
     div v-if='processing != true'
       = current_user.username
