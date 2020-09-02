@@ -377,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       },
       markTaskComplete(task){
+        this.currentTaskDialog = false;
         axios.patch('<%= tasks_url %>/' + String(task.id) + '/complete', {
           credentials: 'same-origin',
           'X-CSRF-Token': token,
@@ -384,15 +385,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }).
         then(response => {
           this.currentTask = {};
-          this.currentTaskDialog = false;
           toastr.success('Completed task!');
           this.refreshTasks();
         }).
         catch(e => {
+          this.currentTaskDialog = true;
           toastr.error(e.message);
         });
       },
       markTaskIncomplete(task){
+        this.currentTaskDialog = false;
         axios.patch('<%= tasks_url %>/' + String(task.id) + '/incomplete', {
           credentials: 'same-origin',
           'X-CSRF-Token': token,
@@ -400,11 +402,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }).
         then(response => {
           this.currentTask = {};
-          this.currentTaskDialog = false;
           toastr.success('Uncompleted task!');
           this.refreshTasks();
         }).
         catch(e => {
+          this.currentTaskDialog = true;
           toastr.error(e.message);
         });
       },
