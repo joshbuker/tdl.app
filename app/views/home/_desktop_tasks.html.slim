@@ -1,5 +1,5 @@
 v-container#main[fluid]
-  v-row.pt-3.pr-3
+  v-row.pt-3.pr-3[v-if='view == 0 || view == 1']
     v-spacer
     v-btn.mr-4.darken-1[color='primary' @click='createTaskDialog = true' small]
       v-icon[small left]
@@ -35,8 +35,8 @@ v-container#main[fluid]
             v-card-actions.mb-0
               v-text-field[v-model="newQuick#{list.titleize}Task" label='Create new task' filled dark rounded append-icon='fa-arrow-up' @keyup.enter="createQuickTask('#{list}', newQuick#{list.titleize}Task)"]
     template[v-else-if='view == 1']
-      v-card.ma-3.pa-6.pb-0[rounded width='100%']
-        v-treeview[:active.sync='treeActive' :open.sync='treeOpen' :items='treeTasks' item-text='title' item-key='title' item-children='postreqs' :load-children='loadPostreqs' activatable open-on-click transition]
+      v-card.ma-3.pa-6[rounded width='100%']
+        v-treeview[:items='treeTasks' item-text='title' item-key='title' item-children='postreqs' :load-children='loadPostreqs' activatable open-on-click transition]
           template[v-slot:append='{ item }']
             v-chip.ml-1[v-if='item.completed' color='success']
               | Completed

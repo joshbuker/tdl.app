@@ -1,20 +1,29 @@
-v-card.pa-4
-  - %w[today tomorrow upcoming someday].each do |list|
-    div
-      v-toolbar-title.primary--text
-        = list.titleize
-      v-divider
-      v-list
-        v-list-item-group
-          draggable[:list="#{list}" @change='syncTaskOrdering' delay='200' touch-start-threshold='5' delay-on-touch-only='true']
-            v-list-item[v-for="task in #{list}" :key="task.title" @click='setCurrentTask(task)']
+v-card.pa-4[v-if='view == 0 || view == 1' tile]
+  template[v-if='view == 0']
+    - %w[today tomorrow upcoming someday].each do |list|
+      div
+        v-toolbar-title.primary--text
+          = list.titleize
+        v-divider
+        v-list
+          v-list-item-group
+            draggable[:list="#{list}" @change='syncTaskOrdering' delay='200' touch-start-threshold='5' delay-on-touch-only='true']
+              v-list-item[v-for="task in #{list}" :key="task.title" @click='setCurrentTask(task)']
+                v-list-item-content
+                  v-list-item-title
+                    | {{ task.title }}
+                v-chip[v-for='tag in task.tags' :color='tag.color' :key='tag.title' @click.stop='selectTag(tag)']
+                  v-icon[:color='tag.text_color']
+                    | fa-tag
+            v-list-item[v-if="#{list}.length == 0"]
               v-list-item-content
                 v-list-item-title
-                  | {{ task.title }}
-              v-chip[v-for='tag in task.tags' :color='tag.color' :key='tag.title' @click.stop='selectTag(tag)']
-                v-icon[:color='tag.text_color']
-                  | fa-tag
-          v-list-item[v-if="#{list}.length == 0"]
-            v-list-item-content
-              v-list-item-title
-                strong Nothing yet!
+                  strong Nothing yet!
+  template[v-else-if='view == 1']
+    v-treeview[:items='treeTasks' item-text='title' item-key='title' item-children='postreqs' :load-children='loadPostreqs' activatable open-on-click transition]
+      template[v-slot:append='{ item }']
+        v-chip.ml-1[v-if='item.completed' color='success']
+          | Completed
+        v-chip.ml-1[v-for='tag in item.tags' :color='tag.color' :text-color='tag.text_color' :key='tag.title']
+          v-icon
+            | fa-tag

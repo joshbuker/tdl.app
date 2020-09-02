@@ -78,8 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
       newQuickUpcomingTask: '',
       newQuickSomedayTask: '',
       tagToBeEdited: {},
-      treeActive: [],
-      treeOpen: [],
       requestCount: 0,
       selectedList: null,
       selectedTag: null,
@@ -163,6 +161,72 @@ document.addEventListener('DOMContentLoaded', () => {
           this.refreshTasks();
           this.newTask = '';
           toastr.success('Added new task!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      addPrerequisite(task){
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/pre', {
+          pre_task_id: task.id,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshTasks();
+          this.currentPrereqs.push(response.data);
+          toastr.success('Added prerequisite!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      addPreTask(){
+        axios.post('<%= tasks_url %>', {
+          title: this.newTask,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.today.push(response.data);
+          this.newTask = '';
+          toastr.success('Added new task!');
+          this.addPrerequisite(this.today[this.today.length - 1]);
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      addPostrequisite(task){
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/post', {
+          post_task_id: task.id,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshTasks();
+          this.currentPostreqs.push(response.data);
+          toastr.success('Added postrequisite!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      addPostTask(){
+        axios.post('<%= tasks_url %>', {
+          title: this.newTask,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.today.push(response.data);
+          this.newTask = '';
+          toastr.success('Added new task!');
+          this.addPostrequisite(this.today[this.today.length - 1]);
         }).
         catch(e => {
           toastr.error(e.message);
