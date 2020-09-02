@@ -104,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     created: function() {
       this.refreshEverything();
-      this.refreshTreeTasks();
       this.debouncedSearch = _.debounce(this.searchForTasks, 100);
     },
     computed: {
@@ -340,6 +339,26 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
       },
+      deleteTask(task) {
+        if(confirm('Deleting this task cannot be undone, are you sure?')) {
+          axios.delete('<%= tasks_url %>/' + task.id, {
+            headers: {
+              credentials: 'same-origin',
+              'X-CSRF-Token': token,
+              'authenticity_token': token
+            }
+          }).
+          then(response => {
+            this.currentTask = {};
+            this.currentTaskDialog = false;
+            toastr.success('Deleted task!');
+            this.refreshTasks();
+          }).
+          catch(e => {
+            toastr.error(e.message);
+          });
+        }
+      },
       editList() {
         alert('I do like turtles');
       },
@@ -357,13 +376,37 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
-      resetTagEdit() {
-        this.editTagDialog = false;
-        this.tagToBeEdited = {
-          title: 'Placeholder',
-          color: '#000000'
-        };
-        this.editTagTitle = '';
+      markTaskComplete(task){
+        axios.patch('<%= tasks_url %>/' + String(task.id) + '/complete', {
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.currentTask = {};
+          this.currentTaskDialog = false;
+          toastr.success('Completed task!');
+          this.refreshTasks();
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      markTaskIncomplete(task){
+        axios.patch('<%= tasks_url %>/' + String(task.id) + '/incomplete', {
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.currentTask = {};
+          this.currentTaskDialog = false;
+          toastr.success('Uncompleted task!');
+          this.refreshTasks();
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
       },
       refreshLists() {
         axios.get('<%= lists_url %>').
@@ -383,6 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
+      // TODO: Extract into separate methods for each group
       refreshTasks() {
         // Today
         axios.post('<%= tasks_url %>/today', {
@@ -440,6 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
         catch(e => {
           toastr.error(e.message);
         });
+        this.refreshTreeTasks();
       },
       refreshTreeTasks() {
         axios.post('<%= tasks_url %>/treeview', {
@@ -458,6 +503,52 @@ document.addEventListener('DOMContentLoaded', () => {
         this.refreshLists();
         this.refreshTags();
         this.refreshTasks();
+      },
+      removePrerequisite(task){
+        if(confirm('Are you sure?')) {
+          axios.delete('<%= tasks_url %>/' + String(this.currentTask.id) + '/pre/' + task.id, {
+            headers: {
+              credentials: 'same-origin',
+              'X-CSRF-Token': token,
+              'authenticity_token': token
+            }
+          }).
+          then(response => {
+            this.refreshTasks();
+            this.currentPrereqs = response.data;
+            toastr.success('Removed prerequisite!');
+          }).
+          catch(e => {
+            toastr.error(e.message);
+          });
+        }
+      },
+      removePostrequisite(task){
+        if(confirm('Are you sure?')) {
+          axios.delete('<%= tasks_url %>/' + String(this.currentTask.id) + '/post/' + task.id, {
+            headers: {
+              credentials: 'same-origin',
+              'X-CSRF-Token': token,
+              'authenticity_token': token
+            }
+          }).
+          then(response => {
+            this.refreshTasks();
+            this.currentPostreqs = response.data;
+            toastr.success('Removed postrequisite!');
+          }).
+          catch(e => {
+            toastr.error(e.message);
+          });
+        }
+      },
+      resetTagEdit() {
+        this.editTagDialog = false;
+        this.tagToBeEdited = {
+          title: 'Placeholder',
+          color: '#000000'
+        };
+        this.editTagTitle = '';
       },
       setCurrentTask(task) {
         this.currentTask = task;
@@ -547,6 +638,39 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       },
+      updateList() {
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/list', {
+          list_title: this.currentList,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshLists();
+          this.refreshTasks();
+          this.currentTask.list_title = response.data;
+          this.currentList = this.currentTask.list_title;
+          toastr.success('Updated list!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      updateNotes: function() {
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/notes', {
+          notes: this.currentTask.notes,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.currentTask.notes = response.data;
+          toastr.success('Updated notes!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
       updateRemindMeAt() {
         axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/remind-me-at', {
           remind_me_at: this.editRemindMeAt,
@@ -596,8 +720,24 @@ document.addEventListener('DOMContentLoaded', () => {
           this.refreshEverything();
           this.currentTask.tags = response.data;
           this.currentTags = this.currentTask.tags.map( function(tag) { return tag.title } );
-          $('#addTagsModal').modal('hide');
           toastr.success('Updated tags!');
+        }).
+        catch(e => {
+          toastr.error(e.message);
+        });
+      },
+      updateTaskTitle() {
+        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id), {
+          title: this.editTaskTitle,
+          credentials: 'same-origin',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          this.refreshEverything();
+          this.currentTask.title = this.editTaskTitle;
+          this.editTaskTitle = '';
+          toastr.success('Updated task title!');
         }).
         catch(e => {
           toastr.error(e.message);

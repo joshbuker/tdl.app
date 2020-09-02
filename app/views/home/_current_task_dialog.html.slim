@@ -6,16 +6,16 @@ v-dialog[v-model='currentTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
       v-card-title.headline.float-left.mt-1 Task Details
     v-row.pt-3[justify='center' no-gutters]
       template[v-if='currentTask.completed']
-        v-btn.ma-2.darken-1[color='indigo' :small='$vuetify.breakpoint.mobile' text-with-icon]
+        v-btn.ma-2.darken-1[color='indigo' @click='markTaskIncomplete(currentTask)' :small='$vuetify.breakpoint.mobile' text-with-icon]
           v-icon[left :small='$vuetify.breakpoint.mobile']
             | fa-undo
           | Mark Incomplete
       template[v-else]
-        v-btn.ma-2.darken-1[color='primary' :small='$vuetify.breakpoint.mobile' text-with-icon]
+        v-btn.ma-2.darken-1[color='primary' @click='markTaskComplete(currentTask)' :small='$vuetify.breakpoint.mobile' text-with-icon]
           v-icon[left :small='$vuetify.breakpoint.mobile']
             | fa-check
           | Mark Complete
-      v-btn.ma-2[color='red' :small='$vuetify.breakpoint.mobile' text-with-icon]
+      v-btn.ma-2[color='red' @click='deleteTask(currentTask)' :small='$vuetify.breakpoint.mobile' text-with-icon]
         v-icon[left :small='$vuetify.breakpoint.mobile']
           | fa-trash
         | Delete
@@ -26,18 +26,18 @@ v-dialog[v-model='currentTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
         | {{ currentTask.title }}
       v-row
         v-col
-          v-text-field[label='Task title' :placeholder='currentTask.title' v-model='editTaskTitle' clearable]
-          v-select[label='Tags' v-model='currentTags' :items='tags' item-text='title' item-value='title' multiple clearable]
+          v-text-field[label='Task title' :placeholder='currentTask.title' v-model='editTaskTitle' @keyup.enter='updateTaskTitle' clearable]
+          v-select[label='Tags' v-model='currentTags' @input='updateTags' :items='tags' item-text='title' item-value='title' multiple clearable]
             template v-slot:selection="{ item, index }"
               v-chip[:color='item.color' :text-color='item.text_color' :key='item.title']
                 | {{ item.title }}
-          v-select[label='List' v-model='currentList' :items='lists' item-text='title' item-value='title']
+          v-select[label='List' v-model='currentList' @input='updateList' :items='lists' item-text='title' item-value='title']
           v-datetime-picker[label='Remind me at' v-model='editRemindMeAt' @input='updateRemindMeAt']
             v-icon[slot='dateIcon']
               | fa-calendar
             v-icon[slot='timeIcon']
               | fa-clock-o
-          v-textarea[label='Notes' placeholder='Write some notes...' v-model='currentTask.notes']
+          v-textarea[label='Notes' placeholder='Write some notes...' v-model='currentTask.notes' @change='updateNotes']
         v-col
           v-row.pa-3
             h5
@@ -59,7 +59,7 @@ v-dialog[v-model='currentTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
                   v-icon
                     | fa-tag
                 v-list-item-action
-                  v-btn[icon color='red']
+                  v-btn[icon color='red' @click.stop='removePrerequisite(task)']
                     v-icon
                       | fa-unlink
               v-list-item[v-if="currentPrereqs.length == 0"]
@@ -87,7 +87,7 @@ v-dialog[v-model='currentTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
                   v-icon
                     | fa-tag
                 v-list-item-action
-                  v-btn[icon color='red']
+                  v-btn[icon color='red' @click.stop='removePostrequisite(task)']
                     v-icon
                       | fa-unlink
               v-list-item[v-if="currentPostreqs.length == 0"]
