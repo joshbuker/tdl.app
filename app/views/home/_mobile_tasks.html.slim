@@ -7,7 +7,7 @@ v-card.pa-4[v-if='view == 0 || view == 1' tile]
         v-divider
         v-list
           v-list-item-group
-            draggable[:list="#{list}" @change='syncTaskOrdering' delay='200' touch-start-threshold='5' delay-on-touch-only='true']
+            draggable[:list="#{list}" @change='syncTaskOrdering' delay='200' delay-on-touch-only='true']
               v-list-item[v-for="task in #{list}" :key="task.title" @click='setCurrentTask(task)']
                 v-list-item-content
                   v-list-item-title
