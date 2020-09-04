@@ -35,7 +35,7 @@ v-dialog[v-model='createTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
       v-list
         v-list-item-group
           v-list-item[v-for='task in search' :key='task.title']
-            v-list-item-content
+            v-list-item-content[@click.stop='setCurrentTask(task)']
               v-list-item-title
                 | {{ task.title }}
 = render partial: 'current_task_dialog'
