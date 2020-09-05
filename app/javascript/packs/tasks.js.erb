@@ -78,7 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
       newQuickUpcomingTask: '',
       newQuickSomedayTask: '',
       tagToBeEdited: {},
+      treeActive: [],
       requestCount: 0,
+      searchEnabled: true,
       selectedList: null,
       selectedTag: null,
       view: 0,
@@ -104,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     created: function() {
       this.refreshEverything();
-      this.debouncedSearch = _.debounce(this.searchForTasks, 100);
+      this.debouncedSearch = _.debounce(this.searchForTasks, 400);
     },
     computed: {
       allTasksCount() {
@@ -144,6 +146,14 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           return true;
         }
+      },
+      treeSelected() {
+        if(!this.treeActive.length) return undefined;
+        if(!this.treeTasks.length) return undefined;
+
+        const title = this.treeActive[0];
+
+        return this.findTreeTask(this.treeTasks, title);
       }
     },
     methods: {
@@ -366,6 +376,18 @@ document.addEventListener('DOMContentLoaded', () => {
         this.editTagDialog = true;
         this.tagToBeEdited = tag;
         this.editTagTitle = this.tagToBeEdited.title;
+      },
+      findTreeTask(items, title) {
+        if(!items) return;
+
+        for(const item of items) {
+          if(item.title === title) return item;
+
+          const child = this.findTreeTask(item.postreqs, title);
+          if(child) {
+            return child;
+          }
+        }
       },
       async loadPostreqs(task) {
         return axios.get('<%= tasks_url %>/' + String(task.id) + '/tree-postreqs').
@@ -784,6 +806,9 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     watch: {
       newTask: function(newValue, oldValue) {
+        if(!this.searchEnabled) {
+          return;
+        }
         this.debouncedSearch();
       }
     }

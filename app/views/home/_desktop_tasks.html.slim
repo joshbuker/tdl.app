@@ -36,10 +36,20 @@ v-container#main[fluid]
               v-text-field[v-model="newQuick#{list.titleize}Task" label='Create new task' filled dark rounded append-icon='fa-arrow-up' @keyup.enter="createQuickTask('#{list}', newQuick#{list.titleize}Task)"]
     template[v-else-if='view == 1']
       v-card.ma-3.pa-6[rounded width='100%']
-        v-treeview[:items='treeTasks' item-text='title' item-key='title' item-children='postreqs' :load-children='loadPostreqs' activatable open-on-click transition]
-          template[v-slot:append='{ item }']
-            v-chip.ml-1[v-if='item.completed' color='success']
-              | Completed
-            v-chip.ml-1[v-for='tag in item.tags' :color='tag.color' :text-color='tag.text_color' :key='tag.title']
-              v-icon
-                | fa-tag
+        v-row.pa-4[justify='space-between']
+          v-col
+            v-treeview[:items='treeTasks' :active.sync='treeActive' item-text='title' item-key='title' item-children='postreqs' :load-children='loadPostreqs' activatable hoverable transition]
+              template[v-slot:append='{ item }']
+                v-chip.ml-1[v-if='item.completed' color='success']
+                  | Completed
+                v-chip.ml-1[v-for='tag in item.tags' :color='tag.color' :text-color='tag.text_color' :key='tag.title']
+                  v-icon
+                    | fa-tag
+          v-divider[vertical]
+          v-col.d-flex.text-center
+            v-scroll-y-transition[mode='out-in']
+              .title.grey--text.text--lighten-1.font-weight-light.align-center[v-if='!treeSelected']
+                | Select a task
+              v-card.pt-6.mx-auto[v-else :key='treeSelected.title' flat]
+                h3.headline.mb-2
+                  | {{ treeSelected.title }}

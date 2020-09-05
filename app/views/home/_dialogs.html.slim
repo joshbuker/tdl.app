@@ -29,6 +29,11 @@ v-dialog[v-model='createTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
     v-divider
     v-card-text
       v-text-field[label='Task title' v-model='newTask' @keyup.enter='addTask']
+      v-switch[v-model='searchEnabled' label='Auto Search']
+      v-btn[@click='searchForTasks' text-with-icon]
+        v-icon[left]
+          | fa-search
+        | Search
       v-divider
       h3
         | Possible Matches - {{ search.length }}
@@ -54,6 +59,11 @@ v-dialog[v-model='createTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
           | {{ currentTask.title }}
         v-divider
         v-text-field[label='Task title' v-model='newTask' @keyup.enter="add#{dry}Task"]
+        v-switch[v-model='searchEnabled' label='Auto Search']
+        v-btn[@click='searchForTasks' text-with-icon]
+          v-icon[left]
+            | fa-search
+          | Search
         v-divider
         h3
           | Possible Matches - {{ search.length }}
