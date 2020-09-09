@@ -100,29 +100,48 @@ class TasksController < ApiController
 
   def create
     task = Task.new(task_params)
-    if params[:limiter_type] == 'list' && params[:limiter_value].present? && params[:limiter_value] != 'All Tasks'
-      task.list = current_user.lists.find_by(title: params[:limiter_value])
+
+    if params[:limiter_value].present? && params[:limiter_type].present?
+      if params[:limiter_type] == 'list' && params[:limiter_value] != 'All Tasks'
+        task.list = current_user.lists.find_by(title: params[:limiter_value])
+      else
+        task.list = current_user.lists.find_by(title: 'Inbox')
+      end
+
+      if params[:limiter_type] == 'tag' && params[:limiter_value] != 'No Tags'
+        tag = current_user.tags.find_by(title: params[:limiter_value])
+        task.tags << tag
+      end
+
+      case params[:time].to_s.titleize
+      when 'Today'
+        task.remind_me_at = Time.current
+      when 'Tomorrow'
+        task.remind_me_at = 1.day.from_now
+      when 'Upcoming'
+        task.remind_me_at = 2.weeks.from_now
+      when 'Someday'
+        task.remind_me_at = 2.months.from_now
+      end
     else
-      task.list = current_user.lists.find_by(title: 'Inbox')
+      if params[:tags].present? && params[:tags].is_a?(Array)
+        tags = []
+        params[:tags].each do |tag_title|
+          if tag = current_user.tags.find_by(title: tag_title)
+            tags << tag
+          end
+        end
+        task.tags = tags
+      end
+
+      if params[:list].present? && params[:list] != 'All Tasks'
+        task.list = current_user.lists.find_by(title: params[:list])
+      else
+        task.list = current_user.lists.find_by(title: 'Inbox')
+      end
     end
 
     task.user = current_user
-
-    if params[:limiter_type] == 'tag' && params[:limiter_value].present? && params[:limiter_value] != 'No Tags'
-      tag = current_user.tags.find_by(title: params[:limiter_value])
-      task.tags << tag
-    end
-
-    case params[:time].to_s.titleize
-    when 'Today'
-      task.remind_me_at = Time.current
-    when 'Tomorrow'
-      task.remind_me_at = 1.day.from_now
-    when 'Upcoming'
-      task.remind_me_at = 2.weeks.from_now
-    when 'Someday'
-      task.remind_me_at = 2.months.from_now
-    end
 
     task.save!
 

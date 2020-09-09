@@ -62,6 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
       addPostDialog: false,
       controls: 0,
       createTaskDialog: false,
+      createTaskTags: [],
+      createTaskList: null,
       currentTaskDialog: false,
       drawer: null,
       editControls: false,
@@ -160,8 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
       addTask(){
         axios.post('<%= tasks_url %>', {
           title: this.newTask,
-          limiter_type: this.limiterType,
-          limiter_value: this.limiterValue,
+          tags: this.createTaskTags,
+          list: this.createTaskList,
           credentials: 'same-origin',
           'X-CSRF-Token': token,
           'authenticity_token': token
@@ -194,6 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
       addPreTask(){
         axios.post('<%= tasks_url %>', {
           title: this.newTask,
+          tags: this.currentTags.map(item => item.title),
+          list: this.currentList,
           credentials: 'same-origin',
           'X-CSRF-Token': token,
           'authenticity_token': token
@@ -227,6 +231,8 @@ document.addEventListener('DOMContentLoaded', () => {
       addPostTask(){
         axios.post('<%= tasks_url %>', {
           title: this.newTask,
+          tags: this.currentTags.map(item => item.title),
+          list: this.currentList,
           credentials: 'same-origin',
           'X-CSRF-Token': token,
           'authenticity_token': token
@@ -579,9 +585,9 @@ document.addEventListener('DOMContentLoaded', () => {
         this.currentTags = task.tags;
         this.currentList = task.list_title;
         this.editTaskTitle = task.title;
-        this.editRemindMeAt = ''; // forcibly clear variable because js is dumb
         this.editRemindMeAt = task.remind_me_at;
         this.newTask = '';
+        this.createTaskDialog = false;
         // Fetch pres
         axios.get('<%= tasks_url %>/' + String(task.id) + '/prereqs').
         then(response => {

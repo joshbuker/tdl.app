@@ -28,6 +28,11 @@ v-dialog[v-model='createTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
       v-btn.ma-2[@click='createTaskDialog = false' color='secondary' :small='$vuetify.breakpoint.mobile'] Close
     v-divider
     v-card-text
+      v-select[label='Tags' v-model='createTaskTags' :items='tags' item-text='title' item-value='title' multiple clearable]
+        template v-slot:selection="{ item, index }"
+          v-chip[:color='item.color' :text-color='item.text_color' :key='item.title']
+            | {{ item.title }}
+      v-select[label='List' v-model='createTaskList' :items='lists' item-text='title' item-value='title']
       v-text-field[label='Task title' v-model='newTask' @keyup.enter='addTask']
       v-switch[v-model='searchEnabled' label='Auto Search']
       v-btn[@click='searchForTasks' text-with-icon]
