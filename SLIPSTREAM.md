@@ -2,15 +2,15 @@
 
 - [ ] UI
     - [ ] Dashboard Buttons
-        - [ ] Add Task
-            - [ ] Name TextBox
-                - [ ] Ensure new task is not dupe
-                    - [ ] live search
-                        - [ ] buffered
-                        - [ ] async
-                        - [ ] multithreaded
-                        - [ ] substring search
-                        - [ ] case insensitive (user setting) (list setting?)
+        - [X] Add Task
+            - [X] Name TextBox
+                - [X] Ensure new task is not dupe
+                    - [X] live search
+                        - [X] buffered
+                        - [X] async
+                        - [X] multithreaded
+                        - [X] substring search
+                        - [X] case insensitive (user setting) (list setting?)
         - [ ] feature add: Add tasks like workflowy does
             - [ ] Enter adds new task dialog below current, w/in same level
                 1. A -> B
@@ -21,13 +21,13 @@
                 1. [TAB]
                 1. A -> B -> ___
         - [ ] Modify Task
-            - [ ] Prerequisites - same UI layout as Postrequisites
-                - [ ] Search for candidate Pres
-                    - [ ] See live search, but limit to valid candidates
-                - [ ] Add New Task as Prerequisite -> Add Task layout
-                - [ ] List current Prerequisites
-                    - [ ] Remove selected Prerequisite(s) button
-            - [ ] Postrequisites - see Pres
+            - [X] Prerequisites - same UI layout as Postrequisites
+                - [X] Search for candidate Pres
+                    - [X] See live search, but limit to valid candidates
+                - [X] Add New Task as Prerequisite -> Add Task layout
+                - [X] List current Prerequisites
+                    - [X] Remove selected Prerequisite(s) button
+            - [X] Postrequisites - see Pres
             - [ ] Permanent Loop Info
                 - [ ] Visualize Perm Pre, This Task, and Perm Post
                     - A -> B -> C
@@ -45,8 +45,8 @@
                         - [ ] Perm pre's perm post is now this task's perm post
                             1. A -> B -> C -> A
                             1. A, B -> C -> B
-        - [ ] Delete Task -> Move to Trash
-            - [ ] Posts remain, rule to deleted task removed
+        - [X] Delete Task -> Move to Trash
+            - [X] Posts remain, rule to deleted task removed
         - [ ] Import/Export List
             - [ ] Validate on Import
             - [ ] Implicitly Valid on Export
@@ -71,18 +71,18 @@
                     - [ ] Star/Unstar, or other simple mech
                     - [ ] TimeSpent
                     - [ ] TimeFocused (think green thoughts)
-        - [ ] Save List (not needed)
-        - [ ] Open (not needed)
-        - [ ] Close (not needed)
+        - [X] Save List (not needed)
+        - [X] Open (not needed)
+        - [X] Close (not needed)
         - [ ] Search -> replaced with live search bar on dashboard
         - [ ] Boggle
             - [ ] Select 2 Tasks who do not depend on each other
             - [ ] UI allows user to place one or the other as pre
                 - A -> B, or B -> A
             - [ ] or, skip
-        - [ ] Mark Done
+        - [X] Mark Done
             - [ ] If task has perm pre/post, flag perm post as "next"
-            - [ ] Move task to completed tasks land
+            - [X] Move task to completed tasks land
     - [ ] TreeTableView
         - [ ] Lazy Load
         - [ ] Sorted by Priority score

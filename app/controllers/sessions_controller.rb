@@ -17,6 +17,8 @@ class SessionsController < ApplicationController
     end
 
     if (@user = login(params[:username], params[:password]))
+      remember_me!
+
       respond_to do |format|
         format.html { redirect_to root_path }
         format.json { head :ok }
@@ -31,6 +33,7 @@ class SessionsController < ApplicationController
 
   def destroy
     if current_user
+      forget_me!
       logout
 
       respond_to do |format|

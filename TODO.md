@@ -7,6 +7,9 @@
   * MVP - Has all features needed to replace personal usage of Any.do
   * Supports mobile
   * Invite only
+* Beta Release
+  * Invite only - expanded to include friends
+* Full Release
 
 ## Alpha Release Features
 
@@ -26,5 +29,10 @@
 - [X] Delete a task
 - [X] Delete a list
 - [X] Create a tag
-- [ ] Delete a tag
+- [X] Delete a tag
 - [X] Clear completed tasks (delete where completed: true)
+
+## Beta Release Features
+
+- [ ] Task Sharing
+- [ ] Feature complete

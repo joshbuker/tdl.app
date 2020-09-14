@@ -6,7 +6,8 @@
 # :magic_login, :external
 Rails.application.config.sorcery.submodules = [
   :activity_logging,
-  :brute_force_protection
+  :brute_force_protection,
+  :remember_me
 ]
 
 # Here you can configure each submodule's features.
@@ -27,7 +28,7 @@ Rails.application.config.sorcery.configure do |config|
   # Set domain option for cookies; Useful for remember_me submodule.
   # Default: `nil`
   #
-  # config.cookie_domain =
+  config.cookie_domain = 'tdl.app'
 
   # Allow the remember_me cookie to be set through AJAX
   # Default: `true`
@@ -292,7 +293,7 @@ Rails.application.config.sorcery.configure do |config|
     # logins/logouts (to support remembering on multiple browsers simultaneously).
     # Default: false
     #
-    # user.remember_me_token_persist_globally =
+    user.remember_me_token_persist_globally = true
 
     # -- user_activation --
     # The attribute name to hold activation state (active/pending).
