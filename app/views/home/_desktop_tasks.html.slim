@@ -42,7 +42,7 @@ v-container#main[fluid]
               template[v-slot:append='{ item }']
                 v-chip.ml-1[v-if='item.completed' color='success']
                   | Completed
-                v-chip.ml-1[v-for='tag in item.tags' :color='tag.color' :text-color='tag.text_color' :key='tag.title']
+                v-chip.ml-1[v-for='tag in item.tags' :color='tag.color' :text-color='tag.text_color' :key='tag.title' @click.stop='selectTag(tag)']
                   v-icon
                     | fa-tag
           v-divider[vertical]

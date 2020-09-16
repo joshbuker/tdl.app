@@ -4,7 +4,7 @@ class TasksController < ApiController
     :index, :today, :tomorrow, :upcoming, :someday, :treeview, :search, :create,
     :clear_completed
   ]
-  before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday]
+  before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday, :treeview]
 
   def index
     tasks = Task.search(params[:title]).order(order: :asc, id: :asc).map do |task|
@@ -64,17 +64,8 @@ class TasksController < ApiController
   end
 
   def treeview
-    if current_user
-      @tasks = current_user.tasks.
-        includes(:tags, :list).
-        treeview.
-        order(order: :asc, id: :asc)
-    else
-      @tasks = Task.none
-    end
-
     if @tasks.any?
-      tasks = @tasks.map do |task|
+      tasks = @tasks.includes(:tags, :list).treeview.map do |task|
         if task.postreqs.any?
           task.to_hash.merge!({ postreqs: [] })
         else

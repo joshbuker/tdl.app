@@ -518,6 +518,8 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       refreshTreeTasks() {
         axios.post('<%= tasks_url %>/treeview', {
+          limiter_type: this.limiterType,
+          limiter_value: this.limiterValue,
           credentials: 'same-origin',
           'X-CSRF-Token': token,
           'authenticity_token': token
