@@ -86,8 +86,6 @@ class Rule < ApplicationRecord
     end
 
     Rule.where(pre: pre, post: post.get_all_posts).each do |rule|
-      # if you're doing this: remove rules where pre: pre and post: post.get_all_posts
-      # remove rules where pre: post.get_all_posts and post: the post of that one ^
       rule.destroy! if rule.invalid?
     end
   end

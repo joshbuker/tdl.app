@@ -1,0 +1,25 @@
+import axios from 'axios'
+
+<% tags_url = Rails.application.routes.url_helpers.tags_url %>
+<% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
+<% lists_url = Rails.application.routes.url_helpers.lists_url %>
+<% logout_url = Rails.application.routes.url_helpers.logout_url %>
+
+const token = $('meta[name="csrf-token"]').attr('content');
+
+export default {
+  createList(options, onSuccess, onFailure) {
+    axios.post('<%= lists_url %>', {
+      title: options.title,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess();
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  }
+}

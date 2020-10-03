@@ -5,6 +5,10 @@ v-app-bar[app clipped-left]
       = current_user.username
     div[v-else]
       v-progress-circular[indeterminate color='primary']
+  p
+    | {{ count }}
+  v-btn[color='indigo' @click='increment']
+    | +1
   - if browser.device.mobile?
     v-btn.mr-4.darken-1[color='primary' @click='createTaskDialog = true']
       v-icon[left]

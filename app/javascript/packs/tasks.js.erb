@@ -2,6 +2,7 @@ import Vue from 'vue/dist/vue.esm'
 import App from '../app.vue'
 import Vuetify from 'vuetify'
 import Vuex from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import draggable from 'vuedraggable';
 
 import toastr from 'toastr'
@@ -10,17 +11,13 @@ import bootstrap from 'bootstrap'
 import DatetimePicker from 'vuetify-datetime-picker'
 import $ from 'jquery'
 import _ from 'lodash'
+import moment from 'moment-timezone'
+
+import store from '../store'
 
 Vue.use(Vuex)
 Vue.use(Vuetify)
 Vue.use(DatetimePicker)
-
-<% tags_url = Rails.application.routes.url_helpers.tags_url %>
-<% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
-<% lists_url = Rails.application.routes.url_helpers.lists_url %>
-<% logout_url = Rails.application.routes.url_helpers.logout_url %>
-
-const token = $('meta[name="csrf-token"]').attr('content');
 
 const opts = {
   icons: {
@@ -36,18 +33,10 @@ const opts = {
   }
 }
 
-export default new Vuetify(opts)
+// Expose moment to everything via Vue
+Vue.prototype.$moment = moment;
 
-const store = new Vuex.Store({
-  state: {
-    count: 0
-  },
-  mutations: {
-    increment (state) {
-      state.count++
-    }
-  }
-})
+export default new Vuetify(opts)
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
@@ -94,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
       currentPrereqs: [],
       currentPostreqs: [],
       currentList: '',
-      lists: [],
       tags: [],
       search: [],
       today: [],
@@ -111,16 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
       this.debouncedSearch = _.debounce(this.searchForTasks, 400);
     },
     computed: {
-      allTasksCount() {
-        if(!this.lists) {
-          return 0;
-        }
-
-        return this.lists.reduce(
-          function(total, value) { return total + Number(value.task_count); },
-          0
-        );
-      },
       limiterType() {
         if(this.controls == 0) {
           return 'list';
@@ -156,7 +134,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const title = this.treeActive[0];
 
         return this.findTreeTask(this.treeTasks, title);
-      }
+      },
+      ...mapGetters({
+        count: 'lists/allTasksCount'
+      }),
+      ...mapState({
+        lists: state => state.lists.lists
+      })
     },
     methods: {
       addTask(){
@@ -263,21 +247,21 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
       },
+      increment () {
+        this.$store.dispatch('lists/incrementAction')
+      },
       createList: function() {
-        axios.post('<%= lists_url %>', {
-          title: this.newList,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          this.lists.push(response.data);
-          this.newList = '';
-          toastr.success('Added new list!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        this.$store.dispatch(
+          'lists/createList',
+          this.newList,
+          () => {
+            this.newList = '';
+            toastr.success('Added new list!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       createTag: function() {
         axios.post('<%= tags_url %>', {
