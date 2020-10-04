@@ -1,4 +1,4 @@
-import rest from '../../api/rest'
+import rest from '../../api/rest.js.erb'
 
 // Initial State
 const state = () => ({
@@ -14,39 +14,71 @@ const getters = {
       function(total, value) { return total + Number(value.task_count); },
       0
     );
+  },
+  lists(state) {
+    return state.lists;
   }
 }
 
 const actions = {
-  createList ({ commit, state}, newListTitle, onSuccess, onFailure) {
+  createList({ commit, state }, options, onSuccess, onFailure) {
     rest.createList(
-      { title: newListTitle },
-      () => {
-        this.lists.push(response.data);
-        onSuccess();
+      options,
+      (response) => {
+        commit('addList', response.data);
+        onSuccess(response);
       },
       (error) => {
         onFailure(error);
       }
     );
-    axios.post('<%= lists_url %>', {
-      title: newListTitle,
-      credentials: 'same-origin',
-      'X-CSRF-Token': token,
-      'authenticity_token': token
-    }).
-    then(response => {
-      this.lists.push(response.data);
-      onSuccess();
-    }).
-    catch(error => {
-      onFailure(error);
-    });
-  }
-  incrementAction ({ commit, state }) {
-    commit('increment')
+  },
+  async deleteList({ commit, state }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        rest.deleteList(
+          options,
+          (response) => {
+            resolve(response);
+          },
+          (error) => {
+            reject(error);
+          }
+        )
+      }
+    );
+  },
+  refresh({ commit, state }, onSuccess, onFailure) {
+    rest.refreshLists(
+      (response) => {
+        commit('setLists', response.data);
+        onSuccess(response);
+      },
+      (error) => {
+        onFailure(error);
+      }
+    )
   }
 }
+
+// mutations
+const mutations = {
+  addList(state, list) {
+    state.lists.push(list);
+  },
+  setLists(state, lists) {
+    state.lists = lists;
+  }
+}
+
+export default {
+  namespaced: true,
+  state,
+  getters,
+  actions,
+  mutations
+}
+
 // actions
 // const actions = {
 //   checkout ({ commit, state }, products) {
@@ -79,19 +111,3 @@ const actions = {
 //     }
 //   }
 // }
-
-// mutations
-const mutations = {
-  increment (state) {
-    // `state` is the local module state
-    state.count++
-  }
-}
-
-export default {
-  namespaced: true,
-  state,
-  getters,
-  actions,
-  mutations
-}

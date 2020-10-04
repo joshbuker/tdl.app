@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_14_200828) do
+ActiveRecord::Schema.define(version: 2020_09_30_223123) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -72,6 +72,8 @@ ActiveRecord::Schema.define(version: 2020_09_14_200828) do
     t.bigint "user_id", null: false
     t.string "notes"
     t.integer "order", default: 0, null: false
+    t.datetime "review_at"
+    t.datetime "deadline_at"
     t.index ["list_id"], name: "index_tasks_on_list_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
@@ -94,6 +96,7 @@ ActiveRecord::Schema.define(version: 2020_09_14_200828) do
     t.string "last_login_from_ip_address"
     t.string "remember_me_token"
     t.datetime "remember_me_token_expires_at"
+    t.string "timezone", default: "UTC", null: false
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 

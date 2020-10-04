@@ -13,11 +13,12 @@ inbox = List.create!(
 
 # TODO: Do some seeds
 
-task_count = 1_000
+task_count = 100
 rule_count = (task_count.to_f * 1.5).to_i
+print_interval = (task_count / 10)
 
 task_count.times do |n|
-  puts "Creating task #{n+1}" if (n + 1) % 100 == 0
+  puts "Creating task #{n+1}" if (n + 1) % print_interval == 0
   task = Task.create!(
     title: "Task #{n}",
     list: inbox,
@@ -26,7 +27,7 @@ task_count.times do |n|
 end
 
 rule_count.times do |n|
-  puts "Creating rule #{n+1}" if (n + 1) % 100 == 0
+  puts "Creating rule #{n+1}" if (n + 1) % print_interval == 0
   loop do
     random_tasks = Task.where(user: void_xxx).order(Arel.sql('RANDOM()')).first(2)
     rule = Rule.new(pre: random_tasks.first, post: random_tasks.second)

@@ -33,6 +33,15 @@ const opts = {
   }
 }
 
+// \/ Remove all these once api is fully migrated into rest.js.erb
+<% tags_url = Rails.application.routes.url_helpers.tags_url %>
+<% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
+<% lists_url = Rails.application.routes.url_helpers.lists_url %>
+<% logout_url = Rails.application.routes.url_helpers.logout_url %>
+
+const token = $('meta[name="csrf-token"]').attr('content');
+// /\ Remove all these once api is fully migrated into rest.js.erb
+
 // Expose moment to everything via Vue
 Vue.prototype.$moment = moment;
 
@@ -136,14 +145,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return this.findTreeTask(this.treeTasks, title);
       },
       ...mapGetters({
-        count: 'lists/allTasksCount'
-      }),
-      ...mapState({
-        lists: state => state.lists.lists
+        allTasksCount: 'lists/allTasksCount',
+        lists: 'lists/lists'
       })
+      // Unused due to reactivity problems
+      // ...mapState({
+      //   lists: state => state.lists.lists
+      // })
     },
     methods: {
-      addTask(){
+      addTask() {
         axios.post('<%= tasks_url %>', {
           title: this.newTask,
           tags: this.createTaskTags,
@@ -161,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
-      addPrerequisite(task){
+      addPrerequisite(task) {
         axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/pre', {
           pre_task_id: task.id,
           credentials: 'same-origin',
@@ -177,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
-      addPreTask(){
+      addPreTask() {
         axios.post('<%= tasks_url %>', {
           title: this.newTask,
           tags: this.currentTags.map(item => item.title),
@@ -196,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
-      addPostrequisite(task){
+      addPostrequisite(task) {
         axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/post', {
           post_task_id: task.id,
           credentials: 'same-origin',
@@ -212,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
-      addPostTask(){
+      addPostTask() {
         axios.post('<%= tasks_url %>', {
           title: this.newTask,
           tags: this.currentTags.map(item => item.title),
@@ -231,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
-      clearCompleted: function() {
+      clearCompleted() {
         if(confirm('This will delete all completed tasks, are you sure?')) {
           axios.post('<%= tasks_url %>/clear-completed', {
             credentials: 'same-origin',
@@ -247,14 +258,11 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
       },
-      increment () {
-        this.$store.dispatch('lists/incrementAction')
-      },
-      createList: function() {
+      createList() {
         this.$store.dispatch(
           'lists/createList',
-          this.newList,
-          () => {
+          { title: this.newList },
+          (response) => {
             this.newList = '';
             toastr.success('Added new list!');
           },
@@ -263,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         );
       },
-      createTag: function() {
+      createTag() {
         axios.post('<%= tags_url %>', {
           title: this.newTag,
           credentials: 'same-origin',
@@ -279,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
-      createQuickTask: function (taskTime, taskTitle) {
+      createQuickTask(taskTime, taskTitle) {
         axios.post('<%= tasks_url %>', {
           title: taskTitle,
           time: taskTime,
@@ -301,26 +309,23 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
-      deleteList: function(list) {
+      deleteList(list) {
         if(confirm('This will delete your list and any tasks in it, are you sure?')) {
-          axios.delete('<%= lists_url %>/' + list.id, {
-            headers: {
-              credentials: 'same-origin',
-              'X-CSRF-Token': token,
-              'authenticity_token': token
+          this.$store.dispatch('lists/deleteList', { id: list.id }).
+          then(
+            (response) => {
+              // TODO: Directly remove list
+              this.refreshLists();
+              this.refreshTasks();
+              toastr.success('Deleted list!');
+            },
+            (error) => {
+              toastr.error(error.message);
             }
-          }).
-          then(response => {
-            this.refreshLists();
-            this.refreshTasks();
-            toastr.success('Deleted list!');
-          }).
-          catch(e => {
-            toastr.error(e.message);
-          });
+          );
         }
       },
-      deleteTag: function(tag) {
+      deleteTag(tag) {
         if(confirm('This will delete your tag, are you sure?')) {
           axios.delete('<%= tags_url %>/' + tag.id, {
             headers: {
@@ -388,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
-      markTaskComplete(task){
+      markTaskComplete(task) {
         this.currentTaskDialog = false;
         axios.patch('<%= tasks_url %>/' + String(task.id) + '/complete', {
           credentials: 'same-origin',
@@ -405,7 +410,7 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
-      markTaskIncomplete(task){
+      markTaskIncomplete(task) {
         this.currentTaskDialog = false;
         axios.patch('<%= tasks_url %>/' + String(task.id) + '/incomplete', {
           credentials: 'same-origin',
@@ -423,13 +428,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       },
       refreshLists() {
-        axios.get('<%= lists_url %>').
-        then(response => {
-          this.lists = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        this.$store.dispatch(
+          'lists/refresh',
+          (response) => {},
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       refreshTags() {
         axios.get('<%= tags_url %>').
@@ -520,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.refreshTags();
         this.refreshTasks();
       },
-      removePrerequisite(task){
+      removePrerequisite(task) {
         if(confirm('Are you sure?')) {
           axios.delete('<%= tasks_url %>/' + String(this.currentTask.id) + '/pre/' + task.id, {
             headers: {
@@ -539,7 +544,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
       },
-      removePostrequisite(task){
+      removePostrequisite(task) {
         if(confirm('Are you sure?')) {
           axios.delete('<%= tasks_url %>/' + String(this.currentTask.id) + '/post/' + task.id, {
             headers: {
@@ -592,7 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         this.currentTaskDialog = true;
       },
-      syncTaskOrdering(){
+      syncTaskOrdering() {
         var lists = [this.today, this.tomorrow, this.upcoming, this.someday];
         for(var list of lists) {
           for(var task of list) {
@@ -672,7 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
           toastr.error(e.message);
         });
       },
-      updateNotes: function() {
+      updateNotes() {
         axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/notes', {
           notes: this.currentTask.notes,
           credentials: 'same-origin',
@@ -797,7 +802,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     },
     watch: {
-      newTask: function(newValue, oldValue) {
+      newTask(newValue, oldValue) {
         if(!this.searchEnabled) {
           return;
         }

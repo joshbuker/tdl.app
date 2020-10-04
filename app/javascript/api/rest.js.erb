@@ -1,4 +1,5 @@
 import axios from 'axios'
+import $ from 'jquery'
 
 <% tags_url = Rails.application.routes.url_helpers.tags_url %>
 <% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
@@ -6,6 +7,8 @@ import axios from 'axios'
 <% logout_url = Rails.application.routes.url_helpers.logout_url %>
 
 const token = $('meta[name="csrf-token"]').attr('content');
+
+// TODO: Break this into smaller chunks if the file gets too bloated.
 
 export default {
   createList(options, onSuccess, onFailure) {
@@ -16,7 +19,31 @@ export default {
       'authenticity_token': token
     }).
     then(response => {
-      onSuccess();
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async deleteList(options, onSuccess, onFailure) {
+    return axios.delete('<%= lists_url %>/' + options.id, {
+      headers: {
+        credentials: 'same-origin',
+        'X-CSRF-Token': token,
+        'authenticity_token': token
+      }
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  refreshLists(onSuccess, onFailure) {
+    axios.get('<%= lists_url %>').
+    then(response => {
+      onSuccess(response);
     }).
     catch(error => {
       onFailure(error);
