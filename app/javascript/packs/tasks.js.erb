@@ -14,6 +14,7 @@ import _ from 'lodash'
 import moment from 'moment-timezone'
 
 import store from '../store'
+import api from '../api/index.js.erb'
 
 Vue.use(Vuex)
 Vue.use(Vuetify)
@@ -34,9 +35,7 @@ const opts = {
 }
 
 // \/ Remove all these once api is fully migrated into rest.js.erb
-<% tags_url = Rails.application.routes.url_helpers.tags_url %>
 <% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
-<% lists_url = Rails.application.routes.url_helpers.lists_url %>
 <% logout_url = Rails.application.routes.url_helpers.logout_url %>
 
 const token = $('meta[name="csrf-token"]').attr('content');
@@ -92,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
       currentPrereqs: [],
       currentPostreqs: [],
       currentList: '',
-      tags: [],
       search: [],
       today: [],
       tomorrow: [],
@@ -146,7 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       ...mapGetters({
         allTasksCount: 'lists/allTasksCount',
-        lists: 'lists/lists'
+        lists: 'lists/lists',
+        tags: 'tags/tags'
       })
       // Unused due to reactivity problems
       // ...mapState({
@@ -259,9 +258,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       },
       createList() {
-        this.$store.dispatch(
-          'lists/createList',
-          { title: this.newList },
+        this.$store.dispatch('lists/create', { title: this.newList }).
+        then(
           (response) => {
             this.newList = '';
             toastr.success('Added new list!');
@@ -272,20 +270,16 @@ document.addEventListener('DOMContentLoaded', () => {
         );
       },
       createTag() {
-        axios.post('<%= tags_url %>', {
-          title: this.newTag,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          this.tags.push(response.data);
-          this.newTag = '';
-          toastr.success('Added new tag!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        this.$store.dispatch('tags/create', { title: this.newTag }).
+        then(
+          (response) => {
+            this.newTag = '';
+            toastr.success('Added new tag!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       createQuickTask(taskTime, taskTitle) {
         axios.post('<%= tasks_url %>', {
@@ -311,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       deleteList(list) {
         if(confirm('This will delete your list and any tasks in it, are you sure?')) {
-          this.$store.dispatch('lists/deleteList', { id: list.id }).
+          this.$store.dispatch('lists/delete', { id: list.id }).
           then(
             (response) => {
               // TODO: Directly remove list
@@ -327,21 +321,18 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       deleteTag(tag) {
         if(confirm('This will delete your tag, are you sure?')) {
-          axios.delete('<%= tags_url %>/' + tag.id, {
-            headers: {
-              credentials: 'same-origin',
-              'X-CSRF-Token': token,
-              'authenticity_token': token
+          this.$store.dispatch('tags/delete', { id: tag.id }).
+          then(
+            (response) => {
+              // TODO: Directly remove tag
+              this.refreshTags();
+              this.refreshTasks();
+              toastr.success('Deleted tag!');
+            },
+            (error) => {
+              toastr.error(error.message);
             }
-          }).
-          then(response => {
-            this.refreshTags();
-            this.refreshTasks();
-            toastr.success('Deleted tag!');
-          }).
-          catch(e => {
-            toastr.error(e.message);
-          });
+          );
         }
       },
       deleteTask(task) {
@@ -428,22 +419,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       },
       refreshLists() {
-        this.$store.dispatch(
-          'lists/refresh',
-          (response) => {},
+        this.$store.dispatch('lists/refresh').
+        catch(
           (error) => {
             toastr.error(error.message);
           }
         );
       },
       refreshTags() {
-        axios.get('<%= tags_url %>').
-        then(response => {
-          this.tags = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        this.$store.dispatch('tags/refresh').
+        catch(
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       // TODO: Extract into separate methods for each group
       refreshTasks() {
@@ -708,27 +697,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       },
       updateTag() {
-        axios.patch('<%= tags_url %>/' + String(this.tagToBeEdited.id), {
+        this.$store.dispatch('tags/update', {
+          id: this.tagToBeEdited.id,
           title: this.editTagTitle,
-          color: this.tagToBeEdited.color,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
+          color: this.tagToBeEdited.color
         }).
-        then(response => {
-          if(this.tagToBeEdited.title == this.selectedTag) {
-            this.selectedTag = this.editTagTitle;
+        then(
+          (response) => {
+            // TODO: Directly update tag
+            if(this.tagToBeEdited.title == this.selectedTag) {
+              this.selectedTag = this.editTagTitle;
+            }
+            this.tagToBeEdited.title = this.editTagTitle;
+            this.editTagTitle = '';
+            this.refreshTags();
+            this.refreshTasks();
+            this.editTagDialog = false;
+            toastr.success('Updated tag!');
+          },
+          (error) => {
+            toastr.error(error.message);
           }
-          this.tagToBeEdited.title = this.editTagTitle;
-          this.editTagTitle = '';
-          this.refreshTags();
-          this.refreshTasks();
-          this.editTagDialog = false;
-          toastr.success('Updated tag!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        );
       },
       updateTags() {
         axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/tags', {
@@ -786,19 +776,14 @@ document.addEventListener('DOMContentLoaded', () => {
         this.refreshTasks();
       },
       logout() {
-        axios.post('<%= logout_url %>', {
-          credentials: 'same-origin',
-          dataType: 'json',
-          contentType: 'application/json',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          window.location.reload();
-        }).
-        catch(error => {
-          toastr.error(error.message);
-        })
+        api.logout(
+          (response) => {
+            window.location.reload();
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        )
       }
     },
     watch: {

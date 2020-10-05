@@ -1,0 +1,120 @@
+import axios from 'axios'
+import $ from 'jquery'
+
+<% tags_url = Rails.application.routes.url_helpers.tags_url %>
+<% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
+<% lists_url = Rails.application.routes.url_helpers.lists_url %>
+<% logout_url = Rails.application.routes.url_helpers.logout_url %>
+
+const token = $('meta[name="csrf-token"]').attr('content');
+
+// TODO: Break this into smaller chunks if the file gets too bloated.
+
+export default {
+  async createList(options, onSuccess, onFailure) {
+    return axios.post('<%= lists_url %>', {
+      title: options.title,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async createTag(options, onSuccess, onFailure) {
+    return axios.post('<%= tags_url %>', {
+      title: options.title,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async deleteList(options, onSuccess, onFailure) {
+    return axios.delete('<%= lists_url %>/' + options.id, {
+      headers: {
+        credentials: 'same-origin',
+        'X-CSRF-Token': token,
+        'authenticity_token': token
+      }
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async deleteTag(options, onSuccess, onFailure) {
+    return axios.delete('<%= tags_url %>/' + options.id, {
+      headers: {
+        credentials: 'same-origin',
+        'X-CSRF-Token': token,
+        'authenticity_token': token
+      }
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async logout(onSuccess, onFailure) {
+    axios.post('<%= logout_url %>', {
+      credentials: 'same-origin',
+      dataType: 'json',
+      contentType: 'application/json',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  }
+  async refreshLists(onSuccess, onFailure) {
+    return axios.get('<%= lists_url %>').
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async refreshTags(onSuccess, onFailure) {
+    return axios.get('<%= tags_url %>').
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async updateTag(options, onSuccess, onFailure) {
+    return axios.patch('<%= tags_url %>/' + String(options.id), {
+      title: options.editTagTitle,
+      color: options.tagToBeEdited.color,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  }
+}
