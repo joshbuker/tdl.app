@@ -13,8 +13,8 @@ import $ from 'jquery'
 import _ from 'lodash'
 import moment from 'moment-timezone'
 
+import api from '../api'
 import store from '../store'
-import api from '../api/index.js.erb'
 
 Vue.use(Vuex)
 Vue.use(Vuetify)
@@ -36,7 +36,6 @@ const opts = {
 
 // \/ Remove all these once api is fully migrated into rest.js.erb
 <% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
-<% logout_url = Rails.application.routes.url_helpers.logout_url %>
 
 const token = $('meta[name="csrf-token"]').attr('content');
 // /\ Remove all these once api is fully migrated into rest.js.erb
