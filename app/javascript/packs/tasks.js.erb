@@ -34,12 +34,6 @@ const opts = {
   }
 }
 
-// \/ Remove all these once api is fully migrated into rest.js.erb
-<% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
-
-const token = $('meta[name="csrf-token"]').attr('content');
-// /\ Remove all these once api is fully migrated into rest.js.erb
-
 // Expose moment to everything via Vue
 Vue.prototype.$moment = moment;
 
@@ -89,13 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentTags: [],
       currentPrereqs: [],
       currentPostreqs: [],
-      currentList: '',
-      search: [],
-      today: [],
-      tomorrow: [],
-      upcoming: [],
-      someday: [],
-      treeTasks: []
+      currentList: ''
     },
     components: {
       draggable
@@ -144,7 +132,13 @@ document.addEventListener('DOMContentLoaded', () => {
       ...mapGetters({
         allTasksCount: 'lists/allTasksCount',
         lists: 'lists/lists',
-        tags: 'tags/tags'
+        tags: 'tags/tags',
+        today: 'tasks/today',
+        tomorrow: 'tasks/tomorrow',
+        upcoming: 'tasks/upcoming',
+        someday: 'tasks/someday',
+        treeTasks: 'tasks/treeTasks',
+        search: 'tasks/search'
       })
       // Unused due to reactivity problems
       // ...mapState({
@@ -153,107 +147,107 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     methods: {
       addTask() {
-        axios.post('<%= tasks_url %>', {
+        this.$store.dispatch('tasks/create', {
           title: this.newTask,
           tags: this.createTaskTags,
-          list: this.createTaskList,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
+          list: this.createTaskList
         }).
-        then(response => {
-          this.refreshTasks();
-          this.newTask = '';
-          toastr.success('Added new task!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
-      },
-      addPrerequisite(task) {
-        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/pre', {
-          pre_task_id: task.id,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          this.refreshTasks();
-          this.currentPrereqs.push(response.data);
-          toastr.success('Added prerequisite!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
-      },
-      addPreTask() {
-        axios.post('<%= tasks_url %>', {
-          title: this.newTask,
-          tags: this.currentTags.map(item => item.title),
-          list: this.currentList,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          this.today.push(response.data);
-          this.newTask = '';
-          toastr.success('Added new task!');
-          this.addPrerequisite(this.today[this.today.length - 1]);
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        then(
+          (response) => {
+            // TODO: Directly add task
+            this.refreshTasks();
+            this.newTask = '';
+            toastr.success('Added new task!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       addPostrequisite(task) {
-        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/post', {
-          post_task_id: task.id,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
+        this.$store.dispatch('tasks/addPostreq', {
+          id: this.currentTask.id,
+          post_task_id: task.id
         }).
-        then(response => {
-          this.refreshTasks();
-          this.currentPostreqs.push(response.data);
-          toastr.success('Added postrequisite!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        then(
+          (response) => {
+            // TODO: Directly add postreq
+            this.refreshTasks();
+            this.currentPostreqs.push(response.data);
+            toastr.success('Added postrequisite!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
+      // TODO: Convert this into a single vuex action
       addPostTask() {
-        axios.post('<%= tasks_url %>', {
+        this.$store.dispatch('tasks/create', {
           title: this.newTask,
           tags: this.currentTags.map(item => item.title),
-          list: this.currentList,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
+          list: this.currentList
         }).
-        then(response => {
-          this.today.push(response.data);
-          this.newTask = '';
-          toastr.success('Added new task!');
-          this.addPostrequisite(this.today[this.today.length - 1]);
+        then(
+          (response) => {
+            this.today.push(response.data);
+            this.newTask = '';
+            toastr.success('Added new task!');
+            this.addPostrequisite(this.today[this.today.length - 1]);
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
+      },
+      addPrerequisite(task) {
+        this.$store.dispatch('tasks/addPrereq', {
+          id: this.currentTask.id,
+          pre_task_id: task.id
         }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        then(
+          (response) => {
+            // TODO: Directly add prereq
+            this.refreshTasks();
+            this.currentPrereqs.push(response.data);
+            toastr.success('Added prerequisite!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
+      },
+      // TODO: Convert this into a single vuex action
+      addPreTask() {
+        this.$store.dispatch('tasks/create', {
+          title: this.newTask,
+          tags: this.currentTags.map(item => item.title),
+          list: this.currentList
+        }).
+        then(
+          (response) => {
+            this.today.push(response.data);
+            this.newTask = '';
+            toastr.success('Added new task!');
+            this.addPrerequisite(this.today[this.today.length - 1]);
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       clearCompleted() {
         if(confirm('This will delete all completed tasks, are you sure?')) {
-          axios.post('<%= tasks_url %>/clear-completed', {
-            credentials: 'same-origin',
-            'X-CSRF-Token': token,
-            'authenticity_token': token
-          }).
-          then(response => {
-            this.refreshEverything();
-            toastr.success('Cleared completed tasks!');
-          }).
-          catch(e => {
-            toastr.error(e.message);
-          });
+          this.$store.dispatch('tasks/clearCompleted').
+          then(
+            (response) => {
+              this.refreshEverything();
+              toastr.success('Cleared completed tasks!');
+            },
+            (error) => {
+              toastr.error(error.message);
+            }
+          );
         }
       },
       createList() {
@@ -281,26 +275,26 @@ document.addEventListener('DOMContentLoaded', () => {
         );
       },
       createQuickTask(taskTime, taskTitle) {
-        axios.post('<%= tasks_url %>', {
+        this.$store.dispatch('tasks/create', {
           title: taskTitle,
           time: taskTime,
           limiter_type: this.limiterType,
-          limiter_value: this.limiterValue,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
+          limiter_value: this.limiterValue
         }).
-        then(response => {
-          this.newQuickTodayTask = '';
-          this.newQuickTomorrowTask = '';
-          this.newQuickUpcomingTask = '';
-          this.newQuickSomedayTask = '';
-          this.refreshTasks();
-          toastr.success('Added new task!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        then(
+          (response) => {
+            // TODO: Directly add task
+            this.newQuickTodayTask = '';
+            this.newQuickTomorrowTask = '';
+            this.newQuickUpcomingTask = '';
+            this.newQuickSomedayTask = '';
+            this.refreshTasks();
+            toastr.success('Added new task!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       deleteList(list) {
         if(confirm('This will delete your list and any tasks in it, are you sure?')) {
@@ -336,22 +330,19 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       deleteTask(task) {
         if(confirm('Deleting this task cannot be undone, are you sure?')) {
-          axios.delete('<%= tasks_url %>/' + task.id, {
-            headers: {
-              credentials: 'same-origin',
-              'X-CSRF-Token': token,
-              'authenticity_token': token
+          this.$store.dispatch('tasks/delete', { id: task.id }).
+          then(
+            (response) => {
+              // TODO: Directly remove task
+              this.currentTask = {};
+              this.currentTaskDialog = false;
+              toastr.success('Deleted task!');
+              this.refreshTasks();
+            },
+            (error) => {
+              toastr.error(error.message);
             }
-          }).
-          then(response => {
-            this.currentTask = {};
-            this.currentTaskDialog = false;
-            toastr.success('Deleted task!');
-            this.refreshTasks();
-          }).
-          catch(e => {
-            toastr.error(e.message);
-          });
+          );
         }
       },
       editList() {
@@ -374,48 +365,47 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       },
+      // TODO: Convert to vuex action?
       async loadPostreqs(task) {
-        return axios.get('<%= tasks_url %>/' + String(task.id) + '/tree-postreqs').
-        then(response => {
-          task.postreqs = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        return api.fetchTreePostreqs(
+          { id: task.id },
+          (response) => {
+            task.postreqs = response.data;
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       markTaskComplete(task) {
         this.currentTaskDialog = false;
-        axios.patch('<%= tasks_url %>/' + String(task.id) + '/complete', {
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          this.currentTask = {};
-          toastr.success('Completed task!');
-          this.refreshTasks();
-        }).
-        catch(e => {
-          this.currentTaskDialog = true;
-          toastr.error(e.message);
-        });
+        this.$store.dispatch('tasks/markComplete', { id: task.id }).
+        then(
+          (response) => {
+            this.currentTask = {};
+            toastr.success('Completed task!');
+            this.refreshTasks();
+          },
+          (error) => {
+            this.currentTaskDialog = true;
+            toastr.error(error.message);
+          }
+        );
       },
       markTaskIncomplete(task) {
         this.currentTaskDialog = false;
-        axios.patch('<%= tasks_url %>/' + String(task.id) + '/incomplete', {
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          this.currentTask = {};
-          toastr.success('Uncompleted task!');
-          this.refreshTasks();
-        }).
-        catch(e => {
-          this.currentTaskDialog = true;
-          toastr.error(e.message);
-        });
+        this.$store.dispatch('tasks/markIncomplete', { id: task.id }).
+        then(
+          (response) => {
+            this.currentTask = {};
+            toastr.success('Uncompleted task!');
+            this.refreshTasks();
+          },
+          (error) => {
+            this.currentTaskDialog = true;
+            toastr.error(error.message);
+          }
+        );
       },
       refreshLists() {
         this.$store.dispatch('lists/refresh').
@@ -433,122 +423,58 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         );
       },
-      // TODO: Extract into separate methods for each group
       refreshTasks() {
-        // Today
-        axios.post('<%= tasks_url %>/today', {
+        this.$store.dispatch('tasks/refresh', {
           limiter_type: this.limiterType,
-          limiter_value: this.limiterValue,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
+          limiter_value: this.limiterValue
         }).
-        then(response => {
-          this.today = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
-        // Tomorrow
-        axios.post('<%= tasks_url %>/tomorrow', {
-          limiter_type: this.limiterType,
-          limiter_value: this.limiterValue,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          this.tomorrow = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
-        // Upcoming
-        axios.post('<%= tasks_url %>/upcoming', {
-          limiter_type: this.limiterType,
-          limiter_value: this.limiterValue,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          this.upcoming = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
-        // Someday
-        axios.post('<%= tasks_url %>/someday', {
-          limiter_type: this.limiterType,
-          limiter_value: this.limiterValue,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          this.someday = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
-        this.refreshTreeTasks();
-      },
-      refreshTreeTasks() {
-        axios.post('<%= tasks_url %>/treeview', {
-          limiter_type: this.limiterType,
-          limiter_value: this.limiterValue,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          this.treeTasks = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        catch(
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       refreshEverything() {
         this.refreshLists();
         this.refreshTags();
         this.refreshTasks();
       },
-      removePrerequisite(task) {
-        if(confirm('Are you sure?')) {
-          axios.delete('<%= tasks_url %>/' + String(this.currentTask.id) + '/pre/' + task.id, {
-            headers: {
-              credentials: 'same-origin',
-              'X-CSRF-Token': token,
-              'authenticity_token': token
-            }
-          }).
-          then(response => {
-            this.refreshTasks();
-            this.currentPrereqs = response.data;
-            toastr.success('Removed prerequisite!');
-          }).
-          catch(e => {
-            toastr.error(e.message);
-          });
-        }
-      },
       removePostrequisite(task) {
         if(confirm('Are you sure?')) {
-          axios.delete('<%= tasks_url %>/' + String(this.currentTask.id) + '/post/' + task.id, {
-            headers: {
-              credentials: 'same-origin',
-              'X-CSRF-Token': token,
-              'authenticity_token': token
+          this.$store.dispatch('tasks/removePostreq', {
+            id: this.currentTask.id,
+            post_task_id: task.id
+          }).
+          then(
+            (response) => {
+              // TODO: Directly remove postreq
+              this.refreshTasks();
+              this.currentPostreqs = response.data;
+              toastr.success('Removed postrequisite!');
+            },
+            (error) => {
+              toastr.error(error.message);
             }
+          );
+        }
+      },
+      removePrerequisite(task) {
+        if(confirm('Are you sure?')) {
+          this.$store.dispatch('tasks/removePrereq', {
+            id: this.currentTask.id,
+            pre_task_id: task.id
           }).
-          then(response => {
-            this.refreshTasks();
-            this.currentPostreqs = response.data;
-            toastr.success('Removed postrequisite!');
-          }).
-          catch(e => {
-            toastr.error(e.message);
-          });
+          then(
+            (response) => {
+              // TODO: Directly remove prereq
+              this.refreshTasks();
+              this.currentPrereqs = response.data;
+              toastr.success('Removed prerequisite!');
+            },
+            (error) => {
+              toastr.error(error.message);
+            }
+          );
         }
       },
       resetTagEdit() {
@@ -567,65 +493,68 @@ document.addEventListener('DOMContentLoaded', () => {
         this.editRemindMeAt = task.remind_me_at;
         this.newTask = '';
         this.createTaskDialog = false;
-        // Fetch pres
-        axios.get('<%= tasks_url %>/' + String(task.id) + '/prereqs').
-        then(response => {
-          this.currentPrereqs = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
-        // Fetch posts
-        axios.get('<%= tasks_url %>/' + String(task.id) + '/postreqs').
-        then(response => {
-          this.currentPostreqs = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        api.fetchPostreqs(
+          { id: task.id },
+          (response) => {
+            this.currentPostreqs = response.data;
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
+        api.fetchPrereqs(
+          { id: task.id },
+          (response) => {
+            this.currentPrereqs = response.data;
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
         this.currentTaskDialog = true;
       },
+      // FIXME: How do with Vuex?
       syncTaskOrdering() {
-        var lists = [this.today, this.tomorrow, this.upcoming, this.someday];
-        for(var list of lists) {
-          for(var task of list) {
-            var current_order = list.indexOf(task) + 1;
-            // TODO: Handle ordering tagless tasks
-            if(this.limiterType == 'tag') {
-              var tag_order = task.tag_ordering.find( ({ title }) => title == this.limiterValue ).order;
-              if(current_order != tag_order) {
-                axios.patch('<%= tasks_url %>/' + String(task.id) + '/order', {
-                  tag_title: this.limiterValue,
-                  order: current_order,
-                  credentials: 'same-origin',
-                  'X-CSRF-Token': token,
-                  'authenticity_token': token
-                }).
-                then(response => {
-                  toastr.success('Ordering updated');
-                }).
-                catch(e => {
-                  toastr.error(e.message);
-                });
-              }
-            } else {
-              if(current_order != task.order) {
-                axios.patch('<%= tasks_url %>/' + String(task.id) + '/order', {
-                  order: current_order,
-                  credentials: 'same-origin',
-                  'X-CSRF-Token': token,
-                  'authenticity_token': token
-                }).
-                then(response => {
-                  toastr.success('Ordering updated');
-                }).
-                catch(e => {
-                  toastr.error(e.message);
-                });
-              }
-            }
-          }
-        }
+      //   var lists = [this.today, this.tomorrow, this.upcoming, this.someday];
+      //   for(var list of lists) {
+      //     for(var task of list) {
+      //       var current_order = list.indexOf(task) + 1;
+      //       // TODO: Handle ordering tagless tasks
+      //       if(this.limiterType == 'tag') {
+      //         var tag_order = task.tag_ordering.find( ({ title }) => title == this.limiterValue ).order;
+      //         if(current_order != tag_order) {
+      //           axios.patch('task_url_here/' + String(task.id) + '/order', {
+      //             tag_title: this.limiterValue,
+      //             order: current_order,
+      //             credentials: 'same-origin',
+      //             'X-CSRF-Token': token,
+      //             'authenticity_token': token
+      //           }).
+      //           then(response => {
+      //             toastr.success('Ordering updated');
+      //           }).
+      //           catch(e => {
+      //             toastr.error(e.message);
+      //           });
+      //         }
+      //       } else {
+      //         if(current_order != task.order) {
+      //           axios.patch('task_url_here/' + String(task.id) + '/order', {
+      //             order: current_order,
+      //             credentials: 'same-origin',
+      //             'X-CSRF-Token': token,
+      //             'authenticity_token': token
+      //           }).
+      //           then(response => {
+      //             toastr.success('Ordering updated');
+      //           }).
+      //           catch(e => {
+      //             toastr.error(e.message);
+      //           });
+      //         }
+      //       }
+      //     }
+      //   }
       },
       textColor(backgroundColor) {
         // Javascript seems to hate guard clauses like I hate javascript
@@ -647,53 +576,54 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       },
-      updateList() {
-        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/list', {
-          list_title: this.currentList,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
-        }).
-        then(response => {
-          this.refreshLists();
-          this.refreshTasks();
-          this.currentTask.list_title = response.data;
-          this.currentList = this.currentTask.list_title;
-          toastr.success('Updated list!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
-      },
       updateNotes() {
-        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/notes', {
-          notes: this.currentTask.notes,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
+        this.$store.dispatch('tasks/updateNotes', {
+          id: this.currentTask.id,
+          notes: this.currentTask.notes
         }).
-        then(response => {
-          this.currentTask.notes = response.data;
-          toastr.success('Updated notes!');
+        then(
+          (response) => {
+            this.currentTask.notes = response.data;
+            toastr.success('Updated notes!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
+      },
+      updateList() {
+        this.$store.dispatch('tasks/updateList', {
+          id: this.currentTask.id,
+          list_title: this.currentList
         }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        then(
+          (response) => {
+            // TODO: Directly update task/lists
+            this.refreshLists();
+            this.refreshTasks();
+            this.currentTask.list_title = response.data;
+            this.currentList = this.currentTask.list_title;
+            toastr.success('Updated list!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       updateRemindMeAt() {
-        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/remind-me-at', {
-          remind_me_at: this.editRemindMeAt,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
+        this.$store.dispatch('tasks/updateRemindMeAt', {
+          id: this.currentTask.id,
+          list_title: this.currentList
         }).
-        then(response => {
-          this.refreshTasks();
-          toastr.success('Updated remind me at!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        then(
+          (response) => {
+            this.refreshTasks();
+            toastr.success('Updated remind me at!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       updateTag() {
         this.$store.dispatch('tags/update', {
@@ -720,52 +650,48 @@ document.addEventListener('DOMContentLoaded', () => {
         );
       },
       updateTags() {
-        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id) + '/tags', {
-          tag_titles: this.currentTags,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
+        this.$store.dispatch('tasks/updateTags', {
+          id: this.currentTask.id,
+          tag_titles: this.currentTags
         }).
-        then(response => {
-          this.refreshEverything();
-          this.currentTask.tags = response.data;
-          this.currentTags = this.currentTask.tags.map( function(tag) { return tag.title } );
-          toastr.success('Updated tags!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        then(
+          (response) => {
+            this.refreshEverything();
+            this.currentTask.tags = response.data;
+            this.currentTags = this.currentTask.tags.map( function(tag) { return tag.title } );
+            toastr.success('Updated tags!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       updateTaskTitle() {
-        axios.patch('<%= tasks_url %>/' + String(this.currentTask.id), {
-          title: this.editTaskTitle,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
+        this.$store.dispatch('tasks/updateTitle', {
+          id: this.currentTask.id,
+          title: this.editTaskTitle
         }).
-        then(response => {
-          this.refreshEverything();
-          this.currentTask.title = this.editTaskTitle;
-          this.editTaskTitle = '';
-          toastr.success('Updated task title!');
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        then(
+          (response) => {
+            this.refreshEverything();
+            this.currentTask.title = this.editTaskTitle;
+            this.editTaskTitle = '';
+            toastr.success('Updated task title!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       searchForTasks() {
-        axios.post('<%= tasks_url %>/search', {
-          title: this.newTask,
-          credentials: 'same-origin',
-          'X-CSRF-Token': token,
-          'authenticity_token': token
+        this.$store.dispatch('tasks/search', {
+          title: this.newTask
         }).
-        then(response => {
-          this.search = response.data;
-        }).
-        catch(e => {
-          toastr.error(e.message);
-        });
+        catch(
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       selectTag(tag) {
         this.selectedTag = tag.title;
