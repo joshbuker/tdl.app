@@ -23,7 +23,7 @@ v-container#main[fluid]
             v-divider
             v-list
               v-list-item-group
-                draggable[:list="#{list}" @change='syncTaskOrdering' delay='200' delay-on-touch-only='true']
+                draggable[delay='200' delay-on-touch-only='true']
                   v-list-item[v-for="task in #{list}" :key="task.title"]
                     v-list-item-content[@click.stop='setCurrentTask(task)']
                       v-list-item-title
