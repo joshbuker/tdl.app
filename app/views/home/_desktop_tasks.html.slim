@@ -1,6 +1,10 @@
 v-container#main[fluid]
   v-row.pt-3.pr-3[v-if='view == 0 || view == 1']
     v-spacer
+    v-btn.mr-4[color='indigo' @click='beginTaskReview' small]
+      v-icon[small left]
+        | fa-th
+      | Review Tasks
     v-btn.mr-4.darken-1[color='primary' @click='createTaskDialog = true' small]
       v-icon[small left]
         | fa-plus

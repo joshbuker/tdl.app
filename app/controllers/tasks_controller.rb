@@ -251,7 +251,19 @@ class TasksController < ApiController
   end
 
   def update_remind_me_at
-    @task.remind_me_at = params[:remind_me_at]
+    @task.remind_me_at =
+      case params[:remind_me_at]
+      when 'tomorrow'
+        1.day.from_now
+      when 'next week'
+        1.week.from_now
+      when 'upcoming'
+        31.days.from_now
+      when 'someday'
+        2.months.from_now
+      else
+        params[:remind_me_at]
+      end
     @task.save!
 
     if @task.remind_me_at.present?

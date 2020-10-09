@@ -34,7 +34,7 @@ export default {
       onFailure(error);
     });
   },
-  async clearCompleted(options, onSuccess, onFailure) {
+  async clearCompleted(onSuccess, onFailure) {
     return axios.post('<%= tasks_url %>/clear-completed', {
       credentials: 'same-origin',
       'X-CSRF-Token': token,
@@ -273,6 +273,20 @@ export default {
   async updateTaskRemindMeAt(options, onSuccess, onFailure) {
     return axios.patch('<%= tasks_url %>/' + String(options.id) + '/remind-me-at', {
       remind_me_at: options.remind_me_at,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async updateTaskReviewAt(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id) + '/review-at', {
+      review_at: options.review_at,
       credentials: 'same-origin',
       'X-CSRF-Token': token,
       'authenticity_token': token

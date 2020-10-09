@@ -72,6 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
       tagToBeEdited: {},
       treeActive: [],
       requestCount: 0,
+      reviewButtons: 'root',
+      reviewDialog: false,
+      reviewQueue: [],
+      reviewWaiting: false,
       searchEnabled: true,
       selectedList: null,
       selectedTag: null,
@@ -93,6 +97,11 @@ document.addEventListener('DOMContentLoaded', () => {
       this.debouncedSearch = _.debounce(this.searchForTasks, 400);
     },
     computed: {
+      currentReviewTask() {
+        if(this.reviewQueue.length == 0) return undefined;
+
+        return this.reviewQueue[0];
+      },
       limiterType() {
         if(this.controls == 0) {
           return 'list';
@@ -236,6 +245,16 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         );
       },
+      beginTaskReview() {
+        // Duplicate today array
+        this.reviewQueue = JSON.parse(JSON.stringify(this.today));
+        if(this.reviewQueue.length > 0) {
+          this.reviewButtons = 'root';
+          this.reviewDialog = true;
+        } else {
+          toastr.warning('No tasks to review!');
+        }
+      },
       clearCompleted() {
         if(confirm('This will delete all completed tasks, are you sure?')) {
           this.$store.dispatch('tasks/clearCompleted').
@@ -352,6 +371,12 @@ document.addEventListener('DOMContentLoaded', () => {
         this.editTagDialog = true;
         this.tagToBeEdited = tag;
         this.editTagTitle = this.tagToBeEdited.title;
+      },
+      endReview() {
+        this.reviewButtons = 'root';
+        this.reviewDialog = false;
+        this.reviewQueue = [];
+        this.refreshEverything();
       },
       findTreeTask(items, title) {
         if(!items) return;
@@ -485,6 +510,101 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         this.editTagTitle = '';
       },
+      reviewNext() {
+        this.reviewQueue.shift();
+        this.reviewButtons = 'root';
+        if(this.reviewQueue.length == 0) {
+          this.endReview();
+        }
+      },
+      reviewDone() {
+        this.reviewWaiting = true;
+        api.markTaskComplete(
+          { id: this.currentReviewTask.id },
+          (response) => {
+            this.reviewWaiting = false;
+            this.reviewNext();
+          },
+          (error) => {
+            this.reviewWaiting = false;
+            toastr.error(error.message);
+          }
+        )
+      },
+      reviewDelete() {
+        toastr.warning('haha, no.');
+      },
+      reviewToday() {
+        this.reviewNext();
+      },
+      reviewTomorrow() {
+        this.reviewWaiting = true;
+        api.updateTaskRemindMeAt(
+          {
+            id: this.currentReviewTask.id,
+            remind_me_at: 'tomorrow'
+          },
+          (response) => {
+            this.reviewWaiting = false;
+            this.reviewNext();
+          },
+          (error) => {
+            this.reviewWaiting = false;
+            toastr.error(error.message);
+          }
+        )
+      },
+      reviewNextWeek() {
+        this.reviewWaiting = true;
+        api.updateTaskRemindMeAt(
+          {
+            id: this.currentReviewTask.id,
+            remind_me_at: 'next week'
+          },
+          (response) => {
+            this.reviewWaiting = false;
+            this.reviewNext();
+          },
+          (error) => {
+            this.reviewWaiting = false;
+            toastr.error(error.message);
+          }
+        )
+      },
+      reviewUpcoming() {
+        this.reviewWaiting = true;
+        api.updateTaskRemindMeAt(
+          {
+            id: this.currentReviewTask.id,
+            remind_me_at: 'upcoming'
+          },
+          (response) => {
+            this.reviewWaiting = false;
+            this.reviewNext();
+          },
+          (error) => {
+            this.reviewWaiting = false;
+            toastr.error(error.message);
+          }
+        )
+      },
+      reviewSomeday() {
+        this.reviewWaiting = true;
+        api.updateTaskRemindMeAt(
+          {
+            id: this.currentReviewTask.id,
+            remind_me_at: 'someday'
+          },
+          (response) => {
+            this.reviewWaiting = false;
+            this.reviewNext();
+          },
+          (error) => {
+            this.reviewWaiting = false;
+            toastr.error(error.message);
+          }
+        )
+      },
       setCurrentTask(task) {
         this.currentTask = task;
         this.currentTags = task.tags;
@@ -613,7 +733,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateRemindMeAt() {
         this.$store.dispatch('tasks/updateRemindMeAt', {
           id: this.currentTask.id,
-          list_title: this.currentList
+          remind_me_at: this.editRemindMeAt
         }).
         then(
           (response) => {

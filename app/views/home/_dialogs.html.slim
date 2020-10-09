@@ -78,3 +78,64 @@ v-dialog[v-model='createTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
               v-list-item-content[@click.stop="add#{dry}requisite(task)"]
                 v-list-item-title
                   | {{ task.title }}
+v-dialog[v-model='reviewDialog' persistent :fullscreen='$vuetify.breakpoint.mobile']
+  v-card
+    v-toolbar[dark color='primary']
+      v-spacer
+      v-btn[:disabled='reviewWaiting == true' fab dark @click='endReview']
+        v-icon
+          | fa-close
+    v-card-text
+      p
+        | {{ reviewQueue.length }} tasks remaining.
+      v-divider
+      h1[v-if='currentReviewTask != undefined']
+        | {{ currentReviewTask.title }}
+    v-divider
+    v-card-actions.justify-center
+      template[v-if='reviewButtons == "now"']
+        v-btn.darken-1[:disabled='reviewWaiting == true' fab color='green' @click='reviewToday']
+          v-icon
+            | fa-bell-slash-o
+        v-btn.darken-1[:disabled='reviewWaiting == true' fab color='green']
+          | 9am
+        v-btn.darken-1[:disabled='reviewWaiting == true' fab color='green']
+          | 5pm
+        v-btn.darken-1[:disabled='reviewWaiting == true' fab color='green']
+          v-icon
+            | fa-ellipsis-h
+        v-btn[fab color='secondary' @click='reviewButtons = "root"']
+          v-icon
+            | fa-arrow-left
+      template[v-else-if='reviewButtons == "later"']
+        v-btn.darken-3[:disabled='reviewWaiting == true' fab color='yellow' @click='reviewTomorrow']
+          v-icon
+            | fa-chevron-right
+        v-btn.darken-3[:disabled='reviewWaiting == true' fab color='yellow' @click='reviewNextWeek']
+          v-icon
+            | fa-forward
+        v-btn.darken-3[:disabled='reviewWaiting == true' fab color='yellow' @click='reviewUpcoming']
+          v-icon
+            | fa-step-forward
+        v-btn.darken-3[:disabled='reviewWaiting == true' fab color='yellow' @click='reviewSomeday']
+          v-icon
+            | fa-question
+        v-btn[fab color='secondary' @click='reviewButtons = "root"']
+          v-icon
+            | fa-arrow-left
+      template[v-else]
+        v-btn.darken-1[fab color='green' @click='reviewButtons = "now"']
+          v-icon
+            | fa-arrow-down
+        v-btn.darken-3[fab color='yellow' @click='reviewButtons = "later"']
+          v-icon
+            | fa-arrow-right
+        v-btn.darken-1[:disabled='reviewWaiting == true' fab color='blue' @click='reviewDone']
+          v-icon
+            | fa-check
+        v-btn.darken-1[:disabled='reviewWaiting == true' fab color='red' @click='reviewDelete']
+          v-icon
+            | fa-close
+        v-btn[fab style='visibility: hidden;']
+          v-icon
+            | fa-bitcoin
