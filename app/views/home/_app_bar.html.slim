@@ -16,5 +16,11 @@ v-app-bar[app clipped-left]
         | fa-plus
       | New
   v-row[justify="end"]
-    v-btn.mr-3[color='secondary' @click='logout' v-if='processing != true']
-      | Logout
+    - if browser.device.mobile?
+      = render partial: 'app_menu'
+    - else
+      template[v-if='$vuetify.breakpoint.mobile']
+        = render partial: 'app_menu'
+      template[v-else]
+        v-btn.mr-3[color='secondary' @click='logout' v-if='processing != true']
+          | Logout

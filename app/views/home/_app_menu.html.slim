@@ -1,0 +1,12 @@
+v-menu[bottom left]
+  template[v-slot:activator='{ on, attrs }']
+    v-btn[dark icon v-bind='attrs' v-on='on']
+      v-icon
+        | fa-ellipsis-v
+  v-list
+    v-list-item[@click='beginTaskReview']
+      v-list-item-title Review Tasks
+    v-list-item[@click='clearCompleted']
+      v-list-item-title Clear Completed Tasks
+    v-list-item[@click='logout' v-if='processing != true']
+      v-list-item-title Logout
