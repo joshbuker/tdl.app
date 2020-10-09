@@ -106,13 +106,13 @@ class TasksController < ApiController
 
       case params[:time].to_s.titleize
       when 'Today'
-        task.remind_me_at = Time.current
+        task.review_at = Time.current
       when 'Tomorrow'
-        task.remind_me_at = 1.day.from_now
+        task.review_at = 1.day.from_now
       when 'Upcoming'
-        task.remind_me_at = 2.weeks.from_now
+        task.review_at = 2.weeks.from_now
       when 'Someday'
-        task.remind_me_at = 2.months.from_now
+        task.review_at = 2.months.from_now
       end
     else
       if params[:tags].present? && params[:tags].is_a?(Array)
@@ -250,9 +250,9 @@ class TasksController < ApiController
     render json: @task.notes.to_json
   end
 
-  def update_remind_me_at
-    @task.remind_me_at =
-      case params[:remind_me_at]
+  def update_review_at
+    @task.review_at =
+      case params[:review_at]
       when 'tomorrow'
         1.day.from_now
       when 'next week'
@@ -262,12 +262,12 @@ class TasksController < ApiController
       when 'someday'
         2.months.from_now
       else
-        params[:remind_me_at]
+        params[:review_at]
       end
     @task.save!
 
-    if @task.remind_me_at.present?
-      render json: @task.remind_me_at.strftime('%Y-%m-%d %H:%M').to_json
+    if @task.review_at.present?
+      render json: @task.review_at.strftime('%Y-%m-%d %H:%M').to_json
     else
       head :ok
     end

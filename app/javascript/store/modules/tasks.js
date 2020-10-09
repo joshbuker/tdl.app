@@ -296,10 +296,10 @@ const actions = {
       }
     );
   },
-  async updateRemindMeAt({ commit, state }, options) {
+  async updateReviewAt({ commit, state }, options) {
     return new Promise(
       (resolve, reject) => {
-        api.updateTaskRemindMeAt(
+        api.updateTaskReviewAt(
           options,
           (response) => {
             resolve(response);

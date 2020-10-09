@@ -33,28 +33,28 @@ class Task < ApplicationRecord
   validate :list_and_task_owner_match, :prereqs_before_self
 
   scope :today, -> {
-    where(remind_me_at: nil).or(
+    where(review_at: nil).or(
       self.where(
-        'remind_me_at <= ?', Time.current.end_of_day
+        'review_at <= ?', Time.current.end_of_day
       )
     )
   }
 
   scope :tomorrow, -> {
     where(
-      remind_me_at: 1.day.from_now.beginning_of_day..1.day.from_now.end_of_day
+      review_at: 1.day.from_now.beginning_of_day..1.day.from_now.end_of_day
     )
   }
 
   scope :upcoming, -> {
     where(
-      remind_me_at: 2.days.from_now.beginning_of_day..31.days.from_now.end_of_day
+      review_at: 2.days.from_now.beginning_of_day..31.days.from_now.end_of_day
     )
   }
 
   scope :someday, -> {
     where(
-      'remind_me_at > ?', 31.days.from_now.end_of_day
+      'review_at > ?', 31.days.from_now.end_of_day
     )
   }
 
@@ -206,7 +206,7 @@ class Task < ApplicationRecord
       completed: completed,
       list_title: list.title,
       notes: notes,
-      remind_me_at: remind_me_at&.strftime('%Y-%m-%d %H:%M'),
+      review_at: review_at&.strftime('%Y-%m-%d %H:%M'),
       tag_ordering: taggings.reload.map { |tagging| { title: tagging.tag.title, order: tagging.order } },
       tags: tags.reload.map{ |tag| { title: tag.title, color: tag.color, text_color: tag.text_color } }
     }

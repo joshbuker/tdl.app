@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
       drawer: null,
       editControls: false,
       editNotes: '',
-      editRemindMeAt: '',
+      editReviewAt: '',
       editTagDialog: false,
       editTagTitle: '',
       editTaskTitle: '',
@@ -539,10 +539,10 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       reviewTomorrow() {
         this.reviewWaiting = true;
-        api.updateTaskRemindMeAt(
+        api.updateTaskReviewAt(
           {
             id: this.currentReviewTask.id,
-            remind_me_at: 'tomorrow'
+            review_at: 'tomorrow'
           },
           (response) => {
             this.reviewWaiting = false;
@@ -556,10 +556,10 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       reviewNextWeek() {
         this.reviewWaiting = true;
-        api.updateTaskRemindMeAt(
+        api.updateTaskReviewAt(
           {
             id: this.currentReviewTask.id,
-            remind_me_at: 'next week'
+            review_at: 'next week'
           },
           (response) => {
             this.reviewWaiting = false;
@@ -573,10 +573,10 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       reviewUpcoming() {
         this.reviewWaiting = true;
-        api.updateTaskRemindMeAt(
+        api.updateTaskReviewAt(
           {
             id: this.currentReviewTask.id,
-            remind_me_at: 'upcoming'
+            review_at: 'upcoming'
           },
           (response) => {
             this.reviewWaiting = false;
@@ -590,10 +590,10 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       reviewSomeday() {
         this.reviewWaiting = true;
-        api.updateTaskRemindMeAt(
+        api.updateTaskReviewAt(
           {
             id: this.currentReviewTask.id,
-            remind_me_at: 'someday'
+            review_at: 'someday'
           },
           (response) => {
             this.reviewWaiting = false;
@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.currentTags = task.tags;
         this.currentList = task.list_title;
         this.editTaskTitle = task.title;
-        this.editRemindMeAt = task.remind_me_at;
+        this.editReviewAt = task.review_at;
         this.newTask = '';
         this.createTaskDialog = false;
         api.fetchPostreqs(
@@ -730,15 +730,15 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         );
       },
-      updateRemindMeAt() {
-        this.$store.dispatch('tasks/updateRemindMeAt', {
+      updateReviewAt() {
+        this.$store.dispatch('tasks/updateReviewAt', {
           id: this.currentTask.id,
-          remind_me_at: this.editRemindMeAt
+          review_at: this.editReviewAt
         }).
         then(
           (response) => {
             this.refreshTasks();
-            toastr.success('Updated remind me at!');
+            toastr.success('Updated review at!');
           },
           (error) => {
             toastr.error(error.message);
