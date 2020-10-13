@@ -44,10 +44,20 @@ export default {
       onFailure(error);
     });
   },
+  async refreshNoTagsCount(onSuccess, onFailure) {
+    return axios.get('<%= tags_url %>/no-tags-count').
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
   async updateTag(options, onSuccess, onFailure) {
     return axios.patch('<%= tags_url %>/' + String(options.id), {
-      title: options.editTagTitle,
-      color: options.tagToBeEdited.color,
+      title: options.title,
+      color: options.color,
+      order: options.order,
       credentials: 'same-origin',
       'X-CSRF-Token': token,
       'authenticity_token': token

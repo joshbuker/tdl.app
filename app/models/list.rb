@@ -16,7 +16,7 @@ class List < ApplicationRecord
     {
       id: id,
       title: title,
-      task_count: tasks.size
+      task_count: tasks.next_up.size
     }
   end
 

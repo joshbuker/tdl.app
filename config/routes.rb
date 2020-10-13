@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   post 'tasks/treeview' => 'tasks#treeview'
 
   post 'tasks/clear-completed' => 'tasks#clear_completed'
+  get 'tags/no-tags-count' => 'tags#no_tags_count'
 
   post 'login' => 'sessions#create'
   post 'logout' => 'sessions#destroy'

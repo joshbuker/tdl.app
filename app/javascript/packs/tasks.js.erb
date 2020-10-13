@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
       editNotes: '',
       editReviewAt: '',
       editTagDialog: false,
+      editTagColor: '',
       editTagTitle: '',
       editTaskTitle: '',
       newList: '',
@@ -140,19 +141,23 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       ...mapGetters({
         allTasksCount: 'lists/allTasksCount',
+        noTagsCount: 'tags/noTagsCount',
         lists: 'lists/lists',
-        tags: 'tags/tags',
         today: 'tasks/today',
         tomorrow: 'tasks/tomorrow',
         upcoming: 'tasks/upcoming',
         someday: 'tasks/someday',
         treeTasks: 'tasks/treeTasks',
         search: 'tasks/search'
-      })
-      // Unused due to reactivity problems
-      // ...mapState({
-      //   lists: state => state.lists.lists
-      // })
+      }),
+      tags: {
+        get() {
+          return this.$store.state.tags.tags;
+        },
+        set(value) {
+          this.$store.commit('tags/setTags', value);
+        }
+      }
     },
     methods: {
       addTask() {
@@ -336,8 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
           this.$store.dispatch('tags/delete', { id: tag.id }).
           then(
             (response) => {
-              // TODO: Directly remove tag
-              this.refreshTags();
               this.refreshTasks();
               toastr.success('Deleted tag!');
             },
@@ -370,6 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
       editTag(tag) {
         this.editTagDialog = true;
         this.tagToBeEdited = tag;
+        this.editTagColor = this.tagToBeEdited.color;
         this.editTagTitle = this.tagToBeEdited.title;
       },
       endReview() {
@@ -633,6 +637,14 @@ document.addEventListener('DOMContentLoaded', () => {
         );
         this.currentTaskDialog = true;
       },
+      syncTagOrdering() {
+        this.$store.dispatch('tags/syncOrdering').
+        catch(
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
+      },
       // FIXME: How do with Vuex?
       syncTaskOrdering() {
       //   var lists = [this.today, this.tomorrow, this.upcoming, this.someday];
@@ -746,20 +758,18 @@ document.addEventListener('DOMContentLoaded', () => {
         );
       },
       updateTag() {
+        const previousTagTitle = this.tagToBeEdited.title;
         this.$store.dispatch('tags/update', {
           id: this.tagToBeEdited.id,
           title: this.editTagTitle,
-          color: this.tagToBeEdited.color
+          color: this.editTagColor
         }).
         then(
           (response) => {
-            // TODO: Directly update tag
-            if(this.tagToBeEdited.title == this.selectedTag) {
+            if(previousTagTitle == this.selectedTag) {
               this.selectedTag = this.editTagTitle;
             }
-            this.tagToBeEdited.title = this.editTagTitle;
             this.editTagTitle = '';
-            this.refreshTags();
             this.refreshTasks();
             this.editTagDialog = false;
             toastr.success('Updated tag!');

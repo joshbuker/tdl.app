@@ -7,13 +7,6 @@ class TagsController < ApiController
       tag.to_hash
     end
 
-    tags.push({
-      title: 'No Tags',
-      color: 'white',
-      text_color: 'black',
-      task_count: current_user.tasks.tagless.size
-    })
-
     render json: tags.to_json
   end
 
@@ -32,13 +25,17 @@ class TagsController < ApiController
   def update
     @tag.update!(tag_params)
 
-    render json: @task.to_json
+    render json: @tag.to_json
   end
 
   def destroy
     @tag.destroy!
 
     head :ok
+  end
+
+  def no_tags_count
+    render json: current_user.tasks.next_up.tagless.size.to_json
   end
 
 private
@@ -53,6 +50,6 @@ private
   end
 
   def tag_params
-    params.require(:tag).permit(:title, :color)
+    params.require(:tag).permit(:title, :color, :order)
   end
 end

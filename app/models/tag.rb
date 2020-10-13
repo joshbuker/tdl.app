@@ -38,10 +38,11 @@ class Tag < ApplicationRecord
   def to_hash
     {
       id: id,
+      order: order,
       title: title,
       color: color,
       text_color: text_color,
-      task_count: tasks.size
+      task_count: tasks.next_up.size
     }
   end
 

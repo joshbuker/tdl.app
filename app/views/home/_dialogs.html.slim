@@ -4,17 +4,17 @@ v-dialog[v-model='editTagDialog' persistent]
     v-divider
     v-card-text[v-if='tagToBeEdited']
       p Example Usage:
-      v-chip.mr-3[:color='tagToBeEdited.color' :text-color='textColor(tagToBeEdited.color)' close]
+      v-chip.mr-3[:color='editTagColor' :text-color='textColor(editTagColor)' close]
         template[v-if='editTagTitle.length > 0']
           | {{ editTagTitle }}
         template[v-else]
           | {{ tagToBeEdited.title }}
-      v-chip[:color='tagToBeEdited.color']
-        v-icon[:color='textColor(tagToBeEdited.color)']
+      v-chip[:color='editTagColor']
+        v-icon[:color='textColor(editTagColor)']
           | fa-tag
       v-divider
       v-text-field[label='Tag title' :placeholder='tagToBeEdited.title' v-model='editTagTitle' clearable]
-      v-color-picker[v-model='tagToBeEdited.color' mode='hexa' light hide-mode-switch]
+      v-color-picker[v-model='editTagColor' mode='hexa' light hide-mode-switch]
     v-card-actions
       v-btn[@click='updateTag' color='primary'] Save
       v-btn[@click='resetTagEdit' color='secondary'] Cancel

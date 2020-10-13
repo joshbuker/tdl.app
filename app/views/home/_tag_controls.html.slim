@@ -1,7 +1,13 @@
 template v-if='editControls != true'
   v-list[nav]
     v-list-item-group[v-model='selectedTag' @change='refreshTasks' color='primary' mandatory]
-      v-list-item[link v-for='tag in tags' :key='tag.title' :value='tag.title' :color='tag.color']
+      v-list-item[value='No Tags' link color='white']
+        v-list-item-content
+          v-list-item-title
+            | No Tags
+          v-list-item-subtitle
+            | {{ noTagsCount }} tasks
+      v-list-item[link v-for='tag in tags' :key='tag.id' :value='tag.title' :color='tag.color']
         v-list-item-content
           v-list-item-title
             | {{ tag.title }}
@@ -10,9 +16,9 @@ template v-if='editControls != true'
 template[v-else]
   v-list[nav]
     v-list-item-group
-      draggable
-        v-list-item[v-for='tag in tags' :key='tag.title']
-          v-list-item-icon
+      draggable[v-model='tags' handle='.handle' @change='syncTagOrdering' delay='200' delay-on-touch-only='true']
+        v-list-item[v-for='tag in tags' :key='tag.id']
+          v-list-item-icon.handle
             v-icon
               | fa-bars
           v-list-item-content

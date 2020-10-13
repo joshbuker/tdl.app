@@ -7,12 +7,6 @@ class ListsController < ApiController
       list.to_hash
     end
 
-    # Generate and calculate this client-side
-    # lists.unshift({
-    #   title: 'All Tasks',
-    #   task_count: current_user.tasks.size
-    # })
-
     render json: lists.to_json
   end
 
