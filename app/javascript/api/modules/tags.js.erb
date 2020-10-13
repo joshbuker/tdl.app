@@ -9,6 +9,7 @@ export default {
   async createTag(options, onSuccess, onFailure) {
     return axios.post('<%= tags_url %>', {
       title: options.title,
+      order: options.order,
       credentials: 'same-origin',
       'X-CSRF-Token': token,
       'authenticity_token': token

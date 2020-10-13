@@ -22,10 +22,10 @@ const getters = {
 }
 
 const actions = {
-  async create({ commit, state }, options) {
+  async create({ commit, state, getters }, options) {
     return new Promise(
       (resolve, reject) => {
-        options.order = state.nextOrder();
+        options.order = getters.nextOrder;
         api.createTag(
           options,
           (response) => {
