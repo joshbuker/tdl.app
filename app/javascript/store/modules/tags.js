@@ -10,7 +10,7 @@ const state = () => ({
 const getters = {
   nextOrder(state) {
     if(state.tags.length < 1) return undefined;
-    return state.tags[state.tags.length - 1].order;
+    return (state.tags[state.tags.length - 1].order + 1);
   },
   noTagsCount(state) {
     // TODO: Set this using an api request on initial load
