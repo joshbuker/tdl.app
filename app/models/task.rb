@@ -15,6 +15,7 @@ class Task < ApplicationRecord
     dependent: :destroy
 
   has_many :tags,
+    -> { order(order: :asc, title: :asc) },
     through: :taggings
 
   has_many :prereqs,
