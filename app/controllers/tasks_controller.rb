@@ -226,7 +226,7 @@ class TasksController < ApiController
     @task.tags = tags
     @task.save!
 
-    render json: @task.tags.map(&:to_hash).to_json
+    render json: @task.tags.reload.map(&:to_hash).to_json
   end
 
   def update_list
