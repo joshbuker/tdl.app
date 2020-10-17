@@ -59,6 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
       editControls: false,
       editNotes: '',
       editReviewAt: '',
+      editListDialog: false,
+      editListTitle: '',
       editTagDialog: false,
       editTagColor: '',
       editTagTitle: '',
@@ -70,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
       newQuickTomorrowTask: '',
       newQuickUpcomingTask: '',
       newQuickSomedayTask: '',
+      listToBeEdited: {},
       tagToBeEdited: {},
       treeActive: [],
       requestCount: 0,
@@ -142,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ...mapGetters({
         allTasksCount: 'lists/allTasksCount',
         noTagsCount: 'tags/noTagsCount',
-        lists: 'lists/lists',
         today: 'tasks/today',
         tomorrow: 'tasks/tomorrow',
         upcoming: 'tasks/upcoming',
@@ -150,6 +152,14 @@ document.addEventListener('DOMContentLoaded', () => {
         treeTasks: 'tasks/treeTasks',
         search: 'tasks/search'
       }),
+      lists: {
+        get() {
+          return this.$store.state.lists.lists;
+        },
+        set(value) {
+          this.$store.commit('lists/setLists', value);
+        }
+      },
       tags: {
         get() {
           return this.$store.state.tags.tags;
@@ -367,8 +377,10 @@ document.addEventListener('DOMContentLoaded', () => {
           );
         }
       },
-      editList() {
-        alert('I do like turtles');
+      editList(list) {
+        this.editListDialog = true;
+        this.listToBeEdited = list;
+        this.editListTitle = this.listToBeEdited.title;
       },
       editTag(tag) {
         this.editTagDialog = true;
@@ -506,6 +518,11 @@ document.addEventListener('DOMContentLoaded', () => {
           );
         }
       },
+      resetListEdit() {
+        this.editListDialog = false;
+        this.listToBeEdited = { title: 'Placeholder' };
+        this.editListTitle = '';
+      },
       resetTagEdit() {
         this.editTagDialog = false;
         this.tagToBeEdited = {
@@ -513,6 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
           color: '#000000'
         };
         this.editTagTitle = '';
+        this.editTagColor = '#000000';
       },
       reviewNext() {
         this.reviewQueue.shift();
@@ -637,6 +655,14 @@ document.addEventListener('DOMContentLoaded', () => {
         );
         this.currentTaskDialog = true;
       },
+      syncListOrdering() {
+        this.$store.dispatch('lists/syncOrdering').
+        catch(
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
+      },
       syncTagOrdering() {
         this.$store.dispatch('tags/syncOrdering').
         catch(
@@ -723,7 +749,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         );
       },
-      updateList() {
+      updateTaskList() {
         this.$store.dispatch('tasks/updateList', {
           id: this.currentTask.id,
           list_title: this.currentList
@@ -757,6 +783,26 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         );
       },
+      updateList() {
+        const previousListTitle = this.listToBeEdited.title;
+        this.$store.dispatch('lists/update', {
+          id: this.listToBeEdited.id,
+          title: this.editListTitle
+        }).
+        then(
+          (response) => {
+            if(previousListTitle == this.selectedList) {
+              this.selectedList = this.editListTitle;
+            }
+            this.refreshTasks();
+            this.resetListEdit();
+            toastr.success('Updated list!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
+      },
       updateTag() {
         const previousTagTitle = this.tagToBeEdited.title;
         this.$store.dispatch('tags/update', {
@@ -769,9 +815,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if(previousTagTitle == this.selectedTag) {
               this.selectedTag = this.editTagTitle;
             }
-            this.editTagTitle = '';
             this.refreshTasks();
-            this.editTagDialog = false;
+            this.resetTagEdit();
             toastr.success('Updated tag!');
           },
           (error) => {

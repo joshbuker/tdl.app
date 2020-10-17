@@ -94,7 +94,6 @@ const actions = {
     for(var tag of state.tags) {
       var current_order = state.tags.indexOf(tag);
       if(current_order != tag.order) {
-        console.log(tag.id);
         dispatch('update', {
           id: tag.id,
           order: current_order

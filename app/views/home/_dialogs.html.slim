@@ -1,3 +1,12 @@
+v-dialog[v-model='editListDialog' persistent]
+  v-card
+    v-card-title.headline Edit List Settings
+    v-divider
+    v-card-text[v-if='listToBeEdited']
+      v-text-field[label='List title' :placeholder='listToBeEdited.title' v-model='editListTitle' clearable]
+    v-card-actions
+      v-btn[@click='updateList' color='primary'] Save
+      v-btn[@click='resetListEdit' color='secondary'] Cancel
 v-dialog[v-model='editTagDialog' persistent]
   v-card
     v-card-title.headline Edit Tag Settings

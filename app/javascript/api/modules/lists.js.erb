@@ -9,6 +9,7 @@ export default {
   async createList(options, onSuccess, onFailure) {
     return axios.post('<%= lists_url %>', {
       title: options.title,
+      order: options.order,
       credentials: 'same-origin',
       'X-CSRF-Token': token,
       'authenticity_token': token
@@ -21,7 +22,7 @@ export default {
     });
   },
   async deleteList(options, onSuccess, onFailure) {
-    return axios.delete('<%= lists_url %>/' + options.id, {
+    return axios.delete('<%= lists_url %>/' + String(options.id), {
       headers: {
         credentials: 'same-origin',
         'X-CSRF-Token': token,
@@ -37,6 +38,21 @@ export default {
   },
   async refreshLists(onSuccess, onFailure) {
     return axios.get('<%= lists_url %>').
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async updateList(options, onSuccess, onFailure) {
+    return axios.patch('<%= lists_url %>/' + String(options.id), {
+      title: options.title,
+      order: options.order,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
     then(response => {
       onSuccess(response);
     }).

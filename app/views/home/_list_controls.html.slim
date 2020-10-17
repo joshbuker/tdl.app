@@ -7,7 +7,7 @@ template v-if='editControls != true'
             | All Tasks
           v-list-item-subtitle
             | {{ allTasksCount }} tasks
-      v-list-item[link v-for='list in lists' :key='list.title' :value='list.title']
+      v-list-item[link v-for='list in lists' :key='list.id' :value='list.title']
         v-list-item-content
           v-list-item-title
             | {{ list.title }}
@@ -16,9 +16,9 @@ template v-if='editControls != true'
 template[v-else]
   v-list[nav]
     v-list-item-group
-      draggable
-        v-list-item[v-for='list in lists' :key='list.title']
-          v-list-item-icon
+      draggable[v-model='lists' handle='.handle' @change='syncListOrdering' delay='200' delay-on-touch-only='true']
+        v-list-item[v-for='list in lists' :key='list.id']
+          v-list-item-icon.handle
             v-icon
               | fa-bars
           v-list-item-content
@@ -27,7 +27,7 @@ template[v-else]
             v-list-item-subtitle
               | {{ list.task_count }} tasks
           v-list-item-action
-            v-btn[icon color='primary' @click.stop='editList']
+            v-btn[icon color='primary' @click.stop='editList(list)']
               v-icon
                 | fa-pencil
           v-list-item-action

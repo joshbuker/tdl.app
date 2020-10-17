@@ -17,13 +17,18 @@ const getters = {
   },
   lists(state) {
     return state.lists;
+  },
+  nextOrder(state) {
+    if(state.lists.length < 1) return undefined;
+    return (state.lists[state.lists.length - 1].order + 1);
   }
 }
 
 const actions = {
-  async create({ commit, state }, options) {
+  async create({ commit, state, getters }, options) {
     return new Promise(
       (resolve, reject) => {
+        options.order = getters.nextOrder;
         api.createList(
           options,
           (response) => {
@@ -67,6 +72,33 @@ const actions = {
         )
       }
     );
+  },
+  async syncOrdering({ commit, state, dispatch }, options) {
+    for(var list of state.lists) {
+      var current_order = state.lists.indexOf(list);
+      if(current_order != list.order) {
+        dispatch('update', {
+          id: list.id,
+          order: current_order
+        })
+      }
+    }
+  },
+  async update({ commit, state }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.updateList(
+          options,
+          (response) => {
+            commit('updateList', response.data);
+            resolve(response);
+          },
+          (error) => {
+            reject(error);
+          }
+        )
+      }
+    );
   }
 }
 
@@ -77,6 +109,12 @@ const mutations = {
   },
   setLists(state, lists) {
     state.lists = lists;
+  },
+  updateList(state, list) {
+    const index = state.lists.findIndex(
+      (element) => { return (element.id == list.id) }
+    );
+    state.lists.splice(index, 1, list);
   }
 }
 

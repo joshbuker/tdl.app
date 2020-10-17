@@ -15,6 +15,7 @@ class List < ApplicationRecord
   def to_hash
     {
       id: id,
+      order: order,
       title: title,
       task_count: tasks.next_up.size
     }

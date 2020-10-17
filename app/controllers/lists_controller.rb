@@ -1,6 +1,6 @@
 class ListsController < ApiController
   before_action :set_lists, only: [:index]
-  before_action :set_list, only: [:destroy]
+  before_action :set_list, only: [:update, :destroy]
 
   def index
     lists = @lists.map do |list|
@@ -21,6 +21,12 @@ class ListsController < ApiController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
+  def update
+    @list.update!(list_params)
+
+    render json: @list.to_json
+  end
+
   def destroy
     @list.destroy!
 
@@ -39,6 +45,6 @@ private
   end
 
   def list_params
-    params.require(:list).permit(:title)
+    params.require(:list).permit(:title, :order)
   end
 end
