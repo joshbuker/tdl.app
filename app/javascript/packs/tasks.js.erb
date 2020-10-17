@@ -885,15 +885,16 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         )
       }
-    },
-    watch: {
-      newTask(newValue, oldValue) {
-        if(!this.searchEnabled) {
-          return;
-        }
-        this.debouncedSearch();
-      }
     }
+    // Temporarily disabled due to abyssmal performance on mobile
+    // watch: {
+    //   newTask(newValue, oldValue) {
+    //     if(!this.searchEnabled) {
+    //       return;
+    //     }
+    //     this.debouncedSearch();
+    //   }
+    // }
   })
 
   // Add a request interceptor

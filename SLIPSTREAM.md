@@ -84,7 +84,7 @@
             - [ ] If task has perm pre/post, flag perm post as "next"
             - [X] Move task to completed tasks land
     - [ ] TreeTableView
-        - [ ] Lazy Load
+        - [X] Lazy Load
         - [ ] Sorted by Priority score
             - [ ] recursive count of posts
                 - [ ] also lazily counted
