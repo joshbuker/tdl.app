@@ -1,6 +1,7 @@
 import Vue from 'vue/dist/vue.esm'
 import App from '../app.vue'
 import Vuetify from 'vuetify'
+// FIXME: Only include Vuex once?
 import Vuex from 'vuex'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import draggable from 'vuedraggable';
@@ -11,7 +12,11 @@ import bootstrap from 'bootstrap'
 import DatetimePicker from 'vuetify-datetime-picker'
 import $ from 'jquery'
 import _ from 'lodash'
-import moment from 'moment-timezone'
+
+// Time
+// FIXME: Only include Luxon once?
+import luxon from 'luxon'
+import { DateTime } from 'luxon'
 
 import api from '../api'
 import store from '../store'
@@ -34,8 +39,10 @@ const opts = {
   }
 }
 
-// Expose moment to everything via Vue
-Vue.prototype.$moment = moment;
+<% timezones = ActiveSupport::TimeZone.all.map{ |tz| { name: tz.name, value: tz.tzinfo.name} }.to_json %>
+
+// Expose luxon to everything via Vue
+Vue.prototype.$luxon = luxon;
 
 export default new Vuetify(opts)
 
@@ -85,6 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedTag: null,
       view: 0,
       //
+      // Bake in timezones from Rails
+      //
+      timezones: JSON.parse('<%= timezones.gsub("\'", "") %>'),
+      //
       // AJAX variables (TODO: convert to Vuex store)
       //
       currentTask: {},
@@ -97,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
       draggable
     },
     created: function() {
+      this.fetchTimezone();
       this.refreshEverything();
       this.debouncedSearch = _.debounce(this.searchForTasks, 400);
     },
@@ -152,6 +164,15 @@ document.addEventListener('DOMContentLoaded', () => {
         treeTasks: 'tasks/treeTasks',
         search: 'tasks/search'
       }),
+      timezone: {
+        get() {
+          return this.$store.state.settings.timezone;
+        },
+        set(value) {
+          // FIXME: This doesn't properly rollback on failure
+          this.$store.dispatch('settings/updateTimezone', { timezone: value });
+        }
+      },
       lists: {
         get() {
           return this.$store.state.lists.lists;
@@ -393,6 +414,14 @@ document.addEventListener('DOMContentLoaded', () => {
         this.reviewDialog = false;
         this.reviewQueue = [];
         this.refreshEverything();
+      },
+      fetchTimezone() {
+        this.$store.dispatch('settings/fetchTimezone').
+        catch(
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
       },
       findTreeTask(items, title) {
         if(!items) return;

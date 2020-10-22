@@ -1,5 +1,5 @@
 v-dialog[v-model='editListDialog' persistent]
-  v-card
+  v-card[:tile='$vuetify.breakpoint.mobile']
     v-card-title.headline Edit List Settings
     v-divider
     v-card-text[v-if='listToBeEdited']
@@ -8,7 +8,7 @@ v-dialog[v-model='editListDialog' persistent]
       v-btn[@click='updateList' color='primary'] Save
       v-btn[@click='resetListEdit' color='secondary'] Cancel
 v-dialog[v-model='editTagDialog' persistent]
-  v-card
+  v-card[:tile='$vuetify.breakpoint.mobile']
     v-card-title.headline Edit Tag Settings
     v-divider
     v-card-text[v-if='tagToBeEdited']
@@ -88,7 +88,7 @@ v-dialog[v-model='createTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
                 v-list-item-title
                   | {{ task.title }}
 v-dialog[v-model='reviewDialog' persistent :fullscreen='$vuetify.breakpoint.mobile']
-  v-card
+  v-card[:tile='$vuetify.breakpoint.mobile']
     v-toolbar[dark color='primary']
       v-spacer
       v-btn[:disabled='reviewWaiting == true' fab dark @click='endReview']

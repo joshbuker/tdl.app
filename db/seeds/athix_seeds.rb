@@ -3,7 +3,8 @@ athix = User.create!(
   given_name: 'Josh',
   family_name: 'Buker',
   email: 'apate+tdl@nyx.chat',
-  password: 'password'
+  password: 'password',
+  timezone: 'Pacific Time (US & Canada)'
 )
 
 Struct.new('Tag', :title, :color)

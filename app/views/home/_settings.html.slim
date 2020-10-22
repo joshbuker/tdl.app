@@ -1,0 +1,10 @@
+v-card-title.headline
+  v-row[justify='center']
+    h2 Settings
+v-divider
+v-card-text
+  v-row[justify='center']
+    p
+      span> Current Timezone:
+      | {{ timezone }}
+  v-select[v-model='timezone' :items='timezones' item-text='name' item-value='value' single-line]

@@ -65,3 +65,6 @@ v-container#main[fluid]
               v-card.pt-6.mx-auto[v-else :key='treeSelected.title' flat]
                 h3.headline.mb-2
                   | {{ treeSelected.title }}
+    template[v-else-if='view == 3']
+      v-card.ma-3.pa-6[rounded width='100%']
+        = render partial: 'settings'

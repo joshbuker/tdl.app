@@ -34,6 +34,9 @@ Rails.application.routes.draw do
   resources :lists, except: [:show, :new, :edit], defaults: { format: :json }
   resources :tags, except: [:show, :new, :edit], defaults: { format: :json }
 
+  get 'timezone' => 'users#timezone'
+  patch 'timezone' => 'users#update_timezone'
+
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root to: 'home#index'
   # match '*path', to: 'home#index', format: false, via: :get

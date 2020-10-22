@@ -11,7 +11,6 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.5.1",
     "luxon": "^1.24.1",
-    "moment-timezone": "^0.5.31",
     "popper.js": "^1.16.0",
     "rails-erb-loader": "^5.5.2",
     "sass-loader": "^9.0.3",

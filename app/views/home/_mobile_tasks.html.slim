@@ -1,4 +1,4 @@
-v-card.pa-4[v-if='view == 0 || view == 1' tile]
+v-card.pa-4[v-if='view == 0 || view == 1 || view == 3' tile]
   template[v-if='view == 0']
     - %w[today tomorrow upcoming someday].each do |list|
       div
@@ -27,3 +27,5 @@ v-card.pa-4[v-if='view == 0 || view == 1' tile]
         v-chip.ml-1[v-for='tag in item.tags' :color='tag.color' :text-color='tag.text_color' :key='tag.title' @click.stop='selectTag(tag)']
           v-icon
             | fa-tag
+  template[v-else-if='view == 3']
+    = render partial: 'settings'
