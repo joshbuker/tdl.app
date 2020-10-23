@@ -249,13 +249,13 @@ const actions = {
       }
     );
   },
-  async search({ commit, state }, options) {
+  async removePrereq({ commit, state }, options) {
     return new Promise(
       (resolve, reject) => {
-        api.search(
+        api.removePrereq(
           options,
           (response) => {
-            commit('setSearch', response.data);
+            // TODO: Directly remove prereq
             resolve(response);
           },
           (error) => {
@@ -265,13 +265,13 @@ const actions = {
       }
     );
   },
-  async removePrereq({ commit, state }, options) {
+  async search({ commit, state }, options) {
     return new Promise(
       (resolve, reject) => {
-        api.removePrereq(
+        api.search(
           options,
           (response) => {
-            // TODO: Directly remove prereq
+            commit('setSearch', response.data);
             resolve(response);
           },
           (error) => {
