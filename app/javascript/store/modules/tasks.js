@@ -249,6 +249,22 @@ const actions = {
       }
     );
   },
+  async search({ commit, state }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.search(
+          options,
+          (response) => {
+            commit('setSearch', response.data);
+            resolve(response);
+          },
+          (error) => {
+            reject(error);
+          }
+        )
+      }
+    );
+  },
   async removePrereq({ commit, state }, options) {
     return new Promise(
       (resolve, reject) => {
@@ -332,22 +348,6 @@ const actions = {
         api.updateTaskTitle(
           options,
           (response) => {
-            resolve(response);
-          },
-          (error) => {
-            reject(error);
-          }
-        )
-      }
-    );
-  },
-  async search({ commit, state }, options) {
-    return new Promise(
-      (resolve, reject) => {
-        api.search(
-          options,
-          (response) => {
-            commit('setSearch', response.data);
             resolve(response);
           },
           (error) => {
