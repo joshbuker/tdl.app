@@ -13,9 +13,9 @@ The one TDL App to rule them all.
 
 ### Build
 
-* `rvm install 2.6.5`
+* `rvm install 2.7.2`
 * `rvm use`
-* `nvm install 13.0.1`
+* `nvm install 14.5.0`
 * `nvm use`
 * `gem install bundler`
 * `bundle install`

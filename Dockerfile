@@ -1,7 +1,7 @@
 #########################
 ## Official Ruby Image ##
 #########################
-FROM ruby:2.6.5
+FROM ruby:2.7.2
 
 #####################################
 ## Update base system requirements ##

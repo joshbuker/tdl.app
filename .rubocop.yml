@@ -23,7 +23,7 @@ AllCops:
     - 'storage/**/*'
     - 'vendor/**/*'
     - 'Gemfile'
-  TargetRubyVersion: 2.6.5
+  TargetRubyVersion: 2.7.2
 Rails:
   Enabled: true
 
