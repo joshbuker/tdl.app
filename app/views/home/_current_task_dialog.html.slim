@@ -33,10 +33,6 @@ v-dialog[v-model='currentTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
                 | {{ item.title }}
           v-select[label='List' v-model='currentList' @input='updateTaskList' :items='lists' item-text='title' item-value='title']
           v-datetime-picker[label='Review at' v-model='editReviewAt' @input='updateReviewAt']
-            v-icon[slot='dateIcon']
-              | fa-calendar
-            v-icon[slot='timeIcon']
-              | fa-clock-o
           v-textarea[label='Notes' placeholder='Write some notes...' v-model='currentTask.notes' @change='updateNotes']
         v-col
           v-row.pa-3

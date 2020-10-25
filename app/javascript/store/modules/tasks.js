@@ -1,28 +1,115 @@
 import api from '../../api'
+import { DateTime } from 'luxon'
 
 // Initial State
 const state = () => ({
-  today: [],
-  tomorrow: [],
-  upcoming: [],
-  someday: [],
+  // New stuff
+  tasks: [],
   treeview: [],
+  // Obsolete
   search: []
 })
 
 // getters
 const getters = {
-  today(state) {
-    return state.today;
+  list_tasks: (state) => (list) => {
+    if(list == 'All Tasks' || list == null) {
+      return state.tasks;
+    } else {
+      return state.tasks.filter(
+        (task) => { return (
+          task.list_title == list
+        )}
+      );
+    }
   },
-  tomorrow(state) {
-    return state.tomorrow;
+  tasks: (state, getters) => (list, tags) => {
+    if(tags === [] || tags == null || Array.isArray(tags) !== true) {
+      return getters.list_tasks(list);
+    } else if(tags.includes('No Tags') === true) {
+      return getters.list_tasks(list).filter(
+        (task) => { return (
+          task.tags == []
+        )}
+      );
+    } else {
+      return getters.list_tasks(list).filter(
+        // For every task in the list
+        (task) => { return (
+          // For every tag we're limiting by
+          tags.every(
+            (tag) => { return (
+              // Ensure that the task includes said tag
+              task.tags.some(
+                (task_tag) => { return (
+                  task_tag.title == tag
+                )}
+              )
+            )}
+          )
+        )}
+      );
+    }
   },
-  upcoming(state) {
-    return state.upcoming;
+  today: (state, getters) => (list, tags) => {
+    const endOfDay = DateTime.local().endOf('day').toMillis();
+
+    return getters.tasks(list, tags).filter(
+      (task) => { return (
+        task.review_at == null ||
+        DateTime.fromISO(task.review_at).toMillis() <= endOfDay
+      )}
+    );
   },
-  someday(state) {
-    return state.someday;
+  tomorrow: (state, getters) => (list, tags) => {
+    const tomorrow = DateTime.local().plus({ days: 1 });
+    const startOfTomorrow = tomorrow.startOf('day').toMillis();
+    const endOfTomorrow = tomorrow.endOf('day').toMillis();
+
+    return getters.tasks(list, tags).filter(
+      (task) => {
+        if(task.review_at != null) {
+          return (
+            DateTime.fromISO(task.review_at).toMillis() >= startOfTomorrow &&
+            DateTime.fromISO(task.review_at).toMillis() <= endOfTomorrow
+          )
+        } else {
+          return false;
+        }
+      }
+    );
+  },
+  upcoming: (state, getters) => (list, tags) => {
+    const startOfUpcoming = DateTime.local().plus({ days: 2 }).startOf('day').toMillis();
+    const endOfUpcoming = DateTime.local().plus({ days: 31 }).endOf('day').toMillis();
+
+    return getters.tasks(list, tags).filter(
+      (task) => {
+        if(task.review_at != null) {
+          return (
+            DateTime.fromISO(task.review_at).toMillis() >= startOfUpcoming &&
+            DateTime.fromISO(task.review_at).toMillis() <= endOfUpcoming
+          )
+        } else {
+          return false;
+        }
+      }
+    );
+  },
+  someday: (state, getters) => (list, tags) => {
+    const endOfUpcoming = DateTime.local().plus({ days: 31 }).endOf('day').toMillis();
+
+    return getters.tasks(list, tags).filter(
+      (task) => {
+        if(task.review_at != null) {
+          return (
+            DateTime.fromISO(task.review_at).toMillis() > endOfUpcoming
+          )
+        } else {
+          return false;
+        }
+      }
+    );
   },
   // TODO: Consolidate naming for treeTasks/treeview
   treeTasks(state) {
@@ -147,67 +234,15 @@ const actions = {
   },
   // TODO: Should this use await?
   async refresh({ commit, state, dispatch }, options) {
-    dispatch('refreshToday', options);
-    dispatch('refreshTomorrow', options);
-    dispatch('refreshUpcoming', options);
-    dispatch('refreshSomeday', options);
+    dispatch('refreshTasks');
     dispatch('refreshTreeview', options);
   },
-  async refreshToday({ commit, state }, options) {
+  async refreshTasks({ commit, state }) {
     return new Promise(
       (resolve, reject) => {
-        api.refreshToday(
-          options,
+        api.refreshTasks(
           (response) => {
-            commit('setToday', response.data);
-            resolve(response);
-          },
-          (error) => {
-            reject(error);
-          }
-        )
-      }
-    );
-  },
-  async refreshTomorrow({ commit, state }, options) {
-    return new Promise(
-      (resolve, reject) => {
-        api.refreshTomorrow(
-          options,
-          (response) => {
-            commit('setTomorrow', response.data);
-            resolve(response);
-          },
-          (error) => {
-            reject(error);
-          }
-        )
-      }
-    );
-  },
-  async refreshUpcoming({ commit, state }, options) {
-    return new Promise(
-      (resolve, reject) => {
-        api.refreshUpcoming(
-          options,
-          (response) => {
-            commit('setUpcoming', response.data);
-            resolve(response);
-          },
-          (error) => {
-            reject(error);
-          }
-        )
-      }
-    );
-  },
-  async refreshSomeday({ commit, state }, options) {
-    return new Promise(
-      (resolve, reject) => {
-        api.refreshSomeday(
-          options,
-          (response) => {
-            commit('setSomeday', response.data);
+            commit('setTasks', response.data);
             resolve(response);
           },
           (error) => {
@@ -361,17 +396,8 @@ const actions = {
 
 // mutations
 const mutations = {
-  setToday(state, tasks) {
-    state.today = tasks;
-  },
-  setTomorrow(state, tasks) {
-    state.tomorrow = tasks;
-  },
-  setUpcoming(state, tasks) {
-    state.upcoming = tasks;
-  },
-  setSomeday(state, tasks) {
-    state.someday = tasks;
+  setTasks(state, tasks) {
+    state.tasks = tasks;
   },
   setTreeview(state, tasks) {
     state.treeview = tasks;

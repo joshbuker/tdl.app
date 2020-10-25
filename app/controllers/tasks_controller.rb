@@ -4,11 +4,17 @@ class TasksController < ApiController
     :index, :today, :tomorrow, :upcoming, :someday, :treeview, :search, :create,
     :clear_completed
   ]
-  before_action :set_tasks, only: [:today, :tomorrow, :upcoming, :someday, :treeview]
+  before_action :set_tasks, only: [
+    :index, :today, :tomorrow, :upcoming, :someday, :treeview
+  ]
 
   def index
-    tasks = Task.search(params[:title]).order(order: :asc, id: :asc).map do |task|
-      task.to_tree
+    if @tasks.any?
+      tasks = @tasks.includes(:tags, :list).next_up.map do |task|
+        task.to_hash
+      end
+    else
+      tasks = []
     end
 
     render json: tasks.to_json

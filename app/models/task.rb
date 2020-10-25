@@ -207,7 +207,7 @@ class Task < ApplicationRecord
       completed: completed,
       list_title: list.title,
       notes: notes,
-      review_at: review_at&.strftime('%Y-%m-%d %H:%M'),
+      review_at: review_at.present? ? I18n.l(review_at, format: :iso_8601) : nil,
       tag_ordering: taggings.reload.map { |tagging| { title: tagging.tag.title, order: tagging.order } },
       tags: tags.reload.map{ |tag| { title: tag.title, color: tag.color, text_color: tag.text_color } }
     }

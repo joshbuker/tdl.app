@@ -137,55 +137,11 @@ export default {
       onFailure(error);
     });
   },
-  async refreshToday(options, onSuccess, onFailure) {
-    return axios.post('<%= tasks_url %>/today', {
-      limiter_type: options.limiter_type,
-      limiter_value: options.limiter_value,
-      credentials: 'same-origin',
-      'X-CSRF-Token': token,
-      'authenticity_token': token
-    }).
-    then(response => {
-      onSuccess(response);
-    }).
-    catch(error => {
-      onFailure(error);
-    });
-  },
-  async refreshTomorrow(options, onSuccess, onFailure) {
-    return axios.post('<%= tasks_url %>/tomorrow', {
-      limiter_type: options.limiter_type,
-      limiter_value: options.limiter_value,
-      credentials: 'same-origin',
-      'X-CSRF-Token': token,
-      'authenticity_token': token
-    }).
-    then(response => {
-      onSuccess(response);
-    }).
-    catch(error => {
-      onFailure(error);
-    });
-  },
-  async refreshUpcoming(options, onSuccess, onFailure) {
-    return axios.post('<%= tasks_url %>/upcoming', {
-      limiter_type: options.limiter_type,
-      limiter_value: options.limiter_value,
-      credentials: 'same-origin',
-      'X-CSRF-Token': token,
-      'authenticity_token': token
-    }).
-    then(response => {
-      onSuccess(response);
-    }).
-    catch(error => {
-      onFailure(error);
-    });
-  },
-  async refreshSomeday(options, onSuccess, onFailure) {
-    return axios.post('<%= tasks_url %>/someday', {
-      limiter_type: options.limiter_type,
-      limiter_value: options.limiter_value,
+  // TODO: Clean up this request/endpoint to just return tasks without params
+  async refreshTasks(onSuccess, onFailure) {
+    return axios.post('<%= tasks_url %>', {
+      limiter_type: 'list',
+      limiter_value: 'All Tasks',
       credentials: 'same-origin',
       'X-CSRF-Token': token,
       'authenticity_token': token

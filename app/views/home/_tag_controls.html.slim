@@ -1,6 +1,6 @@
 template v-if='editControls != true'
   v-list[nav]
-    v-list-item-group[v-model='selectedTag' @change='refreshTasks' color='primary' mandatory]
+    v-list-item-group[v-model='selectedTag' color='primary' multiple]
       v-list-item[value='No Tags' link color='white']
         v-list-item-content
           v-list-item-title

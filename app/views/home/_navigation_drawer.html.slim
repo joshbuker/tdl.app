@@ -1,5 +1,5 @@
 v-navigation-drawer[v-model='drawer' app clipped v-if='view == 0 || view == 1' width='300px']
-  v-tabs[v-model='controls' @change='refreshEverything' fixed-tabs icons-and-text]
+  v-tabs[v-model='controls' fixed-tabs icons-and-text]
     v-tab[:disabled='editControls == true']
       | Lists
       v-icon

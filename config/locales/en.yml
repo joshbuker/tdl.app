@@ -1,33 +1,32 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t 'hello'
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t('hello') %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# The following keys must be escaped otherwise they will not be retrieved by
-# the default I18n backend:
-#
-# true, false, on, off, yes, no
-#
-# Instead, surround them with single quotes.
-#
-# en:
-#   'true': 'foo'
-#
-# To learn more, please read the Rails Internationalization guide
-# available at https://guides.rubyonrails.org/i18n.html.
-
+#############
+## English ##
+#############
 en:
-  hello: "Hello world"
+  ##################
+  ## Time Formats ##
+  ##################
+  # For symbols, reference: http://apidock.com/ruby/DateTime/strftime
+
+  time:
+    formats:
+      # Used when no format is specified
+      default: "%B %-d, %Y"
+      # DateTime Formats
+      iso_8601: "%FT%T%:z"
+      datetime_human_readable: "%B %-d, %Y - %T"
+      datetime_javascript: '%Y-%m-%d %H:%M'
+      # Date Formats
+      date_standard: "%-m/%-d/%Y"
+      date_full: "%B %-d, %Y"
+      date_iso_8601: "%Y-%m-%d"
+      date_filename: "%^b-%d-%Y"
+      # Time Formats
+      time_zone: "%Z"
+      time_12_hours: "%r"
+      time_24_hours: "%T"
+  date:
+    formats:
+      date_standard: "%-m/%-d/%Y"
+      date_full: "%B %-d, %Y"
+      date_iso_8601: "%Y-%m-%d"
+      date_filename: "%^b-%d-%Y"

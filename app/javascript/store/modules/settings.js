@@ -1,4 +1,5 @@
 import api from '../../api'
+import { Settings } from 'luxon'
 
 // Initial State
 const state = () => ({
@@ -50,6 +51,8 @@ const actions = {
 const mutations = {
   setTimezone(state, timezone) {
     state.timezone = timezone;
+    // Also set default timezone for Luxon...
+    Settings.defaultZoneName = timezone;
   }
 }
 

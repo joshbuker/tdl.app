@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   post 'tasks/search' => 'tasks#search'
   get 'tasks/search/:title' => 'tasks#search'
   # FIXME: Using post to allow passing params outside of URL
+  post 'tasks' => 'tasks#index'
   post 'tasks/today' => 'tasks#today'
   post 'tasks/tomorrow' => 'tasks#tomorrow'
   post 'tasks/upcoming' => 'tasks#upcoming'

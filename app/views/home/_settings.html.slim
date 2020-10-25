@@ -7,4 +7,8 @@ v-card-text
     p
       span> Current Timezone:
       | {{ timezone }}
+  v-row[justify='center']
+    p
+      span> Current Time:
+      | {{ currentTime }}
   v-select[v-model='timezone' :items='timezones' item-text='name' item-value='value' single-line]

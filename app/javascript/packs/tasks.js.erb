@@ -9,21 +9,23 @@ import draggable from 'vuedraggable';
 import toastr from 'toastr'
 import axios from 'axios'
 import bootstrap from 'bootstrap'
-import DatetimePicker from 'vuetify-datetime-picker'
 import $ from 'jquery'
 import _ from 'lodash'
 
-// Time
-// FIXME: Only include Luxon once?
+// Time - See link for formatting symbols
+// https://moment.github.io/luxon/docs/manual/formatting.html#table-of-tokens
 import luxon from 'luxon'
 import { DateTime } from 'luxon'
 
 import api from '../api'
 import store from '../store'
 
+import DateTimePicker from '../components/DateTimePicker.vue'
+
 Vue.use(Vuex)
 Vue.use(Vuetify)
-Vue.use(DatetimePicker)
+
+Vue.component('v-datetime-picker', DateTimePicker)
 
 const opts = {
   icons: {
@@ -88,9 +90,13 @@ document.addEventListener('DOMContentLoaded', () => {
       reviewQueue: [],
       reviewWaiting: false,
       searchEnabled: true,
-      selectedList: null,
+      selectedList: 'All Tasks',
       selectedTag: null,
       view: 0,
+      //
+      // Show current time on settings page
+      //
+      currentTime: '',
       //
       // Bake in timezones from Rails
       //
@@ -107,10 +113,16 @@ document.addEventListener('DOMContentLoaded', () => {
     components: {
       draggable
     },
-    created: function() {
+    created() {
       this.fetchTimezone();
       this.refreshEverything();
       this.debouncedSearch = _.debounce(this.searchForTasks, 400);
+    },
+    mounted() {
+      this.$options.timer = window.setTimeout(this.updateCurrentTime, 1000);
+    },
+    beforeDestroy() {
+      window.clearTimeout(this.$options.timer);
     },
     computed: {
       currentReviewTask() {
@@ -157,20 +169,100 @@ document.addEventListener('DOMContentLoaded', () => {
       ...mapGetters({
         allTasksCount: 'lists/allTasksCount',
         noTagsCount: 'tags/noTagsCount',
-        today: 'tasks/today',
         tomorrow: 'tasks/tomorrow',
         upcoming: 'tasks/upcoming',
         someday: 'tasks/someday',
         treeTasks: 'tasks/treeTasks',
         search: 'tasks/search'
       }),
+      today: {
+        get() {
+          var list = 'All Tasks';
+          var tags = [];
+          if(this.limiterValue != null) {
+            if(this.limiterType === 'list') {
+              list = this.limiterValue;
+            } else {
+              tags = this.limiterValue;
+            }
+          }
+          return this.$store.getters['tasks/today'](list, tags);
+        },
+        set(value) {
+          // lol no
+        }
+      },
+      tomorrow: {
+        get() {
+          var list = 'All Tasks';
+          var tags = [];
+          if(this.limiterValue != null) {
+            if(this.limiterType === 'list') {
+              list = this.limiterValue;
+            } else {
+              tags = this.limiterValue;
+            }
+          }
+          return this.$store.getters['tasks/tomorrow'](list, tags);
+        },
+        set(value) {
+          // lol no
+        }
+      },
+      upcoming: {
+        get() {
+          var list = 'All Tasks';
+          var tags = [];
+          if(this.limiterValue != null) {
+            if(this.limiterType === 'list') {
+              list = this.limiterValue;
+            } else {
+              tags = this.limiterValue;
+            }
+          }
+          return this.$store.getters['tasks/upcoming'](list, tags);
+        },
+        set(value) {
+          // lol no
+        }
+      },
+      someday: {
+        get() {
+          var list = 'All Tasks';
+          var tags = [];
+          if(this.limiterValue != null) {
+            if(this.limiterType === 'list') {
+              list = this.limiterValue;
+            } else {
+              tags = this.limiterValue;
+            }
+          }
+          return this.$store.getters['tasks/someday'](list, tags);
+        },
+        set(value) {
+          // lol no
+        }
+      },
       timezone: {
         get() {
           return this.$store.state.settings.timezone;
         },
         set(value) {
-          // FIXME: This doesn't properly rollback on failure
-          this.$store.dispatch('settings/updateTimezone', { timezone: value });
+          let previousTimezone = this.timezone;
+          this.$store.dispatch('settings/updateTimezone', {
+            timezone: value
+          }).
+          then(
+            (response) => {
+              // The timing of today/tomorrow/etc changes based on timezone...
+              this.refreshTasks();
+              toastr.success('Timezone updated!')
+            },
+            (error) => {
+              // TODO: Rollback selection on failure...
+              toastr.error(error.message);
+            }
+          );
         }
       },
       lists: {
@@ -763,6 +855,10 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       },
+      updateCurrentTime() {
+        this.currentTime = DateTime.local().toFormat('h:mm:ss a ZZZZ');
+        this.$options.timer = window.setTimeout(this.updateCurrentTime, 1000);
+      },
       updateNotes() {
         this.$store.dispatch('tasks/updateNotes', {
           id: this.currentTask.id,
@@ -898,11 +994,10 @@ document.addEventListener('DOMContentLoaded', () => {
         );
       },
       selectTag(tag) {
-        this.selectedTag = tag.title;
+        this.selectedTag = [tag.title];
         if(this.controls == 0) {
           this.controls = 1;
         }
-        this.refreshTasks();
       },
       logout() {
         api.logout(
