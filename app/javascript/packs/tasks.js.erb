@@ -43,9 +43,6 @@ const opts = {
 
 <% timezones = ActiveSupport::TimeZone.all.map{ |tz| { name: tz.name, value: tz.tzinfo.name} }.to_json %>
 
-// Expose luxon to everything via Vue
-Vue.prototype.$luxon = luxon;
-
 export default new Vuetify(opts)
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -91,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
       reviewWaiting: false,
       searchEnabled: true,
       selectedList: 'All Tasks',
-      selectedTag: null,
+      selectedTagsJank: [], // Allow custom No Tags logic (replace this plz)
       view: 0,
       //
       // Show current time on settings page
@@ -130,27 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return this.reviewQueue[0];
       },
-      limiterType() {
-        if(this.controls == 0) {
-          return 'list';
-        } else {
-          return 'tag';
-        }
-      },
-      limiterValue() {
-        if(this.limiterType == 'list') {
-          return this.selectedList;
-        } else {
-          return this.selectedTag;
-        }
-      },
-      // tagTextColor() {
-      //   if(this.tagToBeEdited && this.tagToBeEdited.color) {
-      //     return this.textColor(this.tagToBeEdited.color);
-      //   } else {
-      //     return '#000000';
-      //   }
-      // },
       processing() {
         if(this.requestCount == 0) {
           return false;
@@ -166,6 +142,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return this.findTreeTask(this.treeTasks, title);
       },
+      selectedTags: {
+        get() {
+          return this.selectedTagsJank;
+        },
+        set(value) {
+          if(value.includes('No Tags')) {
+            if(this.selectedTagsJank.includes('No Tags')) {
+              this.selectedTagsJank = value.filter(
+                (tag) => { return tag != 'No Tags' }
+              );
+            } else {
+              this.selectedTagsJank = ['No Tags'];
+            }
+          } else {
+            this.selectedTagsJank = value;
+          }
+        }
+      },
       ...mapGetters({
         allTasksCount: 'lists/allTasksCount',
         noTagsCount: 'tags/noTagsCount',
@@ -177,70 +171,42 @@ document.addEventListener('DOMContentLoaded', () => {
       }),
       today: {
         get() {
-          var list = 'All Tasks';
-          var tags = [];
-          if(this.limiterValue != null) {
-            if(this.limiterType === 'list') {
-              list = this.limiterValue;
-            } else {
-              tags = this.limiterValue;
-            }
-          }
+          var list = this.selectedList;
+          var tags = this.selectedTags;
           return this.$store.getters['tasks/today'](list, tags);
         },
         set(value) {
-          // lol no
+          this.$store.commit('tasks/setToday', value);
         }
       },
       tomorrow: {
         get() {
-          var list = 'All Tasks';
-          var tags = [];
-          if(this.limiterValue != null) {
-            if(this.limiterType === 'list') {
-              list = this.limiterValue;
-            } else {
-              tags = this.limiterValue;
-            }
-          }
+          var list = this.selectedList;
+          var tags = this.selectedTags;
           return this.$store.getters['tasks/tomorrow'](list, tags);
         },
         set(value) {
-          // lol no
+          this.$store.commit('tasks/setTomorrow', value);
         }
       },
       upcoming: {
         get() {
-          var list = 'All Tasks';
-          var tags = [];
-          if(this.limiterValue != null) {
-            if(this.limiterType === 'list') {
-              list = this.limiterValue;
-            } else {
-              tags = this.limiterValue;
-            }
-          }
+          var list = this.selectedList;
+          var tags = this.selectedTags;
           return this.$store.getters['tasks/upcoming'](list, tags);
         },
         set(value) {
-          // lol no
+          this.$store.commit('tasks/setUpcoming', value);
         }
       },
       someday: {
         get() {
-          var list = 'All Tasks';
-          var tags = [];
-          if(this.limiterValue != null) {
-            if(this.limiterType === 'list') {
-              list = this.limiterValue;
-            } else {
-              tags = this.limiterValue;
-            }
-          }
+          var list = this.selectedList;
+          var tags = this.selectedTags;
           return this.$store.getters['tasks/someday'](list, tags);
         },
         set(value) {
-          // lol no
+          this.$store.commit('tasks/setSomeday', value);
         }
       },
       timezone: {
@@ -286,13 +252,11 @@ document.addEventListener('DOMContentLoaded', () => {
       addTask() {
         this.$store.dispatch('tasks/create', {
           title: this.newTask,
-          tags: this.createTaskTags,
-          list: this.createTaskList
+          list: this.createTaskList,
+          tags: this.createTaskTags
         }).
         then(
           (response) => {
-            // TODO: Directly add task
-            this.refreshTasks();
             this.newTask = '';
             toastr.success('Added new task!');
           },
@@ -425,8 +389,8 @@ document.addEventListener('DOMContentLoaded', () => {
         this.$store.dispatch('tasks/create', {
           title: taskTitle,
           time: taskTime,
-          limiter_type: this.limiterType,
-          limiter_value: this.limiterValue
+          list: this.selectedList,
+          tags: this.selectedTags
         }).
         then(
           (response) => {
@@ -937,8 +901,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }).
         then(
           (response) => {
-            if(previousTagTitle == this.selectedTag) {
-              this.selectedTag = this.editTagTitle;
+            if(this.selectedTags.includes(previousTagTitle)) {
+              const index = this.selectedTags.findIndex(this.editTagTitle);
+              this.selectedTags.splice(index, 1, this.editTagTitle);
             }
             this.refreshTasks();
             this.resetTagEdit();
@@ -994,7 +959,7 @@ document.addEventListener('DOMContentLoaded', () => {
         );
       },
       selectTag(tag) {
-        this.selectedTag = [tag.title];
+        this.selectedTags = [tag.title];
         if(this.controls == 0) {
           this.controls = 1;
         }
@@ -1023,21 +988,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Add a request interceptor
   axios.interceptors.request.use(function (config) {
-      app.requestCount += 1;
-      return config;
-    }, function (error) {
-      // TODO: Should this do nothing or decrement requestCount?
-      return Promise.reject(error);
-    });
+    app.requestCount += 1;
+    return config;
+  }, function (error) {
+    // TODO: Should this do nothing or decrement requestCount?
+    return Promise.reject(error);
+  });
 
   // Add a response interceptor
   axios.interceptors.response.use(function (response) {
-      // Any status code that lie within the range of 2xx cause this function to trigger
-      app.requestCount -= 1;
-      return response;
-    }, function (error) {
-      // Any status codes that falls outside the range of 2xx cause this function to trigger
-      app.requestCount -= 1;
-      return Promise.reject(error);
-    });
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    app.requestCount -= 1;
+    return response;
+  }, function (error) {
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    app.requestCount -= 1;
+    return Promise.reject(error);
+  });
 })

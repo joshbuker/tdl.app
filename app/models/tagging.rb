@@ -4,6 +4,13 @@ class Tagging < ApplicationRecord
 
   validate :tag_and_task_owner_match
 
+  def task_hash
+    {
+      title: tag.title,
+      order: order
+    }
+  end
+
   def tag_and_task_owner_match
     return unless tag.is_a?(Tag) && task.is_a?(Task)
     return if tag.user == task.list&.user

@@ -107,6 +107,12 @@ const mutations = {
   addList(state, list) {
     state.lists.push(list);
   },
+  incrementCount(state, list_title) {
+    const index = state.lists.findIndex(
+      (element) => { return (element.title == list_title) }
+    );
+    state.lists[index].task_count += 1;
+  },
   setLists(state, lists) {
     state.lists = lists;
   },

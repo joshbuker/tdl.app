@@ -1,65 +1,13 @@
 class TasksController < ApiController
   # TODO: Make this except instead of only
   before_action :set_task, except: [
-    :index, :today, :tomorrow, :upcoming, :someday, :treeview, :search, :create,
-    :clear_completed
+    :index, :treeview, :search, :create, :clear_completed
   ]
-  before_action :set_tasks, only: [
-    :index, :today, :tomorrow, :upcoming, :someday, :treeview
-  ]
+  before_action :set_tasks, only: [:index, :treeview]
 
   def index
     if @tasks.any?
       tasks = @tasks.includes(:tags, :list).next_up.map do |task|
-        task.to_hash
-      end
-    else
-      tasks = []
-    end
-
-    render json: tasks.to_json
-  end
-
-  def today
-    if @tasks.any?
-      tasks = @tasks.includes(:tags, :list).today.next_up.map do |task|
-        task.to_hash
-      end
-    else
-      tasks = []
-    end
-
-    render json: tasks.to_json
-  end
-
-  def tomorrow
-    if @tasks.any?
-      tasks = @tasks.includes(:tags, :list).tomorrow.next_up.map do |task|
-        task.to_hash
-      end
-    else
-      tasks = []
-    end
-
-    render json: tasks.to_json
-  end
-
-  def upcoming
-    if @tasks.any?
-      tasks = @tasks.includes(:tags, :list).upcoming.next_up.map do |task|
-        task.to_hash
-      end
-    else
-      tasks = []
-    end
-
-    render json: tasks.to_json
-  end
-
-  # This is when I plan on making this DRY
-  def someday
-    if @tasks.any?
-      tasks = @tasks.includes(:tags, :list).someday.next_up.map do |task|
         task.to_hash
       end
     else
@@ -98,18 +46,23 @@ class TasksController < ApiController
   def create
     task = Task.new(task_params)
 
-    if params[:limiter_value].present? && params[:limiter_type].present?
-      if params[:limiter_type] == 'list' && params[:limiter_value] != 'All Tasks'
-        task.list = current_user.lists.find_by(title: params[:limiter_value])
-      else
-        task.list = current_user.lists.find_by(title: 'Inbox')
+    if params[:tags].present? && params[:tags].is_a?(Array)
+      tags = []
+      params[:tags].each do |tag_title|
+        if tag = current_user.tags.find_by(title: tag_title)
+          tags << tag
+        end
       end
+      task.tags = tags
+    end
 
-      if params[:limiter_type] == 'tag' && params[:limiter_value] != 'No Tags'
-        tag = current_user.tags.find_by(title: params[:limiter_value])
-        task.tags << tag
-      end
+    if params[:list].present? && params[:list] != 'All Tasks'
+      task.list = current_user.lists.find_by(title: params[:list])
+    else
+      task.list = current_user.lists.find_by(title: 'Inbox')
+    end
 
+    if params[:time].present?
       case params[:time].to_s.titleize
       when 'Today'
         task.review_at = Time.current
@@ -119,22 +72,6 @@ class TasksController < ApiController
         task.review_at = 2.weeks.from_now
       when 'Someday'
         task.review_at = 2.months.from_now
-      end
-    else
-      if params[:tags].present? && params[:tags].is_a?(Array)
-        tags = []
-        params[:tags].each do |tag_title|
-          if tag = current_user.tags.find_by(title: tag_title)
-            tags << tag
-          end
-        end
-        task.tags = tags
-      end
-
-      if params[:list].present? && params[:list] != 'All Tasks'
-        task.list = current_user.lists.find_by(title: params[:list])
-      else
-        task.list = current_user.lists.find_by(title: 'Inbox')
       end
     end
 
@@ -273,7 +210,7 @@ class TasksController < ApiController
     @task.save!
 
     if @task.review_at.present?
-      render json: @task.review_at.strftime('%Y-%m-%d %H:%M').to_json
+      render json: I18n.l(@task.review_at, format: :iso_8601).to_json
     else
       head :ok
     end
@@ -344,33 +281,8 @@ private
   end
 
   def set_tasks
-    # FIXME: Refactor evil if/else chain into Task scope/class method
     if current_user.present?
-      if params[:limiter_type].present? && params[:limiter_value].present?
-        if params[:limiter_type] == 'list'
-          if params[:limiter_value] == 'All Tasks'
-            @tasks = current_user.tasks.order(order: :asc, id: :asc)
-          else
-            @tasks = current_user.tasks.by_list(
-              params[:limiter_value],
-              current_user
-            )
-          end
-        elsif params[:limiter_type] == 'tag'
-          if params[:limiter_value] == 'No Tags'
-            @tasks = current_user.tasks.tagless.order(order: :asc, id: :asc)
-          else
-            @tasks = current_user.tasks.by_tag(
-              params[:limiter_value],
-              current_user
-            )
-          end
-        else
-          @tasks = Task.none
-        end
-      else
-        @tasks = current_user.tasks.order(order: :asc, id: :asc)
-      end
+      @tasks = current_user.tasks.order(order: :asc, id: :asc)
     else
       @tasks = Task.none
     end

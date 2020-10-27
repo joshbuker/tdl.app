@@ -12,7 +12,7 @@
         h5.primary--text
           | {{ currentTask.title }}
         v-divider
-        v-text-field[label='Task title' v-model='newTask' @keyup.enter="add#{dry}Task"]
+        v-text-field[label='Task title' v-model.lazy='newTask' @keyup.enter="add#{dry}Task"]
         v-switch[v-model='searchEnabled' label='Auto Search']
         v-btn[@click='searchForTasks' text-with-icon]
           v-icon[left]

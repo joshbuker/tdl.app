@@ -13,7 +13,6 @@ const getters = {
     return (state.tags[state.tags.length - 1].order + 1);
   },
   noTagsCount(state) {
-    // TODO: Set this using an api request on initial load
     return state.noTagsCount;
   },
   tags(state) {
@@ -123,6 +122,15 @@ const actions = {
 const mutations = {
   addTag(state, tag) {
     state.tags.push(tag);
+  },
+  incrementCount(state, tag) {
+    const index = state.tags.findIndex(
+      (element) => { return (element.id == tag.id) }
+    );
+    state.tags[index].task_count += 1;
+  },
+  incrementNoTagsCount(state) {
+    state.noTagsCount += 1;
   },
   removeTag(state, id) {
     const index = state.tags.findIndex(

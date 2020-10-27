@@ -12,6 +12,10 @@ const state = () => ({
 
 // getters
 const getters = {
+  nextOrder(state, getters) {
+    if(getters.today('All Tasks', []).length < 1) return undefined;
+    return (getters.today('All Tasks', [])[getters.today('All Tasks', []).length - 1].order + 1);
+  },
   list_tasks: (state) => (list) => {
     if(list == 'All Tasks' || list == null) {
       return state.tasks;
@@ -29,7 +33,11 @@ const getters = {
     } else if(tags.includes('No Tags') === true) {
       return getters.list_tasks(list).filter(
         (task) => { return (
-          task.tags == []
+          task.tags == null ||
+          (
+            Array.isArray(task.tags) &&
+            task.tags.length == 0
+          )
         )}
       );
     } else {
@@ -168,13 +176,31 @@ const actions = {
       }
     );
   },
-  async create({ commit, state }, options) {
+  async create({ commit, state, getters }, options) {
     return new Promise(
       (resolve, reject) => {
+        options.order = getters.nextOrder;
         api.createTask(
           options,
           (response) => {
-            // TODO: Add task directly
+            commit('addTask', response.data);
+            commit('lists/incrementCount',
+              response.data.list_title,
+              { root: true }
+            );
+            const hasTags = (
+              Array.isArray(response.data.tags) &&
+              response.data.tags.length > 0
+            )
+            if(hasTags) {
+              response.data.tags.forEach(
+                (tag) => {
+                  commit('tags/incrementCount', tag, { root: true });
+                }
+              );
+            } else {
+              commit('tags/incrementNoTagsCount', {}, { root: true });
+            }
             resolve(response);
           },
           (error) => {
@@ -396,6 +422,9 @@ const actions = {
 
 // mutations
 const mutations = {
+  addTask(state, task) {
+    state.tasks.push(task);
+  },
   setTasks(state, tasks) {
     state.tasks = tasks;
   },

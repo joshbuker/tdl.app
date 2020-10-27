@@ -205,11 +205,12 @@ class Task < ApplicationRecord
       order: order,
       title: title,
       completed: completed,
-      list_title: list.title,
+      list: list.task_hash,
+      list_title: list.title, # TODO: Replace usage with List object
       notes: notes,
       review_at: review_at.present? ? I18n.l(review_at, format: :iso_8601) : nil,
-      tag_ordering: taggings.reload.map { |tagging| { title: tagging.tag.title, order: tagging.order } },
-      tags: tags.reload.map{ |tag| { title: tag.title, color: tag.color, text_color: tag.text_color } }
+      tag_ordering: taggings.reload.map { |tagging| tagging.task_hash },
+      tags: tags.reload.map{ |tag| tag.task_hash }
     }
   end
 

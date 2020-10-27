@@ -25,6 +25,13 @@ class List < ApplicationRecord
     self.to_hash.to_json
   end
 
+  def task_hash
+    {
+      id: id,
+      title: title,
+    }
+  end
+
   private
 
   def reserved_title

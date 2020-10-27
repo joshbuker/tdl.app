@@ -36,6 +36,7 @@
               v-model="date"
               v-bind="datePickerProps"
               @input="showTimePicker"
+              :show-current="currentDate"
               full-width
             ></v-date-picker>
           </v-tab-item>
@@ -65,12 +66,13 @@
 import { DateTime } from 'luxon'
 
 const DEFAULT_DATE = ''
-const DEFAULT_TIME = '00:00'
+const DEFAULT_TIME = ''
 const DEFAULT_DATE_FORMAT = 'LLLL d, yyyy -'
 const DEFAULT_TIME_FORMAT = 'h:mm a ZZZZ'
 const DEFAULT_DIALOG_WIDTH = 340
 const DEFAULT_CLEAR_TEXT = 'CLEAR'
 const DEFAULT_OK_TEXT = 'OK'
+const DEFAULT_CURRENT_DATE = DateTime.local().toISODate();
 
 export default {
   name: 'v-datetime-picker',
@@ -128,7 +130,8 @@ export default {
       display: false,
       activeTab: 0,
       date: DEFAULT_DATE,
-      time: DEFAULT_TIME
+      time: DEFAULT_TIME,
+      currentDate: DEFAULT_CURRENT_DATE
     }
   },
   mounted() {
@@ -168,6 +171,7 @@ export default {
       if (!this.datetime) {
         this.date = DEFAULT_DATE;
         this.time = DEFAULT_TIME;
+        this.currentDate = DateTime.local().toISODate();
         return
       }
 
@@ -183,6 +187,8 @@ export default {
       // These formats are dependent on what vuetify accepts
       this.date = initDateTime.toFormat('yyyy-MM-dd');
       this.time = initDateTime.toFormat('HH:mm');
+      // Auto update current date to see if it's changed (e.g. default timezone)
+      this.currentDate = DateTime.local().toISODate();
     },
     okHandler() {
       this.resetPicker();

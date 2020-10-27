@@ -50,6 +50,15 @@ class Tag < ApplicationRecord
     self.to_hash.to_json
   end
 
+  def task_hash
+    {
+      id: id,
+      title: title,
+      color: color,
+      text_color: text_color
+    }
+  end
+
 private
 
   def reserved_title

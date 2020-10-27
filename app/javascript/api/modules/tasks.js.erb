@@ -50,13 +50,10 @@ export default {
   async createTask(options, onSuccess, onFailure) {
     return axios.post('<%= tasks_url %>', {
       title: options.title,
-      // Used by create dialog
-      tags: options.tags,
       list: options.list,
+      tags: options.tags,
       // Used by quick create
       time: options.time,
-      limiter_type: options.limiter_type,
-      limiter_value: options.limiter_value,
       //
       credentials: 'same-origin',
       'X-CSRF-Token': token,
@@ -139,7 +136,7 @@ export default {
   },
   // TODO: Clean up this request/endpoint to just return tasks without params
   async refreshTasks(onSuccess, onFailure) {
-    return axios.post('<%= tasks_url %>', {
+    return axios.post('<%= tasks_url %>/next-up', {
       limiter_type: 'list',
       limiter_value: 'All Tasks',
       credentials: 'same-origin',
