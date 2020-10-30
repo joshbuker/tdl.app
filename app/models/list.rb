@@ -1,4 +1,6 @@
 class List < ApplicationRecord
+  include AutoStripTitle
+
   belongs_to :user
 
   has_many :tasks, dependent: :destroy

@@ -13,9 +13,9 @@ v-dialog[v-model='createTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
           v-chip[:color='item.color' :text-color='item.text_color' :key='item.title']
             | {{ item.title }}
       v-select[label='List' v-model='createTaskList' :items='lists' item-text='title' item-value='title']
-      v-text-field[label='Task title' v-model.lazy='newTask' @keyup.enter='addTask']
+      v-text-field[label='Task title' :value='newTask' @change='value => newTask = value' @keyup.enter='addTask']
       v-switch[v-model='searchEnabled' label='Auto Search']
-      v-btn[@click='searchForTasks' text-with-icon]
+      v-btn[@click='searchForTasks(newTask)' text-with-icon]
         v-icon[left]
           | fa-search
         | Search

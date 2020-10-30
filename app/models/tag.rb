@@ -1,4 +1,6 @@
 class Tag < ApplicationRecord
+  include AutoStripTitle
+
   belongs_to :user
 
   has_many :taggings

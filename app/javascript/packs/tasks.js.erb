@@ -74,6 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
       newList: '',
       newTag: '',
       newTask: '',
+      newPreTask: '',
+      newPostTask: '',
       newQuickTodayTask: '',
       newQuickTomorrowTask: '',
       newQuickUpcomingTask: '',
@@ -273,8 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
         then(
           (response) => {
             // TODO: Directly add postreq
-            this.refreshTasks();
             this.currentPostreqs.push(response.data);
+            this.refreshTasks();
             toastr.success('Added postrequisite!');
           },
           (error) => {
@@ -285,16 +287,15 @@ document.addEventListener('DOMContentLoaded', () => {
       // TODO: Convert this into a single vuex action
       addPostTask() {
         this.$store.dispatch('tasks/create', {
-          title: this.newTask,
+          title: this.newPostTask,
           tags: this.currentTags.map(item => item.title),
           list: this.currentList
         }).
         then(
           (response) => {
-            this.today.push(response.data);
-            this.newTask = '';
+            this.newPostTask = '';
             toastr.success('Added new task!');
-            this.addPostrequisite(this.today[this.today.length - 1]);
+            this.addPostrequisite({ id: response.data.id });
           },
           (error) => {
             toastr.error(error.message);
@@ -309,8 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
         then(
           (response) => {
             // TODO: Directly add prereq
-            this.refreshTasks();
             this.currentPrereqs.push(response.data);
+            this.refreshTasks();
             toastr.success('Added prerequisite!');
           },
           (error) => {
@@ -321,16 +322,15 @@ document.addEventListener('DOMContentLoaded', () => {
       // TODO: Convert this into a single vuex action
       addPreTask() {
         this.$store.dispatch('tasks/create', {
-          title: this.newTask,
+          title: this.newPreTask,
           tags: this.currentTags.map(item => item.title),
           list: this.currentList
         }).
         then(
           (response) => {
-            this.today.push(response.data);
-            this.newTask = '';
+            this.newPreTask = '';
             toastr.success('Added new task!');
-            this.addPrerequisite(this.today[this.today.length - 1]);
+            this.addPrerequisite({ id: response.data.id });
           },
           (error) => {
             toastr.error(error.message);
@@ -948,9 +948,9 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         );
       },
-      searchForTasks() {
+      searchForTasks(title) {
         this.$store.dispatch('tasks/search', {
-          title: this.newTask
+          title: title
         }).
         catch(
           (error) => {

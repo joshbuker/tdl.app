@@ -1,4 +1,6 @@
 class Task < ApplicationRecord
+  include AutoStripTitle
+
   belongs_to :list
   belongs_to :user
 
