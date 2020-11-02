@@ -4,6 +4,8 @@ v-menu[bottom left]
       v-icon
         | fa-ellipsis-v
   v-list
+    v-list-item[@click='refreshEverything']
+      v-list-item-title Refresh
     v-list-item[@click='beginTaskReview']
       v-list-item-title Review Tasks
     v-list-item[@click='clearCompleted']

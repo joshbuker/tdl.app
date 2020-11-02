@@ -16,7 +16,7 @@ template v-if='editControls != true'
 template[v-else]
   v-list[nav]
     v-list-item-group
-      draggable[v-model='tags' handle='.handle' @change='syncTagOrdering' delay='200' delay-on-touch-only='true']
+      draggable[v-model='tags' handle='.handle' @change='syncTagOrdering' delay='200' delay-on-touch-only='true' force-fallback='true']
         v-list-item[v-for='tag in tags' :key='tag.id']
           v-list-item-icon.handle
             v-icon
