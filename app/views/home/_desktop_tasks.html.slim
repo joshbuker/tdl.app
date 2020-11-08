@@ -1,6 +1,10 @@
 v-container#main[fluid]
   v-row.pt-3.pr-3[v-if='view == 0 || view == 1']
     v-spacer
+    v-btn.mr-4[color='indigo' @click='notifyMe' small]
+      v-icon[small left]
+        | fa-bell
+      | Notify Me
     v-btn.mr-4[color='indigo' @click='refreshEverything' small]
       v-icon[small left]
         | fa-refresh

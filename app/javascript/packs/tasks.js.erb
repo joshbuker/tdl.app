@@ -41,6 +41,7 @@ const opts = {
 }
 
 <% timezones = ActiveSupport::TimeZone.all.map{ |tz| { name: tz.name, value: tz.tzinfo.name} }.to_json %>
+<% appIcon = ActionController::Base.helpers.asset_path('favicon/android-chrome-192x192.png') %>
 
 export default new Vuetify(opts)
 
@@ -92,6 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedTagsJank: [], // Allow custom No Tags logic (replace this plz)
       view: 0,
       //
+      // Service worker for notification support
+      //
+      serviceWorker: null,
+      //
       // Show current time on settings page
       //
       currentTime: '',
@@ -115,6 +120,25 @@ document.addEventListener('DOMContentLoaded', () => {
       this.fetchTimezone();
       this.refreshEverything();
       this.debouncedSearch = _.debounce(this.searchForTasks, 400);
+      navigator.serviceWorker.register('/service-worker.js').then(registration => {
+        console.log('ServiceWorker registered: ', registration);
+
+        var serviceWorker;
+        if (registration.installing) {
+          serviceWorker = registration.installing;
+          console.log('Service worker installing.');
+        } else if (registration.waiting) {
+          serviceWorker = registration.waiting;
+          console.log('Service worker installed & waiting.');
+        } else if (registration.active) {
+          serviceWorker = registration.active;
+          console.log('Service worker active.');
+        }
+
+        this.serviceWorker = registration;
+      }).catch(registrationError => {
+        console.log('Service worker registration failed: ', registrationError);
+      });
     },
     mounted() {
       this.$options.timer = window.setTimeout(this.updateCurrentTime, 1000);
@@ -532,6 +556,17 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         );
       },
+      notifyMe() {
+        this.requestNotificationPermission().
+        then(
+          () => {
+            this.showLocalNotification('Bro', 'It works');
+          },
+          () => {
+            toastr.error('Notification permission denied.');
+          }
+        );
+      },
       refreshLists() {
         this.$store.dispatch('lists/refresh').
         catch(
@@ -601,6 +636,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           );
         }
+      },
+      async requestNotificationPermission() {
+        return new Promise(
+          (resolve, reject) => {
+            window.Notification.requestPermission().
+            then(permission => {
+              if(permission === 'granted') {
+                resolve();
+              } else {
+                reject();
+              }
+            })
+          }
+        );
       },
       resetListEdit() {
         this.editListDialog = false;
@@ -961,6 +1010,17 @@ document.addEventListener('DOMContentLoaded', () => {
         this.selectedTags = [tag.title];
         if(this.controls == 0) {
           this.controls = 1;
+        }
+      },
+      showLocalNotification(title, body, serviceWorker) {
+        const options = {
+          body,
+          icon: "<%= appIcon %>"
+        };
+        if(this.serviceWorker != null) {
+          this.serviceWorker.showNotification(title, options);
+        } else {
+          toastr.error('Service worker is null!');
         }
       },
       logout() {
