@@ -1,17 +1,32 @@
 class TasksController < ApiController
-  # TODO: Make this except instead of only
   before_action :set_task, except: [
     :index, :treeview, :search, :create, :clear_completed
   ]
   before_action :set_tasks, only: [:index, :treeview]
 
   def index
+    tasks = []
     if @tasks.any?
-      tasks = @tasks.includes(:tags, :list).next_up.map do |task|
-        task.to_hash
+      next_up = @tasks.includes(:tags, :list).next_up
+
+      # FIXME: This causes a race condition on day rollover (tasks that roll
+      #        from tomorrow to today will be missing if today was parsed before
+      #        midnight, and tomorrow after midnight)
+      next_up.today.each do |task|
+        tasks << task.to_hash
       end
-    else
-      tasks = []
+
+      next_up.tomorrow.each do |task|
+        tasks << task.to_hash
+      end
+
+      next_up.upcoming.each do |task|
+        tasks << task.to_hash
+      end
+
+      next_up.someday.each do |task|
+        tasks << task.to_hash
+      end
     end
 
     render json: tasks.to_json

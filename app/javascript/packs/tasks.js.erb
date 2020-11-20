@@ -177,9 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
           var tags = this.selectedTags;
           return this.$store.getters['tasks/today'](list, tags);
         },
-        set(value) {
-          this.$store.commit('tasks/setToday', value);
-        }
+        set(value) {}
       },
       tomorrow: {
         get() {
@@ -187,9 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
           var tags = this.selectedTags;
           return this.$store.getters['tasks/tomorrow'](list, tags);
         },
-        set(value) {
-          this.$store.commit('tasks/setTomorrow', value);
-        }
+        set(value) {}
       },
       upcoming: {
         get() {
@@ -197,9 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
           var tags = this.selectedTags;
           return this.$store.getters['tasks/upcoming'](list, tags);
         },
-        set(value) {
-          this.$store.commit('tasks/setUpcoming', value);
-        }
+        set(value) {}
       },
       someday: {
         get() {
@@ -207,9 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
           var tags = this.selectedTags;
           return this.$store.getters['tasks/someday'](list, tags);
         },
-        set(value) {
-          this.$store.commit('tasks/setSomeday', value);
-        }
+        set(value) {}
       },
       timezone: {
         get() {
@@ -227,7 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
               toastr.success('Timezone updated!')
             },
             (error) => {
-              // TODO: Rollback selection on failure...
               toastr.error(error.message);
             }
           );
