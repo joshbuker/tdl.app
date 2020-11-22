@@ -69,6 +69,8 @@ group :development do
   gem 'brakeman'
   # Sweet baby jesus, my new favorite gem right here
   gem 'html2slim'
+  # Support rendering the service worker file(s) in development
+  gem 'webpacker-pwa'
 end
 
 group :test do
