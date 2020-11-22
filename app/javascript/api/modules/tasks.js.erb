@@ -195,6 +195,22 @@ export default {
       onFailure(error);
     });
   },
+  async updateTask(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id), {
+      // TODO: consolidate the other task update methods into this one
+      title: options.title,
+      order: options.order,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
   async updateTaskList(options, onSuccess, onFailure) {
     return axios.patch('<%= tasks_url %>/' + String(options.id) + '/list', {
       list_title: options.list_title,

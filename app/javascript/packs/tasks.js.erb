@@ -524,6 +524,37 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         );
       },
+      moveTask(event, list, listname) {
+        console.log('moveTask', event, list, listname);
+        if(event.hasOwnProperty('moved')) {
+          console.log('moved');
+          this.$store.dispatch('tasks/moveTask', {
+            event: event,
+            list: list
+          }).
+          catch(
+            (error) => {
+              toastr.error(error.message);
+            }
+          );
+        }
+        else if(event.hasOwnProperty('added')) {
+          console.log('added');
+          this.$store.dispatch('tasks/moveTaskColumn', {
+            event: event,
+            list: list,
+            time: listname
+          }).
+          catch(
+            (error) => {
+              toastr.error(error.message);
+            }
+          );
+        }
+        else {
+          console.log('do nothing');
+        }
+      },
       refreshLists() {
         this.$store.dispatch('lists/refresh').
         catch(
@@ -731,7 +762,8 @@ document.addEventListener('DOMContentLoaded', () => {
         );
         this.currentTaskDialog = true;
       },
-      syncListOrdering() {
+      syncListOrdering(event) {
+        console.log(event);
         this.$store.dispatch('lists/syncOrdering').
         catch(
           (error) => {
@@ -746,49 +778,6 @@ document.addEventListener('DOMContentLoaded', () => {
             toastr.error(error.message);
           }
         );
-      },
-      // FIXME: How do with Vuex?
-      syncTaskOrdering() {
-      //   var lists = [this.today, this.tomorrow, this.upcoming, this.someday];
-      //   for(var list of lists) {
-      //     for(var task of list) {
-      //       var current_order = list.indexOf(task) + 1;
-      //       // TODO: Handle ordering tagless tasks
-      //       if(this.limiterType == 'tag') {
-      //         var tag_order = task.tag_ordering.find( ({ title }) => title == this.limiterValue ).order;
-      //         if(current_order != tag_order) {
-      //           axios.patch('task_url_here/' + String(task.id) + '/order', {
-      //             tag_title: this.limiterValue,
-      //             order: current_order,
-      //             credentials: 'same-origin',
-      //             'X-CSRF-Token': token,
-      //             'authenticity_token': token
-      //           }).
-      //           then(response => {
-      //             toastr.success('Ordering updated');
-      //           }).
-      //           catch(e => {
-      //             toastr.error(e.message);
-      //           });
-      //         }
-      //       } else {
-      //         if(current_order != task.order) {
-      //           axios.patch('task_url_here/' + String(task.id) + '/order', {
-      //             order: current_order,
-      //             credentials: 'same-origin',
-      //             'X-CSRF-Token': token,
-      //             'authenticity_token': token
-      //           }).
-      //           then(response => {
-      //             toastr.success('Ordering updated');
-      //           }).
-      //           catch(e => {
-      //             toastr.error(e.message);
-      //           });
-      //         }
-      //       }
-      //     }
-      //   }
       },
       textColor(backgroundColor) {
         // Javascript seems to hate guard clauses like I hate javascript

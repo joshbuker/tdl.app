@@ -9,9 +9,10 @@ class TasksController < ApiController
     if @tasks.any?
       next_up = @tasks.includes(:tags, :list).next_up
 
-      # FIXME: This causes a race condition on day rollover (tasks that roll
-      #        from tomorrow to today will be missing if today was parsed before
-      #        midnight, and tomorrow after midnight)
+      # FIXME: This might cause race conditions near midnight. (parses today,
+      #        time rolls over to the next day, task that was in tomorrow is no
+      #        longer in tomorrow, but wasn't in today either. Task would be
+      #        missing until a refresh)
       next_up.today.each do |task|
         tasks << task.to_hash
       end
@@ -211,6 +212,8 @@ class TasksController < ApiController
   def update_review_at
     @task.review_at =
       case params[:review_at]
+      when 'today'
+        nil
       when 'tomorrow'
         1.day.from_now
       when 'next week'
@@ -304,6 +307,6 @@ private
   end
 
   def task_params
-    params.require(:task).permit(:title)
+    params.require(:task).permit(:title, :order)
   end
 end

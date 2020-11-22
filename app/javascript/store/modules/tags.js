@@ -21,7 +21,7 @@ const getters = {
 }
 
 const actions = {
-  async create({ commit, state, getters }, options) {
+  async create({ commit, getters }, options) {
     return new Promise(
       (resolve, reject) => {
         options.order = getters.nextOrder;
@@ -38,7 +38,7 @@ const actions = {
       }
     );
   },
-  async delete({ commit, state }, options) {
+  async delete({ commit }, options) {
     return new Promise(
       (resolve, reject) => {
         api.deleteTag(
@@ -55,11 +55,11 @@ const actions = {
     );
   },
   // TODO: Should this use await?
-  async refresh({ commit, state, dispatch }) {
+  async refresh({ dispatch }) {
     dispatch('refreshTags');
     dispatch('refreshNoTagsCount');
   },
-  async refreshTags({ commit, state }) {
+  async refreshTags({ commit }) {
     return new Promise(
       (resolve, reject) => {
         api.refreshTags(
@@ -74,7 +74,7 @@ const actions = {
       }
     );
   },
-  async refreshNoTagsCount({ commit, state }) {
+  async refreshNoTagsCount({ commit }) {
     return new Promise(
       (resolve, reject) => {
         api.refreshNoTagsCount(
@@ -89,7 +89,7 @@ const actions = {
       }
     );
   },
-  async syncOrdering({ commit, state, dispatch }, options) {
+  async syncOrdering({ state, dispatch }, options) {
     for(var tag of state.tags) {
       var current_order = state.tags.indexOf(tag);
       if(current_order != tag.order) {
@@ -100,7 +100,7 @@ const actions = {
       }
     }
   },
-  async update({ commit, state }, options) {
+  async update({ commit }, options) {
     return new Promise(
       (resolve, reject) => {
         api.updateTag(
