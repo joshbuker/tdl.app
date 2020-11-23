@@ -43,6 +43,9 @@ gem 'browser'
 # Store delayed jobs in the database (e.g. scheduled push notifications)
 gem 'delayed_job_active_record'
 
+# Allow the server to send push notifications
+gem 'webpush'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
