@@ -113,9 +113,9 @@ class Task < ApplicationRecord
 
   after_commit :queue_reminder,
     if: -> {
-      remind_me? &&
-      review_at.present? &&
-      (new_record? || changes[:review_at])
+      new_record? ||
+      changes[:review_at] ||
+      changes[:remind_me]
     }
 
   def self.search(title)
@@ -217,6 +217,7 @@ class Task < ApplicationRecord
       list: list.task_hash,
       list_title: list.title, # TODO: Replace usage with List object
       notes: notes,
+      remind_me: remind_me,
       review_at: review_at.present? ? I18n.l(review_at, format: :iso_8601) : nil,
       tag_ordering: taggings.reload.map { |tagging| tagging.task_hash },
       tags: tags.reload.map{ |tag| tag.task_hash }
@@ -234,7 +235,7 @@ class Task < ApplicationRecord
       job.destroy if job.payload_object.id == id
     end
     # Queue new notification
-    push_notification
+    push_notification if remind_me? && review_at.present?
   end
 
   def push_notification

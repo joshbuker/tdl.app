@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
       drawer: null,
       editControls: false,
       editNotes: '',
+      editRemindMe: false,
       editReviewAt: '',
       editListDialog: false,
       editListTitle: '',
@@ -782,6 +783,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.currentTags = task.tags;
         this.currentList = task.list_title;
         this.editTaskTitle = task.title;
+        this.editRemindMe = task.remind_me;
         this.editReviewAt = task.review_at;
         this.newTask = '';
         this.createTaskDialog = false;
@@ -916,6 +918,22 @@ document.addEventListener('DOMContentLoaded', () => {
             this.currentTask.list_title = response.data;
             this.currentList = this.currentTask.list_title;
             toastr.success('Updated list!');
+          },
+          (error) => {
+            toastr.error(error.message);
+          }
+        );
+      },
+      updateRemindMe() {
+        this.$store.dispatch('tasks/updateRemindMe', {
+          id: this.currentTask.id,
+          remind_me: this.editRemindMe
+        }).
+        then(
+          (response) => {
+            this.editRemindMe = response.data;
+            this.refreshTasks(); // TODO: Edit value directly
+            toastr.success('Updated remind me!');
           },
           (error) => {
             toastr.error(error.message);

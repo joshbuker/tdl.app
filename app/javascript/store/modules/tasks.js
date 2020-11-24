@@ -373,6 +373,21 @@ const actions = {
       }
     );
   },
+  async updateRemindMe({ commit, state }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.updateTaskRemindMe(
+          options,
+          (response) => {
+            resolve(response);
+          },
+          (error) => {
+            reject(error);
+          }
+        )
+      }
+    );
+  },
   async updateReviewAt({ commit, state }, options) {
     return new Promise(
       (resolve, reject) => {
