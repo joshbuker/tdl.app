@@ -111,6 +111,13 @@ class Task < ApplicationRecord
     where(tags: { id: nil })
   }
 
+  after_commit :queue_reminder,
+    if: -> {
+      remind_me? &&
+      review_at.present? &&
+      (new_record? || changes[:review_at])
+    }
+
   def self.search(title)
     if title.present?
       where('tasks.title iLIKE :title', title: "%#{title}%")
@@ -219,6 +226,27 @@ class Task < ApplicationRecord
   def to_json
     self.to_hash.to_json
   end
+
+  def queue_reminder
+    # Purge any existing notifications queued for this task
+    Delayed::Job.all.find_each do |job|
+      next unless job.payload_object.object.is_a?(Task)
+      job.destroy if job.payload_object.id == id
+    end
+    # Queue new notification
+    push_notification
+  end
+
+  def push_notification
+    return false unless remind_me? && review_at.present?
+    return false unless review_at.in_time_zone <= Time.current
+    user.push_notification(title, 'Task notification')
+    true
+  end
+
+  # This must be called after the method is declared
+  handle_asynchronously :push_notification,
+    run_at: Proc.new { |task| task.review_at }
 
   def list_and_task_owner_match
     return unless list.is_a?(List)

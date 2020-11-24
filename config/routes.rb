@@ -35,6 +35,8 @@ Rails.application.routes.draw do
   resources :lists, except: [:show, :new, :edit], defaults: { format: :json }
   resources :tags, except: [:show, :new, :edit], defaults: { format: :json }
 
+  resources :devices, only: [:create], defaults: { format: :json }
+
   get 'timezone' => 'users#timezone'
   patch 'timezone' => 'users#update_timezone'
 

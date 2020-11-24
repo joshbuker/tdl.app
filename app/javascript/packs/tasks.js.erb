@@ -136,6 +136,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         this.serviceWorker = registration;
+        this.serviceWorker.pushManager.getSubscription().
+        then(
+          (subscription) => {
+            api.subscribeDevice(
+              subscription.toJSON(),
+              (response) => {
+                console.log(response);
+              },
+              (error) => {
+                toastr.error(error.message);
+              }
+            );
+          },
+          (nay) => {
+            console.log(':(', nay);
+          }
+        );
       }).catch(registrationError => {
         console.log('Service worker registration failed: ', registrationError);
       });
