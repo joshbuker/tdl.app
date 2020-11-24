@@ -234,8 +234,12 @@ class Task < ApplicationRecord
       next unless job.payload_object.object.is_a?(Task)
       job.destroy if job.payload_object.id == id
     end
+    # Don't queue notification if remind me is false or no time is set
+    return unless remind_me? && review_at.present?
+    # Don't queue notification if it would happen immediately
+    return if review_at.in_time_zone <= Time.current
     # Queue new notification
-    push_notification if remind_me? && review_at.present?
+    push_notification
   end
 
   def push_notification
