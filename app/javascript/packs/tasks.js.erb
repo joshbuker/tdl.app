@@ -140,22 +140,28 @@ document.addEventListener('DOMContentLoaded', () => {
         this.serviceWorker.pushManager.getSubscription().
         then(
           (subscription) => {
-            api.subscribeDevice(
-              subscription.toJSON(),
-              (response) => {
-                console.log(response);
-              },
-              (error) => {
-                toastr.error(error.message);
-              }
-            );
+            if(subscription != null) {
+              api.subscribeDevice(
+                subscription.toJSON(),
+                (response) => {
+                  toastr.success('tier 3 subbed', response);
+                },
+                (error) => {
+                  toastr.error(error.message);
+                }
+              );
+            } else {
+              toastr.error(subscription);
+            }
           },
           (nay) => {
+            toastr.error(nay);
             console.log(':(', nay);
           }
         );
       }).catch(registrationError => {
         console.log('Service worker registration failed: ', registrationError);
+        toastr.error('failed to register service worker entirely');
       });
     },
     mounted() {
