@@ -245,6 +245,7 @@ class Task < ApplicationRecord
   def push_notification
     return false unless remind_me? && review_at.present?
     return false unless review_at.in_time_zone <= Time.current
+    # TODO: Ensure that this can't be fuzzed
     message = {
       title: title
     }.to_json

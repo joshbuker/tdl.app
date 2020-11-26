@@ -7,15 +7,6 @@ class Device < ApplicationRecord
   validates :user, :user_agent, :last_seen_at,
     presence: true
 
-  # TODO: Remove? (only needed if push values are allowed to be nil, which they
-  #       are not currently.)
-  # scope :active, lambda {
-  #   where.not(push_endpoint: nil).
-  #   where.not(push_p256dh: nil).
-  #   where.not(push_auth: nil)
-  # }
-  # TODO: Remove? /\
-
   def active?
     push_endpoint.present? &&
     push_p256dh.present? &&
@@ -23,7 +14,7 @@ class Device < ApplicationRecord
   end
 
   def push_notification(message, subject)
-    return unless active?
+    return unless active? && persisted?
     return unless message.present? && subject.present?
 
     # There should probably be some validation that the endpoint and such are
