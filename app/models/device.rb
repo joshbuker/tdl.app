@@ -42,9 +42,10 @@ class Device < ApplicationRecord
       }
     )
 
-    # TODO: Check if payload succeeded, if it fails (401), destroy device record
-
     # Skip model validations and just update the field directly
     self.update_column(:last_seen_at, Time.current)
+  rescue Webpush::ExpiredSubscription
+    # If the push service says the subscription is no longer valid, destroy it
+    self.destroy
   end
 end
