@@ -18,6 +18,8 @@ function urlB64ToUint8Array(base64String) {
 
 self.addEventListener('install', function(event) {
   console.log('Service Worker installing.');
+  // Allow auto update on new version detection
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', async function(event) {
