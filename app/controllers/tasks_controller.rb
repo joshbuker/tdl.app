@@ -95,6 +95,8 @@ class TasksController < ApiController
 
     task.save!
 
+    task.queue_reminder
+
     render json: task.to_json
   rescue ActiveRecord::RecordInvalid => e
     render json: { error: e.message }, status: :unprocessable_entity
@@ -209,6 +211,15 @@ class TasksController < ApiController
     render json: @task.notes.to_json
   end
 
+  def update_remind_me
+    @task.remind_me = params[:remind_me]
+    @task.save!
+
+    @task.queue_reminder
+
+    render json: @task.remind_me.to_json
+  end
+
   def update_review_at
     @task.review_at =
       case params[:review_at]
@@ -226,6 +237,8 @@ class TasksController < ApiController
         params[:review_at]
       end
     @task.save!
+
+    @task.queue_reminder
 
     if @task.review_at.present?
       render json: I18n.l(@task.review_at, format: :iso_8601).to_json

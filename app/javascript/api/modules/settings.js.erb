@@ -2,12 +2,29 @@ import axios from 'axios'
 import $ from 'jquery'
 
 <% timezone_url = Rails.application.routes.url_helpers.timezone_url %>
+<% subscribe_url = Rails.application.routes.url_helpers.devices_url %>
 
 const token = $('meta[name="csrf-token"]').attr('content');
 
 export default {
   async fetchTimezone(onSuccess, onFailure) {
     return axios.get('<%= timezone_url %>').
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async subscribeDevice(options, onSuccess, onFailure) {
+    return axios.post('<%= subscribe_url %>', {
+      push_endpoint: options.endpoint,
+      push_p256dh: options.keys.p256dh,
+      push_auth: options.keys.auth,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
     then(response => {
       onSuccess(response);
     }).

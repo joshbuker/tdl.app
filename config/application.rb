@@ -29,6 +29,9 @@ module TdlApp
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
 
+    # Use delayed job for ActiveJob
+    config.active_job.queue_adapter = :delayed_job
+
     # Configure rails generators
     config.generators do |g|
       g.test_framework :rspec

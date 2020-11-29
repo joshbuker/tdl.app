@@ -40,6 +40,12 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # Browser / device / mobile detection
 gem 'browser'
 
+# Store delayed jobs in the database (e.g. scheduled push notifications)
+gem 'delayed_job_active_record'
+
+# Allow the server to send push notifications
+gem 'webpush'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -66,6 +72,8 @@ group :development do
   gem 'brakeman'
   # Sweet baby jesus, my new favorite gem right here
   gem 'html2slim'
+  # Support rendering the service worker file(s) in development
+  gem 'webpacker-pwa'
 end
 
 group :test do

@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   has_many :lists
   has_many :tags
+  has_many :devices
 
   has_many :tasks,
     through: :lists
@@ -25,5 +26,13 @@ class User < ApplicationRecord
   def js_timezone
     return nil unless timezone.present?
     ActiveSupport::TimeZone[timezone].tzinfo.name
+  end
+
+  def push_notification(message, subject)
+    raise ArgumentError, 'No active devices!' unless devices.any?
+
+    devices.find_each do |device|
+      device.push_notification(message, subject)
+    end
   end
 end

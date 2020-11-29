@@ -10,10 +10,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_30_223123) do
+ActiveRecord::Schema.define(version: 2020_11_24_021728) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "delayed_jobs", force: :cascade do |t|
+    t.integer "priority", default: 0, null: false
+    t.integer "attempts", default: 0, null: false
+    t.text "handler", null: false
+    t.text "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string "locked_by"
+    t.string "queue"
+    t.datetime "created_at", precision: 6
+    t.datetime "updated_at", precision: 6
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
+  end
+
+  create_table "devices", force: :cascade do |t|
+    t.string "name"
+    t.string "push_endpoint", null: false
+    t.string "push_p256dh", null: false
+    t.string "push_auth", null: false
+    t.string "user_agent", null: false
+    t.datetime "last_seen_at", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_devices_on_user_id"
+  end
 
   create_table "lists", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -68,12 +96,12 @@ ActiveRecord::Schema.define(version: 2020_09_30_223123) do
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "completed", default: false, null: false
     t.bigint "list_id", null: false
-    t.datetime "remind_me_at"
     t.bigint "user_id", null: false
     t.string "notes"
     t.integer "order", default: 0, null: false
     t.datetime "review_at"
     t.datetime "deadline_at"
+    t.boolean "remind_me", default: false, null: false
     t.index ["list_id"], name: "index_tasks_on_list_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
@@ -100,6 +128,7 @@ ActiveRecord::Schema.define(version: 2020_09_30_223123) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "devices", "users"
   add_foreign_key "lists", "users"
   add_foreign_key "taggings", "tags"
   add_foreign_key "taggings", "tasks"
