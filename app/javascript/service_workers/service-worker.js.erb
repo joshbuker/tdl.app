@@ -33,9 +33,11 @@ self.addEventListener('activate', async function(event) {
     console.log('Error', err)
   }
 });
+
 self.addEventListener('fetch', function(event) {
   console.log('Service Worker fetching.');
 });
+
 self.addEventListener('push', function(event) {
   console.log('[Service Worker] Push Received.');
   var message = event.data.json();
