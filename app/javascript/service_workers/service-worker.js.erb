@@ -1,5 +1,8 @@
-<% appIcon = ActionController::Base.helpers.asset_path('favicon/android-chrome-192x192.png') %>
-<% appIcon = Rails.application.routes.url_helpers.root_url[0..-2] + appIcon %>
+<% root_url = Rails.application.routes.url_helpers.root_url[0..-2] %>
+<% appIconPath = ActionController::Base.helpers.asset_path('favicon/android-chrome-192x192.png') %>
+<% badgeIconPath = ActionController::Base.helpers.asset_path('badge.png') %>
+<% appIcon = root_url + appIconPath %>
+<% badgeIcon = root_url + badgeIconPath %>
 
 function urlB64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -44,7 +47,7 @@ self.addEventListener('push', function(event) {
   const options = {
     // body: message.body,
     icon: '<%= appIcon %>',
-    badge: '<%= appIcon %>'
+    badge: '<%= badgeIcon %>'
   };
 
   event.waitUntil(self.registration.showNotification(title, options));

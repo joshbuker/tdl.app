@@ -1,6 +1,7 @@
 import toastr from 'toastr'
 
 <% appIcon = ActionController::Base.helpers.asset_path('favicon/android-chrome-192x192.png') %>
+<% badgeIcon = ActionController::Base.helpers.asset_path('badge.png') %>
 
 const methods = {
   notifyMe() {
@@ -31,7 +32,8 @@ const methods = {
   showLocalNotification(title, body, serviceWorker) {
     const options = {
       body,
-      icon: "<%= appIcon %>"
+      icon: "<%= appIcon %>",
+      badge: "<%= badgeIcon %>"
     };
     if(this.serviceWorker != null) {
       this.serviceWorker.showNotification(title, options);

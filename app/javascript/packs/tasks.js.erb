@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
               api.subscribeDevice(
                 subscription.toJSON(),
                 (response) => {
-                  toastr.success('tier 3 subbed', response);
+                  // Do nothing
                 },
                 (error) => {
                   toastr.error(error.message);
