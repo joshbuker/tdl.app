@@ -18,6 +18,7 @@ import { DateTime } from 'luxon'
 
 import api from '../api'
 import store from '../store'
+import code from '../code'
 
 import DateTimePicker from '../components/DateTimePicker.vue'
 
@@ -41,7 +42,6 @@ const opts = {
 }
 
 <% timezones = ActiveSupport::TimeZone.all.map{ |tz| { name: tz.name, value: tz.tzinfo.name} }.to_json %>
-<% appIcon = ActionController::Base.helpers.asset_path('favicon/android-chrome-192x192.png') %>
 
 export default new Vuetify(opts)
 
@@ -52,43 +52,22 @@ document.addEventListener('DOMContentLoaded', () => {
     store: store,
     data: {
       //
+      // Pull in modularized data
+      //
+      ...code.data,
+      //
       // UI Tracking
       //
-      addPreDialog: false,
-      addPostDialog: false,
       controls: 0,
-      createTaskDialog: false,
-      createTaskTags: [],
-      createTaskList: null,
-      currentTaskDialog: false,
       drawer: null,
       editControls: false,
-      editNotes: '',
-      editRemindMe: false,
-      editReviewAt: '',
-      editListDialog: false,
-      editListTitle: '',
-      editTagDialog: false,
-      editTagColor: '',
-      editTagTitle: '',
-      editTaskTitle: '',
       newList: '',
       newTag: '',
-      newTask: '',
-      newPreTask: '',
-      newPostTask: '',
       newQuickTodayTask: '',
       newQuickTomorrowTask: '',
       newQuickUpcomingTask: '',
       newQuickSomedayTask: '',
-      listToBeEdited: {},
-      tagToBeEdited: {},
-      treeActive: [],
       requestCount: 0,
-      reviewButtons: 'root',
-      reviewDialog: false,
-      reviewQueue: [],
-      reviewWaiting: false,
       searchEnabled: true,
       selectedList: 'All Tasks',
       selectedTagsJank: [], // Allow custom No Tags logic (replace this plz)
@@ -105,14 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // Bake in timezones from Rails
       //
       timezones: JSON.parse('<%= timezones.gsub("\'", "") %>'),
-      //
-      // AJAX variables (TODO: convert to Vuex store)
-      //
-      currentTask: {},
-      currentTags: [],
-      currentPrereqs: [],
-      currentPostreqs: [],
-      currentList: ''
     },
     components: {
       draggable
@@ -171,25 +142,19 @@ document.addEventListener('DOMContentLoaded', () => {
       window.clearTimeout(this.$options.timer);
     },
     computed: {
-      currentReviewTask() {
-        if(this.reviewQueue.length == 0) return undefined;
-
-        return this.reviewQueue[0];
-      },
+      //
+      // Pull in modularized computed methods
+      //
+      ...code.computed,
+      //
+      // Other computed methods
+      //
       processing() {
         if(this.requestCount == 0) {
           return false;
         } else {
           return true;
         }
-      },
-      treeSelected() {
-        if(!this.treeActive.length) return undefined;
-        if(!this.treeTasks.length) return undefined;
-
-        const title = this.treeActive[0];
-
-        return this.findTreeTask(this.treeTasks, title);
       },
       selectedTags: {
         get() {
@@ -298,102 +263,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     },
     methods: {
-      addTask() {
-        this.$store.dispatch('tasks/create', {
-          title: this.newTask,
-          list: this.createTaskList,
-          tags: this.createTaskTags
-        }).
-        then(
-          (response) => {
-            this.newTask = '';
-            toastr.success('Added new task!');
-          },
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-      },
-      addPostrequisite(task) {
-        this.$store.dispatch('tasks/addPostreq', {
-          id: this.currentTask.id,
-          post_task_id: task.id
-        }).
-        then(
-          (response) => {
-            // TODO: Directly add postreq
-            this.currentPostreqs.push(response.data);
-            this.refreshTasks();
-            toastr.success('Added postrequisite!');
-          },
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-      },
-      // TODO: Convert this into a single vuex action
-      addPostTask() {
-        this.$store.dispatch('tasks/create', {
-          title: this.newPostTask,
-          tags: this.currentTags.map(item => item.title),
-          list: this.currentList
-        }).
-        then(
-          (response) => {
-            this.newPostTask = '';
-            toastr.success('Added new task!');
-            this.addPostrequisite({ id: response.data.id });
-          },
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-      },
-      addPrerequisite(task) {
-        this.$store.dispatch('tasks/addPrereq', {
-          id: this.currentTask.id,
-          pre_task_id: task.id
-        }).
-        then(
-          (response) => {
-            // TODO: Directly add prereq
-            this.currentPrereqs.push(response.data);
-            this.refreshTasks();
-            toastr.success('Added prerequisite!');
-          },
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-      },
-      // TODO: Convert this into a single vuex action
-      addPreTask() {
-        this.$store.dispatch('tasks/create', {
-          title: this.newPreTask,
-          tags: this.currentTags.map(item => item.title),
-          list: this.currentList
-        }).
-        then(
-          (response) => {
-            this.newPreTask = '';
-            toastr.success('Added new task!');
-            this.addPrerequisite({ id: response.data.id });
-          },
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-      },
-      beginTaskReview() {
-        // Duplicate today array
-        this.reviewQueue = JSON.parse(JSON.stringify(this.today));
-        if(this.reviewQueue.length > 0) {
-          this.reviewButtons = 'root';
-          this.reviewDialog = true;
-        } else {
-          toastr.warning('No tasks to review!');
-        }
-      },
+      //
+      // Import modularized methods
+      //
+      ...code.methods,
+      //
+      // Other methods
+      //
       clearCompleted() {
         if(confirm('This will delete all completed tasks, are you sure?')) {
           this.$store.dispatch('tasks/clearCompleted').
@@ -501,93 +377,11 @@ document.addEventListener('DOMContentLoaded', () => {
           );
         }
       },
-      editList(list) {
-        this.editListDialog = true;
-        this.listToBeEdited = list;
-        this.editListTitle = this.listToBeEdited.title;
-      },
-      editTag(tag) {
-        this.editTagDialog = true;
-        this.tagToBeEdited = tag;
-        this.editTagColor = this.tagToBeEdited.color;
-        this.editTagTitle = this.tagToBeEdited.title;
-      },
-      endReview() {
-        this.reviewButtons = 'root';
-        this.reviewDialog = false;
-        this.reviewQueue = [];
-        this.refreshEverything();
-      },
       fetchTimezone() {
         this.$store.dispatch('settings/fetchTimezone').
         catch(
           (error) => {
             toastr.error(error.message);
-          }
-        );
-      },
-      findTreeTask(items, title) {
-        if(!items) return;
-
-        for(const item of items) {
-          if(item.title === title) return item;
-
-          const child = this.findTreeTask(item.postreqs, title);
-          if(child) {
-            return child;
-          }
-        }
-      },
-      // TODO: Convert to vuex action?
-      async loadPostreqs(task) {
-        return api.fetchTreePostreqs(
-          { id: task.id },
-          (response) => {
-            task.postreqs = response.data;
-          },
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-      },
-      markTaskComplete(task) {
-        this.currentTaskDialog = false;
-        this.$store.dispatch('tasks/markComplete', { id: task.id }).
-        then(
-          (response) => {
-            this.currentTask = {};
-            toastr.success('Completed task!');
-            this.refreshTasks();
-          },
-          (error) => {
-            this.currentTaskDialog = true;
-            toastr.error(error.message);
-          }
-        );
-      },
-      markTaskIncomplete(task) {
-        this.currentTaskDialog = false;
-        this.$store.dispatch('tasks/markIncomplete', { id: task.id }).
-        then(
-          (response) => {
-            this.currentTask = {};
-            toastr.success('Uncompleted task!');
-            this.refreshTasks();
-          },
-          (error) => {
-            this.currentTaskDialog = true;
-            toastr.error(error.message);
-          }
-        );
-      },
-      notifyMe() {
-        this.requestNotificationPermission().
-        then(
-          () => {
-            this.showLocalNotification('Bro', 'It works');
-          },
-          () => {
-            toastr.error('Notification permission denied.');
           }
         );
       },
@@ -622,275 +416,6 @@ document.addEventListener('DOMContentLoaded', () => {
         this.refreshLists();
         this.refreshTags();
         this.refreshTasks();
-      },
-      removePostrequisite(task) {
-        if(confirm('Are you sure?')) {
-          this.$store.dispatch('tasks/removePostreq', {
-            id: this.currentTask.id,
-            post_task_id: task.id
-          }).
-          then(
-            (response) => {
-              // TODO: Directly remove postreq
-              this.refreshTasks();
-              this.currentPostreqs = response.data;
-              toastr.success('Removed postrequisite!');
-            },
-            (error) => {
-              toastr.error(error.message);
-            }
-          );
-        }
-      },
-      removePrerequisite(task) {
-        if(confirm('Are you sure?')) {
-          this.$store.dispatch('tasks/removePrereq', {
-            id: this.currentTask.id,
-            pre_task_id: task.id
-          }).
-          then(
-            (response) => {
-              // TODO: Directly remove prereq
-              this.refreshTasks();
-              this.currentPrereqs = response.data;
-              toastr.success('Removed prerequisite!');
-            },
-            (error) => {
-              toastr.error(error.message);
-            }
-          );
-        }
-      },
-      async requestNotificationPermission() {
-        return new Promise(
-          (resolve, reject) => {
-            window.Notification.requestPermission().
-            then(permission => {
-              if(permission === 'granted') {
-                resolve();
-              } else {
-                reject();
-              }
-            })
-          }
-        );
-      },
-      resetListEdit() {
-        this.editListDialog = false;
-        this.listToBeEdited = { title: 'Placeholder' };
-        this.editListTitle = '';
-      },
-      resetTagEdit() {
-        this.editTagDialog = false;
-        this.tagToBeEdited = {
-          title: 'Placeholder',
-          color: '#000000'
-        };
-        this.editTagTitle = '';
-        this.editTagColor = '#000000';
-      },
-      reviewNext() {
-        this.reviewQueue.shift();
-        this.reviewButtons = 'root';
-        if(this.reviewQueue.length == 0) {
-          this.endReview();
-        }
-      },
-      reviewDone() {
-        this.reviewWaiting = true;
-        api.markTaskComplete(
-          { id: this.currentReviewTask.id },
-          (response) => {
-            this.reviewWaiting = false;
-            this.reviewNext();
-          },
-          (error) => {
-            this.reviewWaiting = false;
-            toastr.error(error.message);
-          }
-        )
-      },
-      reviewDelete() {
-        toastr.warning('haha, no.');
-      },
-      reviewToday() {
-        this.reviewNext();
-      },
-      reviewTomorrow() {
-        this.reviewWaiting = true;
-        api.updateTaskReviewAt(
-          {
-            id: this.currentReviewTask.id,
-            review_at: 'tomorrow'
-          },
-          (response) => {
-            this.reviewWaiting = false;
-            this.reviewNext();
-          },
-          (error) => {
-            this.reviewWaiting = false;
-            toastr.error(error.message);
-          }
-        )
-      },
-      reviewNextWeek() {
-        this.reviewWaiting = true;
-        api.updateTaskReviewAt(
-          {
-            id: this.currentReviewTask.id,
-            review_at: 'next week'
-          },
-          (response) => {
-            this.reviewWaiting = false;
-            this.reviewNext();
-          },
-          (error) => {
-            this.reviewWaiting = false;
-            toastr.error(error.message);
-          }
-        )
-      },
-      reviewUpcoming() {
-        this.reviewWaiting = true;
-        api.updateTaskReviewAt(
-          {
-            id: this.currentReviewTask.id,
-            review_at: 'upcoming'
-          },
-          (response) => {
-            this.reviewWaiting = false;
-            this.reviewNext();
-          },
-          (error) => {
-            this.reviewWaiting = false;
-            toastr.error(error.message);
-          }
-        )
-      },
-      reviewSomeday() {
-        this.reviewWaiting = true;
-        api.updateTaskReviewAt(
-          {
-            id: this.currentReviewTask.id,
-            review_at: 'someday'
-          },
-          (response) => {
-            this.reviewWaiting = false;
-            this.reviewNext();
-          },
-          (error) => {
-            this.reviewWaiting = false;
-            toastr.error(error.message);
-          }
-        )
-      },
-      setCurrentTask(task) {
-        this.currentTask = task;
-        this.currentTags = task.tags;
-        this.currentList = task.list_title;
-        this.editTaskTitle = task.title;
-        this.editRemindMe = task.remind_me;
-        this.editReviewAt = task.review_at;
-        this.newTask = '';
-        this.createTaskDialog = false;
-        api.fetchPostreqs(
-          { id: task.id },
-          (response) => {
-            this.currentPostreqs = response.data;
-          },
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-        api.fetchPrereqs(
-          { id: task.id },
-          (response) => {
-            this.currentPrereqs = response.data;
-          },
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-        this.currentTaskDialog = true;
-      },
-      syncListOrdering() {
-        this.$store.dispatch('lists/syncOrdering').
-        catch(
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-      },
-      syncTagOrdering() {
-        this.$store.dispatch('tags/syncOrdering').
-        catch(
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-      },
-      // FIXME: How do with Vuex?
-      syncTaskOrdering() {
-      //   var lists = [this.today, this.tomorrow, this.upcoming, this.someday];
-      //   for(var list of lists) {
-      //     for(var task of list) {
-      //       var current_order = list.indexOf(task) + 1;
-      //       // TODO: Handle ordering tagless tasks
-      //       if(this.limiterType == 'tag') {
-      //         var tag_order = task.tag_ordering.find( ({ title }) => title == this.limiterValue ).order;
-      //         if(current_order != tag_order) {
-      //           axios.patch('task_url_here/' + String(task.id) + '/order', {
-      //             tag_title: this.limiterValue,
-      //             order: current_order,
-      //             credentials: 'same-origin',
-      //             'X-CSRF-Token': token,
-      //             'authenticity_token': token
-      //           }).
-      //           then(response => {
-      //             toastr.success('Ordering updated');
-      //           }).
-      //           catch(e => {
-      //             toastr.error(e.message);
-      //           });
-      //         }
-      //       } else {
-      //         if(current_order != task.order) {
-      //           axios.patch('task_url_here/' + String(task.id) + '/order', {
-      //             order: current_order,
-      //             credentials: 'same-origin',
-      //             'X-CSRF-Token': token,
-      //             'authenticity_token': token
-      //           }).
-      //           then(response => {
-      //             toastr.success('Ordering updated');
-      //           }).
-      //           catch(e => {
-      //             toastr.error(e.message);
-      //           });
-      //         }
-      //       }
-      //     }
-      //   }
-      },
-      textColor(backgroundColor) {
-        // Javascript seems to hate guard clauses like I hate javascript
-        if(!backgroundColor || 0 === backgroundColor.length) {
-          return '#000000';
-        } else {
-          let input = backgroundColor.toString().replace('#', '');
-          if(input.length != 6) {
-            return '#000000';
-          } else {
-            let red = parseInt(input.substr(0,2), 16);
-            let green = parseInt(input.substr(2,2), 16);
-            let blue = parseInt(input.substr(4,2), 16);
-            // Luminance values for different hues are not equal.
-            let greyscale = red * 0.299 + green * 0.587 + blue * 0.114;
-            // Perceived midpoint for grey is higher than 128. (around 186)
-            let midpoint = 152;
-            return (greyscale > midpoint) ? '#000000' : '#ffffff';
-          }
-        }
       },
       updateCurrentTime() {
         this.currentTime = DateTime.local().toFormat('h:mm:ss a ZZZZ');
@@ -961,48 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         );
       },
-      updateList() {
-        const previousListTitle = this.listToBeEdited.title;
-        this.$store.dispatch('lists/update', {
-          id: this.listToBeEdited.id,
-          title: this.editListTitle
-        }).
-        then(
-          (response) => {
-            if(previousListTitle == this.selectedList) {
-              this.selectedList = this.editListTitle;
-            }
-            this.refreshTasks();
-            this.resetListEdit();
-            toastr.success('Updated list!');
-          },
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-      },
-      updateTag() {
-        const previousTagTitle = this.tagToBeEdited.title;
-        this.$store.dispatch('tags/update', {
-          id: this.tagToBeEdited.id,
-          title: this.editTagTitle,
-          color: this.editTagColor
-        }).
-        then(
-          (response) => {
-            if(this.selectedTags.includes(previousTagTitle)) {
-              const index = this.selectedTags.findIndex(this.editTagTitle);
-              this.selectedTags.splice(index, 1, this.editTagTitle);
-            }
-            this.refreshTasks();
-            this.resetTagEdit();
-            toastr.success('Updated tag!');
-          },
-          (error) => {
-            toastr.error(error.message);
-          }
-        );
-      },
       updateTags() {
         this.$store.dispatch('tasks/updateTags', {
           id: this.currentTask.id,
@@ -1052,27 +535,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if(this.controls == 0) {
           this.controls = 1;
         }
-      },
-      showLocalNotification(title, body, serviceWorker) {
-        const options = {
-          body,
-          icon: "<%= appIcon %>"
-        };
-        if(this.serviceWorker != null) {
-          this.serviceWorker.showNotification(title, options);
-        } else {
-          toastr.error('Service worker is null!');
-        }
-      },
-      logout() {
-        api.logout(
-          (response) => {
-            window.location.reload();
-          },
-          (error) => {
-            toastr.error(error.message);
-          }
-        )
       }
     }
     // Temporarily disabled due to abyssmal performance on mobile
