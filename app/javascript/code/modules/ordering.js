@@ -20,7 +20,6 @@ const methods = {
   moveTask(event, list, listname) {
     console.log('moveTask', event, list, listname);
     if(event.hasOwnProperty('moved')) {
-      console.log('moved');
       this.$store.dispatch('tasks/moveTask', {
         event: event,
         list: list
@@ -32,7 +31,6 @@ const methods = {
       );
     }
     else if(event.hasOwnProperty('added')) {
-      console.log('added');
       this.$store.dispatch('tasks/moveTaskColumn', {
         event: event,
         list: list,
@@ -43,9 +41,6 @@ const methods = {
           toastr.error(error.message);
         }
       );
-    }
-    else {
-      console.log('do nothing');
     }
   }
 }

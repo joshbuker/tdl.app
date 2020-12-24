@@ -65,6 +65,13 @@ const getters = {
       );
     }
   },
+  globalTaskIndex: (state) => (id) => {
+    return state.tasks.findIndex(
+      (element) => {
+        return (element.id == id)
+      }
+    )
+  },
   today: (state, getters) => (list, tags) => {
     const endOfDay = DateTime.local().endOf('day').toMillis();
 
@@ -356,23 +363,22 @@ const actions = {
     await dispatch('updateColumnAndPosition', options);
     dispatch('syncOrdering');
   },
-  async updatePosition({ commit, state, dispatch }, options) {
-    let newGlobalIndex;
+  async updatePosition({ commit, state, getters }, options) {
+    var currentTaskID = options.event.moved.element.id;
+    var oldGlobalIndex = getters.globalTaskIndex(currentTaskID);
+    // console.log("currentTaskID: ", currentTaskID);
+    // console.log("oldGlobalIndex: ", oldGlobalIndex);
+
     var newLocalIndex = options.event.moved.newIndex;
-    if (newLocalIndex != 0) {
-      newGlobalIndex = state.tasks.findIndex((element) => { return (element.id == options.list[newLocalIndex-1].id) }) + 1;
-      console.log("local-1 id ", options.list[newLocalIndex-1].id);
-    }
-    else if (newLocalIndex != options.list.length-1) {
-      newGlobalIndex = state.tasks.findIndex((element) => { return (element.id == options.list[newLocalIndex+1].id) }) - 1;
-      console.log("local+1 id ", options.list[newLocalIndex+1].id);
-    }
-    console.log("newGlobalIndex: ", newGlobalIndex);
-    let movedID = options.event.moved.element.id;
-    let oldGlobalIndex = state.tasks.findIndex((element) => { return (element.id == movedID) });
+    var targetTaskID = options.list[newLocalIndex].id;
+    var newGlobalIndex = getters.globalTaskIndex(targetTaskID);
+    // console.log("newLocalIndex: ", newLocalIndex);
+    // console.log("targetTaskID: ", targetTaskID);
+    // console.log("newGlobalIndex: ", newGlobalIndex);
+
     commit('moveTask', { oldIndex: oldGlobalIndex, newIndex: newGlobalIndex });
   },
-  async updateColumnAndPosition({ commit, state, getters, dispatch }, options) {
+  async updateColumnAndPosition({ commit, state, getters }, options) {
     let newGlobalIndex;
     var newLocalIndex = options.event.added.newIndex;
     if(options.list.length == 0) {
@@ -546,9 +552,11 @@ const mutations = {
     state.tasks.push(task);
   },
   moveTask(state, options) {
-    console.log(options.oldIndex);
-    console.log(options.newIndex);
-    state.tasks.splice(options.newIndex, 0, state.tasks.splice(options.oldIndex, 1)[0]);
+    state.tasks.splice(
+      options.newIndex,
+      0,
+      state.tasks.splice(options.oldIndex, 1)[0]
+    );
   },
   moveTaskToColumn(state, options) {
     console.log(options.oldIndex);
