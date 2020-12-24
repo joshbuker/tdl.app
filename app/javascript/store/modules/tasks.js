@@ -379,52 +379,60 @@ const actions = {
     commit('moveTask', { oldIndex: oldGlobalIndex, newIndex: newGlobalIndex });
   },
   async updateColumnAndPosition({ commit, state, getters }, options) {
-    let newGlobalIndex;
+    var currentTaskID = options.event.added.element.id;
+    var oldGlobalIndex = getters.globalTaskIndex(currentTaskID);
+    // console.log("currentTaskID: ", currentTaskID);
+    // console.log("oldGlobalIndex: ", oldGlobalIndex);
+
     var newLocalIndex = options.event.added.newIndex;
+    // console.log('newLocalIndex: ', newLocalIndex);
+    var newGlobalIndex;
     if(options.list.length == 0) {
       if(options.time == 'today' || options.time == 'tomorrow') {
-        newGlobalIndex = state.tasks.findIndex((element) => {
-          return (element.id == getters.today('All Tasks', [])[getters.today('All Tasks', []).length-1].id)
-        }) + 1;
+        newGlobalIndex = getters.nextOrder('All Tasks', 'today') - 1;
+      } else if(options.time == 'upcoming') {
+        newGlobalIndex = getters.nextOrder('All Tasks', 'tomorrow') - 1;
+      } else if(options.time == 'someday') {
+        newGlobalIndex = getters.nextOrder('All Tasks', 'upcoming') - 1;
+      } else {
+        throw new Error('Invalid column when moving: ', options.time);
       }
-      else if(options.time == 'upcoming') {
-        newGlobalIndex = state.tasks.findIndex((element) => {
-          return (element.id == getters.tomorrow('All Tasks', [])[getters.tomorrow('All Tasks', []).length-1].id)
-        }) + 1;
+    } else {
+      var appendToList = false;
+      if(newLocalIndex > options.list.length - 1) {
+        newLocalIndex = options.list.length - 1;
+        appendToList = true;
       }
-      else if(options.time == 'someday') {
-        newGlobalIndex = state.tasks.findIndex((element) => {
-          return (element.id == getters.upcoming('All Tasks', [])[getters.upcoming('All Tasks', []).length-1].id)
-        }) + 1;
-      }
-      else {
-        console.log("inside the else");
+      var targetTaskID = options.list[newLocalIndex].id;
+      // console.log('targetTaskID: ', targetTaskID);
+      newGlobalIndex = getters.globalTaskIndex(targetTaskID);
+      if(appendToList == true) {
+        newGlobalIndex += 1;
       }
     }
-    else if (newLocalIndex != 0) {
-      newGlobalIndex = state.tasks.findIndex((element) => { return (element.id == options.list[newLocalIndex-1].id) }) + 1;
-      console.log("local-1 id ", options.list[newLocalIndex-1].id);
-    }
-    else if (newLocalIndex != options.list.length-1) {
-      newGlobalIndex = state.tasks.findIndex((element) => { return (element.id == options.list[newLocalIndex+1].id) }) - 1;
-      console.log("local+1 id ", options.list[newLocalIndex+1].id);
-    }
-    console.log("newGlobalIndex: ", newGlobalIndex);
-    let movedID = options.event.added.element.id;
-    let oldGlobalIndex = state.tasks.findIndex((element) => { return (element.id == movedID) });
+
+    // console.log("newGlobalIndex: ", newGlobalIndex);
 
     await api.updateTaskReviewAt(
       {
-        id: movedID,
-        time: options.time
+        id: currentTaskID,
+        review_at: options.time
       },
       (response) => {
-        let newTask = JSON.parse(JSON.stringify(options.event.added.element));
+        var newTask = JSON.parse(JSON.stringify(options.event.added.element));
         newTask.review_at = response.data;
-        console.log('replacement task goes: ', newTask);
-        commit('moveTaskToColumn', { oldIndex: oldGlobalIndex, newIndex: newGlobalIndex, task: newTask });
+        commit(
+          'moveTaskToColumn',
+          {
+            oldIndex: oldGlobalIndex,
+            newIndex: newGlobalIndex,
+            task: newTask
+          }
+        );
       },
-      (error) => {}
+      (error) => {
+        throw new Error(error);
+      }
     )
   },
   async syncOrdering({ commit, state, dispatch }) {
@@ -559,38 +567,18 @@ const mutations = {
     );
   },
   moveTaskToColumn(state, options) {
-    console.log(options.oldIndex);
-    console.log(options.newIndex);
+    if(options.oldIndex < options.newIndex) {
+      // Account for the position shift
+      options.newIndex -= 1;
+    }
+    // console.log(options.oldIndex);
+    // console.log(options.newIndex);
     state.tasks.splice(options.oldIndex, 1);
     state.tasks.splice(options.newIndex, 0, options.task);
   },
   setTasks(state, tasks) {
     state.tasks = tasks;
   },
-  // setToday(state, tasks) {
-  //   find global index for all tasks in column
-  //   global index move for any tasks out of order in global
-  //   var global_indexes = [];
-/*    for task in tasks {
-      global_indexes.push(state.tasks.findIndex((element) => { return (element.id == task.id) } ));
-    }*/
-  //   for(int a = 0; a < global_indexes.length - 2; a++) {
-  //     if(global_indexes.length > 1) {
-  //       for(int b = 1; b < global_indexes.length - 1; b++) {
-  //         if(a > b) {a is the one that moved}
-  //       }
-  //     }
-  //   }
-
-  //   var prev = global_indexes[0]
-  //   for(int i = 1; i < global_indexes.length - 1; i++) {
-  //     if(prev > global_indexes[i]) {
-  //       // if item was moved up: last was moved
-  //       // if item was moved down: global_indexes[i] was moved
-  //     }
-  //   }
-  //   state.tasks
-  // }
   setTreeview(state, tasks) {
     state.treeview = tasks;
   },
