@@ -43,7 +43,12 @@ self.addEventListener('fetch', function(event) {
 
 self.addEventListener('push', function(event) {
   console.log('[Service Worker] Push Received.');
-  var message = event.data.json();
+  try {
+    var message = event.data.json();
+  } catch (e) {
+    var message = { title: event.data.text() };
+    console.log(e);
+  }
   console.log(`[Service Worker] Push had this data: "${message}"`);
   const title = message.title;
   const options = {

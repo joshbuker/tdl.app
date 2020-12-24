@@ -47,7 +47,7 @@ const methods = {
     else {
       console.log('do nothing');
     }
-  },
+  }
 }
 
 export default {
