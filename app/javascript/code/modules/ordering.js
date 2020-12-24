@@ -18,7 +18,7 @@ const methods = {
     );
   },
   moveTask(event, list, listname) {
-    console.log('moveTask', event, list, listname);
+    // console.log('moveTask', event, list, listname);
     if(event.hasOwnProperty('moved')) {
       this.$store.dispatch('tasks/moveTask', {
         event: event,
