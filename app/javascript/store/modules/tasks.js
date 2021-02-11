@@ -339,6 +339,20 @@ const actions = {
       }
     );
   },
+  async resetReviewAt({ commit, state }) {
+    return new Promise(
+      (resolve, reject) => {
+        api.resetReviewAt(
+          (response) => {
+            resolve(response);
+          },
+          (error) => {
+            reject(error);
+          }
+        )
+      }
+    );
+  },
   async search({ commit, state }, options) {
     return new Promise(
       (resolve, reject) => {

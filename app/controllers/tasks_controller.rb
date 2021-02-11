@@ -1,6 +1,6 @@
 class TasksController < ApiController
   before_action :set_task, except: [
-    :index, :treeview, :search, :create, :clear_completed
+    :index, :treeview, :search, :create, :clear_completed, :reset_review_at
   ]
   before_action :set_tasks, only: [:index, :treeview]
 
@@ -285,6 +285,17 @@ class TasksController < ApiController
     @task.update!(completed: false)
 
     render json: @task.to_json
+  end
+
+  def reset_review_at
+    if current_user.present?
+      current_user.tasks.where(remind_me: false).update(review_at: nil)
+    else
+      head :forbidden
+      return
+    end
+
+    head :ok
   end
 
   def clear_completed

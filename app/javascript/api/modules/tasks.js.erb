@@ -195,6 +195,19 @@ export default {
       onFailure(error);
     });
   },
+  async resetReviewAt(onSuccess, onFailure) {
+    return axios.post('<%= tasks_url %>/reset-review-at', {
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
   async updateTask(options, onSuccess, onFailure) {
     return axios.patch('<%= tasks_url %>/' + String(options.id), {
       // TODO: consolidate the other task update methods into this one

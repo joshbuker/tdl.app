@@ -408,6 +408,21 @@ document.addEventListener('DOMContentLoaded', () => {
         this.refreshTags();
         this.refreshTasks();
       },
+      resetReviewAt() {
+        if(confirm('This will reset review at for anything without a reminder, are you sure?')) {
+          console.log('sono');
+          this.$store.dispatch('tasks/resetReviewAt').
+          then(
+            (response) => {
+              this.refreshEverything();
+              toastr.success('Reset review at for tasks without a reminder!');
+            },
+            (error) => {
+              toastr.error(error.message);
+            }
+          );
+        }
+      },
       updateCurrentTime() {
         this.currentTime = DateTime.local().toFormat('h:mm:ss a ZZZZ');
         this.$options.timer = window.setTimeout(this.updateCurrentTime, 1000);
