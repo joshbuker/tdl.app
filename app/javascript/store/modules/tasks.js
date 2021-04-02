@@ -33,8 +33,8 @@ const getters = {
       );
     }
   },
-  tasks: (state, getters) => (list, tags) => {
-    if(tags === [] || tags == null || Array.isArray(tags) !== true) {
+  tasks: (state, getters) => (list, tags, all_tags) => {
+    if(tags == null || Array.isArray(tags) !== true || tags.length == 0) {
       return getters.list_tasks(list);
     } else if(tags.includes('No Tags') === true) {
       return getters.list_tasks(list).filter(
@@ -49,19 +49,35 @@ const getters = {
     } else {
       return getters.list_tasks(list).filter(
         // For every task in the list
-        (task) => { return (
-          // For every tag we're limiting by
-          tags.every(
-            (tag) => { return (
-              // Ensure that the task includes said tag
-              task.tags.some(
-                (task_tag) => { return (
-                  task_tag.title == tag
+        (task) => {
+          if(all_tags === true) {
+            return (
+              // For every tag we're limiting by
+              tags.every(
+                (tag) => { return (
+                  // Ensure that the task includes said tag
+                  task.tags.some(
+                    (task_tag) => { return (
+                      task_tag.title == tag
+                    )}
+                  )
                 )}
               )
-            )}
-          )
-        )}
+            )
+          } else {
+            return (
+              tags.some(
+                (tag) => { return (
+                  task.tags.some(
+                    (task_tag) => { return (
+                      task_tag.title == tag
+                    )}
+                  )
+                )}
+              )
+            )
+          }
+        }
       );
     }
   },
@@ -72,22 +88,22 @@ const getters = {
       }
     )
   },
-  today: (state, getters) => (list, tags) => {
+  today: (state, getters) => (list, tags, all_tags) => {
     const endOfDay = DateTime.local().endOf('day').toMillis();
 
-    return getters.tasks(list, tags).filter(
+    return getters.tasks(list, tags, all_tags).filter(
       (task) => { return (
         task.review_at == null ||
         DateTime.fromISO(task.review_at).toMillis() <= endOfDay
       )}
     );
   },
-  tomorrow: (state, getters) => (list, tags) => {
+  tomorrow: (state, getters) => (list, tags, all_tags) => {
     const tomorrow = DateTime.local().plus({ days: 1 });
     const startOfTomorrow = tomorrow.startOf('day').toMillis();
     const endOfTomorrow = tomorrow.endOf('day').toMillis();
 
-    return getters.tasks(list, tags).filter(
+    return getters.tasks(list, tags, all_tags).filter(
       (task) => {
         if(task.review_at != null) {
           return (
@@ -100,11 +116,11 @@ const getters = {
       }
     );
   },
-  upcoming: (state, getters) => (list, tags) => {
+  upcoming: (state, getters) => (list, tags, all_tags) => {
     const startOfUpcoming = DateTime.local().plus({ days: 2 }).startOf('day').toMillis();
     const endOfUpcoming = DateTime.local().plus({ days: 31 }).endOf('day').toMillis();
 
-    return getters.tasks(list, tags).filter(
+    return getters.tasks(list, tags, all_tags).filter(
       (task) => {
         if(task.review_at != null) {
           return (
@@ -117,10 +133,10 @@ const getters = {
       }
     );
   },
-  someday: (state, getters) => (list, tags) => {
+  someday: (state, getters) => (list, tags, all_tags) => {
     const endOfUpcoming = DateTime.local().plus({ days: 31 }).endOf('day').toMillis();
 
-    return getters.tasks(list, tags).filter(
+    return getters.tasks(list, tags, all_tags).filter(
       (task) => {
         if(task.review_at != null) {
           return (

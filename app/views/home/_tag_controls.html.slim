@@ -1,4 +1,11 @@
 template v-if='editControls != true'
+  v-container
+    v-row.mt-1[align='center' justify='center']
+      v-btn-toggle[v-model='allTags' color='primary' mandatory]
+        v-btn[:value='true' small]
+          | All
+        v-btn[:value='false' small]
+          | Any
   v-list[nav]
     v-list-item-group[v-model='selectedTags' color='primary' multiple]
       v-list-item[value='No Tags' link color='white']

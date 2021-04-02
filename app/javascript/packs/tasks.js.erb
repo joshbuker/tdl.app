@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
       //
       // UI Tracking
       //
+      allTags: true,
       controls: 0,
       drawer: null,
       editControls: false,
@@ -187,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         get() {
           var list = this.selectedList;
           var tags = this.selectedTags;
-          return this.$store.getters['tasks/today'](list, tags);
+          return this.$store.getters['tasks/today'](list, tags, this.allTags);
         },
         set(value) {}
       },
@@ -195,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         get() {
           var list = this.selectedList;
           var tags = this.selectedTags;
-          return this.$store.getters['tasks/tomorrow'](list, tags);
+          return this.$store.getters['tasks/tomorrow'](list, tags, this.allTags);
         },
         set(value) {}
       },
@@ -203,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
         get() {
           var list = this.selectedList;
           var tags = this.selectedTags;
-          return this.$store.getters['tasks/upcoming'](list, tags);
+          return this.$store.getters['tasks/upcoming'](list, tags, this.allTags);
         },
         set(value) {}
       },
@@ -211,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         get() {
           var list = this.selectedList;
           var tags = this.selectedTags;
-          return this.$store.getters['tasks/someday'](list, tags);
+          return this.$store.getters['tasks/someday'](list, tags, this.allTags);
         },
         set(value) {}
       },
