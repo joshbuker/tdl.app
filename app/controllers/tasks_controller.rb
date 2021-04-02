@@ -331,6 +331,6 @@ private
   end
 
   def task_params
-    params.require(:task).permit(:title, :order)
+    params.require(:task).permit(:title, :order, :remind_me, :review_at)
   end
 end

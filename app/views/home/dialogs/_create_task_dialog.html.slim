@@ -13,6 +13,11 @@ v-dialog[v-model='createTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
           v-chip[:color='item.color' :text-color='item.text_color' :key='item.title']
             | {{ item.title }}
       v-select[label='List' v-model='createTaskList' :items='lists' item-text='title' item-value='title']
+      v-row style='flex-wrap: nowrap;'
+        v-col.flex-grow-1.flex-shrink-0
+          v-datetime-picker[label='Review at' v-model='createTaskReviewAt']
+        v-col.flex-grow-0.flex-shrink-1
+          v-switch[label='Remind me' v-model='createTaskRemindMe' style='white-space: nowrap;']
       v-text-field[label='Task title' :value='newTask' @change='value => newTask = value' @keyup.enter='addTask']
       v-switch[v-model='searchEnabled' label='Auto Search']
       v-btn[@click='searchForTasks(newTask)' text-with-icon]

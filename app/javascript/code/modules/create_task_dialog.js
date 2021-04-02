@@ -4,7 +4,9 @@ const data = {
   newTask: '',
   createTaskDialog: false,
   createTaskTags: [],
-  createTaskList: null
+  createTaskList: null,
+  createTaskReviewAt: '',
+  createTaskRemindMe: false
 }
 
 const methods = {
@@ -12,7 +14,9 @@ const methods = {
     this.$store.dispatch('tasks/create', {
       title: this.newTask,
       list: this.createTaskList,
-      tags: this.createTaskTags
+      tags: this.createTaskTags,
+      remind_me: this.createTaskRemindMe,
+      review_at: this.createTaskReviewAt
     }).
     then(
       (response) => {
