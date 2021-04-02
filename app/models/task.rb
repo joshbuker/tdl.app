@@ -200,6 +200,10 @@ class Task < ApplicationRecord
     Task.find_by_sql(sql)
   end
 
+  def overdue?
+    remind_me? && review_at.present? && review_at < Time.current
+  end
+
   def to_tree
     results = self.to_hash
 
@@ -217,6 +221,7 @@ class Task < ApplicationRecord
       list: list.task_hash,
       list_title: list.title, # TODO: Replace usage with List object
       notes: notes,
+      overdue: overdue?,
       remind_me: remind_me,
       review_at: review_at.present? ? I18n.l(review_at, format: :iso_8601) : nil,
       tag_ordering: taggings.reload.map { |tagging| tagging.task_hash },

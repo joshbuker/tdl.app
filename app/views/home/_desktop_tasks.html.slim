@@ -34,7 +34,7 @@ v-container#main[fluid]
                 draggable[v-model="#{list}" delay='200' delay-on-touch-only='true' @change="moveTask($event, #{list}, '#{list}')" group='tasks']
                   v-list-item[v-for="task in #{list}" :key="task.title"]
                     v-list-item-content[@click.stop='setCurrentTask(task)']
-                      v-list-item-title
+                      v-list-item-title[:style="(task.overdue) ? 'color: red;' : null"]
                         | {{ task.title }}
                     v-tooltip[top v-for='tag in task.tags' :key='tag.title']
                       template[v-slot:activator='{ on, attrs }']

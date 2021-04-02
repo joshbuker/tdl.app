@@ -10,7 +10,7 @@ v-card.pa-4[v-if='view == 0 || view == 1 || view == 3' tile]
             draggable[v-model="#{list}" delay='200' delay-on-touch-only='true'  @change="moveTask($event, #{list}, '#{list}')" group='tasks']
               v-list-item[v-for="task in #{list}" :key="task.title" @click='setCurrentTask(task)']
                 v-list-item-content.handle
-                  v-list-item-title
+                  v-list-item-title[:style="(task.overdue) ? 'color: red;' : null"]
                     | {{ task.title }}
                 v-chip.ml-1[v-for='tag in task.tags' :color='tag.color' :key='tag.title' @click.stop='selectTag(tag)']
                   v-icon[:color='tag.text_color']
