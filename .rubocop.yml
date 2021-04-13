@@ -19,7 +19,7 @@ AllCops:
     - 'Gemfile'
   NewCops: enable
   SuggestExtensions: false
-  TargetRubyVersion: 3.0
+  TargetRubyVersion: 3.0.1
 
 ###########################
 ## Custom Rubocop Config ##

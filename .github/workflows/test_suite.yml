@@ -13,7 +13,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0
+          ruby-version: 3.0.1
           bundler-cache: true
       - name: Run tests
         run: bundle exec rake spec
@@ -27,7 +27,7 @@ jobs:
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.0
+        ruby-version: 3.0.1
         bundler-cache: true
     - name: Run rubocop
       run: bundle exec rake rubocop
@@ -41,7 +41,7 @@ jobs:
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.0
+        ruby-version: 3.0.1
         bundler-cache: true
     - name: Run bundle audit
       run: bundle exec bundle audit check --update
