@@ -1,0 +1,59 @@
+name: Test Suite
+
+# Run against all commits and pull requests.
+on: [ push, pull_request ]
+
+jobs:
+  specs:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+          bundler-cache: true
+      - name: Run tests
+        run: bundle exec rake spec
+
+  styling:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.0
+        bundler-cache: true
+    - name: Run rubocop
+      run: bundle exec rake rubocop
+
+  security:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.0
+        bundler-cache: true
+    - name: Run bundle audit
+      run: bundle exec bundle audit check --update
+    - name: Run brakeman
+      run: bundle exec brakeman
+
+# TODO: Add code coverage testing
+# TODO: Add documentation/maintainability testing?
+
+  finish:
+    runs-on: ubuntu-latest
+    needs: [ specs, styling, security ]
+    steps:
+      - name: Wait for status checks
+        run: echo "All Green!"
