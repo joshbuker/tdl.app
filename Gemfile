@@ -47,6 +47,9 @@ group :development, :test do
   gem 'rubocop'
   gem 'rubocop-performance'
   gem 'rubocop-rspec'
+
+  # Prevent parser from yelling at us about mismatched ruby versions
+  gem 'parser', '~> 3.0.0.0'
 end
 
 group :development do

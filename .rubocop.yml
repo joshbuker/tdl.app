@@ -7,6 +7,16 @@ require:
   - rubocop-performance
 
 AllCops:
+  Exclude:
+    - 'bin/**/*'
+    - 'config/**/*'
+    - 'coverage/**/*'
+    - 'db/**/*'
+    - 'lib/templates/**/*'
+    - 'log/**/*'
+    - 'tmp/**/*'
+    - 'vendor/**/*'
+    - 'Gemfile'
   NewCops: enable
   SuggestExtensions: false
   TargetRubyVersion: 3.0
@@ -59,6 +69,9 @@ Style/SymbolArray:
   EnforcedStyle: brackets
 # Look upon thy field of fucks, and see that it is barren.
 Style/FrozenStringLiteralComment:
+  Enabled: false
+# Might re-enable this later, but for now it's just annoying.
+Style/Documentation:
   Enabled: false
 
 #############
