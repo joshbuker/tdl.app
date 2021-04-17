@@ -1,3 +1,11 @@
+ENV['RAILS_ENV'] ||= 'test'
+
+require 'byebug'
+require 'faker'
+require 'simplecov' # Automatically requires .simplecov
+
+# TODO: Remove all instances of `:nocov:`
+
 RSpec.configure do |config|
   ######################
   ## RSpec 4 Defaults ##

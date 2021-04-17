@@ -58,6 +58,7 @@ group :development do
 end
 
 group :test do
+  gem 'simplecov', require: false
   gem 'shoulda-matchers'
   gem 'timecop'
 end
