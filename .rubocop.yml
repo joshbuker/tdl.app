@@ -80,4 +80,4 @@ Style/Documentation:
 
 # TODO: Is there a good way to break up specs without it getting unwieldy?
 Metrics/BlockLength:
-  IgnoredMethods: ['describe', 'context']
+  IgnoredMethods: ['describe', 'context', 'configure']
