@@ -1,0 +1,38 @@
+openapi: 3.0.0
+info:
+  title: TDL App API
+  version: v1
+  description: >
+    Provides a REST API backend for arbitrary TDL App front-ends.
+  contact:
+    name: TDL App Support
+    email: support@tdl.app
+
+servers:
+  - url: https://api.tdl.app/v1
+    description: Production Server
+  - url: https://sandbox.tdl.app/v1
+    description: >
+      Sandbox server (that resets daily? not implementing until it's useful)
+
+components:
+  # TODO: Look into how to properly do api security in 2021
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+
+# Apply security scheme to all endpoints
+security:
+  - bearerAuth: []
+
+paths:
+  /login:
+    post:
+  /logout:
+    post:
+  /tasks:

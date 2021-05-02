@@ -1,0 +1,5 @@
+---
+ja:
+  validators:
+    email:
+      invalid_format: 有効なメールではありません

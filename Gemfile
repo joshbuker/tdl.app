@@ -32,6 +32,15 @@ gem 'rails', '~> 6.1'
 gem 'rswag-api'
 gem 'rswag-ui'
 
+# Authentication via Sorcery
+gem 'sorcery-core',
+  github: 'Sorcery/sorcery-rework',
+  glob: 'sorcery-core/sorcery-core.gemspec'
+# gem 'sorcery-jwt'
+
+# Password Hashing
+gem 'sorcery-argon2'
+
 ##########################
 ## Environment Specific ##
 ##########################
@@ -42,6 +51,7 @@ group :development, :test do
   gem 'byebug'
   gem 'factory_bot_rails'
   gem 'faker' # So faker can be used for both test data and development seeds
+  gem 'i18n-tasks'
   gem 'rspec-rails'
   gem 'rswag-specs'
   gem 'rubocop'
@@ -60,5 +70,6 @@ end
 group :test do
   gem 'simplecov', require: false
   gem 'shoulda-matchers'
+  gem 'validator-matchers'
   gem 'timecop'
 end

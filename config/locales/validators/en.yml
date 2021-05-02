@@ -1,0 +1,5 @@
+---
+en:
+  validators:
+    email:
+      invalid_format: is not a valid email

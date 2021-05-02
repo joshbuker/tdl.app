@@ -1,0 +1,14 @@
+---
+en:
+  sessions:
+    create:
+      failed: Failed to login
+      pending_implementation: Pending API support in Sorcery
+    destroy:
+      failed: You must be logged in to logout
+      pending_implementation: Pending API support in Sorcery
+    verify_auth_token:
+      pending_implementation: Pending WebAuthn support in Sorcery
+    verify_authy_app:
+      failed: That OTP was invalid or expired
+      pending_implementation: Pending API support in Sorcery

@@ -37,6 +37,9 @@ module ApiTdlApp
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    # Support loading i18n translations from subfolders
+    config.i18n.load_path += Dir[Rails.root.join('config/locales/**/*.yml')]
+
     # Configure rails generators
     config.generators do |g|
       g.test_framework :rspec

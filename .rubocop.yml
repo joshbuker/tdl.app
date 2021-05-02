@@ -30,7 +30,7 @@ AllCops:
 ############
 
 Layout/LineLength:
-  IgnoredPatterns: ['it { is_expected.']
+  IgnoredPatterns: ['it { should']
   Max: 80
 # Variable assignment can be indented weirdly, so align to the ending statement
 # instead
