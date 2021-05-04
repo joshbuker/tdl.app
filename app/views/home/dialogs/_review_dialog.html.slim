@@ -8,7 +8,6 @@ v-dialog[v-model='reviewDialog' persistent :fullscreen='$vuetify.breakpoint.mobi
     v-card-text
       p
         | {{ reviewQueue.length }} tasks remaining.
-      v-divider
       h1[v-if='currentReviewTask != undefined']
         | {{ currentReviewTask.title }}
     v-divider
