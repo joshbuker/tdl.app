@@ -1,5 +1,6 @@
 {
   "name": "tdl_app",
+  "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@rails/actioncable": "^6.0.0-alpha",
@@ -27,7 +28,10 @@
     "webpacker-pwa": "^0.1.2",
     "weekstart": "^1.0.1"
   },
-  "version": "0.1.0",
+  "engines": {
+    "yarn": "1.x",
+    "node": "14.x"
+  },
   "devDependencies": {
     "deepmerge": "^4.2.2",
     "fibers": "^5.0.0",
