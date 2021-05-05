@@ -1,11 +1,11 @@
 v-dialog[v-model='reviewDialog' persistent :fullscreen='$vuetify.breakpoint.mobile']
-  v-card[:tile='$vuetify.breakpoint.mobile']
-    v-toolbar[dark color='primary']
+  v-card.d-flex.flex-column[:tile='$vuetify.breakpoint.mobile']
+    v-toolbar[dark color='primary' style='max-height: 56px;']
       v-spacer
       v-btn[:disabled='reviewWaiting == true' fab dark @click='endReview']
         v-icon
           | fa-close
-    v-card-text
+    v-card-text.flex-grow-1
       p
         | {{ reviewQueue.length }} tasks remaining.
       h1[v-if='currentReviewTask != undefined']
