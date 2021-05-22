@@ -8,7 +8,8 @@ RSpec.describe User do
   end
 
   describe 'associations' do
-    # TODO: Add tests or remove placeholder
+    it { should have_many(:devices).dependent(:destroy) }
+    it { should have_many(:sessions).dependent(:destroy) }
   end
 
   describe 'validations' do

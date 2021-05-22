@@ -27,12 +27,12 @@ components:
       description: Access token is missing or invalid
 
 # Apply security scheme to all endpoints
-security:
-  - bearerAuth: []
+# security:
+#   - bearerAuth: []
 
 paths:
   /login:
+    summary: Takes login credentials, and returns a JWT session token if successful.
     post:
   /logout:
     post:
-  /tasks:

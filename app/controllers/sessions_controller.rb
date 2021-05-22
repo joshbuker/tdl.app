@@ -2,9 +2,8 @@ class SessionsController < ApplicationController
   skip_before_action :require_login, except: [:destroy]
 
   def create
-    if (session = login(params[:login], params[:password]))
-      raise NotImplementedError, t('.pending_implementation')
-      # Give session JWT as response
+    if (session_token = login(params[:login], params[:password]))
+      render json: { session_token: session_token }
     else
       render json: { error: t('.failed') }, status: :bad_request
     end
@@ -12,8 +11,6 @@ class SessionsController < ApplicationController
 
   def destroy
     if logged_in?
-      raise NotImplementedError, t('.pending_implementation')
-      forget_me!
       logout
       head :ok
     else
@@ -26,7 +23,7 @@ class SessionsController < ApplicationController
   end
 
   def verify_authy_app
-    if (session = verify(params[:otp]))
+    if (session_token = verify(params[:otp]))
       raise NotImplementedError, t('.pending_implementation')
       # Give session JWT as response
     else
