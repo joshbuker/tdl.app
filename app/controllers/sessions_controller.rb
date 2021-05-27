@@ -23,8 +23,8 @@ class SessionsController < ApplicationController
   end
 
   def verify_authy_app
+    raise NotImplementedError, t('.pending_implementation')
     if (session_token = verify(params[:otp]))
-      raise NotImplementedError, t('.pending_implementation')
       # Give session JWT as response
     else
       render json: { error: t('.failed') }, status: :bad_request

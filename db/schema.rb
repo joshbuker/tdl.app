@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 2021_05_08_173636) do
     t.string "username", null: false
     t.string "email", null: false
     t.string "password_digest"
-    t.datetime "terms_and_conditions"
+    t.datetime "terms_and_conditions", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

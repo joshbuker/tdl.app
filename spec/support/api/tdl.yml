@@ -1,7 +1,7 @@
-openapi: 3.0.0
+openapi: 3.0.1
 info:
   title: TDL App API
-  version: v1
+  version: v0
   description: >
     Provides a REST API backend for arbitrary TDL App front-ends.
   contact:
@@ -9,30 +9,72 @@ info:
     email: support@tdl.app
 
 servers:
-  - url: https://api.tdl.app/v1
+  - url: https://api.tdl.app/v0
     description: Production Server
-  - url: https://sandbox.tdl.app/v1
+  - url: https://sandbox.tdl.app/v0
     description: >
       Sandbox server (that resets daily? not implementing until it's useful)
 
 components:
-  # TODO: Look into how to properly do api security in 2021
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    Login:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+      required:
+        - login
+        - password
+    SessionToken:
+      type: object
+      properties:
+        session_token:
+          type: string
+      required:
+        - session_token
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
 
 # Apply security scheme to all endpoints
-# security:
-#   - bearerAuth: []
+security:
+  - bearerAuth: []
 
 paths:
   /login:
-    summary: Takes login credentials, and returns a JWT session token if successful.
     post:
+      summary: >
+        Takes login credentials, and returns a JWT session token if successful.
+      tags:
+        - Authentication
+      security: [] # Don't require login when logging in...
+      requestBody:
+        description: Username and password
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionToken'
   /logout:
     post:
+      summary: >
+        Logs out your current session by revoking the JWT token server-side.
+      tags:
+        - Authentication
+      responses:
+        '200':
+          description: OK

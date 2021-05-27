@@ -54,6 +54,19 @@ Layout/DotPosition:
 Layout/SpaceAroundOperators:
   AllowForAlignment: true
 
+#############
+## Rubocop ##
+#############
+
+# `should` is shorter than `is_expected.to`
+RSpec/ImplicitExpect:
+  EnforcedStyle: should
+# Known issue with RSpec rubocop, remove when fixed
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/requests/**/*'
+    - 'spec/system/**/*'
+
 ###########
 ## Style ##
 ###########
