@@ -3,3 +3,12 @@ ja:
   validators:
     email_formatting:
       invalid_format: 有効なメールではありません
+      must_be_lowercase: 小文字ではありません
+    locale_availability:
+      unavailable: 現在利用できません
+    password_complexity:
+      not_enough_complexity: '十分に複雑ではありません (次の 4 つのうち 3 つを含める必要があります: A-Z、a-z、0-9、特殊文字、例: @#$%)'
+    time_zone:
+      invalid: は有効なタイムゾーンではありません
+    username_formatting:
+      must_not_contain_spaces: スペースを含んではいけません

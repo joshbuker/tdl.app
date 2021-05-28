@@ -5,10 +5,12 @@ class UserSessionsController < ApplicationController
     if (session_token = login(params[:login], params[:password]))
       render json: { session_token: session_token }
     else
-      render json: { error: I18n.t('.failed') }, status: :bad_request
+      render json: { error: I18n.t('user_sessions.create.failed') },
+        status: :bad_request
     end
   rescue ArgumentError
-    render json: { error: I18n.t('.invalid_params') }, status: :bad_request
+    render json: { error: I18n.t('user_sessions.create.invalid_params') },
+      status: :bad_request
   end
 
   def destroy
@@ -16,20 +18,24 @@ class UserSessionsController < ApplicationController
       logout
       head :ok
     else
-      render json: { error: I18n.t('.failed') }, status: :bad_request
+      render json: { error: I18n.t('user_sessions.destroy.failed') },
+        status: :bad_request
     end
   end
 
   def verify_auth_token
-    raise NotImplementedError, I18n.t('.pending_implementation')
+    raise NotImplementedError,
+      I18n.t('user_sessions.verify_auth_token.pending_implementation')
   end
 
   def verify_authy_app
-    raise NotImplementedError, I18n.t('.pending_implementation')
+    raise NotImplementedError,
+      I18n.t('user_sessions.verify_authy_app.pending_implementation')
     if (session_token = verify(params[:otp]))
       # Give session JWT as response
     else
-      render json: { error: I18n.t('.failed') }, status: :bad_request
+      render json: { error: I18n.t('user_sessions.verify_authy_app.failed') },
+        status: :bad_request
     end
   end
 end
