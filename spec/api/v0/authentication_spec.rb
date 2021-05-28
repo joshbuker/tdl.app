@@ -1,6 +1,6 @@
 require 'swagger_helper'
 
-RSpec.describe 'Authentication', type: :request do
+RSpec.describe 'Authentication' do
   let(:user) { create :user, password: 'Amazing!' }
 
   path '/login' do
