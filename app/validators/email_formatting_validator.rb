@@ -1,8 +1,20 @@
-class EmailValidator < ActiveModel::EachValidator
-  def validate_each(record, attribute, value)
-    return if value.blank? || value =~ URI::MailTo::EMAIL_REGEXP
+class EmailFormattingValidator < ActiveModel::EachValidator
+  def validate_each(record, field, value)
+    return if value.blank?
 
-    record.errors[attribute] <<
-      I18n.t('validators.email.invalid_format')
+    if value != value.downcase
+      record.errors.add(
+        field,
+        message: I18n.t('validators.email_formatting.must_be_lowercase')
+      )
+    end
+
+    # NOTE: Regex is witchcraft
+    return if value =~ URI::MailTo::EMAIL_REGEXP
+
+    record.errors.add(
+      field,
+      message: I18n.t('validators.email_formatting.invalid_format')
+    )
   end
 end

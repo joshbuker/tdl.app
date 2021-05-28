@@ -9,7 +9,7 @@ RSpec.describe User do
 
   describe 'associations' do
     it { should have_many(:devices).dependent(:destroy) }
-    it { should have_many(:sessions).dependent(:destroy) }
+    it { should have_many(:user_sessions).dependent(:destroy) }
   end
 
   describe 'validations' do
@@ -23,6 +23,7 @@ RSpec.describe User do
     it { should validate_locale_availability_of(:locale) }
 
     it { should validate_presence_of(:username) }
+    it { should validate_length_of(:username).is_at_most(69) } # nice
     it { should validate_uniqueness_of(:username).case_insensitive }
     it { should validate_username_formatting_of(:username) }
 
@@ -35,7 +36,6 @@ RSpec.describe User do
     it { should validate_password_complexity_of(:password) }
 
     it { should validate_presence_of(:terms_and_conditions) }
-    it { should validate_acceptance_of(:terms_and_conditions) }
   end
 
   describe 'callbacks' do

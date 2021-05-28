@@ -23,13 +23,11 @@ ActiveRecord::Schema.define(version: 2021_05_08_173636) do
     t.index ["user_id"], name: "index_devices_on_user_id"
   end
 
-  create_table "sessions", force: :cascade do |t|
+  create_table "user_sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "device_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["device_id"], name: "index_sessions_on_device_id"
-    t.index ["user_id"], name: "index_sessions_on_user_id"
+    t.index ["user_id"], name: "index_user_sessions_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -40,12 +38,14 @@ ActiveRecord::Schema.define(version: 2021_05_08_173636) do
     t.string "username", null: false
     t.string "email", null: false
     t.string "password_digest"
+    t.integer "failed_logins_count", default: 0, null: false
+    t.datetime "lock_expires_at"
+    t.string "unlock_token"
     t.datetime "terms_and_conditions", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
   add_foreign_key "devices", "users"
-  add_foreign_key "sessions", "devices"
-  add_foreign_key "sessions", "users"
+  add_foreign_key "user_sessions", "users"
 end

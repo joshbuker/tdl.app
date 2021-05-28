@@ -10,8 +10,12 @@ class CreateUsers < ActiveRecord::Migration[6.1]
       # Account information
       t.string :username, null: false
       t.string :email,    null: false
-      # Password (argon2 hash)
+      # Sorcery - Password (argon2 hash)
       t.string :password_digest
+      # Sorcery - Brute Force Protection Module
+      t.integer   :failed_logins_count, default: 0, null: false
+      t.datetime  :lock_expires_at
+      t.string    :unlock_token
       # Track the last time a user accepted the terms
       t.datetime :terms_and_conditions, null: false
 

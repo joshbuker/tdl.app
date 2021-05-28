@@ -47,6 +47,9 @@ RSpec.configure do |config|
   # Allow shortened FactoryBot syntax.
   # i.e. (create instead of FactoryBot.create)
   config.include FactoryBot::Syntax::Methods
+  # Allow shortened I18n translation syntax.
+  # i.e. (t('message') instead of I18n.t('message'))
+  config.include AbstractController::Translation
 
   # Automatically applies metadata to specs based on folder name, see:
   # https://relishapp.com/rspec/rspec-rails/docs

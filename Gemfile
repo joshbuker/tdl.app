@@ -36,7 +36,9 @@ gem 'rswag-ui'
 gem 'sorcery-core',
   github: 'Sorcery/sorcery-rework',
   glob: 'sorcery-core/sorcery-core.gemspec'
-# gem 'sorcery-jwt'
+gem 'sorcery-jwt',
+  github: 'Sorcery/sorcery-rework',
+  glob: 'sorcery-jwt/sorcery-jwt.gemspec'
 
 # Password Hashing
 gem 'sorcery-argon2'

@@ -1,0 +1,79 @@
+---
+openapi: 3.0.1
+info:
+  title: TDL App API
+  version: v0
+  description: 'Provides a REST API backend for arbitrary TDL App front-ends.
+
+    '
+  contact:
+    name: TDL App Support
+    email: support@tdl.app
+servers:
+- url: https://api.tdl.app/v0
+  description: Production Server
+- url: https://sandbox.tdl.app/v0
+  description: 'Sandbox server (that resets daily? not implementing until it''s useful)
+
+    '
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Login:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+      required:
+      - login
+      - password
+    SessionToken:
+      type: object
+      properties:
+        session_token:
+          type: string
+      required:
+      - session_token
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+security:
+- bearerAuth: []
+paths:
+  "/login":
+    post:
+      summary: Creates a session token
+      tags:
+      - Authentication
+      security: []
+      requestBody:
+        description: Username and password
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Login"
+      responses:
+        '200':
+          description: session created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/SessionToken"
+      parameters: []
+  "/logout":
+    post:
+      summary: 'Logs out your current session by revoking the JWT token server-side.
+
+        '
+      tags:
+      - Authentication
+      responses:
+        '200':
+          description: OK

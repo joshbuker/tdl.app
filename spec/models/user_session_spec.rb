@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe Session do
-  subject(:record) { build :session }
+RSpec.describe UserSession do
+  subject(:record) { build :user_session }
 
   it 'has valid factory' do
     expect(record).to be_valid

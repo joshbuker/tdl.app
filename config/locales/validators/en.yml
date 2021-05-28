@@ -1,5 +1,14 @@
 ---
 en:
   validators:
-    email:
-      invalid_format: is not a valid email
+    email_formatting:
+      invalid_format: is not in a valid email format
+      must_be_lowercase: is not lowercase
+    locale_availability:
+      unavailable: is not available currently
+    password_complexity:
+      not_enough_complexity: 'is not complex enough (must include 3 out of 4 of the following: A-Z, a-z, 0-9, Special characters e.g. @#$%)'
+    time_zone:
+      invalid: is not a valid time zone
+    username_formatting:
+      must_not_contain_spaces: must not contain spaces
