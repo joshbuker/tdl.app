@@ -1,4 +1,7 @@
 class EmailFormattingValidator < ActiveModel::EachValidator
+  # TODO: Split this into two validators: regex and lowercase, or turn them into
+  #       validator params
+  # rubocop:disable Metrics/MethodLength
   def validate_each(record, field, value)
     return if value.blank?
 
@@ -17,4 +20,5 @@ class EmailFormattingValidator < ActiveModel::EachValidator
       message: I18n.t('validators.email_formatting.invalid_format')
     )
   end
+  # rubocop:enable Metrics/MethodLength
 end

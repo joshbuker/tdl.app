@@ -28,6 +28,8 @@ class UserSessionsController < ApplicationController
       I18n.t('user_sessions.verify_auth_token.pending_implementation')
   end
 
+  # rubocop:disable Lint/UnreachableCode
+  # rubocop:disable Lint/UselessAssignment
   def verify_authy_app
     raise NotImplementedError,
       I18n.t('user_sessions.verify_authy_app.pending_implementation')
@@ -38,4 +40,6 @@ class UserSessionsController < ApplicationController
         status: :bad_request
     end
   end
+  # rubocop:enable Lint/UnreachableCode
+  # rubocop:enable Lint/UselessAssignment
 end

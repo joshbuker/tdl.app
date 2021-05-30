@@ -58,10 +58,15 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/Login"
+              type: object
+              properties:
+                login:
+                  type: string
+                password:
+                  type: string
       responses:
         '200':
-          description: session created
+          description: Logged in successfully
           content:
             application/json:
               schema:
@@ -77,3 +82,8 @@ paths:
       responses:
         '200':
           description: OK
+    delete:
+      summary: Destroys a session token
+      responses:
+        '200':
+          description: Logged out successfully
