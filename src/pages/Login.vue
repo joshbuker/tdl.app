@@ -1,9 +1,15 @@
 <template>
   <q-page class="row items-center justify-evenly">
     <q-card>
-      <q-card-section>
-        <q-icon name="terminal" />
-        <p>TDL App</p>
+      <q-card-section class="bg-grey-8 text-white">
+        <q-item>
+          <q-item-section avatar>
+            <q-icon name="list" />
+          </q-item-section>
+          <q-item-section>
+            <div class="text-h5">TDL App</div>
+          </q-item-section>
+        </q-item>
       </q-card-section>
 
       <q-card-section>
@@ -13,7 +19,7 @@
             label="Username"
           >
             <template v-slot:prepend>
-              <q-icon name="user" />
+              <q-icon name="account_circle" />
             </template>
           </q-input>
 
@@ -28,6 +34,10 @@
           </q-input>
         </q-form>
       </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat>Login</q-btn>
+      </q-card-actions>
     </q-card>
   </q-page>
 </template>
