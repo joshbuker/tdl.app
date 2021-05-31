@@ -15,6 +15,7 @@
       <q-card-section>
         <q-form class="q-gutter-md">
           <q-input
+            v-model="username"
             filled
             :label="$t('username')"
           >
@@ -24,6 +25,7 @@
           </q-input>
 
           <q-input
+            v-model="password"
             filled
             :label="$t('password')"
             type="password"
@@ -36,20 +38,55 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat>{{ $t('login') }}</q-btn>
+        <q-btn flat @click="login">{{ $t('login') }}</q-btn>
       </q-card-actions>
     </q-card>
   </q-page>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { useQuasar } from 'quasar'
+import { defineComponent, ref } from 'vue';
+import { api } from 'boot/axios'
 
 export default defineComponent({
   name: 'PageLogin',
 
   setup() {
-    return {};
+    const $q = useQuasar()
+    const token = ref(null)
+    const username = ref('')
+    const password = ref('')
+
+    function login() {
+      api.post('/login', {
+        username: username.value,
+        password: password.value,
+        dataType: 'json',
+        contentType: 'application/json'
+      }).
+      then((response) => {
+        token.value = response.data
+        console.log(token.value)
+      }).
+      catch((error) => {
+        var errorMessage = ''
+        if (typeof error.response !== 'undefined') {
+          errorMessage = error.response.data.error
+        } else {
+          errorMessage = `Failed to login: ${error.message}`
+        }
+        password.value = ''
+        // $("input[name='password']").focus()
+        $q.notify({
+          color: 'negative',
+          position: 'top',
+          message: errorMessage,
+          icon: 'report_problem'
+        })
+      })
+    }
+    return { token, username, password, login };
   }
 });
 </script>
