@@ -16,7 +16,7 @@
         <q-form class="q-gutter-md">
           <q-input
             filled
-            label="Username"
+            :label="$t('username')"
           >
             <template v-slot:prepend>
               <q-icon name="account_circle" />
@@ -25,7 +25,7 @@
 
           <q-input
             filled
-            label="Password"
+            :label="$t('password')"
             type="password"
           >
             <template v-slot:prepend>
@@ -36,7 +36,7 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat>Login</q-btn>
+        <q-btn flat>{{ $t('login') }}</q-btn>
       </q-card-actions>
     </q-card>
   </q-page>
