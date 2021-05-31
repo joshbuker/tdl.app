@@ -26,12 +26,12 @@ components:
     Login:
       type: object
       properties:
-        login:
+        username:
           type: string
         password:
           type: string
       required:
-      - login
+      - username
       - password
     SessionToken:
       type: object
@@ -60,7 +60,7 @@ paths:
             schema:
               type: object
               properties:
-                login:
+                username:
                   type: string
                 password:
                   type: string

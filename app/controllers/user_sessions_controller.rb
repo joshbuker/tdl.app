@@ -2,7 +2,7 @@ class UserSessionsController < ApplicationController
   skip_before_action :require_login, except: [:destroy]
 
   def create
-    if (session_token = login(params[:login], params[:password]))
+    if (session_token = login(params[:username], params[:password]))
       render json: { session_token: session_token }
     else
       render json: { error: I18n.t('user_sessions.create.failed') },

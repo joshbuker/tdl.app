@@ -9,7 +9,7 @@ RSpec.describe 'Authentication' do
       parameter name: :login, in: :body, schema: {
         type: :object,
         properties: {
-          login: { type: :string },
+          username: { type: :string },
           password: { type: :string }
         }
       }
@@ -17,7 +17,7 @@ RSpec.describe 'Authentication' do
       produces 'application/json'
 
       response '200', 'Logged in successfully' do
-        let(:login) { { login: user.username, password: 'Amazing!' } }
+        let(:login) { { username: user.username, password: 'Amazing!' } }
 
         run_test!
       end

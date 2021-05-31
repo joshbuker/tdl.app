@@ -1,7 +1,7 @@
 Sorcery.configure do |config|
   config.user_class = 'User'
   config.session_class = 'UserSession'
-  config.username_attr_names = [:username, :email]
+  config.username_attr_names = [:username]
 
   config.password_hashing_algorithm = :argon2
   config.session_store = :jwt_session
