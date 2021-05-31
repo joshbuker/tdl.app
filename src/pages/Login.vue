@@ -1,5 +1,8 @@
 <template>
   <q-page class="row items-center justify-evenly">
+    <p>
+      {{ token }}
+    </p>
     <q-card>
       <q-card-section class="bg-grey-8 text-white">
         <q-item>
@@ -54,9 +57,15 @@ export default defineComponent({
 
   setup() {
     const $q = useQuasar()
-    const token = ref(null)
+    const token = ref('')
     const username = ref('')
     const password = ref('')
+
+    if ($q.localStorage.has('sessionToken')) {
+      token.value = $q.localStorage.getItem('sessionToken')!
+    }
+
+    console.log(token.value)
 
     function login() {
       api.post('/login', {
@@ -66,8 +75,8 @@ export default defineComponent({
         contentType: 'application/json'
       }).
       then((response) => {
-        token.value = response.data
-        console.log(token.value)
+        token.value = response.data.session_token
+        $q.localStorage.set('sessionToken', token.value)
       }).
       catch((error) => {
         var errorMessage = ''
