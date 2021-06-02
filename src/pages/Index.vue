@@ -1,5 +1,8 @@
 <template>
   <q-page class="row items-center justify-evenly">
+    <p>
+      {{ sessionToken }}
+    </p>
     <example-component
       title="Example component"
       active
@@ -10,14 +13,31 @@
 </template>
 
 <script lang="ts">
+import { useQuasar } from 'quasar'
 import { Todo, Meta } from 'components/models';
 import ExampleComponent from 'components/CompositionComponent.vue';
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
+import { useStore } from '../store'
 
 export default defineComponent({
   name: 'PageIndex',
   components: { ExampleComponent },
   setup() {
+    const $q = useQuasar()
+    const $store = useStore()
+
+    const sessionToken = computed({
+      get: () => $store.state.settings.sessionToken,
+      set: value => {
+        $store.commit('settings/setSessionToken', value)
+      }
+    })
+
+    // FIXME: Do this only once?
+    if ($q.localStorage.has('sessionToken')) {
+      sessionToken.value = $q.localStorage.getItem('sessionToken')!
+    }
+
     const todos = ref<Todo[]>([
       {
         id: 1,
@@ -43,7 +63,7 @@ export default defineComponent({
     const meta = ref<Meta>({
       totalCount: 1200
     });
-    return { todos, meta };
+    return { sessionToken, todos, meta };
   }
 });
 </script>

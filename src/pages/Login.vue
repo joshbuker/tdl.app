@@ -1,7 +1,7 @@
 <template>
   <q-page class="row items-center justify-evenly">
     <p>
-      {{ token }}
+      {{ sessionToken }}
     </p>
     <q-card>
       <q-card-section class="bg-grey-8 text-white">
@@ -49,23 +49,30 @@
 
 <script lang="ts">
 import { useQuasar } from 'quasar'
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref } from 'vue'
 import { api } from 'boot/axios'
+import { useStore } from '../store'
 
 export default defineComponent({
   name: 'PageLogin',
 
   setup() {
     const $q = useQuasar()
-    const token = ref('')
+    const $store = useStore()
+
     const username = ref('')
     const password = ref('')
 
-    if ($q.localStorage.has('sessionToken')) {
-      token.value = $q.localStorage.getItem('sessionToken')!
-    }
+    const sessionToken = computed({
+      get: () => $store.state.settings.sessionToken,
+      set: value => {
+        $store.commit('settings/setSessionToken', value)
+      }
+    })
 
-    console.log(token.value)
+    if ($q.localStorage.has('sessionToken')) {
+      sessionToken.value = $q.localStorage.getItem('sessionToken')!
+    }
 
     function login() {
       api.post('/login', {
@@ -75,8 +82,8 @@ export default defineComponent({
         contentType: 'application/json'
       }).
       then((response) => {
-        token.value = response.data.session_token
-        $q.localStorage.set('sessionToken', token.value)
+        sessionToken.value = response.data.session_token
+        $q.localStorage.set('sessionToken', sessionToken.value)
       }).
       catch((error) => {
         var errorMessage = ''
@@ -95,7 +102,7 @@ export default defineComponent({
         })
       })
     }
-    return { token, username, password, login };
+    return { sessionToken, username, password, login };
   }
 });
 </script>
