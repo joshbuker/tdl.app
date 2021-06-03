@@ -49,16 +49,25 @@
 
 <script lang="ts">
 import { useQuasar } from 'quasar'
+import { useStore } from '../store'
+import { useRouter } from 'vue-router'
 import { computed, defineComponent, ref } from 'vue'
 import { api } from 'boot/axios'
-import { useStore } from '../store'
 
 export default defineComponent({
   name: 'PageLogin',
 
+  preFetch({ store, redirect }) {
+    const isAuthenticated = (store.state.settings.sessionToken.length > 0)
+    if (isAuthenticated) {
+      redirect({ path: '/' })
+    }
+  },
+
   setup() {
     const $q = useQuasar()
     const $store = useStore()
+    const $router = useRouter()
 
     const username = ref('')
     const password = ref('')
@@ -70,10 +79,6 @@ export default defineComponent({
       }
     })
 
-    if ($q.localStorage.has('sessionToken')) {
-      sessionToken.value = $q.localStorage.getItem('sessionToken')!
-    }
-
     function login() {
       api.post('/login', {
         username: username.value,
@@ -83,7 +88,9 @@ export default defineComponent({
       }).
       then((response) => {
         sessionToken.value = response.data.session_token
-        $q.localStorage.set('sessionToken', sessionToken.value)
+        username.value = ''
+        password.value = ''
+        $router.push({ path: '/' })
       }).
       catch((error) => {
         var errorMessage = ''
@@ -102,6 +109,7 @@ export default defineComponent({
         })
       })
     }
+
     return { sessionToken, username, password, login };
   }
 });

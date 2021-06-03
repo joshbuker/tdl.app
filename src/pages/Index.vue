@@ -33,11 +33,6 @@ export default defineComponent({
       }
     })
 
-    // FIXME: Do this only once?
-    if ($q.localStorage.has('sessionToken')) {
-      sessionToken.value = $q.localStorage.getItem('sessionToken')!
-    }
-
     const todos = ref<Todo[]>([
       {
         id: 1,
