@@ -1,8 +1,5 @@
 <template>
   <q-page class="row items-center justify-evenly">
-    <p>
-      {{ sessionToken }}
-    </p>
     <q-card>
       <q-card-section class="bg-grey-8 text-white">
         <q-item>
@@ -16,7 +13,7 @@
       </q-card-section>
 
       <q-card-section>
-        <q-form class="q-gutter-md">
+        <q-form class="q-gutter-md" autofocus>
           <q-input
             v-model="username"
             filled
@@ -32,6 +29,7 @@
             filled
             :label="$t('password')"
             type="password"
+            @keyup.enter="login"
           >
             <template v-slot:prepend>
               <q-icon name="lock" />
