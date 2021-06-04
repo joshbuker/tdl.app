@@ -10,8 +10,8 @@ import createPersistedState from 'vuex-persistedstate'
 // import example from './module-example'
 // import { ExampleStateInterface } from './module-example/state';
 
-import settings from './settings'
-import { SettingsStateInterface } from './settings/state'
+import authentication from './authentication'
+import { AuthenticationStateInterface } from './authentication/state'
 
 /*
  * If not building with SSR mode, you can
@@ -27,7 +27,7 @@ export interface StateInterface {
   // example: ExampleStateInterface;
   // Declared as unknown to avoid linting issue. Best to strongly type as per the line above.
   // example: unknown
-  settings: SettingsStateInterface
+  authentication: AuthenticationStateInterface
 }
 
 // provide typings for `this.$store`
@@ -45,7 +45,7 @@ export default store(function (/* { ssrContext } */) {
     plugins: [createPersistedState()],
 
     modules: {
-      settings
+      authentication
       // example
     },
 

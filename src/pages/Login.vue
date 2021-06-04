@@ -56,7 +56,7 @@ export default defineComponent({
   name: 'PageLogin',
 
   preFetch({ store, redirect }) {
-    const isAuthenticated = (store.state.settings.sessionToken.length > 0)
+    const isAuthenticated = (store.state.authentication.sessionToken.length > 0)
     if (isAuthenticated) {
       redirect({ path: '/' })
     }
@@ -71,9 +71,9 @@ export default defineComponent({
     const password = ref('')
 
     const sessionToken = computed({
-      get: () => $store.state.settings.sessionToken,
+      get: () => $store.state.authentication.sessionToken,
       set: value => {
-        $store.commit('settings/setSessionToken', value)
+        $store.commit('authentication/setSessionToken', value)
       }
     })
 

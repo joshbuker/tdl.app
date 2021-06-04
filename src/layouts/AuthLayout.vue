@@ -73,9 +73,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="sass">
-body
-  background: url(~assets/background.jpg) no-repeat center center fixed
-  background-size: cover
-</style>

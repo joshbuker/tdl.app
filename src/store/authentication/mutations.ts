@@ -1,7 +1,7 @@
 import { MutationTree } from 'vuex';
-import { SettingsStateInterface } from './state';
+import { AuthenticationStateInterface } from './state';
 
-const mutation: MutationTree<SettingsStateInterface> = {
+const mutation: MutationTree<AuthenticationStateInterface> = {
   setSessionToken(state, sessionToken) {
     state.sessionToken = sessionToken
   }

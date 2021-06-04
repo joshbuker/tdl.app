@@ -1,8 +1,8 @@
 import { GetterTree } from 'vuex';
 import { StateInterface } from '../index';
-import { SettingsStateInterface } from './state';
+import { AuthenticationStateInterface } from './state';
 
-const getters: GetterTree<SettingsStateInterface, StateInterface> = {
+const getters: GetterTree<AuthenticationStateInterface, StateInterface> = {
   sessionToken (state) {
     return state.sessionToken;
   }
