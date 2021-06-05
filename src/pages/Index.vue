@@ -27,9 +27,9 @@ export default defineComponent({
     const $store = useStore()
 
     const sessionToken = computed({
-      get: () => $store.state.settings.sessionToken,
+      get: () => $store.state.authentication.sessionToken,
       set: value => {
-        $store.commit('settings/setSessionToken', value)
+        $store.commit('authentication/setSessionToken', value)
       }
     })
 
