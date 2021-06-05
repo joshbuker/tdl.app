@@ -1,5 +1,12 @@
 <template>
   <q-layout view="hHh Lpr lff">
+    <q-footer elevated class="bg-grey-8 text-white">
+      <q-tabs shrink inline-label>
+        <q-route-tab icon="fas fa-sign-in-alt" to="/login" label="Login" />
+        <q-route-tab icon="fas fa-user-plus" to="/register" label="Register" />
+      </q-tabs>
+    </q-footer>
+
     <q-page-container>
       <router-view v-slot="{ Component }">
         <keep-alive>

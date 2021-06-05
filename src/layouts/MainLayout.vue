@@ -24,7 +24,7 @@
       show-if-above
       :width="250"
       :breakpoint="500"
-      side="left" overlay elevated
+      side="left" elevated
     >
       <q-tabs>
         <q-tab icon="fas fa-th-list" label="Lists" />

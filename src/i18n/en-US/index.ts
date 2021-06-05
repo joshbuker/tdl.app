@@ -2,5 +2,6 @@ export default {
   username: 'Username',
   password: 'Password',
   login: 'Login',
-  logout: 'Logout'
+  logout: 'Logout',
+  register: 'Register'
 };
