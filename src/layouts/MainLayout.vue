@@ -85,6 +85,15 @@ export default defineComponent({
     })
 
     function logout() {
+      if(sessionToken.value === null) {
+        $q.notify({
+          color: 'negative',
+          position: 'top',
+          message: 'You can checkout anytime, but you can never leave.',
+          icon: 'report_problem'
+        })
+        return
+      }
       api.delete('/logout', {
         headers: {
           Authorization: `Bearer ${sessionToken.value}`
