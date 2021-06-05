@@ -4,7 +4,7 @@
       <q-card-section class="bg-grey-8 text-white">
         <q-item>
           <q-item-section avatar>
-            <q-icon name="list" />
+            <q-icon name="fas fa-terminal" />
           </q-item-section>
           <q-item-section>
             <div class="text-h5">TDL App</div>

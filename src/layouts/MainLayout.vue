@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh Lpr lff">
+  <q-layout view="hHh LpR fFf">
     <q-header elevated>
       <q-toolbar>
         <q-btn
@@ -22,33 +22,22 @@
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
-      :width="200"
+      :width="250"
       :breakpoint="500"
+      side="left" overlay elevated
     >
-      <q-scroll-area class="fit">
-        <q-list padding class="menu-list">
-          <q-item clickable v-ripple exact to="/">
-            <q-item-section avatar>
-              <q-icon name="home" />
-            </q-item-section>
-
-            <q-item-section>
-              Home
-            </q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple exact to="/login">
-            <q-item-section avatar>
-              <q-icon name="lock" />
-            </q-item-section>
-
-            <q-item-section>
-              Login
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-scroll-area>
+      <q-tabs>
+        <q-tab icon="fas fa-th-list" label="Lists" />
+        <q-tab icon="fas fa-tags" label="Tags" />
+      </q-tabs>
     </q-drawer>
+
+    <q-footer elevated class="bg-grey-8 text-white">
+      <q-tabs shrink inline-label>
+        <q-route-tab icon="home" to="/" label="Home" />
+        <q-route-tab icon="fas fa-sign-in-alt" to="/login" label="Login" />
+      </q-tabs>
+    </q-footer>
 
     <q-page-container>
       <router-view v-slot="{ Component }">
