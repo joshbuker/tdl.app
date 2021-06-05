@@ -94,10 +94,10 @@ export default defineComponent({
         var errorMessage = ''
         if (typeof error.response !== 'undefined') {
           errorMessage = error.response.data.error
+          password.value = ''
         } else {
           errorMessage = `Failed to login: ${error.message}`
         }
-        password.value = ''
         // $("input[name='password']").focus()
         $q.notify({
           color: 'negative',
