@@ -28,6 +28,7 @@
     >
       <q-tabs>
         <q-tab icon="fas fa-th-list" label="Lists" />
+        <q-tab icon="fas fa-gem" label="Projects" />
         <q-tab icon="fas fa-tags" label="Tags" />
       </q-tabs>
     </q-drawer>
