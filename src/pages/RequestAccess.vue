@@ -27,6 +27,7 @@
               title="Who are you?"
               icon="fas fa-question"
               :done="step > 1"
+              :header-nav="step > 1"
             >
               <q-input
                 v-model="name"
@@ -60,6 +61,7 @@
               :title="$t('reasonForInterest')"
               icon="fas fa-question"
               :done="step > 2"
+              :header-nav="step > 2"
             >
               <q-input
                 v-model="reasonForInterest"
@@ -84,6 +86,7 @@
               title="When do you want in?"
               icon="far fa-clock"
               :done="step > 3"
+              :header-nav="step > 3"
             >
               <q-list>
                 <!--
@@ -150,6 +153,8 @@
               :name="4"
               title="Are you a robot?"
               icon="fas fa-robot"
+              :done="step > 4"
+              :header-nav="step > 4"
             >
               ReCAPTCHA box goes here
 
