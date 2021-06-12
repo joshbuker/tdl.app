@@ -22,6 +22,13 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    Username:
+      type: object
+      properties:
+        username:
+          type: string
+      required:
+        - username
     Login:
       type: object
       properties:
@@ -70,7 +77,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SessionToken'
   /logout:
-    post:
+    delete:
       summary: >
         Logs out your current session by revoking the JWT token server-side.
       tags:
@@ -78,3 +85,16 @@ paths:
       responses:
         '200':
           description: OK
+  /username:
+    get:
+      summary: >
+        Retrieves the current user's username.
+      tags:
+        - Settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Username'
