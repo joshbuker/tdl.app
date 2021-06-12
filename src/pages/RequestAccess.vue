@@ -1,6 +1,6 @@
 <template>
   <q-page class="row items-center justify-evenly">
-    <q-card style="max-width: 500px;">
+    <q-card style="width: 500px;">
       <q-card-section class="bg-grey-8 text-white">
         <q-item>
           <q-item-section avatar>
@@ -181,7 +181,11 @@ export default defineComponent({
   name: 'PageRegister',
 
   preFetch({ store, redirect }) {
-    const isAuthenticated = (store.state.authentication.sessionToken.length > 0)
+    const isAuthenticated =
+      (
+        store.state.authentication.sessionToken !== null &&
+        store.state.authentication.sessionToken.length > 0
+      )
     if (isAuthenticated) {
       redirect({ path: '/' })
     }

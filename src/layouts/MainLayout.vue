@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          TDL App
+          {{ username }}
         </q-toolbar-title>
 
         <q-btn color='green' @click="logout">{{ $t('logout') }}</q-btn>
@@ -35,8 +35,8 @@
 
     <q-footer elevated class="bg-grey-8 text-white">
       <q-tabs shrink inline-label>
-        <q-route-tab icon="home" to="/" label="Home" />
-        <q-route-tab icon="fas fa-sign-in-alt" to="/login" label="Login" />
+        <q-route-tab icon="fas fa-tasks" to="/" label="Tasks" />
+        <q-route-tab icon="fas fa-user-cog" to="/settings" label="Settings" />
       </q-tabs>
     </q-footer>
 
@@ -74,6 +74,13 @@ export default defineComponent({
       }
     })
 
+    const username = computed({
+      get: () => $store.state.settings.username,
+      set: value => {
+        $store.commit('settings/setUsername', value)
+      }
+    })
+
     function logout() {
       if(sessionToken.value === null) {
         $q.notify({
@@ -94,6 +101,12 @@ export default defineComponent({
       then((response) => {
         sessionToken.value = null
         $router.push({ path: '/login' })
+        $q.notify({
+          color: 'positive',
+          position: 'top',
+          message: 'Logged out successfully',
+          icon: 'fas fa-sign-out-alt'
+        })
       }).
       catch((error) => {
         var errorMessage = ''
@@ -102,7 +115,6 @@ export default defineComponent({
         } else {
           errorMessage = `Failed to logout: ${error.message}`
         }
-        // $("input[name='password']").focus()
         $q.notify({
           color: 'negative',
           position: 'top',
@@ -114,6 +126,7 @@ export default defineComponent({
 
     return {
       leftDrawerOpen,
+      username,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },

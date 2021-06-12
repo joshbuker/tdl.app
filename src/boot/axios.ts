@@ -16,7 +16,7 @@ declare module '@vue/runtime-core' {
 // const api = axios.create({ baseURL: 'https://api.tdl.app' });
 const api = axios.create({ baseURL: 'http://localhost:3000' })
 
-export default boot(({ app }) => {
+export default boot(({ app, store }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
 
   app.config.globalProperties.$axios = axios;
@@ -26,6 +26,9 @@ export default boot(({ app }) => {
   app.config.globalProperties.$api = api;
   // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
   //       so you can easily perform requests against your app's API
+
+  store.$axios = axios;
+  store.$api = api;
 });
 
 export { api };

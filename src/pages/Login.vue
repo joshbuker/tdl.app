@@ -56,7 +56,11 @@ export default defineComponent({
   name: 'PageLogin',
 
   preFetch({ store, redirect }) {
-    const isAuthenticated = (store.state.authentication.sessionToken.length > 0)
+    const isAuthenticated =
+      (
+        store.state.authentication.sessionToken !== null &&
+        store.state.authentication.sessionToken.length > 0
+      )
     if (isAuthenticated) {
       redirect({ path: '/' })
     }
@@ -88,6 +92,12 @@ export default defineComponent({
         sessionToken.value = response.data.session_token
         username.value = ''
         password.value = ''
+        $q.notify({
+          color: 'positive',
+          position: 'top',
+          message: 'Logged in successfully',
+          icon: 'fas fa-sign-out-alt'
+        })
         $router.push({ path: '/' })
       }).
       catch((error) => {

@@ -13,6 +13,9 @@ import createPersistedState from 'vuex-persistedstate'
 import authentication from './authentication'
 import { AuthenticationStateInterface } from './authentication/state'
 
+import settings from './settings'
+import { SettingsStateInterface } from './settings/state'
+
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation;
@@ -23,11 +26,8 @@ import { AuthenticationStateInterface } from './authentication/state'
  */
 
 export interface StateInterface {
-  // Define your own store structure, using submodules if needed
-  // example: ExampleStateInterface;
-  // Declared as unknown to avoid linting issue. Best to strongly type as per the line above.
-  // example: unknown
-  authentication: AuthenticationStateInterface
+  authentication: AuthenticationStateInterface,
+  settings: SettingsStateInterface
 }
 
 // provide typings for `this.$store`
@@ -45,8 +45,8 @@ export default store(function (/* { ssrContext } */) {
     plugins: [createPersistedState()],
 
     modules: {
-      authentication
-      // example
+      authentication,
+      settings
     },
 
     // enable strict mode (adds overhead!)
