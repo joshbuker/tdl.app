@@ -5,7 +5,7 @@ class User < ApplicationRecord
   ## Associations ##
   ##################
 
-  has_many :devices, dependent: :destroy
+  has_many :devices,       dependent: :destroy
   has_many :user_sessions, dependent: :destroy
 
   ########################
