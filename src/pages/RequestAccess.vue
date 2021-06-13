@@ -171,11 +171,7 @@
 </template>
 
 <script lang="ts">
-import { useQuasar } from 'quasar'
-import { useStore } from '../store'
-import { useRouter } from 'vue-router'
-import { computed, defineComponent, ref } from 'vue'
-import { api } from 'boot/axios'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'PageRegister',

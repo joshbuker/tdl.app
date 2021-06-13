@@ -1,7 +1,7 @@
 import { boot } from 'quasar/wrappers';
 import { Notify } from 'quasar'
 
-export default boot(({ app, store }) => {
+export default boot(({ store }) => {
   console.log('kekw')
   store.dispatch('settings/fetchUsername').
   catch(

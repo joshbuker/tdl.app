@@ -82,7 +82,7 @@ export default defineComponent({
     })
 
     function logout() {
-      if(sessionToken.value === null) {
+      if(sessionToken.value === null || sessionToken.value === '') {
         $q.notify({
           color: 'negative',
           position: 'top',
@@ -93,14 +93,14 @@ export default defineComponent({
       }
       api.delete('/logout', {
         headers: {
-          Authorization: `Bearer ${sessionToken.value}`
-        },
-        dataType: 'json',
-        contentType: 'application/json'
+          Authorization: `Bearer ${sessionToken.value}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        }
       }).
-      then((response) => {
-        sessionToken.value = null
-        $router.push({ path: '/login' })
+      then(() => {
+        sessionToken.value = ''
+        void $router.push({ path: '/login' })
         $q.notify({
           color: 'positive',
           position: 'top',

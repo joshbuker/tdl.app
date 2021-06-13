@@ -49,6 +49,7 @@
 import { useQuasar } from 'quasar'
 import { useStore } from '../store'
 import { useRouter } from 'vue-router'
+// import { Login } from 'components/models';
 import { computed, defineComponent, ref } from 'vue'
 import { api } from 'boot/axios'
 
@@ -98,7 +99,7 @@ export default defineComponent({
           message: 'Logged in successfully',
           icon: 'fas fa-sign-out-alt'
         })
-        $router.push({ path: '/' })
+        void $router.push({ path: '/' })
       }).
       catch((error) => {
         var errorMessage = ''

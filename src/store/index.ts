@@ -16,6 +16,8 @@ import { AuthenticationStateInterface } from './authentication/state'
 import settings from './settings'
 import { SettingsStateInterface } from './settings/state'
 
+// import { AxiosInstance } from 'axios';
+
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation;
@@ -27,7 +29,7 @@ import { SettingsStateInterface } from './settings/state'
 
 export interface StateInterface {
   authentication: AuthenticationStateInterface,
-  settings: SettingsStateInterface
+  settings: SettingsStateInterface,
 }
 
 // provide typings for `this.$store`

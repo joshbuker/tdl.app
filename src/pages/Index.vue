@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { useQuasar } from 'quasar'
+// import { useQuasar } from 'quasar'
 import { Todo, Meta } from 'components/models';
 import ExampleComponent from 'components/CompositionComponent.vue';
 import { computed, defineComponent, ref } from 'vue';
@@ -35,7 +35,7 @@ export default defineComponent({
   },
 
   setup() {
-    const $q = useQuasar()
+    // const $q = useQuasar()
     const $store = useStore()
 
     const sessionToken = computed({

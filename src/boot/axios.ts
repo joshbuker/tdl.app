@@ -27,7 +27,7 @@ export default boot(({ app, store }) => {
   // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
   //       so you can easily perform requests against your app's API
 
-  store.$axios = axios;
+  // store.$axios = axios;
   store.$api = api;
 });
 
