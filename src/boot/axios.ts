@@ -1,6 +1,5 @@
 import { boot } from 'quasar/wrappers';
 import axios, { AxiosInstance } from 'axios';
-import { StateInterface } from '../store'
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
@@ -19,7 +18,7 @@ const api = axios.create({ baseURL: 'http://localhost:3000' })
 
 // Technically we don't need to tell it about the store state interface, but
 // knowing that this is possible is very useful in itself.
-export default boot<StateInterface>(({ app, store }) => {
+export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
 
   app.config.globalProperties.$axios = axios;
