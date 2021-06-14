@@ -97,7 +97,7 @@
 
                 <q-item tag="label" v-ripple>
                   <q-item-section avatar>
-                    <q-radio v-model="color" val="teal" color="teal" />
+                    <q-radio v-model="versionInterest" val="alpha" color="red" />
                   </q-item-section>
                   <q-item-section>
                     <q-item-label>Alpha</q-item-label>
@@ -113,7 +113,7 @@
 
                 <q-item tag="label" v-ripple>
                   <q-item-section avatar>
-                    <q-radio v-model="color" val="orange" color="orange" />
+                    <q-radio v-model="versionInterest" val="beta" color="blue" />
                   </q-item-section>
                   <q-item-section>
                     <q-item-label>Beta</q-item-label>
@@ -129,7 +129,7 @@
 
                 <q-item tag="label" v-ripple>
                   <q-item-section avatar top>
-                    <q-radio v-model="color" val="cyan" color="cyan" />
+                    <q-radio v-model="versionInterest" val="release" color="green" />
                   </q-item-section>
                   <q-item-section>
                     <q-item-label>Release</q-item-label>
@@ -189,7 +189,12 @@ export default defineComponent({
 
   setup() {
     const step = ref(1)
-    return { step };
+    const name = ref('')
+    const email = ref('')
+    const reasonForInterest = ref('')
+    const versionInterest = ref('')
+
+    return { step, name, email, reasonForInterest, versionInterest };
   }
 });
 </script>
