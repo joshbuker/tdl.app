@@ -18,6 +18,12 @@ jobs:
         with:
           ruby-version: 3.0.1
           bundler-cache: true
+      - name: Set up PostgreSQL
+        uses: harmon758/postgresql-action@v1
+        with:
+          postgresql version: '11'  # See https://hub.docker.com/_/postgres for available versions
+      - name: Set up test database
+        run: bundle exec rails db:create db:migrate
       - name: Run tests
         run: bundle exec rake spec
 
