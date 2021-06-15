@@ -8,7 +8,7 @@ RSpec.describe EmailFormattingValidator do
       'john-smith@example.com',
       'smith.john+ccsk@example.com'
     ].each do |valid_email|
-      context "#{valid_email}" do
+      context valid_email.to_s do
         let(:value) { valid_email }
 
         it { should be_valid }
@@ -36,6 +36,7 @@ RSpec.describe EmailFormattingValidator do
     it { should_not have_validation_error(I18n.t('validators.email_formatting.invalid_format')) }
   end
 
+  # rubocop:disable Layout/LineLength
   context 'when email has uppercase letters and fails regex' do
     [
       'Jon.Snow@night.watch.com    Bran.Stark@winterfell.com    Harry.Potter@winterfell.com',
@@ -43,7 +44,7 @@ RSpec.describe EmailFormattingValidator do
       'Jon.Snow@night.watch.com, Bran.Stark@winterfell.com',
       "Jon.Snow@night.watch.com\tBran.Stark@winterfell.com\tHarry.Potter@winterfell.com"
     ].each do |uppercase_email|
-      context "#{uppercase_email}" do
+      context uppercase_email.to_s do
         let(:value) { uppercase_email }
 
         it { should be_invalid }
@@ -62,7 +63,7 @@ RSpec.describe EmailFormattingValidator do
       'jon.snow@night.watch.com, bran.stark@winterfell.com',
       "jon.snow@night.watch.com\tbran.stark@winterfell.com\tharry.potter@winterfell.com"
     ].each do |invalid_email|
-      context "#{invalid_email}" do
+      context invalid_email.to_s do
         let(:value) { invalid_email }
 
         it { should be_invalid }
@@ -71,4 +72,5 @@ RSpec.describe EmailFormattingValidator do
       end
     end
   end
+  # rubocop:enable Layout/LineLength
 end

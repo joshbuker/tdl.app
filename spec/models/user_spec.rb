@@ -38,19 +38,48 @@ RSpec.describe User do
     it { should validate_presence_of(:terms_and_conditions) }
   end
 
-  describe 'callbacks' do
-    # TODO: Add tests or remove placeholder
-  end
-
-  describe 'scopes' do
-    # TODO: Add tests or remove placeholder
-  end
-
-  describe 'class method' do
-    # TODO: Add tests or remove placeholder
-  end
-
   describe 'instance method' do
+    describe 'bypass_password?' do
+      context 'when bypass_password is true' do
+        subject(:bypass_password?) do
+          user = build :user
+          user.bypass_password = true
+          user.bypass_password?
+        end
+
+        it { should be_truthy }
+      end
+
+      context 'when bypass_password is an arbitrary string' do
+        subject(:bypass_password?) do
+          user = build :user
+          user.bypass_password = Faker::String.random
+          user.bypass_password?
+        end
+
+        it { should be_truthy }
+      end
+
+      context 'when bypass_password is false' do
+        subject(:bypass_password?) do
+          user = build :user
+          user.bypass_password = false
+          user.bypass_password?
+        end
+
+        it { should be_falsey }
+      end
+
+      context 'when bypass_password is nil' do
+        subject(:bypass_password?) do
+          user = build :user
+          user.bypass_password = nil
+          user.bypass_password?
+        end
+
+        it { should be_falsey }
+      end
+    end
     # TODO: Add tests or remove placeholder
   end
 end

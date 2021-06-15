@@ -11,13 +11,13 @@ class PasswordComplexityValidator < ActiveModel::EachValidator
   def password_complexity(value)
     complexity = 0
     # Any Upper-case Letters
-    complexity += 1 if value =~ /[A-Z]/
+    complexity += 1 if /[A-Z]/.match?(value)
     # Any Lower-case letters
-    complexity += 1 if value =~ /[a-z]/
+    complexity += 1 if /[a-z]/.match?(value)
     # Any digits
-    complexity += 1 if value =~ /[0-9]/
+    complexity += 1 if /[0-9]/.match?(value)
     # Any Special Characters (non-alphanumeric nor whitespace)
-    complexity += 1 if value.gsub(/[A-Z, a-z, 0-9, \s+]/, '').length.positive?
-    return complexity
+    complexity += 1 if value.gsub(/[A-Za-z0-9\s+]/, '').length.positive?
+    complexity
   end
 end

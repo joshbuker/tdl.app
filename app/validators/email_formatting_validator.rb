@@ -13,7 +13,7 @@ class EmailFormattingValidator < ActiveModel::EachValidator
     end
 
     # NOTE: Regex is witchcraft
-    return if value =~ URI::MailTo::EMAIL_REGEXP
+    return if URI::MailTo::EMAIL_REGEXP.match?(value)
 
     record.errors.add(
       field,

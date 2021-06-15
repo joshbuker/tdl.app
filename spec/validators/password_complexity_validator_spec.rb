@@ -10,7 +10,7 @@ RSpec.describe PasswordComplexityValidator do
       '$up3rdup3r',
       '2$h0Rt'
     ].each do |valid_password|
-      context "#{valid_password}" do
+      context valid_password.to_s do
         let(:value) { valid_password }
 
         it { should be_valid }
@@ -38,7 +38,7 @@ RSpec.describe PasswordComplexityValidator do
       'password12345',
       'PASSWORD!@#$%'
     ].each do |invalid_password|
-      context "#{invalid_password}" do
+      context invalid_password.to_s do
         let(:value) { invalid_password }
 
         it { should be_invalid }

@@ -8,7 +8,7 @@ RSpec.describe LocaleAvailabilityValidator do
       'en', # English
       'ja'  # Japanese
     ].each do |valid_locale|
-      context "#{valid_locale}" do
+      context valid_locale.to_s do
         let(:value) { valid_locale }
 
         it { should be_valid }

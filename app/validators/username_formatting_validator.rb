@@ -2,7 +2,7 @@ class UsernameFormattingValidator < ActiveModel::EachValidator
   def validate_each(record, field, value)
     return if value.blank?
     # NOTE: Regex is witchcraft
-    return unless value =~ /\s/
+    return unless /\s/.match?(value)
 
     record.errors.add(
       field,

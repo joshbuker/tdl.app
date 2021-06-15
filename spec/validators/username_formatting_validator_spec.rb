@@ -11,7 +11,7 @@ RSpec.describe UsernameFormattingValidator do
       '💩💩💩',
       '水'
     ].each do |valid_email|
-      context "#{valid_email}" do
+      context valid_email.to_s do
         let(:value) { valid_email }
 
         it { should be_valid }
