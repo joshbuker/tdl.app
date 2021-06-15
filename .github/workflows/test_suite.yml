@@ -3,6 +3,17 @@ name: Test Suite
 # Run against all commits and pull requests.
 on: [ push, pull_request ]
 
+# Add Postgres support
+services:
+  postgres:
+    image: postgres:11
+      env:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+      options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      ports:
+        - 5432:5432
+
 jobs:
   specs:
 
@@ -10,6 +21,8 @@ jobs:
 
     env:
       CI: true
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
     steps:
       - uses: actions/checkout@v2
@@ -18,12 +31,8 @@ jobs:
         with:
           ruby-version: 3.0.1
           bundler-cache: true
-      - name: Set up PostgreSQL
-        uses: harmon758/postgresql-action@v1
-        with:
-          postgresql version: '11'  # See https://hub.docker.com/_/postgres for available versions
-      - name: Set up test database
-        run: bundle exec rails db:create db:migrate
+      - name: Setup test database
+        run: bundle exec rails db:setup
       - name: Run tests
         run: bundle exec rake spec
 
