@@ -14,13 +14,8 @@ class UserSessionsController < ApplicationController
   end
 
   def destroy
-    if logged_in?
-      logout
-      head :ok
-    else
-      render json: { error: I18n.t('user_sessions.destroy.failed') },
-        status: :bad_request
-    end
+    logout
+    head :ok
   end
 
   def verify_auth_token
@@ -33,12 +28,14 @@ class UserSessionsController < ApplicationController
   def verify_authy_app
     raise NotImplementedError,
       I18n.t('user_sessions.verify_authy_app.pending_implementation')
+    # :nocov:
     if (session_token = verify(params[:otp]))
       # Give session JWT as response
     else
       render json: { error: I18n.t('user_sessions.verify_authy_app.failed') },
         status: :bad_request
     end
+    # :nocov:
   end
   # rubocop:enable Lint/UnreachableCode
   # rubocop:enable Lint/UselessAssignment

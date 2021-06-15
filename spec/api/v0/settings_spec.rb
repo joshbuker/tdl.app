@@ -19,6 +19,12 @@ RSpec.describe 'Settings' do
 
         run_test!
       end
+
+      response '401', 'Not authorized' do
+        let(:Authorization) { nil }
+
+        run_test!
+      end
     end
   end
 end

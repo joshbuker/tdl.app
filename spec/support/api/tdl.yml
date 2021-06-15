@@ -22,6 +22,14 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    # Schema for error response body
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
     Username:
       type: object
       properties:
@@ -47,8 +55,30 @@ components:
       required:
         - session_token
   responses:
-    UnauthorizedError:
+    BadRequest:
+      description: You did a dumb dumb
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
       description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotImplemented:
+      description: Endpoint not implemented yet
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
 
 # Apply security scheme to all endpoints
 security:
@@ -76,6 +106,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SessionToken'
+        '400':
+          $ref: '#/components/responses/BadRequest'
   /logout:
     delete:
       summary: >
@@ -85,6 +117,26 @@ paths:
       responses:
         '200':
           description: OK
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /verify/token:
+    post:
+      summary: >
+        2FA verification using a hardware token.
+      tags:
+        - Authentication
+      responses:
+        '501':
+          $ref: '#/components/responses/NotImplemented'
+  /verify/app:
+    post:
+      summary: >
+        2FA verification using an authy app.
+      tags:
+        - Authentication
+      responses:
+        '501':
+          $ref: '#/components/responses/NotImplemented'
   /username:
     get:
       summary: >
@@ -98,3 +150,5 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Username'
+        '401':
+          $ref: '#/components/responses/Unauthorized'

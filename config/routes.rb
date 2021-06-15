@@ -6,5 +6,8 @@ Rails.application.routes.draw do
   post 'login'    => 'user_sessions#create'
   delete 'logout' => 'user_sessions#destroy'
 
+  post 'verify/token' => 'user_sessions#verify_auth_token'
+  post 'verify/app' => 'user_sessions#verify_authy_app'
+
   get 'username' => 'settings#username'
 end

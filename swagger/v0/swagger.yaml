@@ -23,6 +23,13 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
     Username:
       type: object
       properties:
@@ -48,8 +55,30 @@ components:
       required:
       - session_token
   responses:
-    UnauthorizedError:
+    BadRequest:
+      description: You did a dumb dumb
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    Unauthorized:
       description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    NotImplemented:
+      description: Endpoint not implemented yet
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
 security:
 - bearerAuth: []
 paths:
@@ -78,6 +107,9 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/SessionToken"
+        '400':
+          "$ref": "#/components/responses/BadRequest"
+          description: Bad login
       parameters: []
   "/logout":
     delete:
@@ -87,6 +119,29 @@ paths:
       responses:
         '200':
           description: Logged out successfully
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+          description: Not authorized
+  "/verify/token":
+    post:
+      summary: Verifies 2FA via hardware token
+      tags:
+      - Authentication
+      responses:
+        '501':
+          "$ref": "#/components/responses/NotImplemented"
+          description: Not implemented yet
+      security: []
+  "/verify/app":
+    post:
+      summary: Verifies 2FA via authy app
+      tags:
+      - Authentication
+      responses:
+        '501':
+          "$ref": "#/components/responses/NotImplemented"
+          description: Not implemented yet
+      security: []
   "/username":
     get:
       summary: Retrieves a user's username
@@ -99,3 +154,6 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/Username"
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+          description: Not authorized
