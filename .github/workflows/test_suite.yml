@@ -26,6 +26,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Install Postgres Library
+        run: sudo apt-get install libpq-dev
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
