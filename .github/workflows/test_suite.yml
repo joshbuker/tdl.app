@@ -3,21 +3,21 @@ name: Test Suite
 # Run against all commits and pull requests.
 on: [ push, pull_request ]
 
-# Add Postgres support
-services:
-  postgres:
-    image: postgres:11
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    ports:
-      - 5432:5432
-
 jobs:
   specs:
 
     runs-on: ubuntu-latest
+
+    # Add Postgres support
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports:
+          - 5432:5432
 
     env:
       CI: true
