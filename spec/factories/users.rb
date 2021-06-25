@@ -12,6 +12,6 @@ FactoryBot.define do
         special_characters: true
       )
     end
-    terms_and_conditions { Time.current }
+    terms_and_conditions { Faker::Time.backward }
   end
 end

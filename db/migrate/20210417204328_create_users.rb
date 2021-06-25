@@ -12,6 +12,11 @@ class CreateUsers < ActiveRecord::Migration[6.1]
       t.string :email,    null: false
       # Sorcery - Password (argon2 hash)
       t.string :password_digest
+      # Sorcery - Activity Monitoring Module
+      t.datetime :last_login_at
+      t.datetime :last_logout_at
+      t.datetime :last_activity_at
+      t.string   :last_login_from_ip_address
       # Sorcery - Brute Force Protection Module
       t.integer   :failed_logins_count, default: 0, null: false
       t.datetime  :lock_expires_at

@@ -6,7 +6,11 @@ class User < ApplicationRecord
   ##################
 
   has_many :devices,       dependent: :destroy
+  has_many :lists,         dependent: :destroy
+  has_many :tags,          dependent: :destroy
   has_many :user_sessions, dependent: :destroy
+
+  has_many :tasks, through: :lists
 
   ########################
   ## Virtual Attributes ##

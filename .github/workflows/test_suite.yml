@@ -76,7 +76,6 @@ jobs:
     - name: Run brakeman
       run: bundle exec brakeman
 
-# TODO: Add code coverage testing
 # TODO: Add documentation/maintainability testing?
 
   finish:

@@ -10,17 +10,77 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_08_173636) do
+ActiveRecord::Schema.define(version: 2021_06_25_044702) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "devices", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "user_agent"
+    t.string "name"
+    t.string "push_endpoint", null: false
+    t.string "push_p256dh", null: false
+    t.string "push_auth", null: false
+    t.string "user_agent", null: false
+    t.datetime "last_seen_at", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_devices_on_user_id"
+  end
+
+  create_table "lists", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.integer "order", default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_lists_on_user_id"
+  end
+
+  create_table "rules", force: :cascade do |t|
+    t.bigint "pre_id", null: false
+    t.bigint "post_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["post_id"], name: "index_rules_on_post_id"
+    t.index ["pre_id"], name: "index_rules_on_pre_id"
+  end
+
+  create_table "taggings", force: :cascade do |t|
+    t.bigint "tag_id", null: false
+    t.bigint "task_id", null: false
+    t.integer "order", default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+    t.index ["task_id"], name: "index_taggings_on_task_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title", null: false
+    t.string "color", null: false
+    t.integer "order", default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_tags_on_user_id"
+  end
+
+  create_table "tasks", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "list_id", null: false
+    t.string "title", null: false
+    t.string "notes"
+    t.integer "order", default: 0, null: false
+    t.datetime "completed_at"
+    t.datetime "deadline_at"
+    t.datetime "prioritize_at"
+    t.datetime "remind_me_at"
+    t.datetime "review_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["list_id"], name: "index_tasks_on_list_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
   create_table "user_sessions", force: :cascade do |t|
@@ -38,6 +98,10 @@ ActiveRecord::Schema.define(version: 2021_05_08_173636) do
     t.string "username", null: false
     t.string "email", null: false
     t.string "password_digest"
+    t.datetime "last_login_at"
+    t.datetime "last_logout_at"
+    t.datetime "last_activity_at"
+    t.string "last_login_from_ip_address"
     t.integer "failed_logins_count", default: 0, null: false
     t.datetime "lock_expires_at"
     t.string "unlock_token"
@@ -47,5 +111,11 @@ ActiveRecord::Schema.define(version: 2021_05_08_173636) do
   end
 
   add_foreign_key "devices", "users"
+  add_foreign_key "lists", "users"
+  add_foreign_key "taggings", "tags"
+  add_foreign_key "taggings", "tasks"
+  add_foreign_key "tags", "users"
+  add_foreign_key "tasks", "lists"
+  add_foreign_key "tasks", "users"
   add_foreign_key "user_sessions", "users"
 end

@@ -9,7 +9,11 @@ RSpec.describe User do
 
   describe 'associations' do
     it { should have_many(:devices).dependent(:destroy) }
+    it { should have_many(:lists).dependent(:destroy) }
+    it { should have_many(:tags).dependent(:destroy) }
     it { should have_many(:user_sessions).dependent(:destroy) }
+
+    it { should have_many(:tasks).through(:lists) }
   end
 
   describe 'validations' do
@@ -80,6 +84,5 @@ RSpec.describe User do
         it { should be_falsey }
       end
     end
-    # TODO: Add tests or remove placeholder
   end
 end
