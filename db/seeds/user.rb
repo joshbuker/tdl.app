@@ -6,5 +6,3 @@ testuser = User.create!(
   password: 'Awesome1!',
   terms_and_conditions: DateTime.new(1970,1,2,1)
 )
-
-
