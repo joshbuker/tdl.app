@@ -36,12 +36,27 @@ task_count.times do |n|
   )
 end
 
+combo_breaker = 0
+
 rule_count.times do |n|
   puts "Creating rule #{n+1}" if (n + 1) % print_interval == 0
   loop do
-    random_tasks = Task.where(user: void_xxx).order(Arel.sql('RANDOM()')).first(2)
+    random_tasks =
+      Task.uncached { Task.where(user: void_xxx).order('RANDOM()').first(2) }
     rule = Rule.new(pre: random_tasks.first, post: random_tasks.second)
-    rule.save! and break if rule.valid?
-    puts 'invalid rule!'
+
+    if rule.valid?
+      rule.save!
+      combo_breaker = 0
+      break
+    end
+
+    if combo_breaker >= 100
+      puts 'C-C-C-COMBO BREAKER!'
+      raise StandardError, 'Something broke while generating the rules'
+    else
+      combo_breaker += 1
+      puts "#{combo_breaker}x COMBO"
+    end
   end
 end
