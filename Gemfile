@@ -56,8 +56,8 @@ group :development, :test do
   gem 'i18n-tasks'
   gem 'rspec-rails'
   gem 'rswag-specs'
-  gem 'rubocop'
-  gem 'rubocop-performance'
+  gem 'rubocop-athix'
+  gem 'rubocop-rails'
   gem 'rubocop-rspec'
 
   # Prevent parser from yelling at us about mismatched ruby versions
