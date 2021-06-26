@@ -1,10 +1,10 @@
 athix = User.create!(
-  username: 'athix',
-  given_name: 'Josh',
-  family_name: 'Buker',
-  email: 'athix@tdl.app',
-  password: 'Amazing!',
-  time_zone: 'Pacific Time (US & Canada)',
+  username:             'athix',
+  given_name:           'Josh',
+  family_name:          'Buker',
+  email:                'athix@tdl.app',
+  password:             'Amazing!',
+  time_zone:            'Pacific Time (US & Canada)',
   terms_and_conditions: Time.current
 )
 
@@ -22,7 +22,7 @@ tags << Struct::Tag.new('@Laptop',  '#6ce2cf')
 
 tags.each do |tag|
   Tag.create!(
-    user: athix,
+    user:  athix,
     title: tag.title,
     color: tag.color
   )
@@ -40,7 +40,7 @@ lists = [
 
 lists.each do |list|
   List.create!(
-    user: athix,
+    user:  athix,
     title: list
   )
 end
@@ -54,24 +54,24 @@ career = athix.tags.find_by(title: 'Career')
 10.times do |n|
   task = Task.create!(
     title: "Task #{n}",
-    list: inbox,
-    user: athix
+    list:  inbox,
+    user:  athix
   )
   Tagging.create!(task: task, tag: priority)
   Tagging.create!(task: task, tag: career) if [true, false].sample
   3.times do |m|
     subtask = Task.create!(
       title: "Set #{n} Subtask #{m}",
-      list: inbox,
-      user: athix
+      list:  inbox,
+      user:  athix
     )
     Rule.create!(pre: task, post: subtask)
     Tagging.create!(task: subtask, tag: career) if [true, false].sample
     2.times do |k|
       subsub = Task.create!(
         title: "Set #{n} Subset #{m} Subtask #{k}",
-        list: inbox,
-        user: athix
+        list:  inbox,
+        user:  athix
       )
       Rule.create!(pre: subtask, post: subsub)
       Tagging.create!(task: subsub, tag: career) if [true, false].sample

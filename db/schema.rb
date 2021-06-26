@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 2021_06_25_044702) do
     t.integer "order", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["title", "user_id"], name: "index_lists_on_title_and_user_id", unique: true
     t.index ["user_id"], name: "index_lists_on_user_id"
   end
 
@@ -43,6 +44,7 @@ ActiveRecord::Schema.define(version: 2021_06_25_044702) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["post_id"], name: "index_rules_on_post_id"
+    t.index ["pre_id", "post_id"], name: "index_rules_on_pre_id_and_post_id", unique: true
     t.index ["pre_id"], name: "index_rules_on_pre_id"
   end
 
@@ -63,6 +65,7 @@ ActiveRecord::Schema.define(version: 2021_06_25_044702) do
     t.integer "order", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["title", "user_id"], name: "index_tags_on_title_and_user_id", unique: true
     t.index ["user_id"], name: "index_tags_on_user_id"
   end
 
@@ -80,6 +83,7 @@ ActiveRecord::Schema.define(version: 2021_06_25_044702) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["list_id"], name: "index_tasks_on_list_id"
+    t.index ["title", "user_id"], name: "index_tasks_on_title_and_user_id", unique: true
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 

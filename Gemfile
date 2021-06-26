@@ -35,10 +35,10 @@ gem 'rswag-ui'
 # Authentication via Sorcery
 gem 'sorcery-core',
   github: 'Sorcery/sorcery-rework',
-  glob: 'sorcery-core/sorcery-core.gemspec'
+  glob:   'sorcery-core/sorcery-core.gemspec'
 gem 'sorcery-jwt',
   github: 'Sorcery/sorcery-rework',
-  glob: 'sorcery-jwt/sorcery-jwt.gemspec'
+  glob:   'sorcery-jwt/sorcery-jwt.gemspec'
 
 # Password Hashing
 gem 'sorcery-argon2'
@@ -70,8 +70,8 @@ group :development do
 end
 
 group :test do
-  gem 'simplecov', require: false
   gem 'shoulda-matchers'
-  gem 'validator-matchers'
+  gem 'simplecov', require: false
   gem 'timecop'
+  gem 'validator-matchers'
 end

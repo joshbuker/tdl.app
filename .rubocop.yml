@@ -9,8 +9,17 @@ inherit_mode:
 AllCops:
   TargetRubyVersion: 3.0.1
   Exclude:
-    - 'db/migrate/*.rb'
     - 'db/schema.rb'
+    - 'spec/api/**/*' # RSwag does not play nice with RSpec rubocop
+
+###########
+## Rails ##
+###########
+
+Rails/Output:
+  Exclude:
+    - 'db/seeds/*.rb'
+    - 'db/seeds.rb'
 
 ###########
 ## RSpec ##
@@ -21,14 +30,6 @@ RSpec/DescribeClass:
   Exclude:
     - 'spec/requests/**/*'
     - 'spec/system/**/*'
-# Rubocop doesn't recognize run_tests! as an example
-RSpec/EmptyExampleGroup:
-  Exclude:
-    - 'spec/api/**/*'
-# The Authorization header does not follow snake_case
-RSpec/VariableName:
-  Exclude:
-    - 'spec/api/**/*'
 # FIXME: This complains about the way we nest the model specs.
 RSpec/NestedGroups:
   Max: 4
@@ -51,3 +52,11 @@ Style/Documentation:
 # TODO: Is there a good way to break up specs without it getting unwieldy?
 Metrics/BlockLength:
   IgnoredMethods: ['describe', 'context', 'configure']
+# This cop makes no sense in the context of migrations
+Metrics/AbcSize:
+  Exclude:
+    - 'db/migrate/*.rb'
+# This cop makes no sense in the context of migrations
+Metrics/MethodLength:
+  Exclude:
+    - 'db/migrate/*.rb'

@@ -4,8 +4,8 @@ class CreateTasks < ActiveRecord::Migration[6.1]
       t.belongs_to :user,  null: false, foreign_key: true
       t.belongs_to :list,  null: false, foreign_key: true
       t.string     :title, null: false
-      t.string     :notes
       t.integer    :order, null: false, default: 0
+      t.string     :notes
 
       t.datetime :completed_at
       t.datetime :deadline_at
@@ -15,5 +15,7 @@ class CreateTasks < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+
+    add_index :tasks, [:title, :user_id], unique: true
   end
 end

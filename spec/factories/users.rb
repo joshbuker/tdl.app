@@ -6,9 +6,9 @@ FactoryBot.define do
     email       { Faker::Internet.email }
     password do
       Faker::Internet.password(
-        min_length: 8,
-        max_length: 64,
-        mix_case: true,
+        min_length:         8,
+        max_length:         64,
+        mix_case:           true,
         special_characters: true
       )
     end

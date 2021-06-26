@@ -25,20 +25,20 @@ class User < ApplicationRecord
   #################
 
   validates :username,
-    length: { maximum: 69 },
-    presence: true,
+    length:              { maximum: 69 },
+    presence:            true,
     username_formatting: true
 
   validates :email,
-    presence: true,
+    presence:         true,
     email_formatting: true
 
   validates :time_zone,
-    presence: true,
+    presence:  true,
     time_zone: true
 
   validates :locale,
-    presence: true,
+    presence:            true,
     locale_availability: true
 
   validates :given_name, :family_name,
@@ -52,12 +52,15 @@ class User < ApplicationRecord
   #############################
 
   validates :password,
-    presence: true,
+    presence:            true,
     password_complexity: true,
-    length: { minimum: 8, maximum: 128 },
-    if: lambda {
-          (new_record? && !bypass_password?) || changes[:password_digest]
-        }
+    length:              { minimum: 8, maximum: 128 },
+    if:                  lambda {
+                           (
+                             (new_record? && !bypass_password?) ||
+                             changes[:password_digest]
+                           )
+                         }
 
   # Only validate uniqueness if we're creating a new user, or editing said
   # field. This saves needing a query every time you validate a user, without

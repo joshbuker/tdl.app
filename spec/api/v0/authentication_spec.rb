@@ -7,7 +7,7 @@ RSpec.describe 'Authentication' do
     post 'Creates a session token' do
       security []
       parameter name: :login, in: :body, schema: {
-        type: :object,
+        type:       :object,
         properties: {
           username: { type: :string },
           password: { type: :string }

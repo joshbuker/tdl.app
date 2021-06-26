@@ -6,5 +6,7 @@ class CreateRules < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+
+    add_index :rules, [:pre_id, :post_id], unique: true
   end
 end

@@ -6,13 +6,15 @@ class Task < ApplicationRecord
     dependent: :destroy
 
   has_many :pre_rules,
-    class_name: 'Rule',
+    class_name:  'Rule',
+    inverse_of:  :post,
     foreign_key: :post_id,
-    dependent: :destroy
+    dependent:   :destroy
   has_many :post_rules,
-    class_name: 'Rule',
+    class_name:  'Rule',
+    inverse_of:  :pre,
     foreign_key: :pre_id,
-    dependent: :destroy
+    dependent:   :destroy
 
   has_many :tags,
     -> { order(order: :asc, title: :asc) },
@@ -20,14 +22,14 @@ class Task < ApplicationRecord
 
   has_many :prereqs,
     class_name: 'Task',
-    through: :pre_rules,
-    source: :pre
+    through:    :pre_rules,
+    source:     :pre
   has_many :postreqs,
     class_name: 'Task',
-    through: :post_rules,
-    source: :post
+    through:    :post_rules,
+    source:     :post
 
   validates :title,
-    presence: true,
+    presence:   true,
     uniqueness: { case_sensitive: false, scope: :user_id }
 end
