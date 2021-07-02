@@ -12,8 +12,6 @@ inherit_mode:
 
 AllCops:
   TargetRubyVersion: 3.0.1
-  Exclude:
-    - 'spec/api/**/*' # RSwag does not play nice with RSpec rubocop
 
 ###########
 ## RSpec ##
@@ -27,6 +25,13 @@ AllCops:
 # FIXME: This complains about the way we nest the model specs.
 RSpec/NestedGroups:
   Max: 4
+
+##
+# RSwag does not play nice with RuboCop RSpec
+#
+RSpec:
+  Exclude:
+    - 'spec/api/**/*'
 
 ###########
 ## Style ##
