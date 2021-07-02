@@ -57,7 +57,9 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'rswag-specs'
   gem 'rubocop-athix'
+  gem 'rubocop-i18n'
   gem 'rubocop-rails'
+  gem 'rubocop-rake'
   gem 'rubocop-rspec'
 
   # Prevent parser from yelling at us about mismatched ruby versions

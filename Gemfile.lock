@@ -214,7 +214,7 @@ GEM
     rswag-ui (2.4.0)
       actionpack (>= 3.1, < 7.0)
       railties (>= 3.1, < 7.0)
-    rubocop (1.17.0)
+    rubocop (1.18.1)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
@@ -225,19 +225,29 @@ GEM
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.7.0)
       parser (>= 3.0.1.1)
-    rubocop-athix (0.0.3)
+    rubocop-athix (0.0.8)
       rubocop (~> 1.0)
+      rubocop-packaging (~> 0.5)
       rubocop-performance (~> 1.0)
+      rubocop-thread_safety (~> 0.4)
+    rubocop-i18n (3.0.0)
+      rubocop (~> 1.0)
+    rubocop-packaging (0.5.1)
+      rubocop (>= 0.89, < 2.0)
     rubocop-performance (1.11.3)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
-    rubocop-rails (2.11.1)
+    rubocop-rails (2.11.2)
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 1.7.0, < 2.0)
+    rubocop-rake (0.6.0)
+      rubocop (~> 1.0)
     rubocop-rspec (2.4.0)
       rubocop (~> 1.0)
       rubocop-ast (>= 1.1.0)
+    rubocop-thread_safety (0.4.2)
+      rubocop (>= 0.53.0)
     ruby-progressbar (1.11.0)
     shoulda-matchers (4.5.1)
       activesupport (>= 4.2.0)
@@ -295,7 +305,9 @@ DEPENDENCIES
   rswag-specs
   rswag-ui
   rubocop-athix
+  rubocop-i18n
   rubocop-rails
+  rubocop-rake
   rubocop-rspec
   shoulda-matchers
   simplecov

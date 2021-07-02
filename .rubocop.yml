@@ -2,6 +2,10 @@ inherit_gem:
   rubocop-athix:
     - config/rails.yml
 
+##
+# Merge instead of overwriting. For more details, see:
+# https://docs.rubocop.org/rubocop/configuration.html#merging-arrays-using-inherit_mode
+#
 inherit_mode:
   merge:
     - Exclude
