@@ -7,14 +7,9 @@ RSpec.describe 'Authentication' do
     post 'Creates a session token' do
       security []
       parameter name: :login, in: :body, schema: {
-        type:       :object,
-        properties: {
-          username: { type: :string },
-          password: { type: :string }
-        }
+        '$ref' => '#/components/schemas/Login'
       }
       consumes 'application/json'
-      produces 'application/json'
 
       response '200', 'Logged in successfully' do
         let(:login) { { username: user.username, password: 'Amazing!' } }
@@ -73,7 +68,7 @@ RSpec.describe 'Authentication' do
         run_test!
       end
 
-      response '401', 'Not authorized' do
+      response '401', 'Not authenticated' do
         let(:Authorization) { nil }
 
         run_test!

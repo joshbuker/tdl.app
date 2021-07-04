@@ -9,7 +9,7 @@ RSpec.describe List do
 
   describe 'associations' do
     it { should belong_to(:user) }
-    it { should have_many(:tasks).dependent(:destroy) }
+    it { should have_many(:tasks).dependent(:restrict_with_exception) }
   end
 
   describe 'validations' do

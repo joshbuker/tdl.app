@@ -4,6 +4,8 @@ Rails.application.routes.draw do
 
   # Default to json for all requests
   defaults format: :json do
+    resources :lists
+
     # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
     post 'login'    => 'user_sessions#create'
     delete 'logout' => 'user_sessions#destroy'

@@ -15,10 +15,10 @@ SimpleCov.start do
   add_group 'Models',      'app/models'
   add_group 'Policies',    'app/policies'
   add_group 'Validators',  'app/validators'
-  add_group 'Views',       'app/views'
+  # add_group 'Views',       'app/views' # TODO: Does testing views make sense?
 
   # File types to be covered
-  track_files '{app}/**/*.{rb,jbuilder}'
+  track_files '{app}/**/*.{rb}'
 
   # Require 100% code coverage. (Get rekt scrub)
   SimpleCov.minimum_coverage 100

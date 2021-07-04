@@ -75,8 +75,8 @@ group :development do
 end
 
 group :test do
-  gem 'shoulda-matchers'
   gem 'pundit-matchers'
+  gem 'shoulda-matchers'
   gem 'simplecov', require: false
   gem 'timecop'
   gem 'validator-matchers'

@@ -8,9 +8,11 @@ class ApplicationPolicy
 
   def record_user_matches?
     return false unless record.present? && user.present?
+
     record.user == user
   end
 
+  # :nocov:
   def index?
     false
   end
@@ -51,4 +53,5 @@ class ApplicationPolicy
       scope.all
     end
   end
+  # :nocov:
 end

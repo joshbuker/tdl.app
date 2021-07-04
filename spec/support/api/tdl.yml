@@ -23,6 +23,11 @@ components:
       bearerFormat: JWT
   schemas:
     # Schema for error response body
+    ArrayOfLists:
+      type: array
+      items:
+        $ref: '#/components/schemas/List'
+      uniqueItems: true
     Error:
       type: object
       properties:
@@ -37,6 +42,19 @@ components:
           type: string
       required:
         - username
+    List:
+      type: object
+      properties:
+        id:
+          type: integer
+        order:
+          type: integer
+        title:
+          type: string
+      required:
+        - id
+        - order
+        - title
     Login:
       type: object
       properties:
@@ -61,14 +79,32 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    PaymentRequired:
+      description: Your subscription has expired, app in readonly mode
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     NotFound:
       description: The specified resource was not found
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    UnprocessableEntity:
+      description: The changes requested could not be processed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     Unauthorized:
       description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: You don't have permission to do that
       content:
         application/json:
           schema:
@@ -85,6 +121,105 @@ security:
   - bearerAuth: []
 
 paths:
+  /lists:
+    get:
+      summary: Returns an array of the current user's lists.
+      tags:
+        - Lists
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfLists'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create a new list for the current user.
+      tags:
+        - Lists
+      requestBody:
+        description: List to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /lists/{id}:
+    get:
+      summary: Returns the information for a specific list.
+      tags:
+        - Lists
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      summary: Update an existing list.
+      tags:
+        - Lists
+      requestBody:
+        description: Updates for existing list
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      summary: Destroy a list.
+      tags:
+        - Lists
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
   /login:
     post:
       summary: >

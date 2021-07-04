@@ -4,10 +4,6 @@ en:
     create:
       failed: Failed to login
       invalid_params: You must provide a username and password to login
-      pending_implementation: Pending API support in Sorcery
-    destroy:
-      failed: You must be logged in to logout
-      pending_implementation: Pending API support in Sorcery
     verify_auth_token:
       pending_implementation: Pending WebAuthn support in Sorcery
     verify_authy_app:

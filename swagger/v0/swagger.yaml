@@ -23,6 +23,11 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    ArrayOfLists:
+      type: array
+      items:
+        "$ref": "#/components/schemas/List"
+      uniqueItems: true
     Error:
       type: object
       properties:
@@ -37,6 +42,19 @@ components:
           type: string
       required:
       - username
+    List:
+      type: object
+      properties:
+        id:
+          type: integer
+        order:
+          type: integer
+        title:
+          type: string
+      required:
+      - id
+      - order
+      - title
     Login:
       type: object
       properties:
@@ -61,14 +79,32 @@ components:
         application/json:
           schema:
             "$ref": "#/components/schemas/Error"
+    PaymentRequired:
+      description: Your subscription has expired, app in readonly mode
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
     NotFound:
       description: The specified resource was not found
       content:
         application/json:
           schema:
             "$ref": "#/components/schemas/Error"
+    UnprocessableEntity:
+      description: The changes requested could not be processed
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
     Unauthorized:
       description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    Forbidden:
+      description: You don't have permission to do that
       content:
         application/json:
           schema:
@@ -82,6 +118,129 @@ components:
 security:
 - bearerAuth: []
 paths:
+  "/lists":
+    get:
+      summary: Returns an array of the current user's lists.
+      tags:
+      - Lists
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/ArrayOfLists"
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+          description: Not authenticated
+    post:
+      summary: Create a new list for the current user.
+      tags:
+      - Lists
+      requestBody:
+        description: List to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/List"
+      responses:
+        '200':
+          description: Successfully created new list
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/List"
+        '400':
+          "$ref": "#/components/responses/BadRequest"
+          description: Missing parameters
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+          description: Not authenticated
+        '422':
+          "$ref": "#/components/responses/UnprocessableEntity"
+          description: Failed to process list
+      parameters: []
+  "/lists/{id}":
+    get:
+      summary: Returns the information for a specific list.
+      tags:
+      - Lists
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/List"
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+          description: Not authenticated
+        '403':
+          "$ref": "#/components/responses/Forbidden"
+          description: Not authorized
+        '404':
+          "$ref": "#/components/responses/NotFound"
+          description: Not Found
+    patch:
+      summary: Update an existing list.
+      tags:
+      - Lists
+      requestBody:
+        description: Updates for existing list
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/List"
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/List"
+        '400':
+          "$ref": "#/components/responses/BadRequest"
+          description: Missing parameters
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+          description: Not authenticated
+        '403':
+          "$ref": "#/components/responses/Forbidden"
+          description: Not authorized
+        '404':
+          "$ref": "#/components/responses/NotFound"
+          description: Not Found
+        '422':
+          "$ref": "#/components/responses/UnprocessableEntity"
+          description: Failed to process list
+      parameters: []
+    delete:
+      summary: Destroy a list.
+      tags:
+      - Lists
+      responses:
+        '200':
+          description: Success
+        '401':
+          "$ref": "#/components/responses/Unauthorized"
+          description: Not authenticated
+        '403':
+          "$ref": "#/components/responses/Forbidden"
+          description: Not authorized
+        '404':
+          "$ref": "#/components/responses/NotFound"
+          description: Not Found
+        '422':
+          "$ref": "#/components/responses/UnprocessableEntity"
+          description: Failed to process list
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
   "/login":
     post:
       summary: Creates a session token
@@ -94,12 +253,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
+              "$ref": "#/components/schemas/Login"
       responses:
         '200':
           description: Logged in successfully
@@ -121,7 +275,7 @@ paths:
           description: Logged out successfully
         '401':
           "$ref": "#/components/responses/Unauthorized"
-          description: Not authorized
+          description: Not authenticated
   "/verify/token":
     post:
       summary: Verifies 2FA via hardware token
