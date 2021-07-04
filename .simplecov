@@ -9,11 +9,11 @@ SimpleCov.start do
   # Groups to be tested
   add_group 'Channels',    'app/channels'
   add_group 'Controllers', 'app/controllers'
-  add_group 'Helpers',     'app/helpers' # TODO: Unused, remove?
+  # add_group 'Helpers',     'app/helpers' # TODO: Unused, remove?
   add_group 'Jobs',        'app/jobs'
   add_group 'Mailers',     'app/mailers'
   add_group 'Models',      'app/models'
-  add_group 'Policies',    'app/policies' # TODO: Add policies
+  add_group 'Policies',    'app/policies'
   add_group 'Validators',  'app/validators'
   add_group 'Views',       'app/views'
 

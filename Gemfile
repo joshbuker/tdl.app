@@ -40,6 +40,9 @@ gem 'sorcery-jwt',
   github: 'Sorcery/sorcery-rework',
   glob:   'sorcery-jwt/sorcery-jwt.gemspec'
 
+# Authorization via Pundit
+gem 'pundit'
+
 # Password Hashing
 gem 'sorcery-argon2'
 
@@ -73,6 +76,7 @@ end
 
 group :test do
   gem 'shoulda-matchers'
+  gem 'pundit-matchers'
   gem 'simplecov', require: false
   gem 'timecop'
   gem 'validator-matchers'

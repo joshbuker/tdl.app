@@ -49,6 +49,8 @@ module ApiTdlApp
     config.generators do |g|
       g.test_framework :rspec
       g.fixture_replacement :factory_bot
+      g.controller_specs = false
+      g.skip_routes = true
     end
   end
 end
