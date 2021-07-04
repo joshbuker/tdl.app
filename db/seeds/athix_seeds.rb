@@ -3,7 +3,7 @@ athix = User.create!(
   given_name:           'Josh',
   family_name:          'Buker',
   email:                'athix@tdl.app',
-  password:             'Amazing!',
+  password:             'correcthorsebatterystaple',
   time_zone:            'Pacific Time (US & Canada)',
   terms_and_conditions: Time.current
 )

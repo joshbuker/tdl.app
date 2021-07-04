@@ -53,8 +53,7 @@ class User < ApplicationRecord
 
   validates :password,
     presence:            true,
-    password_complexity: true,
-    length:              { minimum: 8, maximum: 128 },
+    length:              { minimum: 14, maximum: 128 },
     if:                  lambda {
                            (
                              (new_record? && !bypass_password?) ||

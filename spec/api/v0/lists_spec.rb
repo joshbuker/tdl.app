@@ -1,7 +1,7 @@
 require 'swagger_helper'
 
 RSpec.describe 'Lists' do
-  let(:user) { create :user, password: 'Amazing!' }
+  let(:user) { create :user }
   let(:user_session) { create :user_session, user: user }
   let(:token) do
     # This is dumb and jank, fix it.

@@ -36,8 +36,7 @@ RSpec.describe User do
     it { should validate_email_formatting_of(:email) }
 
     it { should validate_presence_of(:password) }
-    it { should validate_length_of(:password).is_at_least(8).is_at_most(128) }
-    it { should validate_password_complexity_of(:password) }
+    it { should validate_length_of(:password).is_at_least(14).is_at_most(128) }
 
     it { should validate_presence_of(:terms_and_conditions) }
   end

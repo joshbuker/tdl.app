@@ -3,7 +3,7 @@ void_xxx = User.create!(
   given_name:           'Kurt',
   family_name:          'Apple',
   email:                'username@void.xxx',
-  password:             'Amazing!',
+  password:             'correcthorsebatterystaple',
   terms_and_conditions: Time.current
 )
 
@@ -12,7 +12,7 @@ User.create!(
   given_name:           'awesome',
   family_name:          'username',
   email:                'username@awesome',
-  password:             'Awesome1!',
+  password:             'awesomelongpassword',
   terms_and_conditions: DateTime.new(1970, 1, 2, 1)
 )
 

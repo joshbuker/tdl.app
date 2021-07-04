@@ -1,7 +1,7 @@
 require 'swagger_helper'
 
 RSpec.describe 'Settings' do
-  let(:user) { create :user, password: 'Amazing!' }
+  let(:user) { create :user }
 
   path '/username' do
     get 'Retrieves a user\'s username' do

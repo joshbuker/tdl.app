@@ -1,7 +1,7 @@
 require 'swagger_helper'
 
 RSpec.describe 'Authentication' do
-  let(:user) { create :user, password: 'Amazing!' }
+  let(:user) { create :user, password: 'correcthorsebatterystaple' }
 
   path '/login' do
     post 'Creates a session token' do
@@ -12,7 +12,9 @@ RSpec.describe 'Authentication' do
       consumes 'application/json'
 
       response '200', 'Logged in successfully' do
-        let(:login) { { username: user.username, password: 'Amazing!' } }
+        let(:login) do
+          { username: user.username, password: 'correcthorsebatterystaple' }
+        end
 
         run_test!
       end
