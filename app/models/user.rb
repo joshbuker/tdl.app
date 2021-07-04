@@ -52,14 +52,14 @@ class User < ApplicationRecord
   #############################
 
   validates :password,
-    presence:            true,
-    length:              { minimum: 14, maximum: 128 },
-    if:                  lambda {
-                           (
-                             (new_record? && !bypass_password?) ||
-                             changes[:password_digest]
-                           )
-                         }
+    presence: true,
+    length:   { minimum: 14, maximum: 128 },
+    if:       lambda {
+                (
+                  (new_record? && !bypass_password?) ||
+                  changes[:password_digest]
+                )
+              }
 
   # Only validate uniqueness if we're creating a new user, or editing said
   # field. This saves needing a query every time you validate a user, without
