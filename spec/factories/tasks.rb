@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :task do
     user
     list
-    title { "a#{Faker::String.random.tr("\u0000", '')}" }
+    title { "a#{Faker::String.random}" }
     completed_at { [Faker::Time.backward, nil].sample }
     notes { [Faker::Lorem.paragraphs, nil].sample }
 
