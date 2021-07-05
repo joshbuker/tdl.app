@@ -7,6 +7,10 @@ const getters: GetterTree<AuthenticationStateInterface, StateInterface> = {
     return state.sessionToken;
   },
 
+  bearerToken (state) {
+    return `Bearer ${state.sessionToken}`;
+  },
+
   loggedIn (state) {
     return state.sessionToken !== ''
   },

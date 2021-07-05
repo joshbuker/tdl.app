@@ -26,11 +26,27 @@
       :breakpoint="500"
       side="left" elevated
     >
-      <q-tabs>
-        <q-tab icon="fas fa-th-list" label="Lists" />
-        <q-tab icon="fas fa-gem" label="Projects" />
-        <q-tab icon="fas fa-tags" label="Tags" />
+      <q-tabs v-model="drawerTabs">
+        <q-tab icon="fas fa-th-list" name="lists" label="Lists" />
+        <q-tab icon="fas fa-gem" name="projects" label="Projects" />
+        <q-tab icon="fas fa-tags" name="tags" label="Tags" />
       </q-tabs>
+
+      <q-separator />
+
+      <q-tab-panels v-model="drawerTabs" animated>
+        <q-tab-panel class="q-pa-none" name="lists">
+          <ListsControl />
+        </q-tab-panel>
+
+        <q-tab-panel name="projects">
+          <p>Projects here</p>
+        </q-tab-panel>
+
+        <q-tab-panel name="tags">
+          <p>Tags here</p>
+        </q-tab-panel>
+      </q-tab-panels>
     </q-drawer>
 
     <q-footer elevated class="bg-grey-8 text-white">
@@ -56,9 +72,11 @@ import { useStore } from '../store'
 import { useRouter } from 'vue-router'
 import { computed, defineComponent, ref } from 'vue'
 import { api } from 'boot/axios'
+import ListsControl from 'components/ListsControl.vue'
 
 export default defineComponent({
   name: 'MainLayout',
+  components: { ListsControl },
 
   setup () {
     const $q = useQuasar()
@@ -66,6 +84,7 @@ export default defineComponent({
     const $router = useRouter()
 
     const leftDrawerOpen = ref(false)
+    const drawerTabs = ref('lists')
 
     const sessionToken = computed({
       get: () => $store.state.authentication.sessionToken,
@@ -126,6 +145,7 @@ export default defineComponent({
 
     return {
       leftDrawerOpen,
+      drawerTabs,
       username,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value

@@ -7,14 +7,14 @@ import {
 } from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 
-// import example from './module-example'
-// import { ExampleStateInterface } from './module-example/state';
-
 import authentication from './authentication'
 import { AuthenticationStateInterface } from './authentication/state'
 
 import settings from './settings'
 import { SettingsStateInterface } from './settings/state'
+
+import lists from './lists'
+import { ListsStateInterface } from './lists/state'
 
 /*
  * If not building with SSR mode, you can
@@ -28,6 +28,7 @@ import { SettingsStateInterface } from './settings/state'
 export interface StateInterface {
   authentication: AuthenticationStateInterface,
   settings: SettingsStateInterface,
+  lists: ListsStateInterface,
 }
 
 // provide typings for `this.$store`
@@ -46,7 +47,8 @@ export default store(function (/* { ssrContext } */) {
 
     modules: {
       authentication,
-      settings
+      settings,
+      lists
     },
 
     // enable strict mode (adds overhead!)

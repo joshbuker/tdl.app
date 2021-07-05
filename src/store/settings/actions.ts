@@ -4,10 +4,9 @@ import { SettingsStateInterface } from './state';
 import { api } from 'boot/axios';
 
 const actions: ActionTree<SettingsStateInterface, StateInterface> = {
-  async fetchUsername({ commit, rootState }) {
-    const token = `Bearer ${rootState.authentication.sessionToken}`
+  async fetchUsername({ commit, rootGetters }) {
     const response = await api.get('/username', {
-      headers: { Authorization: token },
+      headers: { Authorization: rootGetters['authentication/bearerToken'] },
       params: {}
     })
     commit('setUsername', response.data.username)
