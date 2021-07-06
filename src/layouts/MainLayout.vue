@@ -22,14 +22,14 @@
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
-      :width="250"
+      :width="300"
       :breakpoint="500"
       side="left" elevated
     >
       <q-tabs v-model="drawerTabs">
-        <q-tab icon="fas fa-th-list" name="lists" label="Lists" />
-        <q-tab icon="fas fa-gem" name="projects" label="Projects" />
-        <q-tab icon="fas fa-tags" name="tags" label="Tags" />
+        <q-tab icon="fas fa-th-list text-light-blue-3" name="lists" label="Lists" />
+        <q-tab icon="fas fa-gem text-light-blue-3" name="projects" label="Projects" />
+        <q-tab icon="fas fa-tags text-light-blue-3" name="tags" label="Tags" />
       </q-tabs>
 
       <q-separator />
