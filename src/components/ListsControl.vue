@@ -38,7 +38,7 @@
     </template>
   </q-input>
 
-  <div class="row">
+  <div class="row justify-center q-my-md">
     <template v-if="editMode">
       <q-btn icon="fas fa-check" label="Done" @click="editMode = false" />
     </template>
