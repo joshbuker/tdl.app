@@ -32,7 +32,7 @@
           </q-item-section>
 
           <q-item-section avatar v-if="editMode">
-            <q-btn flat round color="green" icon="fas fa-pencil-alt" />
+            <q-btn flat round color="green" icon="fas fa-pencil-alt" @click="editList(element)" />
           </q-item-section>
 
           <q-item-section avatar v-if="editMode">
@@ -61,15 +61,18 @@
 </template>
 
 <script lang="ts">
+import { useQuasar } from 'quasar'
 import { computed, defineComponent, ref } from 'vue'
 import { useStore } from '../store'
 import draggable from 'vuedraggable'
+import EditListDialog from 'components/EditListDialog.vue'
 
 export default defineComponent({
   name: 'ListsControl',
   components: { draggable },
 
   setup() {
+    const $q = useQuasar()
     const $store = useStore()
     const allTasksCount = ref(0)
     const editMode = ref(false)
@@ -82,9 +85,27 @@ export default defineComponent({
       }
     })
 
+    function editList(list) {
+      $q.dialog({
+        component: EditListDialog,
+      }).onOk(() => {
+        const temp = {
+          id: list.id,
+          order: list.order,
+          title: 'kekw'
+        }
+        $store.commit('lists/updateList', temp)
+      }).onCancel(() => {
+        console.log('Cancel')
+      }).onDismiss(() => {
+        console.log('Called on OK or Cancel')
+      })
+    }
+
     return {
       allTasksCount,
       editMode,
+      editList,
       dragging,
       lists
     }
