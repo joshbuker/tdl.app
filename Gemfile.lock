@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/Sorcery/sorcery-rework.git
-  revision: 0f9c08ced7beff970b78b76e3a78d98333b7aaee
+  revision: 81bda792703f012ab18d2d3999d91fcf61dd3d88
   glob: sorcery-jwt/sorcery-jwt.gemspec
   specs:
     sorcery-jwt (0.0.0)
@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: https://github.com/Sorcery/sorcery-rework.git
-  revision: 0f9c08ced7beff970b78b76e3a78d98333b7aaee
+  revision: 81bda792703f012ab18d2d3999d91fcf61dd3d88
   glob: sorcery-core/sorcery-core.gemspec
   specs:
     sorcery-core (0.0.0)
@@ -76,7 +76,7 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.2)
     bootsnap (1.7.5)
@@ -148,7 +148,7 @@ GEM
       nio4r (~> 2.0)
     pundit (2.1.0)
       activesupport (>= 3.0.0)
-    pundit-matchers (1.6.0)
+    pundit-matchers (1.7.0)
       rspec-rails (>= 3.0.0)
     racc (1.5.2)
     rack (2.2.3)
@@ -186,7 +186,7 @@ GEM
       rake (>= 0.13)
       thor (~> 1.0)
     rainbow (3.0.0)
-    rake (13.0.3)
+    rake (13.0.6)
     rb-fsevent (0.11.0)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
@@ -218,7 +218,7 @@ GEM
     rswag-ui (2.4.0)
       actionpack (>= 3.1, < 7.0)
       railties (>= 3.1, < 7.0)
-    rubocop (1.18.1)
+    rubocop (1.18.3)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
@@ -238,10 +238,10 @@ GEM
       rubocop (~> 1.0)
     rubocop-packaging (0.5.1)
       rubocop (>= 0.89, < 2.0)
-    rubocop-performance (1.11.3)
+    rubocop-performance (1.11.4)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
-    rubocop-rails (2.11.2)
+    rubocop-rails (2.11.3)
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 1.7.0, < 2.0)
@@ -253,8 +253,8 @@ GEM
     rubocop-thread_safety (0.4.2)
       rubocop (>= 0.53.0)
     ruby-progressbar (1.11.0)
-    shoulda-matchers (4.5.1)
-      activesupport (>= 4.2.0)
+    shoulda-matchers (5.0.0)
+      activesupport (>= 5.2.0)
     simplecov (0.21.2)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
