@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   defaults format: :json do
     resources :lists
 
+    # Server health check
+    get 'health' => 'health#health'
+
     # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
     post 'login'    => 'user_sessions#create'
     delete 'logout' => 'user_sessions#destroy'

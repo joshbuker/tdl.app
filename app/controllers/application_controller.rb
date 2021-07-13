@@ -68,4 +68,10 @@ class ApplicationController < ActionController::API
   def endpoint_not_implemented(err)
     render json: { error: err.message }, status: :not_implemented
   end
+
+  # 503
+  def service_unavailable
+    render json: { error: 'API is currently unavailable' },
+      status: :service_unavailable
+  end
 end

@@ -115,9 +115,27 @@ components:
         application/json:
           schema:
             "$ref": "#/components/schemas/Error"
+    ServiceUnavailable:
+      description: API is currently unavailable
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
 security:
 - bearerAuth: []
 paths:
+  "/health":
+    get:
+      summary: Returns API health status
+      tags:
+      - Health
+      responses:
+        '200':
+          description: API is healthy
+        '503':
+          "$ref": "#/components/responses/ServiceUnavailable"
+          description: API is currently unavailable
+      security: []
   "/lists":
     get:
       summary: Returns an array of the current user's lists.
