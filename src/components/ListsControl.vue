@@ -20,7 +20,7 @@
       <template #item="{ element }">
         <q-item
           v-bind:clickable="!editMode"
-          v-bind:v-ripple="!editMode"
+          v-ripple="!editMode"
         >
           <q-item-section avatar v-show="editMode">
             <q-btn flat round icon="fas fa-bars" class="handle" />
