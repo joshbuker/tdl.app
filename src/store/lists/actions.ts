@@ -52,6 +52,32 @@ const actions: ActionTree<ListsStateInterface, StateInterface> = {
     )
   },
 
+  async update({ commit, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.patch(`/lists/${options.id}`,
+          {
+            title: options.title
+          },
+          {
+            headers: {
+              Authorization: rootGetters['authentication/bearerToken']
+            }
+          }
+        ).
+        then(
+          (response) => {
+            commit('updateList', response.data)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
   async fetchLists({ commit, rootGetters }) {
     const response = await api.get('/lists', {
       headers: { Authorization: rootGetters['authentication/bearerToken'] },

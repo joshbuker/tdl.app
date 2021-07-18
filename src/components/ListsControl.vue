@@ -122,20 +122,51 @@ export default defineComponent({
        * callbacks
        */
       $q.dialog({
-        component: EditListDialog,
-      }).onOk(() => {
-        const temp = {
-          id: list.id,
-          order: list.order,
-          title: 'kekw'
+        title: `Edit list: "${list.title}"`,
+        ok: {
+          label: 'Save',
+          color: 'positive'
+        },
+        cancel: {
+          color: 'grey'
+        },
+        prompt: {
+          type: 'text',
+          label: 'Title',
+          model: list.title,
+          placeholder: list.title
+        },
+        persistent: true
+      }).onOk(
+        (data) => {
+          $store.dispatch('lists/update', { id: list.id, title: data }).
+          then(
+            (response) => {
+              $q.notify({
+                color: 'positive',
+                position: 'top',
+                message: 'Updated list title',
+                icon: 'list'
+              })
+            },
+            (error) => {
+              // TODO: This is reused, DRY it up
+              let errorMessage = ''
+              if (typeof error.response !== 'undefined') {
+                errorMessage = error.response.data.error
+              } else {
+                errorMessage = `Failed to update list: ${error.message}`
+              }
+              $q.notify({
+                color: 'negative',
+                position: 'top',
+                message: errorMessage,
+                icon: 'report_problem'
+              })
+            }
+          )
         }
-        $store.commit('lists/updateList', temp)
-        console.log('OK')
-      }).onCancel(() => {
-        console.log('Cancel or click outside dialog')
-      }).onDismiss(() => {
-        console.log('Called on OK or Cancel')
-      })
+      )
     }
 
     function deleteList(list) {
