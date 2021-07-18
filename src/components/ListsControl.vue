@@ -36,7 +36,7 @@
           </q-item-section>
 
           <q-item-section avatar v-if="editMode">
-            <q-btn flat round color="red" icon="fas fa-trash" />
+            <q-btn flat round color="red" icon="fas fa-trash" @click="deleteList(element)" />
           </q-item-section>
         </q-item>
       </template>
@@ -87,7 +87,6 @@ export default defineComponent({
     })
 
     function createList() {
-      console.log(newList.value)
       $store.dispatch('lists/create', { title: newList.value }).
       then(
         (response) => {
@@ -139,11 +138,53 @@ export default defineComponent({
       })
     }
 
+    function deleteList(list) {
+      $q.dialog({
+        title: `Delete list: "${list.title}"`,
+        message: 'This cannot be undone! Are you sure?',
+        ok: {
+          label: 'Delete',
+          color: 'negative'
+        },
+        cancel: {
+          color: 'grey'
+        }
+      }).onOk(() => {
+        $store.dispatch('lists/delete', { id: list.id }).
+        then(
+          (response) => {
+            $q.notify({
+              color: 'positive',
+              position: 'top',
+              message: 'Removed list',
+              icon: 'list'
+            })
+          },
+          (error) => {
+            // TODO: This is reused, DRY it up
+            let errorMessage = ''
+            if (typeof error.response !== 'undefined') {
+              errorMessage = error.response.data.error
+            } else {
+              errorMessage = `Failed to remove list: ${error.message}`
+            }
+            $q.notify({
+              color: 'negative',
+              position: 'top',
+              message: errorMessage,
+              icon: 'report_problem'
+            })
+          }
+        )
+      })
+    }
+
     return {
       allTasksCount,
       createList,
       editMode,
       editList,
+      deleteList,
       newList,
       dragging,
       lists

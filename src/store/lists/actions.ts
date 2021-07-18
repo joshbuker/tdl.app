@@ -5,7 +5,6 @@ import { api } from 'boot/axios';
 
 const actions: ActionTree<ListsStateInterface, StateInterface> = {
   async create({ commit, getters, rootGetters }, options) {
-    console.log(options)
     return new Promise(
       (resolve, reject) => {
         api.post('/lists',
@@ -22,6 +21,27 @@ const actions: ActionTree<ListsStateInterface, StateInterface> = {
         then(
           (response) => {
             commit('addList', response.data)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
+  async delete({ commit, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.delete(`/lists/${options.id}`, {
+          headers: {
+            Authorization: rootGetters['authentication/bearerToken']
+          }
+        }).
+        then(
+          (response) => {
+            commit('removeList', options.id)
             resolve(response)
           },
           (error) => {

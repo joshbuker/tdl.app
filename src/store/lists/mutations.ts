@@ -17,7 +17,7 @@ const mutation: MutationTree<ListsStateInterface> = {
     })
   },
 
-  setLists(state, lists: array) {
+  setLists(state, lists: Array) {
     state.lists = lists
   },
 
@@ -28,9 +28,9 @@ const mutation: MutationTree<ListsStateInterface> = {
     state.lists.splice(index, 1, list)
   },
 
-  removeList(state, list: List) {
+  removeList(state, id: Integer) {
     const index = state.lists.findIndex(
-      (element) => { return (element.id == list.id) }
+      (element) => { return (element.id == id) }
     )
     state.lists.splice(index, 1)
   }
