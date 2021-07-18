@@ -43,7 +43,7 @@
     </draggable>
   </q-list>
 
-  <q-input outlined class="q-ma-md" label="Create new list" v-if="editMode">
+  <q-input v-model="newList" @keyup.enter="createList" outlined class="q-ma-md" label="Create new list" v-if="editMode">
     <template v-slot:append>
       <q-icon name="fas fa-arrow-up" />
     </template>
@@ -77,6 +77,7 @@ export default defineComponent({
     const allTasksCount = ref(0)
     const editMode = ref(false)
     const dragging = ref(false)
+    const newList = ref('')
 
     const lists = computed({
       get: () => $store.state.lists.lists,
@@ -85,7 +86,42 @@ export default defineComponent({
       }
     })
 
+    function createList() {
+      console.log(newList.value)
+      $store.dispatch('lists/create', { title: newList.value }).
+      then(
+        (response) => {
+          newList.value = '';
+          $q.notify({
+            color: 'positive',
+            position: 'top',
+            message: 'Added new list',
+            icon: 'list'
+          })
+        },
+        (error) => {
+          // TODO: This is reused, DRY it up
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to add list: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
     function editList(list) {
+      /* The order that you define the callbacks does matter - it will affect
+       * the order of execution. e.g. Dismiss goes before or after other
+       * callbacks
+       */
       $q.dialog({
         component: EditListDialog,
       }).onOk(() => {
@@ -95,8 +131,9 @@ export default defineComponent({
           title: 'kekw'
         }
         $store.commit('lists/updateList', temp)
+        console.log('OK')
       }).onCancel(() => {
-        console.log('Cancel')
+        console.log('Cancel or click outside dialog')
       }).onDismiss(() => {
         console.log('Called on OK or Cancel')
       })
@@ -104,8 +141,10 @@ export default defineComponent({
 
     return {
       allTasksCount,
+      createList,
       editMode,
       editList,
+      newList,
       dragging,
       lists
     }
