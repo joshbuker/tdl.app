@@ -4,7 +4,7 @@ class ListsController < ApplicationController
   def index
     authorize List
 
-    @lists = policy_scope(List).order(order: :asc, id: :asc)
+    @lists = policy_scope(List).order(order: :asc, title: :asc)
   end
 
   def show
