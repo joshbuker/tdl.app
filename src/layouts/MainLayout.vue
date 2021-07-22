@@ -28,7 +28,7 @@
     >
       <q-tabs v-model="drawerTabs">
         <q-tab icon="fas fa-th-list text-light-blue-3" name="lists" label="Lists" />
-        <q-tab icon="fas fa-gem text-light-blue-3" name="projects" label="Projects" />
+        <!-- <q-tab icon="fas fa-gem text-light-blue-3" name="projects" label="Projects" /> -->
         <q-tab icon="fas fa-tags text-light-blue-3" name="tags" label="Tags" />
       </q-tabs>
 
@@ -128,6 +128,7 @@ export default defineComponent({
         })
       }).
       catch((error) => {
+        sessionToken.value = '' // Remove token even if it fails
         var errorMessage = ''
         if (typeof error.response !== 'undefined') {
           errorMessage = error.response.data.error

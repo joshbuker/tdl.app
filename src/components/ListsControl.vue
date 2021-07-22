@@ -7,6 +7,7 @@
       handle=".handle"
       @start="dragging = true"
       @end="dragging = false"
+      @change="syncListOrdering"
     >
       <template #header>
         <q-item clickable v-ripple v-if="!editMode">
@@ -210,6 +211,35 @@ export default defineComponent({
       })
     }
 
+    function syncListOrdering() {
+      $store.dispatch('lists/syncOrdering').
+      then(
+        (response) => {
+          $q.notify({
+            color: 'positive',
+            position: 'top',
+            message: 'Ordering Synced',
+            icon: 'list'
+          })
+        },
+        (error) => {
+          // TODO: This is reused, DRY it up
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to sync list ordering: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
     return {
       allTasksCount,
       createList,
@@ -218,7 +248,8 @@ export default defineComponent({
       deleteList,
       newList,
       dragging,
-      lists
+      lists,
+      syncListOrdering
     }
   }
 })

@@ -78,6 +78,31 @@ const actions: ActionTree<ListsStateInterface, StateInterface> = {
     )
   },
 
+  async syncOrdering({ commit, getters, rootGetters }) {
+    return new Promise(
+      (resolve, reject) => {
+        api.patch(`/lists/sync-ordering`,
+          {
+            lists: getters.listsOrdering
+          },
+          {
+            headers: {
+              Authorization: rootGetters['authentication/bearerToken']
+            }
+          }
+        ).
+        then(
+          (response) => {
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
   async fetchLists({ commit, rootGetters }) {
     const response = await api.get('/lists', {
       headers: { Authorization: rootGetters['authentication/bearerToken'] },
