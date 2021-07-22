@@ -30,9 +30,8 @@ class ApplicationController < ActionController::API
   ####################
 
   # 400
-  def missing_params
-    render json: { error: 'You must pass parameters to this endpoint' },
-      status: :bad_request
+  def missing_params(err)
+    render json: { error: err.message }, status: :bad_request
   end
 
   # Fun fact, 401 is called unauthorized, but is used to indicate

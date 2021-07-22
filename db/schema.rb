@@ -17,12 +17,12 @@ ActiveRecord::Schema.define(version: 2021_06_25_044702) do
 
   create_table "devices", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "name"
     t.string "push_endpoint", null: false
     t.string "push_p256dh", null: false
     t.string "push_auth", null: false
     t.string "user_agent", null: false
     t.datetime "last_seen_at", null: false
+    t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_devices_on_user_id"
@@ -73,8 +73,8 @@ ActiveRecord::Schema.define(version: 2021_06_25_044702) do
     t.bigint "user_id", null: false
     t.bigint "list_id", null: false
     t.string "title", null: false
-    t.string "notes"
     t.integer "order", default: 0, null: false
+    t.string "notes"
     t.datetime "completed_at"
     t.datetime "deadline_at"
     t.datetime "prioritize_at"

@@ -35,11 +35,13 @@ RSpec.describe ListPolicy do
 
       it { should forbid_action(:index) }
       it { should forbid_actions(crud_actions) }
+      it { should forbid_action(:sync_ordering) }
     end
 
     context 'when another user' do
       it { should permit_action(:index) }
       it { should forbid_actions(crud_actions) }
+      it { should permit_action(:sync_ordering) }
     end
 
     context 'when the record user' do
@@ -47,6 +49,7 @@ RSpec.describe ListPolicy do
 
       it { should permit_action(:index) }
       it { should permit_actions(crud_actions) }
+      it { should permit_action(:sync_ordering) }
     end
   end
 end

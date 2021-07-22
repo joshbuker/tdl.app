@@ -58,6 +58,38 @@ RSpec.describe 'Lists' do
     end
   end
 
+  path '/lists/sync-ordering' do
+    patch 'Update the ordering for current user\'s lists.' do
+      parameter name: :lists, in: :body
+      consumes 'application/json'
+
+      response '200', 'Success' do
+        let(:lists) { { lists: [{ id: user_list.id, order: 1337 }] } }
+
+        run_test!
+      end
+
+      response '401', 'Not authenticated' do
+        let(:Authorization) { nil }
+        let(:lists) { { lists: [{ id: user_list.id, order: 1337 }] } }
+
+        run_test!
+      end
+
+      response '403', 'Not authorized' do
+        let(:lists) { { lists: [{ id: other_list.id, order: 1337 }] } }
+
+        run_test!
+      end
+
+      response '422', 'Failed to process list' do
+        let(:lists) { { lists: [{ id: user_list.id, order: 'NaN' }] } }
+
+        run_test!
+      end
+    end
+  end
+
   path '/lists/{id}' do
     parameter name: :id, in: :path, type: :string
     let(:id) { user_list.id }

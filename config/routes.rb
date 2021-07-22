@@ -4,7 +4,8 @@ Rails.application.routes.draw do
 
   # Default to json for all requests
   defaults format: :json do
-    resources :lists
+    # Sync Ordering
+    patch 'lists/sync-ordering' => 'lists#sync_ordering'
 
     # Server health check
     get 'health' => 'health#health'
@@ -13,9 +14,13 @@ Rails.application.routes.draw do
     post 'login'    => 'user_sessions#create'
     delete 'logout' => 'user_sessions#destroy'
 
+    # MFA
     post 'verify/token' => 'user_sessions#verify_auth_token'
     post 'verify/app' => 'user_sessions#verify_authy_app'
 
+    # Placeholder
     get 'username' => 'settings#username'
+
+    resources :lists
   end
 end

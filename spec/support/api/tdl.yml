@@ -175,6 +175,20 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
+  /lists/sync-ordering:
+    patch:
+      summary: Update the ordering for current user's lists.
+      tags:
+        - Lists
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
   /lists/{id}:
     get:
       summary: Returns the information for a specific list.

@@ -24,4 +24,8 @@ class ListPolicy < ApplicationPolicy
   def destroy?
     record_user_matches?
   end
+
+  def sync_ordering?
+    user.present?
+  end
 end
