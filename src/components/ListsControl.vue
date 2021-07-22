@@ -10,7 +10,13 @@
       @change="syncListOrdering"
     >
       <template #header>
-        <q-item clickable v-ripple v-if="!editMode">
+        <q-item
+          clickable
+          v-ripple
+          v-if="!editMode"
+          :active="selectedList === 'All Tasks'"
+          @click="selectedList = 'All Tasks'"
+        >
           <q-item-section>
             <q-item-label>All Tasks</q-item-label>
             <q-item-label caption>{{ allTasksCount }} tasks</q-item-label>
@@ -22,6 +28,8 @@
         <q-item
           v-bind:clickable="!editMode"
           v-ripple="!editMode"
+          :active="selectedList === element.title"
+          @click="selectedList = element.title"
         >
           <q-item-section avatar v-show="editMode">
             <q-btn flat round icon="fas fa-bars" class="handle" />
@@ -79,6 +87,7 @@ export default defineComponent({
     const editMode = ref(false)
     const dragging = ref(false)
     const newList = ref('')
+    const selectedList = ref('All Tasks')
 
     const lists = computed({
       get: () => $store.state.lists.lists,
@@ -143,6 +152,10 @@ export default defineComponent({
           $store.dispatch('lists/update', { id: list.id, title: data }).
           then(
             (response) => {
+              if (selectedList.value === list.title) {
+                selectedList.value = data
+              }
+
               $q.notify({
                 color: 'positive',
                 position: 'top',
@@ -249,7 +262,8 @@ export default defineComponent({
       newList,
       dragging,
       lists,
-      syncListOrdering
+      syncListOrdering,
+      selectedList,
     }
   }
 })
