@@ -28,6 +28,11 @@ components:
       items:
         $ref: '#/components/schemas/List'
       uniqueItems: true
+    ArrayOfTasks:
+      type: array
+      items:
+        $ref: '#/components/schemas/Task'
+      uniqueItems: true
     Error:
       type: object
       properties:
@@ -55,6 +60,34 @@ components:
         - id
         - order
         - title
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        list_id:
+          type: integer
+        title:
+          type: string
+        order:
+          type: integer
+        notes:
+          type: string
+        completed_at:
+          type: string
+        deadline_at:
+          type: string
+        prioritize_at:
+          type: string
+        remind_me_at:
+          type: string
+        review_at_at:
+          type: string
+      required:
+        - id
+        - list_id
+        - title
+        - order
     Login:
       type: object
       properties:
@@ -137,6 +170,20 @@ paths:
           description: OK
         '503':
           $ref: '#/components/responses/ServiceUnavailable'
+  /tasks:
+    get:
+      summary: Returns an array of the current user's tasks.
+      tags:
+        - Tasks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfTasks'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
   /lists:
     get:
       summary: Returns an array of the current user's lists.

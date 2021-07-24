@@ -1,7 +1,10 @@
 FactoryBot.define do
   factory :task do
     user
-    list
+    list do
+      association :list, user: user
+    end
+
     title { "a#{Faker::String.random}" }
     completed_at { [Faker::Time.backward, nil].sample }
     notes { [Faker::Lorem.paragraphs, nil].sample }

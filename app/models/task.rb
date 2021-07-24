@@ -32,4 +32,44 @@ class Task < ApplicationRecord
   validates :title,
     presence:   true,
     uniqueness: { case_sensitive: false, scope: :user_id }
+
+  # TODO: Should we validate that task and list owners match, or should that
+  #       logic live exclusively within the permission policies?
+  validate :list_and_task_owner_match
+
+  # TODO: Use meta programming to DRY up the ISO_8601 conversion?
+
+  def completed_at_iso_8601
+    iso_8601(completed_at)
+  end
+
+  def deadline_at_iso_8601
+    iso_8601(deadline_at)
+  end
+
+  def prioritize_at_iso_8601
+    iso_8601(prioritize_at)
+  end
+
+  def remind_me_at_iso_8601
+    iso_8601(remind_me_at)
+  end
+
+  def review_at_iso_8601
+    iso_8601(review_at)
+  end
+
+  private
+
+  def iso_8601(time)
+    return nil unless time.present?
+
+    I18n.l(time, format: :iso_8601)
+  end
+
+  def list_and_task_owner_match
+    return unless list.is_a?(List)
+    return if user == list&.user
+    errors.add(:base, 'List and Task must belong to the same user.')
+  end
 end

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   defaults format: :json do
     # Sync Ordering
     patch 'lists/sync-ordering' => 'lists#sync_ordering'
+    patch 'tasks/sync-ordering' => 'tasks#sync_ordering'
 
     # Server health check
     get 'health' => 'health#health'
@@ -22,5 +23,6 @@ Rails.application.routes.draw do
     get 'username' => 'settings#username'
 
     resources :lists
+    resources :tasks
   end
 end

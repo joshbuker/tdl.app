@@ -186,7 +186,7 @@ RSpec.describe 'Lists' do
 
       response '422', 'Failed to process list' do
         before do
-          create :task, list: user_list
+          create :task, list: user_list, user: user_list.user
         end
 
         run_test!
