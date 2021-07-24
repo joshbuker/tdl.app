@@ -134,6 +134,23 @@ export default defineComponent({
               })
             }
           )
+          store.dispatch('tasks/fetchTasks').
+          catch(
+            (error) => {
+              let errorMessage = ''
+              if (typeof error.response !== 'undefined') {
+                errorMessage = error.response.data.error
+              } else {
+                errorMessage = `Failed to fetch tasks: ${error.message}`
+              }
+              Notify.create({
+                color: 'negative',
+                position: 'top',
+                message: errorMessage,
+                icon: 'report_problem'
+              })
+            }
+          )
           void $router.push({ path: '/' })
         },
         (error) => {

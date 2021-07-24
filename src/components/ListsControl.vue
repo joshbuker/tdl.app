@@ -36,7 +36,7 @@
           </q-item-section>
 
           <q-item-section>
-            <q-item-label>{{ element.title }}</q-item-label>
+            <q-item-label class="ellipsis">{{ element.title }}</q-item-label>
             <q-item-label caption>0 tasks</q-item-label>
           </q-item-section>
 
@@ -83,7 +83,9 @@ export default defineComponent({
   setup() {
     const $q = useQuasar()
     const $store = useStore()
-    const allTasksCount = ref(0)
+    const allTasksCount = computed({
+      get: () => $store.getters['tasks/allTasksCount']
+    })
     const editMode = ref(false)
     const dragging = ref(false)
     const newList = ref('')
@@ -198,6 +200,10 @@ export default defineComponent({
         $store.dispatch('lists/delete', { id: list.id }).
         then(
           (response) => {
+            if (selectedList.value === list.title) {
+              selectedList.value = 'All Tasks'
+            }
+
             $q.notify({
               color: 'positive',
               position: 'top',

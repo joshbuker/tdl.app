@@ -1,27 +1,27 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <p>
-      {{ sessionToken }}
-    </p>
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
+  <q-page class="row items-center justify-evenly q-col-gutter-md q-ma-md">
+    <!-- FIXME: Don't use min-width hack, figure out responsive way to expand
+                the columns
+    -->
+    <div class="col">
+      <task-docket
+        title="Today"
+        :todos="tasks"
+      ></task-docket>
+    </div>
   </q-page>
 </template>
 
 <script lang="ts">
 // import { useQuasar } from 'quasar'
 import { Todo, Meta } from 'components/models';
-import ExampleComponent from 'components/CompositionComponent.vue';
+import TaskDocket from 'components/TaskDocket.vue';
 import { computed, defineComponent, ref } from 'vue';
 import { useStore } from '../store'
 
 export default defineComponent({
   name: 'PageIndex',
-  components: { ExampleComponent },
+  components: { TaskDocket },
 
   preFetch({ store, redirect }) {
     const isAuthenticated =
@@ -48,7 +48,7 @@ export default defineComponent({
     const todos = ref<Todo[]>([
       {
         id: 1,
-        content: 'ct1'
+        content: 'A long sentence goes here'
       },
       {
         id: 2,
@@ -67,10 +67,15 @@ export default defineComponent({
         content: 'ct5'
       }
     ]);
-    const meta = ref<Meta>({
-      totalCount: 1200
-    });
-    return { sessionToken, todos, meta };
+
+    const tasks = computed({
+      get: () => $store.state.tasks.tasks,
+      set: value => {
+        $store.commit('tasks/setTasks', value)
+      }
+    })
+
+    return { sessionToken, todos, tasks };
   }
 });
 </script>

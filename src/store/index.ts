@@ -16,6 +16,9 @@ import { SettingsStateInterface } from './settings/state'
 import lists from './lists'
 import { ListsStateInterface } from './lists/state'
 
+import tasks from './tasks'
+import { TasksStateInterface } from './tasks/state'
+
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation;
@@ -29,6 +32,7 @@ export interface StateInterface {
   authentication: AuthenticationStateInterface,
   settings: SettingsStateInterface,
   lists: ListsStateInterface,
+  tasks: TasksStateInterface,
 }
 
 // provide typings for `this.$store`
@@ -48,7 +52,8 @@ export default store(function (/* { ssrContext } */) {
     modules: {
       authentication,
       settings,
-      lists
+      lists,
+      tasks
     },
 
     // enable strict mode (adds overhead!)
