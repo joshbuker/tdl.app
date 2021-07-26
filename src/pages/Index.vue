@@ -1,11 +1,26 @@
 <template>
   <q-page class="row items-center justify-evenly q-col-gutter-md q-ma-md">
-    <!-- FIXME: Don't use min-width hack, figure out responsive way to expand
-                the columns
-    -->
-    <div class="col">
+    <div class="col-grow">
       <task-docket
         title="Today"
+        :todos="tasks"
+      ></task-docket>
+    </div>
+    <div class="col-grow">
+      <task-docket
+        title="Tomorrow"
+        :todos="tasks"
+      ></task-docket>
+    </div>
+    <div class="col-grow">
+      <task-docket
+        title="Upcoming"
+        :todos="tasks"
+      ></task-docket>
+    </div>
+    <div class="col-grow">
+      <task-docket
+        title="Someday"
         :todos="tasks"
       ></task-docket>
     </div>
