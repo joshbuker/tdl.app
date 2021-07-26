@@ -1,4 +1,5 @@
 import { Model } from '@vuex-orm/core'
+import List from './list'
 
 export default class Task extends Model {
   static entity = 'tasks'
@@ -7,6 +8,7 @@ export default class Task extends Model {
     return {
       id: this.attr(null),
       list_id: this.attr(null),
+      list: this.belongsTo(List, 'list_id'),
       title: this.attr(''),
       order: this.attr(0),
       notes: this.attr(''),

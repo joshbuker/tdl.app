@@ -8,7 +8,7 @@
       <q-list>
         <q-item clickable v-ripple v-for="todo in todos" :key="todo.id">
           <q-item-section>
-            {{ todo.title }}
+            {{ todo.title }} - {{ todo.list.title }}
           </q-item-section>
         </q-item>
       </q-list>

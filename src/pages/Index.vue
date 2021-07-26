@@ -92,7 +92,7 @@ export default defineComponent({
     // })
 
     const tasks = computed({
-      get: () => $store.$repo(Task).all()
+      get: () => $store.$repo(Task).with('list').get()
     })
 
     return { sessionToken, todos, tasks };

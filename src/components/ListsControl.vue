@@ -37,7 +37,7 @@
 
           <q-item-section>
             <q-item-label class="ellipsis">{{ element.title }}</q-item-label>
-            <q-item-label caption>0 tasks</q-item-label>
+            <q-item-label caption>{{ element.tasks.length }} tasks</q-item-label>
           </q-item-section>
 
           <q-item-section avatar v-if="editMode">
@@ -101,7 +101,7 @@ export default defineComponent({
     // })
 
     const lists = computed({
-      get: () => $store.$repo(List).all()
+      get: () => $store.$repo(List).with('tasks').get()
     })
 
     function createList() {
