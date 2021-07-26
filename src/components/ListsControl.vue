@@ -75,6 +75,8 @@ import { computed, defineComponent, ref } from 'vue'
 import { useStore } from '../store'
 import draggable from 'vuedraggable'
 import EditListDialog from 'components/EditListDialog.vue'
+import List from '../models/list'
+import Task from '../models/task'
 
 export default defineComponent({
   name: 'ListsControl',
@@ -84,18 +86,22 @@ export default defineComponent({
     const $q = useQuasar()
     const $store = useStore()
     const allTasksCount = computed({
-      get: () => $store.getters['tasks/allTasksCount']
+      get: () => $store.$repo(Task).all().length
     })
     const editMode = ref(false)
     const dragging = ref(false)
     const newList = ref('')
     const selectedList = ref('All Tasks')
 
+    // const lists = computed({
+    //   get: () => $store.state.lists.lists,
+    //   set: value => {
+    //     $store.commit('lists/setLists', value)
+    //   }
+    // })
+
     const lists = computed({
-      get: () => $store.state.lists.lists,
-      set: value => {
-        $store.commit('lists/setLists', value)
-      }
+      get: () => $store.$repo(List).all()
     })
 
     function createList() {

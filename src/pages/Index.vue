@@ -33,6 +33,7 @@ import { Todo, Meta } from 'components/models';
 import TaskDocket from 'components/TaskDocket.vue';
 import { computed, defineComponent, ref } from 'vue';
 import { useStore } from '../store'
+import Task from '../models/task'
 
 export default defineComponent({
   name: 'PageIndex',
@@ -83,11 +84,15 @@ export default defineComponent({
       }
     ]);
 
+    // const tasks = computed({
+    //   get: () => $store.state.tasks.tasks,
+    //   set: value => {
+    //     $store.commit('tasks/setTasks', value)
+    //   }
+    // })
+
     const tasks = computed({
-      get: () => $store.state.tasks.tasks,
-      set: value => {
-        $store.commit('tasks/setTasks', value)
-      }
+      get: () => $store.$repo(Task).all()
     })
 
     return { sessionToken, todos, tasks };

@@ -1,7 +1,9 @@
+// @ts-nocheck
 import { ActionTree } from 'vuex';
 import { StateInterface } from '../index';
 import { ListsStateInterface } from './state';
 import { api } from 'boot/axios';
+import List from '../../models/list'
 
 const actions: ActionTree<ListsStateInterface, StateInterface> = {
   async create({ commit, getters, rootGetters }, options) {
@@ -109,6 +111,7 @@ const actions: ActionTree<ListsStateInterface, StateInterface> = {
       params: {}
     })
     commit('setLists', response.data)
+    this.$repo(List).save(response.data)
     return response
   },
 };
