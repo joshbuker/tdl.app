@@ -91,8 +91,23 @@ export default defineComponent({
     //   }
     // })
 
+    const selectedList = computed({
+      get: () => $store.state.settings.selectedList,
+      set: value => {
+        $store.commit('settings/setSelectedList', value)
+      }
+    })
+
     const tasks = computed({
-      get: () => $store.$repo(Task).with('list').get()
+      get: () => $store.$repo(Task).with('list').get().filter((task) => {
+        if(selectedList.value === 'All Tasks') {
+          return true;
+        } else if (selectedList.value !== undefined && task.list !== undefined) {
+          return task.list.title === selectedList.value;
+        } else {
+          return false;
+        }
+      })
     })
 
     return { sessionToken, todos, tasks };

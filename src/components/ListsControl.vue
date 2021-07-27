@@ -91,7 +91,12 @@ export default defineComponent({
     const editMode = ref(false)
     const dragging = ref(false)
     const newList = ref('')
-    const selectedList = ref('All Tasks')
+    const selectedList = computed({
+      get: () => $store.state.settings.selectedList,
+      set: value => {
+        $store.commit('settings/setSelectedList', value)
+      }
+    })
 
     // const lists = computed({
     //   get: () => $store.state.lists.lists,

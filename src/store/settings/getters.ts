@@ -5,6 +5,10 @@ import { SettingsStateInterface } from './state';
 const getters: GetterTree<SettingsStateInterface, StateInterface> = {
   username (state) {
     return state.username;
+  },
+
+  selectedList (state) {
+    return state.selectedList;
   }
 };
 

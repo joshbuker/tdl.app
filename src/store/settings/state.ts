@@ -1,10 +1,12 @@
 export interface SettingsStateInterface {
   username: string;
+  selectedList: string;
 }
 
 function state(): SettingsStateInterface {
   return {
-    username: ''
+    username: '',
+    selectedList: 'All Tasks'
   }
 };
 

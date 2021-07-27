@@ -11,6 +11,13 @@
             {{ todo.title }} - {{ todo.list.title }}
           </q-item-section>
         </q-item>
+        <template v-if="todos.length == 0">
+          <q-item clickable v-ripple>
+            <q-item-section>
+              <strong>Nothing yet!</strong>
+            </q-item-section>
+          </q-item>
+        </template>
       </q-list>
     </q-card-section>
   </q-card>
