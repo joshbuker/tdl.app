@@ -1721,10 +1721,8 @@
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.1.2.tgz#1069c0bc7d6f4bd15ccf3a5f3be29450aca368f9"
   integrity sha512-EmH/poaDWBPJaPILXNI/1fvUbArJQmmTyVCwvvyDYDFnkPoTclAbHRAtyIvqfez7jybTDn077HTNILpxlsoWhg==
 
-"@vuex-orm/core@^1.0.0-draft.14":
+"@vuex-orm/core@file:../vuex-orm-next":
   version "1.0.0-draft.14"
-  resolved "https://registry.yarnpkg.com/@vuex-orm/core/-/core-1.0.0-draft.14.tgz#9ec13541340fdfca3a08c86f0bc837638c4cdbfd"
-  integrity sha512-yAnjNGa21klEQBLIGqNTomUvrzcwhz1NVJ+HZLbqgkLRr/9Yfu+PyCZHiH/KIscbyzlAeqO3WvApopQAf6lECA==
   dependencies:
     "@types/uuid" "^8.0.0"
     normalizr "^3.6.1"

@@ -106,7 +106,12 @@ export default defineComponent({
     // })
 
     const lists = computed({
-      get: () => $store.$repo(List).with('tasks').get()
+      get: () => $store.$repo(List).with('tasks').orderBy('order').orderBy('title').get(),
+      set: value => {
+        $store.$repo(List).save(value.map((element, index, array) => {
+          return { ...element, order: index }
+        }))
+      }
     })
 
     function createList() {

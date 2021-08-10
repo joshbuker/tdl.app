@@ -6,7 +6,7 @@ import { api } from 'boot/axios';
 import Task from '../../models/task'
 
 const actions: ActionTree<TasksStateInterface, StateInterface> = {
-  async fetchTasks({ commit, rootGetters }) {
+  async fetchTasks({ commit, getters, rootGetters }) {
     const response = await api.get('/tasks', {
       headers: { Authorization: rootGetters['authentication/bearerToken'] },
       params: {}

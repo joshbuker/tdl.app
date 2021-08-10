@@ -1,5 +1,6 @@
 import { Model } from '@vuex-orm/core'
 import List from './list'
+import Rule from './rule'
 
 export default class Task extends Model {
   static entity = 'tasks'
@@ -16,7 +17,11 @@ export default class Task extends Model {
       deadline_at: this.attr(''),
       prioritize_at: this.attr(''),
       remind_me_at: this.attr(''),
-      review_at: this.attr('')
+      review_at: this.attr(''),
+      pre_rules: this.hasMany(Rule, 'post_id'),
+      post_rules: this.hasMany(Rule, 'pre_id'),
+      prereqs: this.hasManyThrough(Task, Rule, 'post_id', 'pre_id'),
+      postreqs: this.hasManyThrough(Task, Rule, 'pre_id', 'post_id')
     }
   }
 }

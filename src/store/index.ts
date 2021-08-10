@@ -5,8 +5,8 @@ import {
   Store as VuexStore,
   useStore as vuexUseStore,
 } from 'vuex'
-import createPersistedState from 'vuex-persistedstate'
 import VuexORM from '@vuex-orm/core'
+import createPersistedState from 'vuex-persistedstate'
 
 import authentication from './authentication'
 import { AuthenticationStateInterface } from './authentication/state'
@@ -49,8 +49,8 @@ export const storeKey: InjectionKey<VuexStore<StateInterface>> = Symbol('vuex-ke
 export default store(function (/* { ssrContext } */) {
   const Store = createStore<StateInterface>({
     plugins: [
-      createPersistedState(),
-      VuexORM.install()
+      VuexORM.install(),
+      createPersistedState()
     ],
 
     modules: {
