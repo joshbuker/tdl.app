@@ -99,7 +99,7 @@ export default defineComponent({
     })
 
     const tasks = computed({
-      get: () => $store.$repo(Task).with('list').get().filter((task) => {
+      get: () => $store.$repo(Task).with('list').with('prereqs').with('postreqs').get().filter((task) => {
         if(selectedList.value === 'All Tasks') {
           return true;
         } else if (selectedList.value !== undefined && task.list !== undefined) {

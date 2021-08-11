@@ -10,7 +10,7 @@
           <q-item-section>
             {{ todo.title }} - {{ todo.list.title }}
             <br>
-            {{ todo.pre_ids.length }} - {{ todo.prereqs.length }}
+            {{ todo.prereqs.length }} - {{ todo.postreqs.length }}
           </q-item-section>
         </q-item>
         <template v-if="todos.length == 0">
