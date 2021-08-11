@@ -9,6 +9,8 @@
         <q-item clickable v-ripple v-for="todo in todos" :key="todo.id">
           <q-item-section>
             {{ todo.title }} - {{ todo.list.title }}
+            <br>
+            {{ todo.pre_ids.length }} - {{ todo.prereqs.length }}
           </q-item-section>
         </q-item>
         <template v-if="todos.length == 0">

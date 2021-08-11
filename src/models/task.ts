@@ -18,10 +18,10 @@ export default class Task extends Model {
       prioritize_at: this.attr(''),
       remind_me_at: this.attr(''),
       review_at: this.attr(''),
-      pre_rules: this.hasMany(Rule, 'post_id'),
-      post_rules: this.hasMany(Rule, 'pre_id'),
-      prereqs: this.hasManyThrough(Task, Rule, 'post_id', 'pre_id'),
-      postreqs: this.hasManyThrough(Task, Rule, 'pre_id', 'post_id')
+      pre_ids: this.attr([]),
+      post_ids: this.attr([]),
+      prereqs: this.hasManyBy(Task, 'pre_ids'),
+      postreqs: this.hasManyBy(Task, 'post_ids'),
     }
   }
 }
