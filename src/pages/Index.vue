@@ -3,25 +3,25 @@
     <div class="col-grow">
       <task-docket
         title="Today"
-        :todos="tasks"
+        :todos="today"
       ></task-docket>
     </div>
     <div class="col-grow">
       <task-docket
         title="Tomorrow"
-        :todos="tasks"
+        :todos="tomorrow"
       ></task-docket>
     </div>
     <div class="col-grow">
       <task-docket
         title="Upcoming"
-        :todos="tasks"
+        :todos="upcoming"
       ></task-docket>
     </div>
     <div class="col-grow">
       <task-docket
         title="Someday"
-        :todos="tasks"
+        :todos="someday"
       ></task-docket>
     </div>
   </q-page>
@@ -98,19 +98,23 @@ export default defineComponent({
       }
     })
 
-    const tasks = computed({
-      get: () => $store.$repo(Task).with('list').with('prereqs').with('postreqs').get().filter((task) => {
-        if(selectedList.value === 'All Tasks') {
-          return true;
-        } else if (selectedList.value !== undefined && task.list !== undefined) {
-          return task.list.title === selectedList.value;
-        } else {
-          return false;
-        }
-      })
+    const today = computed({
+      get: () => $store.getters['tasks/today']($store, selectedList)
     })
 
-    return { sessionToken, todos, tasks };
+    const tomorrow = computed({
+      get: () => $store.getters['tasks/tomorrow']($store, selectedList)
+    })
+
+    const upcoming = computed({
+      get: () => $store.getters['tasks/upcoming']($store, selectedList)
+    })
+
+    const someday = computed({
+      get: () => $store.getters['tasks/someday']($store, selectedList)
+    })
+
+    return { sessionToken, todos, today, tomorrow, upcoming, someday };
   }
 });
 </script>
