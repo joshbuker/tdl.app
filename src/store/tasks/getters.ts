@@ -30,9 +30,16 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
   },
 
   nextUp: (state, getters) => (store, selectedList) => {
-    return getters.tasks(store, selectedList).filter(
+    return getters.tasks(store, selectedList).
+    filter(
       (task) => {
-        return task.prereqs.length == 0
+        return task.completed_at == null
+      }
+    ).filter(
+      (task) => {
+        return !task.prereqs.some(
+          (prereq) => { return prereq.completed_at == null }
+        )
       }
     )
   },
