@@ -25,10 +25,6 @@ class RulePolicy < ApplicationPolicy
     record_user_matches? && pre_and_post_user_matches?
   end
 
-  def sync_ordering?
-    user.present?
-  end
-
   def pre_and_post_user_matches?
     return false unless record.present? && user.present?
     return false unless record.pre.present? && record.post.present?

@@ -33,6 +33,11 @@ components:
       items:
         $ref: '#/components/schemas/Task'
       uniqueItems: true
+    ArrayOfRules:
+      type: array
+      items:
+        $ref: '#/components/schemas/Rule'
+      uniqueItems: true
     Error:
       type: object
       properties:
@@ -88,6 +93,15 @@ components:
         - list_id
         - title
         - order
+    Rule:
+      type: object
+      properties:
+        id:
+          type: integer
+        pre_id:
+          type: integer
+        post_id:
+          type: integer
     Login:
       type: object
       properties:
@@ -170,6 +184,20 @@ paths:
           description: OK
         '503':
           $ref: '#/components/responses/ServiceUnavailable'
+  /rules:
+    get:
+      summary: Returns an array of the current user's rules.
+      tags:
+        - Rules
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfRules'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
   /tasks:
     get:
       summary: Returns an array of the current user's tasks.
@@ -184,6 +212,91 @@ paths:
                 $ref: '#/components/schemas/ArrayOfTasks'
         '401':
           $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create a new task for the current user.
+      tags:
+        - Tasks
+      requestBody:
+        description: Task to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+  /tasks/{id}:
+    get:
+      summary: Returns the information for a specific task.
+      tags:
+        - Tasks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      summary: Update an existing task.
+      tags:
+        - Tasks
+      requestBody:
+        description: Updates for existing task
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+    delete:
+      summary: Destroy a task.
+      tags:
+        - Tasks
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /lists:
     get:
       summary: Returns an array of the current user's lists.
