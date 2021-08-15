@@ -32,11 +32,15 @@ class RulePolicy < ApplicationPolicy
     record.pre.user == record.post.user
   end
 
+  # rubocop:disable Metrics/AbcSize
   def record_user_matches?
     return false unless record.present? && user.present?
     return false unless record.pre.present? && record.post.present?
 
-    record.pre.user == user &&
-    record.post.user == user
+    (
+      record.pre.user == user &&
+      record.post.user == user
+    )
   end
+  # rubocop:enable Metrics/AbcSize
 end

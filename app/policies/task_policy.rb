@@ -31,7 +31,7 @@ class TaskPolicy < ApplicationPolicy
 
   def list_user_matches?
     return false unless record.present? && user.present?
-    return false unless record.list.present?
+    return false if record.list.blank?
 
     record.list.user == user
   end

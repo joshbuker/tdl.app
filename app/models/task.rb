@@ -39,6 +39,7 @@ class Task < ApplicationRecord
 
   # TODO: Use meta programming to DRY up the ISO_8601 conversion?
 
+  # rubocop:disable Naming/VariableNumber
   def completed_at_iso_8601
     iso_8601(completed_at)
   end
@@ -62,14 +63,16 @@ class Task < ApplicationRecord
   private
 
   def iso_8601(time)
-    return nil unless time.present?
+    return nil if time.blank?
 
     I18n.l(time, format: :iso_8601)
   end
+  # rubocop:enable Naming/VariableNumber
 
   def list_and_task_owner_match
     return unless list.is_a?(List)
     return if user == list&.user
-    errors.add(:base, 'List and Task must belong to the same user.')
+
+    errors.add(:base, :list_and_task_owner_match)
   end
 end

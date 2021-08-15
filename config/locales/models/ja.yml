@@ -1,0 +1,7 @@
+---
+ja:
+  activerecord:
+    errors:
+      models:
+        task:
+          list_and_task_owner_match: リストとタスクは同じユーザーに属している必要があります。
