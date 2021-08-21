@@ -2,7 +2,6 @@ import { boot } from 'quasar/wrappers';
 import { Notify } from 'quasar'
 
 export default boot(({ store }) => {
-  console.log('kekw')
   if (store.getters['authentication/loggedIn'] == true) {
     store.dispatch('settings/fetchUsername').
     catch(

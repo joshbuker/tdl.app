@@ -100,19 +100,19 @@ export default defineComponent({
     })
 
     const today = computed({
-      get: () => $store.getters['tasks/today']($store, selectedList)
+      get: () => $store.getters['tasks/today']($store, selectedList.value)
     })
 
     const tomorrow = computed({
-      get: () => $store.getters['tasks/tomorrow']($store, selectedList)
+      get: () => $store.getters['tasks/tomorrow']($store, selectedList.value)
     })
 
     const upcoming = computed({
-      get: () => $store.getters['tasks/upcoming']($store, selectedList)
+      get: () => $store.getters['tasks/upcoming']($store, selectedList.value)
     })
 
     const someday = computed({
-      get: () => $store.getters['tasks/someday']($store, selectedList)
+      get: () => $store.getters['tasks/someday']($store, selectedList.value)
     })
 
     return { sessionToken, todos, today, tomorrow, upcoming, someday };

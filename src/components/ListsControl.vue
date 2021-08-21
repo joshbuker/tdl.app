@@ -37,7 +37,7 @@
 
           <q-item-section>
             <q-item-label class="ellipsis">{{ element.title }}</q-item-label>
-            <q-item-label caption>{{ element.tasks.length }} tasks</q-item-label>
+            <q-item-label caption>{{ taskCount(element) }} tasks</q-item-label>
           </q-item-section>
 
           <q-item-section avatar v-if="editMode">
@@ -86,7 +86,7 @@ export default defineComponent({
     const $q = useQuasar()
     const $store = useStore()
     const allTasksCount = computed({
-      get: () => $store.$repo(Task).all().length
+      get: () => $store.getters['tasks/allTasksCount']($store)
     })
     const editMode = ref(false)
     const dragging = ref(false)
@@ -275,6 +275,10 @@ export default defineComponent({
       )
     }
 
+    function taskCount(list) {
+      return $store.getters['tasks/nextUp']($store, list.title).length;
+    }
+
     return {
       allTasksCount,
       createList,
@@ -286,6 +290,7 @@ export default defineComponent({
       lists,
       syncListOrdering,
       selectedList,
+      taskCount,
     }
   }
 })

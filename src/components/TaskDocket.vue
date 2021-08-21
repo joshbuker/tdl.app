@@ -35,7 +35,9 @@ import {
   toRef,
   Ref,
 } from 'vue';
+import { useQuasar } from 'quasar'
 import { Todo, Meta } from './models';
+import CurrentTaskDialog from 'components/CurrentTaskDialog.vue'
 
 function useDisplayTodo(todos: Ref<Todo[]>) {
   const todoCount = computed(() => todos.value.length);
@@ -55,8 +57,16 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const $q = useQuasar()
+
     function openTask(task) {
-      alert(task.title);
+      $q.dialog({
+        component: CurrentTaskDialog,
+
+        componentProps: {
+          task: task
+        }
+      })
     }
 
     return { openTask, ...useDisplayTodo(toRef(props, 'todos')) };

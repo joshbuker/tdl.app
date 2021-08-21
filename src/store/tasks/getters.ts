@@ -9,19 +9,17 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     return state.tasks;
   },
 
-  allTasksCount (state) {
-    return state.tasks.length;
+  allTasksCount: (state, getters) => (store) => {
+    return getters.nextUp(store, 'All Tasks').length;
   },
 
   tasks: (state) => (store, selectedList) => {
-    console.log(store)
-    // return []
     return store.$repo(Task).with('list').with('prereqs').with('postreqs').get().filter(
       (task) => {
-        if(selectedList.value === 'All Tasks') {
+        if(selectedList === 'All Tasks') {
           return true;
-        } else if (selectedList.value !== undefined && task.list !== undefined) {
-          return task.list.title === selectedList.value;
+        } else if (selectedList !== undefined && task.list !== undefined) {
+          return task.list.title === selectedList;
         } else {
           return false;
         }
