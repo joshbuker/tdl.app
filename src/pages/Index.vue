@@ -1,5 +1,6 @@
 <template>
-  <q-page class="row items-center justify-evenly q-col-gutter-md q-ma-md">
+  <!-- For full height cards: <q-page class="row items-stretch justify-evenly q-col-gutter-md q-ma-md"> -->
+  <q-page class="row items-start justify-evenly q-col-gutter-md q-ma-md">
     <div class="col-grow">
       <task-docket
         title="Today"

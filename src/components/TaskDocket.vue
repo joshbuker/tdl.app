@@ -1,12 +1,13 @@
 <template>
-  <q-card>
+  <!-- For full height cards: <q-card class="full-height"> -->
+  <q-card class="full-height">
     <q-card-section class="bg-primary text-white">
       <div class="text-h6">{{ title }}</div>
     </q-card-section>
 
     <q-card-section>
       <q-list>
-        <q-item clickable v-ripple v-for="todo in todos" :key="todo.id">
+        <q-item clickable v-ripple v-for="todo in todos" :key="todo.id" @click="openTask(todo)">
           <q-item-section>
             {{ todo.title }} - {{ todo.list.title }}
             <br>
@@ -54,7 +55,11 @@ export default defineComponent({
     }
   },
   setup(props) {
-    return { ...useDisplayTodo(toRef(props, 'todos')) };
+    function openTask(task) {
+      alert(task.title);
+    }
+
+    return { openTask, ...useDisplayTodo(toRef(props, 'todos')) };
   },
 });
 </script>
