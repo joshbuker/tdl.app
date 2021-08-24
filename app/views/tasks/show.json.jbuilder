@@ -7,3 +7,4 @@ json.review_at     @task.review_at_iso_8601
 # Necessary because of no front-end support for join model relationships
 json.pre_ids       @task.prereqs.map(&:id)
 json.post_ids      @task.postreqs.map(&:id)
+json.tag_ids       @task.tags.map(&:id)

@@ -8,4 +8,5 @@ json.array! @tasks do |task|
   # Necessary because of no front-end support for join model relationships
   json.pre_ids       task.prereqs.map(&:id)
   json.post_ids      task.postreqs.map(&:id)
+  json.tag_ids       task.tags.map(&:id)
 end
