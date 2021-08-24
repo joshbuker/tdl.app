@@ -14,12 +14,12 @@
       <q-card-section>
         <div class="row">
           <div class="col">
-            <div class="text-h4 text-primary">{{ task.title }}</div>
+            <div class="text-h4 text-primary">{{ currentTask.title }}</div>
             <q-input
               v-model="editTaskTitle"
               filled
               label="Task title"
-              :placeholder="task.title"
+              :placeholder="currentTask.title"
               clearable
             />
             <!-- Tags here -->
@@ -33,9 +33,13 @@
             />
           </div>
         </div>
-        <p>{{ task.title }}</p>
         <ul>
-          <li v-for="post in task.postreqs">
+          <li v-for="pre in currentTask.prereqs" @click="setCurrentTask(pre)">
+            {{ pre.title }}
+          </li>
+        </ul>
+        <ul>
+          <li v-for="post in currentTask.postreqs" @click="setCurrentTask(post)">
             {{ post.title }}
           </li>
         </ul>
@@ -56,6 +60,7 @@ import {
   Ref,
 } from 'vue';
 import List from '../models/list'
+import Task from '../models/task'
 import { useStore } from '../store'
 
 export default {
@@ -84,21 +89,32 @@ export default {
 
     const $store = useStore()
 
-    const editTaskTitle = ref(props.task.title)
-    const selectedList = ref({ id: props.task.list.id, title: props.task.list.title })
+    const currentTask = ref(props.task)
+
+    const editTaskTitle = ref(currentTask.value.title)
+    const selectedList = ref({ id: currentTask.value.list.id, title: currentTask.value.list.title })
 
     const lists = computed({
       get: () => $store.$repo(List).with('tasks').orderBy('order').orderBy('title').get()
     })
+
+    function setCurrentTask(newTask) {
+      currentTask.value = $store.$repo(Task).with('list').with('prereqs').with('postreqs').find(newTask.id)
+      editTaskTitle.value = currentTask.value.title
+      selectedList.value = { id: currentTask.value.list.id, title: currentTask.value.list.title }
+    }
 
     console.log(selectedList.value);
     console.log(lists.value);
 
     return {
       // Custom stuff
+      currentTask,
       editTaskTitle,
       selectedList,
       lists,
+      //
+      setCurrentTask,
 
       // This is REQUIRED;
       // Need to inject these (from useDialogPluginComponent() call)
