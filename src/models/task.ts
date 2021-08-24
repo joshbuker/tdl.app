@@ -1,6 +1,6 @@
 import { Model } from '@vuex-orm/core'
 import List from './list'
-import Rule from './rule'
+import Tag from './tag'
 
 export default class Task extends Model {
   static entity = 'tasks'
@@ -20,8 +20,10 @@ export default class Task extends Model {
       review_at: this.attr(''),
       pre_ids: this.attr([]),
       post_ids: this.attr([]),
+      tag_ids: this.attr([]),
       prereqs: this.hasManyBy(Task, 'pre_ids'),
       postreqs: this.hasManyBy(Task, 'post_ids'),
+      tags: this.hasManyBy(Tag, 'tag_ids'),
     }
   }
 }

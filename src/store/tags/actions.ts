@@ -1,0 +1,121 @@
+// @ts-nocheck
+import { ActionTree } from 'vuex';
+import { StateInterface } from '../index';
+import { TagsStateInterface } from './state';
+import { api } from 'boot/axios';
+import Tag from '../../models/tag'
+
+const actions: ActionTree<TagsStateInterface, StateInterface> = {
+  async create({ commit, getters, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.post('/tags',
+          {
+            title: options.title,
+            order: getters.nextOrder
+          },
+          {
+            headers: {
+              Authorization: rootGetters['authentication/bearerToken']
+            }
+          }
+        ).
+        then(
+          (response) => {
+            commit('addTag', response.data)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
+  async delete({ commit, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.delete(`/tags/${options.id}`, {
+          headers: {
+            Authorization: rootGetters['authentication/bearerToken']
+          }
+        }).
+        then(
+          (response) => {
+            commit('removeTag', options.id)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
+  async update({ commit, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.patch(`/tags/${options.id}`,
+          {
+            title: options.title
+          },
+          {
+            headers: {
+              Authorization: rootGetters['authentication/bearerToken']
+            }
+          }
+        ).
+        then(
+          (response) => {
+            commit('updateTag', response.data)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
+  async syncOrdering({ commit, rootGetters }) {
+    return new Promise(
+      (resolve, reject) => {
+        api.patch(`/tags/sync-ordering`,
+          {
+            tags: this.$repo(Tag).with('tasks').orderBy('order').orderBy('title').get().map((element, index, array) => {
+              return { id: element.id, order: index }
+            })
+          },
+          {
+            headers: {
+              Authorization: rootGetters['authentication/bearerToken']
+            }
+          }
+        ).
+        then(
+          (response) => {
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
+  async fetchTags({ commit, rootGetters }) {
+    const response = await api.get('/tags', {
+      headers: { Authorization: rootGetters['authentication/bearerToken'] },
+      params: {}
+    })
+    commit('setTags', response.data)
+    this.$repo(Tag).save(response.data)
+    return response
+  },
+};
+
+export default actions;

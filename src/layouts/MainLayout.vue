@@ -38,15 +38,15 @@
 
       <q-tab-panels v-model="drawerTabs" animated>
         <q-tab-panel class="q-pa-none" name="lists">
-          <ListsControl />
+          <lists-control />
         </q-tab-panel>
 
         <q-tab-panel name="projects">
           <p>Projects here</p>
         </q-tab-panel>
 
-        <q-tab-panel name="tags">
-          <p>Tags here</p>
+        <q-tab-panel class="q-pa-none" name="tags">
+          <tags-control />
         </q-tab-panel>
       </q-tab-panels>
     </q-drawer>
@@ -75,10 +75,11 @@ import { useRouter } from 'vue-router'
 import { computed, defineComponent, ref } from 'vue'
 import { api } from 'boot/axios'
 import ListsControl from 'components/ListsControl.vue'
+import TagsControl from 'components/TagsControl.vue'
 
 export default defineComponent({
   name: 'MainLayout',
-  components: { ListsControl },
+  components: { ListsControl, TagsControl },
 
   setup () {
     const $q = useQuasar()

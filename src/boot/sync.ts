@@ -37,6 +37,23 @@ export default boot(({ store }) => {
         })
       }
     )
+    store.dispatch('tags/fetchTags').
+    catch(
+      (error) => {
+        let errorMessage = ''
+        if (typeof error.response !== 'undefined') {
+          errorMessage = error.response.data.error
+        } else {
+          errorMessage = `Failed to fetch tags: ${error.message}`
+        }
+        Notify.create({
+          color: 'negative',
+          position: 'top',
+          message: errorMessage,
+          icon: 'report_problem'
+        })
+      }
+    )
     store.dispatch('tasks/fetchTasks').
     catch(
       (error) => {

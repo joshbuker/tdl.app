@@ -9,9 +9,27 @@
       <q-list>
         <q-item clickable v-ripple v-for="todo in todos" :key="todo.id" @click="openTask(todo)">
           <q-item-section>
-            {{ todo.title }} - {{ todo.list.title }}
-            <br>
-            {{ todo.prereqs.length }} - {{ todo.postreqs.length }}
+            {{ todo.title }}
+            <div>
+              <!-- <q-chip
+                clickable
+                icon="list"
+                color="primary"
+                @click.stop="true"
+              >
+                {{ todo.list.title }}
+              </q-chip> -->
+              <q-chip
+                clickable
+                v-for="tag in todo.tags"
+                :key="tag.id"
+                icon="local_offer"
+                :style="'color: ' + textColor(tag.color) + '; background-color: ' + tag.color"
+                @click.stop="true"
+              >
+                {{ tag.title }}
+              </q-chip>
+            </div>
           </q-item-section>
         </q-item>
         <template v-if="todos.length == 0">
@@ -69,7 +87,27 @@ export default defineComponent({
       })
     }
 
-    return { openTask, ...useDisplayTodo(toRef(props, 'todos')) };
+    function textColor(backgroundColor) {
+      if(!backgroundColor || 0 === backgroundColor.length) {
+        return '#000000';
+      } else {
+        let input = backgroundColor.toString().replace('#', '');
+        if(input.length != 6) {
+          return '#000000';
+        } else {
+          let red = parseInt(input.substr(0,2), 16);
+          let green = parseInt(input.substr(2,2), 16);
+          let blue = parseInt(input.substr(4,2), 16);
+          // Luminance values for different hues are not equal.
+          let greyscale = red * 0.299 + green * 0.587 + blue * 0.114;
+          // Perceived midpoint for grey is higher than 128. (around 186)
+          let midpoint = 152;
+          return (greyscale > midpoint) ? '#000000' : '#ffffff';
+        }
+      }
+    }
+
+    return { openTask, textColor, ...useDisplayTodo(toRef(props, 'todos')) };
   },
 });
 </script>

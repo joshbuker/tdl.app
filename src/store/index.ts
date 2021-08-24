@@ -17,6 +17,9 @@ import { SettingsStateInterface } from './settings/state'
 import lists from './lists'
 import { ListsStateInterface } from './lists/state'
 
+import tags from './tags'
+import { TagsStateInterface } from './tags/state'
+
 import tasks from './tasks'
 import { TasksStateInterface } from './tasks/state'
 
@@ -33,6 +36,7 @@ export interface StateInterface {
   authentication: AuthenticationStateInterface,
   settings: SettingsStateInterface,
   lists: ListsStateInterface,
+  tags: TagsStateInterface,
   tasks: TasksStateInterface,
 }
 
@@ -57,6 +61,7 @@ export default store(function (/* { ssrContext } */) {
       authentication,
       settings,
       lists,
+      tags,
       tasks
     },
 
