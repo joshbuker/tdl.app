@@ -16,10 +16,16 @@
           v-if="!editMode"
           :active="tagSelected('No Tags')"
           @click="toggleTag('No Tags')"
+          :style="tagSelected('No Tags') && !editMode ? 'color: black; background-color: white;' : null"
         >
           <q-item-section>
             <q-item-label>No Tags</q-item-label>
-            <q-item-label caption>{{ noTagsCount }} tasks</q-item-label>
+            <q-item-label
+              caption
+              :style="tagSelected('No Tags') && !editMode ? 'color: black;' : null"
+            >
+              {{ noTagsCount }} tasks
+            </q-item-label>
           </q-item-section>
         </q-item>
       </template>
@@ -28,8 +34,9 @@
         <q-item
           v-bind:clickable="!editMode"
           v-ripple="!editMode"
-          :active="tagSelected(element.title)"
+          :active="tagSelected(element.title) && !editMode"
           @click="toggleTag(element.title)"
+          :style="tagSelected(element.title) && !editMode ? 'color: ' + textColor(element.color) + '; background-color: ' + element.color + ';' : null"
         >
           <q-item-section avatar v-show="editMode">
             <q-btn flat round icon="fas fa-bars" class="handle" />
@@ -37,7 +44,12 @@
 
           <q-item-section>
             <q-item-label class="ellipsis">{{ element.title }}</q-item-label>
-            <q-item-label caption>{{ taskCount(element) }} tasks</q-item-label>
+            <q-item-label
+              caption
+              :style="tagSelected(element.title) && !editMode ? 'color: ' + textColor(element.color) + ';' : null"
+            >
+              {{ taskCount(element) }} tasks
+            </q-item-label>
           </q-item-section>
 
           <q-item-section avatar v-if="editMode">
@@ -91,10 +103,10 @@ export default defineComponent({
     const editMode = ref(false)
     const dragging = ref(false)
     const newTag = ref('')
-    const selectedTag = computed({
-      get: () => $store.state.settings.selectedTag,
+    const selectedTags = computed({
+      get: () => $store.state.settings.selectedTags,
       set: value => {
-        $store.commit('settings/setSelectedTag', value)
+        $store.commit('settings/setSelectedTags', value)
       }
     })
 
@@ -115,15 +127,15 @@ export default defineComponent({
     })
 
     function tagSelected(title) {
-      return tags.value.some(
+      return selectedTags.value.some(
         (tag) => {
-          tag.title === title
+          return tag === title
         }
       )
     }
 
     function toggleTag(title) {
-      console.log(title)
+      $store.commit('settings/toggleSelectedTag', title);
     }
 
     function createTag() {
@@ -182,8 +194,9 @@ export default defineComponent({
           $store.dispatch('tags/update', { id: tag.id, title: data }).
           then(
             (response) => {
-              if (selectedTag.value === tag.title) {
-                selectedTag.value = data
+              if (tagSelected(tag.title)) {
+                toggleTag(tag.title)
+                toggleTag(data)
               }
 
               $q.notify({
@@ -291,6 +304,26 @@ export default defineComponent({
       return 69;
     }
 
+    function textColor(backgroundColor) {
+      if(!backgroundColor || 0 === backgroundColor.length) {
+        return '#000000';
+      } else {
+        let input = backgroundColor.toString().replace('#', '');
+        if(input.length != 6) {
+          return '#000000';
+        } else {
+          let red = parseInt(input.substr(0,2), 16);
+          let green = parseInt(input.substr(2,2), 16);
+          let blue = parseInt(input.substr(4,2), 16);
+          // Luminance values for different hues are not equal.
+          let greyscale = red * 0.299 + green * 0.587 + blue * 0.114;
+          // Perceived midpoint for grey is higher than 128. (around 186)
+          let midpoint = 152;
+          return (greyscale > midpoint) ? '#000000' : '#ffffff';
+        }
+      }
+    }
+
     return {
       noTagsCount,
       createTag,
@@ -301,10 +334,11 @@ export default defineComponent({
       dragging,
       tags,
       syncTagOrdering,
-      selectedTag,
+      selectedTags,
       taskCount,
       tagSelected,
       toggleTag,
+      textColor,
     }
   }
 })

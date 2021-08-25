@@ -12,9 +12,10 @@
       <q-separator />
 
       <q-card-section>
-        <div class="row">
+        <div class="row q-gutter-md">
           <div class="col">
             <div class="text-h4 text-primary">{{ currentTask.title }}</div>
+            <br>
             <q-input
               v-model="editTaskTitle"
               filled
@@ -22,7 +23,18 @@
               :placeholder="currentTask.title"
               clearable
             />
-            <!-- Tags here -->
+            <br>
+            <q-select
+              v-model="selectedTags"
+              filled
+              use-chips
+              multiple
+              :options="tags"
+              option-value="id"
+              option-label="title"
+              label="Tags"
+            />
+            <br>
             <q-select
               v-model="selectedList"
               filled
@@ -32,17 +44,43 @@
               label="List"
             />
           </div>
+          <div class="col">
+            <div class="text-h5">Prerequisites</div>
+            <q-list>
+              <q-item clickable v-ripple v-if="!currentTask.prereqs.length">
+                <q-item-section>No prerequisites</q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-ripple
+                v-for="pre in currentTask.prereqs"
+                :key="pre.id"
+                @click="setCurrentTask(pre)"
+              >
+                <q-item-section>
+                  {{ pre.title }}
+                </q-item-section>
+              </q-item>
+            </q-list>
+            <div class="text-h5">Postrequisites</div>
+            <q-list>
+              <q-item clickable v-ripple v-if="!currentTask.postreqs.length">
+                <q-item-section>No postrequisites</q-item-section>
+              </q-item>
+              <q-item
+                clickable
+                v-ripple
+                v-for="post in currentTask.postreqs"
+                :key="post.id"
+                @click="setCurrentTask(post)"
+              >
+                <q-item-section>
+                  {{ post.title }}
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </div>
         </div>
-        <ul>
-          <li v-for="pre in currentTask.prereqs" @click="setCurrentTask(pre)">
-            {{ pre.title }}
-          </li>
-        </ul>
-        <ul>
-          <li v-for="post in currentTask.postreqs" @click="setCurrentTask(post)">
-            {{ post.title }}
-          </li>
-        </ul>
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -61,6 +99,7 @@ import {
 } from 'vue';
 import List from '../models/list'
 import Task from '../models/task'
+import Tag from '../models/tag'
 import { useStore } from '../store'
 
 export default {
@@ -90,29 +129,48 @@ export default {
     const $store = useStore()
 
     const currentTask = ref(props.task)
-
     const editTaskTitle = ref(currentTask.value.title)
     const selectedList = ref({ id: currentTask.value.list.id, title: currentTask.value.list.title })
+    let temp = currentTask.value.tags.map(
+      (tag) => {
+        let temp = { id: tag.id, title: tag.title }
+        console.log(temp)
+        return temp
+      }
+    )
+    console.log(temp)
+    const selectedTags = ref([])
+    selectedTags.value = temp
 
     const lists = computed({
       get: () => $store.$repo(List).with('tasks').orderBy('order').orderBy('title').get()
     })
 
+    const tags = computed({
+      get: () => $store.$repo(Tag).orderBy('order').orderBy('title').get()
+    })
+
     function setCurrentTask(newTask) {
-      currentTask.value = $store.$repo(Task).with('list').with('prereqs').with('postreqs').find(newTask.id)
+      currentTask.value = $store.$repo(Task).with('list').with('prereqs').with('postreqs').with('tags').find(newTask.id)
       editTaskTitle.value = currentTask.value.title
       selectedList.value = { id: currentTask.value.list.id, title: currentTask.value.list.title }
+      selectedTags.value = currentTask.value.tags.map(
+        (tag) => {
+          let temp = { id: tag.id, title: tag.title }
+          console.log(temp)
+          return temp
+        }
+      )
     }
-
-    console.log(selectedList.value);
-    console.log(lists.value);
 
     return {
       // Custom stuff
       currentTask,
       editTaskTitle,
       selectedList,
+      selectedTags,
       lists,
+      tags,
       //
       setCurrentTask,
 

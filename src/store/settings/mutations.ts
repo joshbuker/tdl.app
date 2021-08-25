@@ -8,6 +8,20 @@ const mutation: MutationTree<SettingsStateInterface> = {
 
   setSelectedList(state, selectedList: string) {
     state.selectedList = selectedList
+  },
+
+  setSelectedTags(state, selectedTags: array) {
+    state.selectedTags = selectedTags
+  },
+
+  toggleSelectedTag(state, title: string) {
+    let index = state.selectedTags.indexOf(title);
+
+    if (index === -1) {
+      state.selectedTags.push(title);
+    } else {
+      state.selectedTags.splice(index, 1);
+    }
   }
 };
 

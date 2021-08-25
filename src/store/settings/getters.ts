@@ -9,6 +9,10 @@ const getters: GetterTree<SettingsStateInterface, StateInterface> = {
 
   selectedList (state) {
     return state.selectedList;
+  },
+
+  selectedTags (state) {
+    return state.selectedTags;
   }
 };
 
