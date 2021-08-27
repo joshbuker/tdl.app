@@ -14,6 +14,14 @@ const mutation: MutationTree<SettingsStateInterface> = {
     state.selectedTags = selectedTags
   },
 
+  setAllTagsFilter(state, allTagsFilter: boolean) {
+    state.allTagsFilter = allTagsFilter
+  },
+
+  clearTags(state) {
+    state.selectedTags = []
+  },
+
   toggleSelectedTag(state, title: string) {
     let index = state.selectedTags.indexOf(title);
 

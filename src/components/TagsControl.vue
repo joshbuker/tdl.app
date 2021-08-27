@@ -1,4 +1,19 @@
 <template>
+  <div class="row q-ma-sm justify-center">
+    <q-btn-toggle
+      v-model="allTagsFilter"
+      toggle-color="primary"
+      :options="[
+        { label: 'All', value: true },
+        { label: 'Any', value: false }
+      ]"
+    />
+  </div>
+  <div class="row q-mt-sm q-mx-sm q-mb-md justify-center">
+    <q-btn @click="clearTags()">
+      Clear Tags
+    </q-btn>
+  </div>
   <q-list>
     <draggable
       v-model="tags"
@@ -112,13 +127,12 @@ export default defineComponent({
         $store.commit('settings/setSelectedTags', value)
       }
     })
-
-    // const tags = computed({
-    //   get: () => $store.state.tags.tags,
-    //   set: value => {
-    //     $store.commit('tags/setTags', value)
-    //   }
-    // })
+    const allTagsFilter = computed({
+      get: () => $store.state.settings.allTagsFilter,
+      set: value => {
+        $store.commit('settings/setAllTagsFilter', value)
+      }
+    })
 
     const tags = computed({
       get: () => $store.$repo(Tag).orderBy('order').orderBy('title').get(),
@@ -327,7 +341,13 @@ export default defineComponent({
       }
     }
 
+    function clearTags() {
+      $store.commit('settings/clearTags')
+    }
+
     return {
+      allTagsFilter,
+      clearTags,
       createTag,
       editMode,
       editTag,

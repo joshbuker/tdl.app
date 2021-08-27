@@ -13,6 +13,10 @@ const getters: GetterTree<SettingsStateInterface, StateInterface> = {
 
   selectedTags (state) {
     return state.selectedTags;
+  },
+
+  allTagsFilter (state) {
+    return state.allTagsFilter;
   }
 };
 

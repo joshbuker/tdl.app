@@ -62,36 +62,6 @@ export default defineComponent({
       }
     })
 
-    const todos = ref<Todo[]>([
-      {
-        id: 1,
-        content: 'A long sentence goes here'
-      },
-      {
-        id: 2,
-        content: 'ct2'
-      },
-      {
-        id: 3,
-        content: 'ct3'
-      },
-      {
-        id: 4,
-        content: 'ct4'
-      },
-      {
-        id: 5,
-        content: 'ct5'
-      }
-    ]);
-
-    // const tasks = computed({
-    //   get: () => $store.state.tasks.tasks,
-    //   set: value => {
-    //     $store.commit('tasks/setTasks', value)
-    //   }
-    // })
-
     const selectedList = computed({
       get: () => $store.state.settings.selectedList,
       set: value => {
@@ -106,23 +76,30 @@ export default defineComponent({
       }
     })
 
+    const allTagsFilter = computed({
+      get: () => $store.state.settings.allTagsFilter,
+      set: value => {
+        $store.commit('settings/setAllTagsFilter', value)
+      }
+    })
+
     const today = computed({
-      get: () => $store.getters['tasks/today']($store, selectedList.value, selectedTags.value, true)
+      get: () => $store.getters['tasks/today']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
     })
 
     const tomorrow = computed({
-      get: () => $store.getters['tasks/tomorrow']($store, selectedList.value, selectedTags.value, true)
+      get: () => $store.getters['tasks/tomorrow']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
     })
 
     const upcoming = computed({
-      get: () => $store.getters['tasks/upcoming']($store, selectedList.value, selectedTags.value, true)
+      get: () => $store.getters['tasks/upcoming']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
     })
 
     const someday = computed({
-      get: () => $store.getters['tasks/someday']($store, selectedList.value, selectedTags.value, true)
+      get: () => $store.getters['tasks/someday']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
     })
 
-    return { sessionToken, todos, today, tomorrow, upcoming, someday };
+    return { sessionToken, today, tomorrow, upcoming, someday };
   }
 });
 </script>
