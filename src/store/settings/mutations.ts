@@ -18,7 +18,15 @@ const mutation: MutationTree<SettingsStateInterface> = {
     let index = state.selectedTags.indexOf(title);
 
     if (index === -1) {
-      state.selectedTags.push(title);
+      if (title === 'No Tags') {
+        state.selectedTags = [title];
+      } else {
+        let noTagsIndex = state.selectedTags.indexOf('No Tags');
+        if (noTagsIndex !== -1) {
+          state.selectedTags.splice(noTagsIndex, 1);
+        }
+        state.selectedTags.push(title)
+      }
     } else {
       state.selectedTags.splice(index, 1);
     }

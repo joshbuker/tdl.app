@@ -99,20 +99,27 @@ export default defineComponent({
       }
     })
 
+    const selectedTags = computed({
+      get: () => $store.state.settings.selectedTags,
+      set: value => {
+        $store.commit('settings/setSelectedTags', value)
+      }
+    })
+
     const today = computed({
-      get: () => $store.getters['tasks/today']($store, selectedList.value)
+      get: () => $store.getters['tasks/today']($store, selectedList.value, selectedTags.value, true)
     })
 
     const tomorrow = computed({
-      get: () => $store.getters['tasks/tomorrow']($store, selectedList.value)
+      get: () => $store.getters['tasks/tomorrow']($store, selectedList.value, selectedTags.value, true)
     })
 
     const upcoming = computed({
-      get: () => $store.getters['tasks/upcoming']($store, selectedList.value)
+      get: () => $store.getters['tasks/upcoming']($store, selectedList.value, selectedTags.value, true)
     })
 
     const someday = computed({
-      get: () => $store.getters['tasks/someday']($store, selectedList.value)
+      get: () => $store.getters['tasks/someday']($store, selectedList.value, selectedTags.value, true)
     })
 
     return { sessionToken, todos, today, tomorrow, upcoming, someday };

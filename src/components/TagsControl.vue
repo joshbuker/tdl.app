@@ -24,7 +24,7 @@
               caption
               :style="tagSelected('No Tags') && !editMode ? 'color: black;' : null"
             >
-              {{ noTagsCount }} tasks
+              {{ taskCount({ title: 'No Tags' }) }} tasks
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -97,12 +97,15 @@ export default defineComponent({
   setup() {
     const $q = useQuasar()
     const $store = useStore()
-    const noTagsCount = computed({
-      get: () => 69
-    })
     const editMode = ref(false)
     const dragging = ref(false)
     const newTag = ref('')
+    const selectedList = computed({
+      get: () => $store.state.settings.selectedList,
+      set: value => {
+        $store.commit('settings/setSelectedList', value)
+      }
+    })
     const selectedTags = computed({
       get: () => $store.state.settings.selectedTags,
       set: value => {
@@ -301,7 +304,7 @@ export default defineComponent({
     }
 
     function taskCount(tag) {
-      return 69;
+      return $store.getters['tasks/nextUp']($store, selectedList.value, [tag.title]).length;
     }
 
     function textColor(backgroundColor) {
@@ -325,7 +328,6 @@ export default defineComponent({
     }
 
     return {
-      noTagsCount,
       createTag,
       editMode,
       editTag,

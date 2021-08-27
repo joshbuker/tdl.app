@@ -10,10 +10,10 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
   },
 
   allTasksCount: (state, getters) => (store) => {
-    return getters.nextUp(store, 'All Tasks').length;
+    return getters.nextUp(store, 'All Tasks', null).length;
   },
 
-  tasks: (state) => (store, selectedList) => {
+  listTasks: (state) => (store, selectedList) => {
     return store.$repo(Task).
       with('list').with('prereqs').with('postreqs').with('tags').get().
     filter(
@@ -29,8 +29,58 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     )
   },
 
-  nextUp: (state, getters) => (store, selectedList) => {
-    return getters.tasks(store, selectedList).
+  tasks: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
+    if (selectedTags == null || Array.isArray(selectedTags) !== true || selectedTags.length == 0) {
+      return getters.listTasks(store, selectedList);
+    } else if (selectedTags.includes('No Tags') === true) {
+      return getters.listTasks(store, selectedList).filter(
+        (task) => { return (
+          task.tags == null ||
+          (
+            Array.isArray(task.tags) &&
+            task.tags.length == 0
+          )
+        )}
+      )
+    } else {
+      return getters.listTasks(store, selectedList).filter(
+        // For every task in the list
+        (task) => {
+          if(allTagsFilter === true) {
+            return (
+              // For every tag we're limiting by
+              selectedTags.every(
+                (tag) => { return (
+                  // Ensure that the task includes said tag
+                  task.tags.some(
+                    (task_tag) => { return (
+                      task_tag.title == tag
+                    )}
+                  )
+                )}
+              )
+            )
+          // Otherwise match if it has ANY tag that matches
+          } else {
+            return (
+              selectedTags.some(
+                (tag) => { return (
+                  task.tags.some(
+                    (task_tag) => { return (
+                      task_tag.title == tag
+                    )}
+                  )
+                )}
+              )
+            )
+          }
+        }
+      )
+    }
+  },
+
+  nextUp: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
+    return getters.tasks(store, selectedList, selectedTags, allTagsFilter).
     filter(
       (task) => {
         return task.completed_at == null
@@ -44,10 +94,10 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     )
   },
 
-  today: (state, getters) => (store, selectedList) => {
+  today: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
     const endOfDay = DateTime.local().endOf('day').toMillis();
 
-    return getters.nextUp(store, selectedList).filter(
+    return getters.nextUp(store, selectedList, selectedTags, allTagsFilter).filter(
       (task) => { return (
         task.review_at == null ||
         DateTime.fromISO(task.review_at).toMillis() <= endOfDay
@@ -55,12 +105,12 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     )
   },
 
-  tomorrow: (state, getters) => (store, selectedList) => {
+  tomorrow: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
     const tomorrow = DateTime.local().plus({ days: 1 });
     const startOfTomorrow = tomorrow.startOf('day').toMillis();
     const endOfTomorrow = tomorrow.endOf('day').toMillis();
 
-    return getters.nextUp(store, selectedList).filter(
+    return getters.nextUp(store, selectedList, selectedTags, allTagsFilter).filter(
       (task) => {
         if(task.review_at != null) {
           return (
@@ -74,11 +124,11 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     )
   },
 
-  upcoming: (state, getters) => (store, selectedList) => {
+  upcoming: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
     const startOfUpcoming = DateTime.local().plus({ days: 2 }).startOf('day').toMillis();
     const endOfUpcoming = DateTime.local().plus({ days: 31 }).endOf('day').toMillis();
 
-    return getters.nextUp(store, selectedList).filter(
+    return getters.nextUp(store, selectedList, selectedTags, allTagsFilter).filter(
       (task) => {
         if(task.review_at != null) {
           return (
@@ -92,10 +142,10 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     );
   },
 
-  someday: (state, getters) => (store, selectedList) => {
+  someday: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
     const endOfUpcoming = DateTime.local().plus({ days: 31 }).endOf('day').toMillis();
 
-    return getters.nextUp(store, selectedList).filter(
+    return getters.nextUp(store, selectedList, selectedTags, allTagsFilter).filter(
       (task) => {
         if(task.review_at != null) {
           return (

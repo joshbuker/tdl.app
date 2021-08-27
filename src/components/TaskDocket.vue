@@ -25,7 +25,7 @@
                 :key="tag.id"
                 icon="local_offer"
                 :style="'color: ' + textColor(tag.color) + '; background-color: ' + tag.color"
-                @click.stop="true"
+                @click.stop="toggleTag(tag.title)"
               >
                 {{ tag.title }}
               </q-chip>
@@ -54,6 +54,7 @@ import {
   Ref,
 } from 'vue';
 import { useQuasar } from 'quasar'
+import { useStore } from '../store'
 import { Todo, Meta } from './models';
 import CurrentTaskDialog from 'components/CurrentTaskDialog.vue'
 
@@ -76,6 +77,7 @@ export default defineComponent({
   },
   setup(props) {
     const $q = useQuasar()
+    const $store = useStore()
 
     function openTask(task) {
       $q.dialog({
@@ -85,6 +87,10 @@ export default defineComponent({
           task: task
         }
       })
+    }
+
+    function toggleTag(title) {
+      $store.commit('settings/toggleSelectedTag', title);
     }
 
     function textColor(backgroundColor) {
@@ -107,7 +113,7 @@ export default defineComponent({
       }
     }
 
-    return { openTask, textColor, ...useDisplayTodo(toRef(props, 'todos')) };
+    return { openTask, toggleTag, textColor, ...useDisplayTodo(toRef(props, 'todos')) };
   },
 });
 </script>
