@@ -4,25 +4,25 @@
     <div class="col-grow">
       <task-docket
         title="Today"
-        :todos="today"
+        :tasks="today"
       ></task-docket>
     </div>
     <div class="col-grow">
       <task-docket
         title="Tomorrow"
-        :todos="tomorrow"
+        :tasks="tomorrow"
       ></task-docket>
     </div>
     <div class="col-grow">
       <task-docket
         title="Upcoming"
-        :todos="upcoming"
+        :tasks="upcoming"
       ></task-docket>
     </div>
     <div class="col-grow">
       <task-docket
         title="Someday"
-        :todos="someday"
+        :tasks="someday"
       ></task-docket>
     </div>
   </q-page>

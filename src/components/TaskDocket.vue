@@ -7,9 +7,13 @@
 
     <q-card-section>
       <q-list>
-        <q-item clickable v-ripple v-for="todo in todos" :key="todo.id" @click="openTask(todo)">
+        <q-item clickable v-ripple v-for="task in tasks" :key="task.id" @click="openTask(task)">
+          <q-item-section avatar v-if="false">
+            <q-checkbox v-model="selectedTasks" :val="task.id" />
+          </q-item-section>
+
           <q-item-section>
-            {{ todo.title }}
+            {{ task.title }}
             <div>
               <!-- <q-chip
                 clickable
@@ -17,11 +21,11 @@
                 color="primary"
                 @click.stop="true"
               >
-                {{ todo.list.title }}
+                {{ task.list.title }}
               </q-chip> -->
               <q-chip
                 clickable
-                v-for="tag in todo.tags"
+                v-for="tag in task.tags"
                 :key="tag.id"
                 icon="local_offer"
                 :style="'color: ' + textColor(tag.color) + '; background-color: ' + tag.color"
@@ -32,7 +36,7 @@
             </div>
           </q-item-section>
         </q-item>
-        <template v-if="todos.length == 0">
+        <template v-if="tasks.length == 0">
           <q-item clickable v-ripple>
             <q-item-section>
               <strong>Nothing yet!</strong>
@@ -47,21 +51,13 @@
 <script lang="ts">
 import {
   defineComponent,
-  PropType,
   computed,
   ref,
-  toRef,
-  Ref,
 } from 'vue';
 import { useQuasar } from 'quasar'
 import { useStore } from '../store'
 import { Todo, Meta } from './models';
 import CurrentTaskDialog from 'components/CurrentTaskDialog.vue'
-
-function useDisplayTodo(todos: Ref<Todo[]>) {
-  const todoCount = computed(() => todos.value.length);
-  return { todoCount };
-}
 
 export default defineComponent({
   name: 'TaskDocket',
@@ -70,12 +66,12 @@ export default defineComponent({
       type: String,
       required: true
     },
-    todos: {
-      type: Array as PropType<Todo[]>,
+    tasks: {
+      type: Array,
       default: () => []
     }
   },
-  setup(props) {
+  setup() {
     const $q = useQuasar()
     const $store = useStore()
 
@@ -88,6 +84,8 @@ export default defineComponent({
         }
       })
     }
+
+    const selectedTasks = ref([])
 
     function toggleTag(title) {
       $store.commit('settings/toggleSelectedTag', title);
@@ -113,7 +111,7 @@ export default defineComponent({
       }
     }
 
-    return { openTask, toggleTag, textColor, ...useDisplayTodo(toRef(props, 'todos')) };
+    return { openTask, selectedTasks, toggleTag, textColor };
   },
 });
 </script>
