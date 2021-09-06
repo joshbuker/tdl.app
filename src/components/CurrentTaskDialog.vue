@@ -4,8 +4,13 @@
     <q-card class="q-dialog-plugin">
       <q-card-section class="bg-primary text-white text-center">
         <div class="text-h6">Task Details</div>
-        <q-btn class="q-ma-sm" size="md" color="positive" label="Mark Complete" />
-        <q-btn class="q-ma-sm" size="md" color="negative" label="Delete" />
+        <template v-if="currentTask.completed_at == null">
+          <q-btn class="q-ma-sm" size="md" color="positive" label="Mark Complete" @click="markTaskComplete(currentTask)" />
+        </template>
+        <template v-else>
+          <q-btn class="q-ma-sm" size="md" color="primary" label="Mark Incomplete" @click="markTaskIncomplete(currentTask)" />
+        </template>
+        <q-btn class="q-ma-sm" size="md" color="negative" label="Delete" @click="deleteTask(currentTask)" />
         <q-btn class="q-ma-sm" size="md" color="grey" label="Close" @click="onCancelClick" />
       </q-card-section>
 
@@ -21,6 +26,7 @@
               filled
               label="Task title"
               :placeholder="currentTask.title"
+              @keyup.enter="updateTaskTitle"
               clearable
             />
             <br>
@@ -29,6 +35,8 @@
               filled
               use-chips
               multiple
+              clearable
+              @update:model-value="updateTaskTags"
               :options="tags"
               option-value="id"
               option-label="title"
@@ -38,10 +46,20 @@
             <q-select
               v-model="selectedList"
               filled
+              @update:model-value="updateTaskList"
               :options="lists"
               option-value="id"
               option-label="title"
               label="List"
+            />
+            <br>
+            <q-input
+              v-model="editTaskNotes"
+              filled
+              autogrow
+              @update:model-value="updateTaskNotes"
+              debounce="1000"
+              label="Notes"
             />
           </div>
           <div class="col">
@@ -100,6 +118,7 @@ import {
 import List from '../models/list'
 import Task from '../models/task'
 import Tag from '../models/tag'
+import { useQuasar } from 'quasar'
 import { useStore } from '../store'
 
 export default {
@@ -126,19 +145,19 @@ export default {
     //                    example: onDialogOK({ /*.../* }) - with payload
     // onDialogCancel - Function to call to settle dialog with "cancel" outcome
 
+    const $q = useQuasar()
     const $store = useStore()
 
     const currentTask = ref(props.task)
     const editTaskTitle = ref(currentTask.value.title)
+    const editTaskNotes = ref(currentTask.value.notes)
     const selectedList = ref({ id: currentTask.value.list.id, title: currentTask.value.list.title })
     let temp = currentTask.value.tags.map(
       (tag) => {
         let temp = { id: tag.id, title: tag.title }
-        console.log(temp)
         return temp
       }
     )
-    console.log(temp)
     const selectedTags = ref([])
     selectedTags.value = temp
 
@@ -153,12 +172,185 @@ export default {
     function setCurrentTask(newTask) {
       currentTask.value = $store.$repo(Task).with('list').with('prereqs').with('postreqs').with('tags').find(newTask.id)
       editTaskTitle.value = currentTask.value.title
+      editTaskNotes.value = currentTask.value.notes
       selectedList.value = { id: currentTask.value.list.id, title: currentTask.value.list.title }
       selectedTags.value = currentTask.value.tags.map(
         (tag) => {
           let temp = { id: tag.id, title: tag.title }
-          console.log(temp)
           return temp
+        }
+      )
+    }
+
+    function markTaskComplete(task) {
+      $store.dispatch('tasks/markComplete', { id: task.id }).
+      then(
+        (response) => {
+          onDialogOK()
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to mark task as complete: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
+    function markTaskIncomplete(task) {
+      $store.dispatch('tasks/markIncomplete', { id: task.id }).
+      then(
+        (response) => {
+          onDialogOK()
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to mark task as incomplete: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
+    function deleteTask(task) {
+      $store.dispatch('tasks/delete', { id: task.id }).
+      then(
+        (response) => {
+          onDialogOK()
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to delete task: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
+    function updateTaskTitle() {
+      $store.dispatch('tasks/update', {
+        id: currentTask.value.id,
+        title: editTaskTitle.value
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to update task title: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
+    function updateTaskTags() {
+      $store.dispatch('tasks/updateTags', {
+        id: currentTask.value.id,
+        tags: selectedTags.value
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to update task tags: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
+    function updateTaskList() {
+      $store.dispatch('tasks/updateList', {
+        id: currentTask.value.id,
+        list_id: selectedList.value.id
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to update task list: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
+    function updateTaskNotes() {
+      $store.dispatch('tasks/update', {
+        id: currentTask.value.id,
+        notes: editTaskNotes.value
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to update task notes: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
         }
       )
     }
@@ -167,12 +359,20 @@ export default {
       // Custom stuff
       currentTask,
       editTaskTitle,
+      editTaskNotes,
       selectedList,
       selectedTags,
       lists,
       tags,
       //
       setCurrentTask,
+      markTaskComplete,
+      markTaskIncomplete,
+      updateTaskTitle,
+      updateTaskTags,
+      updateTaskList,
+      updateTaskNotes,
+      deleteTask,
 
       // This is REQUIRED;
       // Need to inject these (from useDialogPluginComponent() call)
