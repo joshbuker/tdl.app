@@ -37,6 +37,10 @@ class Task < ApplicationRecord
   #       logic live exclusively within the permission policies?
   validate :list_and_task_owner_match
 
+  def completed?
+    completed_at.present?
+  end
+
   # TODO: Use meta programming to DRY up the ISO_8601 conversion?
 
   # rubocop:disable Naming/VariableNumber

@@ -75,6 +75,66 @@ class TasksController < ApplicationController
   end
   # rubocop:enable Metrics
 
+  def mark_complete
+    authorize @task
+
+    if @task.completed?
+      render json: { error: 'Already marked as complete' },
+        status: :unprocessable_entity
+      return
+    end
+
+    @task.update!(completed_at: Time.current)
+
+    render :show
+  end
+
+  def mark_incomplete
+    authorize @task
+
+    unless @task.completed?
+      render json: { error: 'Already marked as incomplete' },
+        status: :unprocessable_entity
+      return
+    end
+
+    @task.update!(completed_at: nil)
+
+    render :show
+  end
+
+  def update_tags
+    authorize @task
+
+    allowed_tags = policy_scope(Tag)
+    task_tags = []
+
+    unless params[:tags].nil?
+      params[:tags].each do |potential_tag|
+        tag = allowed_tags.find { |t| t.id == potential_tag[:id] }
+        raise Pundit::NotAuthorizedError if tag.nil?
+        task_tags << tag
+      end
+    end
+
+    @task.tags = task_tags
+    @task.save!
+
+    render :show
+  end
+
+  def update_list
+    authorize @task
+
+    list = policy_scope(List).find(params[:list_id])
+    raise Pundit::NotAuthorizedError if list.nil?
+
+    @task.list = list
+    @task.save!
+
+    render :show
+  end
+
   private
 
   def set_task
@@ -83,6 +143,6 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :order, :list_id)
+    params.require(:task).permit(:title, :order, :list_id, :notes)
   end
 end

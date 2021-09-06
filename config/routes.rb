@@ -25,7 +25,19 @@ Rails.application.routes.draw do
 
     resources :lists
     resources :tags
-    resources :tasks
+
+    resources :tasks do
+      patch 'mark-complete' => 'tasks#mark_complete'
+      patch 'mark-incomplete' => 'tasks#mark_incomplete'
+      patch 'tags' => 'tasks#update_tags'
+      patch 'list' => 'tasks#update_list'
+    end
+
     resources :rules
+
+    get '*unmatched_route', to: 'application#not_found'
+    post '*unmatched_route', to: 'application#not_found'
+    patch '*unmatched_route', to: 'application#not_found'
+    delete '*unmatched_route', to: 'application#not_found'
   end
 end

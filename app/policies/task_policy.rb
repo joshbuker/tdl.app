@@ -10,23 +10,39 @@ class TaskPolicy < ApplicationPolicy
   end
 
   def show?
-    record_user_matches? && list_user_matches?
+    matching_records?
   end
 
   def create?
-    record_user_matches? && list_user_matches?
+    matching_records?
   end
 
   def update?
-    record_user_matches? && list_user_matches?
+    matching_records?
   end
 
   def destroy?
-    record_user_matches? && list_user_matches?
+    matching_records?
+  end
+
+  def mark_complete?
+    update?
+  end
+
+  def mark_incomplete?
+    update?
   end
 
   def sync_ordering?
-    user.present?
+    index?
+  end
+
+  def update_tags?
+    update?
+  end
+
+  def update_list?
+    update?
   end
 
   def list_user_matches?
@@ -34,5 +50,9 @@ class TaskPolicy < ApplicationPolicy
     return false if record.list.blank?
 
     record.list.user == user
+  end
+
+  def matching_records?
+    record_user_matches? && list_user_matches?
   end
 end
