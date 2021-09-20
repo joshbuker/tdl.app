@@ -53,6 +53,12 @@
               label="List"
             />
             <br>
+            <q-datetime-input
+              v-model="editTaskReviewAt"
+              @update:model-value="updateTaskReviewAt"
+              label="Review at"
+            />
+            <br>
             <q-input
               v-model="editTaskNotes"
               filled
@@ -107,6 +113,7 @@
 <script>
 import { useDialogPluginComponent } from 'quasar'
 import { TaskModel } from 'components/models';
+import QDatetimeInput from 'components/QDatetimeInput.vue';
 import {
   defineComponent,
   PropType,
@@ -122,6 +129,8 @@ import { useQuasar } from 'quasar'
 import { useStore } from '../store'
 
 export default {
+  components: { QDatetimeInput },
+
   props: {
     task: {
       type: TaskModel,
@@ -151,6 +160,7 @@ export default {
     const currentTask = ref(props.task)
     const editTaskTitle = ref(currentTask.value.title)
     const editTaskNotes = ref(currentTask.value.notes)
+    const editTaskReviewAt = ref(currentTask.value.review_at)
     const selectedList = ref({ id: currentTask.value.list.id, title: currentTask.value.list.title })
     let temp = currentTask.value.tags.map(
       (tag) => {
@@ -173,6 +183,7 @@ export default {
       currentTask.value = $store.$repo(Task).with('list').with('prereqs').with('postreqs').with('tags').find(newTask.id)
       editTaskTitle.value = currentTask.value.title
       editTaskNotes.value = currentTask.value.notes
+      editTaskReviewAt.value = currentTask.value.review_at
       selectedList.value = { id: currentTask.value.list.id, title: currentTask.value.list.title }
       selectedTags.value = currentTask.value.tags.map(
         (tag) => {
@@ -355,11 +366,38 @@ export default {
       )
     }
 
+    function updateTaskReviewAt() {
+      $store.dispatch('tasks/update', {
+        id: currentTask.value.id,
+        review_at: editTaskReviewAt.value
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to update task review at: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
     return {
       // Custom stuff
       currentTask,
       editTaskTitle,
       editTaskNotes,
+      editTaskReviewAt,
       selectedList,
       selectedTags,
       lists,
@@ -372,6 +410,7 @@ export default {
       updateTaskTags,
       updateTaskList,
       updateTaskNotes,
+      updateTaskReviewAt,
       deleteTask,
 
       // This is REQUIRED;

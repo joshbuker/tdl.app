@@ -94,7 +94,8 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         api.patch(`/tasks/${options.id}`,
           {
             title: options.title,
-            notes: options.notes
+            notes: options.notes,
+            review_at: options.review_at
           },
           {
             headers: {
