@@ -143,6 +143,12 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :order, :list_id, :notes)
+    params.require(:task).permit(
+      :title,
+      :order,
+      :list_id,
+      :notes,
+      :review_at
+    )
   end
 end
