@@ -148,7 +148,10 @@ class TasksController < ApplicationController
       :order,
       :list_id,
       :notes,
-      :review_at
+      :review_at,
+      :remind_me_at,
+      :prioritize_at,
+      :deadline_at
     )
   end
 end
