@@ -95,7 +95,10 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
           {
             title: options.title,
             notes: options.notes,
-            review_at: options.review_at
+            review_at: options.review_at,
+            remind_me_at: options.remind_me_at,
+            prioritize_at: options.prioritize_at,
+            deadline_at: options.deadline_at
           },
           {
             headers: {

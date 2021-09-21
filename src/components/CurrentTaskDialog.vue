@@ -59,6 +59,24 @@
               label="Review at"
             />
             <br>
+            <q-datetime-input
+              v-model="editTaskRemindMeAt"
+              @update:model-value="updateTaskRemindMeAt"
+              label="Remind me at"
+            />
+            <br>
+            <q-datetime-input
+              v-model="editTaskPrioritizeAt"
+              @update:model-value="updateTaskPrioritizeAt"
+              label="Prioritize at"
+            />
+            <br>
+            <q-datetime-input
+              v-model="editTaskDeadlineAt"
+              @update:model-value="updateTaskDeadlineAt"
+              label="Deadline at"
+            />
+            <br>
             <q-input
               v-model="editTaskNotes"
               filled
@@ -69,8 +87,15 @@
             />
           </div>
           <div class="col">
-            <div class="text-h5">Prerequisites</div>
-            <q-list>
+            <div class="row">
+              <div class="col">
+                <div class="text-h5">Prerequisites</div>
+              </div>
+              <div class="col text-right">
+                <q-btn color="primary" icon="fas fa-link" label="Add Prerequisite" />
+              </div>
+            </div>
+            <q-list class="q-my-md">
               <q-item clickable v-ripple v-if="!currentTask.prereqs.length">
                 <q-item-section>No prerequisites</q-item-section>
               </q-item>
@@ -84,10 +109,21 @@
                 <q-item-section>
                   {{ pre.title }}
                 </q-item-section>
+
+                <q-item-section avatar>
+                  <q-btn round color="negative" icon="fas fa-unlink" @click.stop="true" />
+                </q-item-section>
               </q-item>
             </q-list>
-            <div class="text-h5">Postrequisites</div>
-            <q-list>
+            <div class="row">
+              <div class="col">
+                <div class="text-h5">Postrequisites</div>
+              </div>
+              <div class="col text-right">
+                <q-btn color="primary" icon="fas fa-link" label="Add Postrequisite" />
+              </div>
+            </div>
+            <q-list class="q-my-md">
               <q-item clickable v-ripple v-if="!currentTask.postreqs.length">
                 <q-item-section>No postrequisites</q-item-section>
               </q-item>
@@ -100,6 +136,10 @@
               >
                 <q-item-section>
                   {{ post.title }}
+                </q-item-section>
+
+                <q-item-section avatar>
+                  <q-btn round color="negative" icon="fas fa-unlink" @click.stop="true" />
                 </q-item-section>
               </q-item>
             </q-list>
@@ -161,6 +201,9 @@ export default {
     const editTaskTitle = ref(currentTask.value.title)
     const editTaskNotes = ref(currentTask.value.notes)
     const editTaskReviewAt = ref(currentTask.value.review_at)
+    const editTaskRemindMeAt = ref(currentTask.value.remind_me_at)
+    const editTaskPrioritizeAt = ref(currentTask.value.prioritize_at)
+    const editTaskDeadlineAt = ref(currentTask.value.deadline_at)
     const selectedList = ref({ id: currentTask.value.list.id, title: currentTask.value.list.title })
     let temp = currentTask.value.tags.map(
       (tag) => {
@@ -184,6 +227,9 @@ export default {
       editTaskTitle.value = currentTask.value.title
       editTaskNotes.value = currentTask.value.notes
       editTaskReviewAt.value = currentTask.value.review_at
+      editTaskRemindMeAt.value = currentTask.value.remind_me_at
+      editTaskPrioritizeAt.value = currentTask.value.prioritize_at
+      editTaskDeadlineAt.value = currentTask.value.deadline_at
       selectedList.value = { id: currentTask.value.list.id, title: currentTask.value.list.title }
       selectedTags.value = currentTask.value.tags.map(
         (tag) => {
@@ -392,12 +438,93 @@ export default {
       )
     }
 
+    function updateTaskRemindMeAt() {
+      $store.dispatch('tasks/update', {
+        id: currentTask.value.id,
+        remind_me_at: editTaskRemindMeAt.value
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to update task remind me at: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
+    function updateTaskPrioritizeAt() {
+      $store.dispatch('tasks/update', {
+        id: currentTask.value.id,
+        prioritize_at: editTaskPrioritizeAt.value
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to update task prioritize at: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
+    function updateTaskDeadlineAt() {
+      $store.dispatch('tasks/update', {
+        id: currentTask.value.id,
+        deadline_at: editTaskDeadlineAt.value
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to update task deadline at: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
     return {
       // Custom stuff
       currentTask,
       editTaskTitle,
       editTaskNotes,
       editTaskReviewAt,
+      editTaskRemindMeAt,
+      editTaskPrioritizeAt,
+      editTaskDeadlineAt,
       selectedList,
       selectedTags,
       lists,
@@ -411,6 +538,9 @@ export default {
       updateTaskList,
       updateTaskNotes,
       updateTaskReviewAt,
+      updateTaskRemindMeAt,
+      updateTaskPrioritizeAt,
+      updateTaskDeadlineAt,
       deleteTask,
 
       // This is REQUIRED;
