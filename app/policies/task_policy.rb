@@ -25,16 +25,20 @@ class TaskPolicy < ApplicationPolicy
     matching_records?
   end
 
+  def bulk?
+    index?
+  end
+
+  def sync_ordering?
+    index?
+  end
+
   def mark_complete?
     update?
   end
 
   def mark_incomplete?
     update?
-  end
-
-  def sync_ordering?
-    index?
   end
 
   def update_tags?

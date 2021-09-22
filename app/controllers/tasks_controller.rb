@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
-  before_action :set_task, except: [:index, :create, :sync_ordering]
+  before_action :set_task, except: [:index, :create, :sync_ordering, :bulk]
 
   def index
     authorize Task
@@ -133,6 +133,39 @@ class TasksController < ApplicationController
     @task.save!
 
     render :show
+  end
+
+  def bulk
+    authorize Task
+
+    tasks = policy_scope(Task)
+
+    # TODO: Find the best way to test these edge cases / move them into the
+    #       model so it can be unit tested.
+    # :nocov:
+    raise ActionController::ParameterMissing, :task_ids if params[:task_ids].blank?
+
+    unless params[:task_ids].is_a?(Array)
+      raise ArgumentError, 'Tasks must be an array'
+    end
+
+    # :nocov:
+
+    Task.transaction do
+      params[:task_ids].each do |task_id|
+        task = tasks.find { |l| l.id == task_id }
+        raise Pundit::NotAuthorizedError if task.nil?
+
+        task.update!(task_params)
+      end
+    end
+
+    # This mildly spikes my danger senses...Double check that this is sane
+    @tasks = policy_scope(Task).where(id: params[:task_ids])
+
+    render :index
+  rescue ArgumentError => e
+    not_processable(e)
   end
 
   private

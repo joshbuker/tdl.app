@@ -8,6 +8,8 @@ Rails.application.routes.draw do
     patch 'lists/sync-ordering' => 'lists#sync_ordering'
     patch 'tags/sync-ordering' => 'tags#sync_ordering'
     patch 'tasks/sync-ordering' => 'tasks#sync_ordering'
+    # Bulk updates
+    patch 'tasks/bulk' => 'tasks#bulk'
 
     # Server health check
     get 'health' => 'health#health'
