@@ -1,29 +1,40 @@
 <template>
-  <!-- For full height cards: <q-page class="row items-stretch justify-evenly q-col-gutter-md q-ma-md"> -->
-  <q-page class="row items-start justify-evenly q-col-gutter-md q-ma-md">
-    <div class="col-grow">
-      <task-docket
-        title="Today"
-        :tasks="today"
-      ></task-docket>
+  <q-page>
+    <div class="row items-start justify-center text-right q-col-gutter-md q-ma-md">
+      <div class="col-grow">
+        <q-btn color="primary" icon="fas fa-check-double" label="Multi select" @click="multiSelectEnabled = !multiSelectEnabled" />
+      </div>
     </div>
-    <div class="col-grow">
-      <task-docket
-        title="Tomorrow"
-        :tasks="tomorrow"
-      ></task-docket>
-    </div>
-    <div class="col-grow">
-      <task-docket
-        title="Upcoming"
-        :tasks="upcoming"
-      ></task-docket>
-    </div>
-    <div class="col-grow">
-      <task-docket
-        title="Someday"
-        :tasks="someday"
-      ></task-docket>
+    <!-- For full height cards: <q-page class="row items-stretch justify-evenly q-col-gutter-md q-ma-md"> -->
+    <div class="row items-start justify-evenly q-col-gutter-md q-ma-md">
+      <div class="col-grow">
+        <task-docket
+          title="Today"
+          :tasks="today"
+          :multi-select-enabled="multiSelectEnabled"
+        ></task-docket>
+      </div>
+      <div class="col-grow">
+        <task-docket
+          title="Tomorrow"
+          :tasks="tomorrow"
+          :multi-select-enabled="multiSelectEnabled"
+        ></task-docket>
+      </div>
+      <div class="col-grow">
+        <task-docket
+          title="Upcoming"
+          :tasks="upcoming"
+          :multi-select-enabled="multiSelectEnabled"
+        ></task-docket>
+      </div>
+      <div class="col-grow">
+        <task-docket
+          title="Someday"
+          :tasks="someday"
+          :multi-select-enabled="multiSelectEnabled"
+        ></task-docket>
+      </div>
     </div>
   </q-page>
 </template>
@@ -99,7 +110,9 @@ export default defineComponent({
       get: () => $store.getters['tasks/someday']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
     })
 
-    return { sessionToken, today, tomorrow, upcoming, someday };
+    const multiSelectEnabled = ref(false)
+
+    return { sessionToken, today, tomorrow, upcoming, someday, multiSelectEnabled };
   }
 });
 </script>

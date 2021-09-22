@@ -27,6 +27,17 @@ const mutation: MutationTree<TasksStateInterface> = {
     state.tasks = tasks
   },
 
+  updateTasks(state, tasks: Array) {
+    for (const task of tasks) {
+      const index = state.tasks.findIndex(
+        (element) => { return (element.id == task.id) }
+      )
+      state.tasks.splice(index, 1, task)
+    }
+    // Resort because title change might affect ordering
+    sortTasks(state)
+  },
+
   updateTask(state, task: Task) {
     const index = state.tasks.findIndex(
       (element) => { return (element.id == task.id) }

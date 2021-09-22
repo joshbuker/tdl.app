@@ -88,6 +88,34 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
     )
   },
 
+  async bulkUpdate({ commit, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.patch('/tasks/bulk',
+          {
+            task_ids: options.task_ids,
+            review_at: options.review_at
+          },
+          {
+            headers: {
+              Authorization: rootGetters['authentication/bearerToken']
+            }
+          }
+        ).
+        then(
+          (response) => {
+            commit('updateTasks', response.data)
+            this.$repo(Task).save(response.data)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
   async update({ commit, rootGetters }, options) {
     return new Promise(
       (resolve, reject) => {

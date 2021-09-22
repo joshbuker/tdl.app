@@ -2,27 +2,48 @@
   <!-- For full height cards: <q-card class="full-height"> -->
   <q-card class="full-height">
     <q-card-section class="bg-primary text-white">
-      <div class="text-h6">{{ title }}</div>
+      <div class="row">
+        <div class="col">
+          <div class="text-h6">{{ title }}</div>
+        </div>
+        <div class="col text-right" v-if="multiSelectEnabled && tasks.length !== 0">
+          <q-checkbox v-model="allTasksSelected" color="secondary" label="All tasks" />
+          <q-btn flat round class="q-ml-sm" color="white" icon="more_vert" :disable="allTasksSelected === false">
+            <q-menu>
+              <q-list style="min-width: 100px;">
+                <q-item clickable v-close-popup @click="bulkEditReviewAt">
+                  <q-item-section>Edit review at</q-item-section>
+                </q-item>
+                <q-item clickable v-close-popup>
+                  <q-item-section>Edit tags</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </div>
+      </div>
     </q-card-section>
 
     <q-card-section>
       <q-list>
         <q-item clickable v-ripple v-for="task in tasks" :key="task.id" @click="openTask(task)">
-          <q-item-section avatar v-if="false">
+          <q-item-section avatar v-if="multiSelectEnabled">
             <q-checkbox v-model="selectedTasks" :val="task.id" />
           </q-item-section>
 
           <q-item-section>
             {{ task.title }}
             <div>
-              <!-- <q-chip
+              <!-- Display the list as a chip
+              <q-chip
                 clickable
                 icon="list"
                 color="primary"
                 @click.stop="true"
               >
                 {{ task.list.title }}
-              </q-chip> -->
+              </q-chip>
+              -->
               <q-chip
                 clickable
                 v-for="tag in task.tags"
@@ -52,12 +73,14 @@
 import {
   defineComponent,
   computed,
+  watch,
   ref,
 } from 'vue';
 import { useQuasar } from 'quasar'
 import { useStore } from '../store'
 import { Todo, Meta } from './models';
 import CurrentTaskDialog from 'components/CurrentTaskDialog.vue'
+import QDatetimeDialog from 'components/QDatetimeDialog.vue'
 
 export default defineComponent({
   name: 'TaskDocket',
@@ -69,9 +92,13 @@ export default defineComponent({
     tasks: {
       type: Array,
       default: () => []
+    },
+    multiSelectEnabled: {
+      type: Boolean,
+      default: false
     }
   },
-  setup() {
+  setup(props) {
     const $q = useQuasar()
     const $store = useStore()
 
@@ -85,7 +112,77 @@ export default defineComponent({
       })
     }
 
+    function bulkEditReviewAt() {
+      $q.dialog({
+        component: QDatetimeDialog,
+
+        componentProps: {
+          datetime: '',
+          label: 'Bulk edit review at'
+        }
+      }).onOk(
+        (payload) => {
+          $store.dispatch('tasks/bulkUpdate', {
+            task_ids: selectedTasks.value,
+            review_at: payload.datetime
+          }).
+          then(
+            (response) => {
+              // Should we do anything? Notification?
+            },
+            (error) => {
+              // TODO: This is reused, DRY it up
+              let errorMessage = ''
+              if (typeof error.response !== 'undefined') {
+                errorMessage = error.response.data.error
+              } else {
+                errorMessage = `Failed to bulk update review at: ${error.message}`
+              }
+              $q.notify({
+                color: 'negative',
+                position: 'top',
+                message: errorMessage,
+                icon: 'report_problem'
+              })
+            }
+          )
+        }
+      )
+    }
     const selectedTasks = ref([])
+
+    const allTasksSelected = computed({
+      get: () => {
+        if (props.tasks.length === 0) {
+          return false
+        }
+        let hasAll = props.tasks.every(
+          (task) => {
+            return selectedTasks.value.includes(task.id)
+          }
+        )
+        let hasSome = props.tasks.some(
+          (task) => {
+            return selectedTasks.value.includes(task.id)
+          }
+        )
+
+        if (hasAll) {
+          return true
+        } else if (hasSome) {
+          return null
+        } else {
+          return false
+        }
+      },
+      set: (value) => {
+        if (value) {
+          selectedTasks.value = props.tasks.map((task) => { return task.id })
+        } else {
+          selectedTasks.value = []
+        }
+      }
+    })
 
     function toggleTag(title) {
       $store.commit('settings/toggleSelectedTag', title);
@@ -111,7 +208,21 @@ export default defineComponent({
       }
     }
 
-    return { openTask, selectedTasks, toggleTag, textColor };
+    watch(
+      () => props.tasks,
+      (newValue) => {
+        selectedTasks.value = []
+      }
+    )
+
+    return {
+      openTask,
+      bulkEditReviewAt,
+      selectedTasks,
+      allTasksSelected,
+      toggleTag,
+      textColor
+    };
   },
 });
 </script>

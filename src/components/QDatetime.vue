@@ -34,6 +34,9 @@
 
     <q-separator />
 
+    <div style="float: left;" class="q-ma-md">
+      {{ label }}
+    </div>
     <q-card-actions align="right">
       <template v-if="activeTab == 'date'">
         <q-btn flat @click="$emit('cancel')">Cancel</q-btn>
@@ -70,6 +73,10 @@ const TIME_FORMAT = 'HH:mm'
 export default {
   props: {
     modelValue: {
+      type: String,
+      default: ''
+    },
+    label: {
       type: String,
       default: ''
     }

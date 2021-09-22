@@ -3,7 +3,7 @@
     <template v-slot:append>
       <q-icon name="access_time" class="cursor-pointer">
         <q-popup-proxy v-model="showPicker" transition-show="scale" transition-hide="scale">
-          <q-datetime v-model="datetime" @cancel="onCancel" @update:model-value="onSave" />
+          <q-datetime v-model="datetime" :label="label" @cancel="onCancel" @update:model-value="onSave" />
         </q-popup-proxy>
       </q-icon>
     </template>
