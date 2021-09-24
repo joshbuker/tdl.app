@@ -14,7 +14,9 @@ declare module '@vue/runtime-core' {
 // "export default () => {}" function below (which runs individually
 // for each client)
 // const api = axios.create({ baseURL: 'https://api.tdl.app' });
-const api = axios.create({ baseURL: 'http://localhost:3000' })
+// const api = axios.create({ baseURL: 'http://localhost:3000' })
+// const api = axios.create({ baseURL: 'http://192.168.7.74:3000' })
+const api = axios.create({ baseURL: 'http://10.0.2.2:3000' })
 
 // Technically we don't need to tell it about the store state interface, but
 // knowing that this is possible is very useful in itself.

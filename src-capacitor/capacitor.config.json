@@ -1,0 +1,7 @@
+{
+  "appId": "app.tdl",
+  "appName": "TDL App",
+  "bundledWebRuntime": false,
+  "npmClient": "yarn",
+  "webDir": "www"
+}

@@ -18,7 +18,7 @@
 
       <q-card-section>
         <div class="row q-gutter-md">
-          <div class="col">
+          <div class="col-md-6 col-sm-12">
             <div class="text-h4 text-primary">{{ currentTask.title }}</div>
             <br>
             <q-input
@@ -86,7 +86,7 @@
               label="Notes"
             />
           </div>
-          <div class="col">
+          <div class="col-md-6 col-sm-12">
             <div class="row">
               <div class="col">
                 <div class="text-h5">Prerequisites</div>
