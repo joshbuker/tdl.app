@@ -7,7 +7,7 @@
             <q-icon name="fas fa-terminal" />
           </q-item-section>
           <q-item-section>
-            <div class="text-h5">TDL App 2</div>
+            <div class="text-h5">TDL App</div>
           </q-item-section>
         </q-item>
       </q-card-section>

@@ -47,6 +47,17 @@ import { computed, defineComponent, ref } from 'vue';
 import { useStore } from '../store'
 import Task from '../models/task'
 
+
+let LocalNotifications = null
+
+if (process.env.MODE === 'capacitor') {
+  import('@capacitor/core').then(
+    ({ Plugins }) => {
+      LocalNotifications = Plugins.LocalNotifications
+    }
+  )
+}
+
 export default defineComponent({
   name: 'PageIndex',
   components: { TaskDocket },
@@ -65,6 +76,27 @@ export default defineComponent({
   setup() {
     // const $q = useQuasar()
     const $store = useStore()
+
+    function beepBoopIn5() {
+      if (process.env.MODE === 'capacitor') {
+        LocalNotifications.schedule({
+          notifications: [
+            {
+              title: 'Title',
+              body: 'Body',
+              id: 1,
+              schedule: { at: new Date(Date.now() + 1000 * 5) },
+              sound: null,
+              attachments: null,
+              actionTypeId: '',
+              extra: null,
+            },
+          ],
+        });
+      } else {
+        console.log('No beep boop on web')
+      }
+    }
 
     const sessionToken = computed({
       get: () => $store.state.authentication.sessionToken,
@@ -112,7 +144,7 @@ export default defineComponent({
 
     const multiSelectEnabled = ref(false)
 
-    return { sessionToken, today, tomorrow, upcoming, someday, multiSelectEnabled };
+    return { beepBoopIn5, sessionToken, today, tomorrow, upcoming, someday, multiSelectEnabled };
   }
 });
 </script>
