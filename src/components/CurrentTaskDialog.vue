@@ -17,8 +17,8 @@
       <q-separator />
 
       <q-card-section>
-        <div class="row q-gutter-md">
-          <div class="col-md-6 col-sm-12">
+        <div class="row q-gutter-md q-pa-sm">
+          <div class="col-12 col-md">
             <div class="text-h4 text-primary">{{ currentTask.title }}</div>
             <br>
             <q-input
@@ -86,7 +86,7 @@
               label="Notes"
             />
           </div>
-          <div class="col-md-6 col-sm-12">
+          <div class="col-12 col-md">
             <div class="row">
               <div class="col">
                 <div class="text-h5">Prerequisites</div>
