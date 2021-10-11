@@ -92,7 +92,7 @@
                 <div class="text-h5">Prerequisites</div>
               </div>
               <div class="col text-right">
-                <q-btn color="primary" icon="fas fa-link" label="Add Prerequisite" />
+                <q-btn color="primary" icon="fas fa-link" label="Add Prerequisite" @click="openPrerequisiteDialog" />
               </div>
             </div>
             <q-list class="q-my-md">
@@ -120,7 +120,7 @@
                 <div class="text-h5">Postrequisites</div>
               </div>
               <div class="col text-right">
-                <q-btn color="primary" icon="fas fa-link" label="Add Postrequisite" />
+                <q-btn color="primary" icon="fas fa-link" label="Add Postrequisite" @click="openPostrequisiteDialog" />
               </div>
             </div>
             <q-list class="q-my-md">
@@ -154,6 +154,7 @@
 import { useDialogPluginComponent } from 'quasar'
 import { TaskModel } from 'components/models';
 import QDatetimeInput from 'components/QDatetimeInput.vue';
+import TaskSearchDialog from 'components/TaskSearchDialog.vue';
 import {
   defineComponent,
   PropType,
@@ -516,6 +517,50 @@ export default {
       )
     }
 
+    function openPrerequisiteDialog() {
+      $q.dialog({
+        component: TaskSearchDialog,
+
+        componentProps: {
+          dialogTitle: 'Add Prerequisite',
+          taskTitle: currentTask.value.title,
+          excludeFromSearch: [currentTask.value, ...currentTask.value.prereqs],
+          onCreate: (payload) => { createPrereq(payload) },
+          onSelect: (payload) => { addPrereq(payload) }
+        }
+      })
+    }
+
+    function openPostrequisiteDialog() {
+      $q.dialog({
+        component: TaskSearchDialog,
+
+        componentProps: {
+          dialogTitle: 'Add Postrequisite',
+          taskTitle: currentTask.value.title,
+          excludeFromSearch: [currentTask.value, ...currentTask.value.postreqs],
+          onCreate: (payload) => { createPostreq(payload) },
+          onSelect: (payload) => { addPostreq(payload) }
+        }
+      })
+    }
+
+    function createPrereq(payload) {
+      console.log(payload)
+    }
+
+    function addPrereq(payload) {
+      console.log(payload)
+    }
+
+    function createPostreq(payload) {
+      console.log(payload)
+    }
+
+    function addPostreq(payload) {
+      console.log(payload)
+    }
+
     return {
       // Custom stuff
       currentTask,
@@ -542,6 +587,9 @@ export default {
       updateTaskPrioritizeAt,
       updateTaskDeadlineAt,
       deleteTask,
+      //
+      openPrerequisiteDialog,
+      openPostrequisiteDialog,
 
       // This is REQUIRED;
       // Need to inject these (from useDialogPluginComponent() call)
