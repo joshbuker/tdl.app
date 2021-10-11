@@ -7,7 +7,7 @@
           <div class="text-h6">{{ title }}</div>
         </div>
         <div class="col text-right" v-if="multiSelectEnabled && tasks.length !== 0">
-          <q-checkbox v-model="allTasksSelected" color="secondary" label="All tasks" />
+          <q-checkbox v-model="allTasksSelected" toggle-order="ft" color="secondary" label="All tasks" />
           <q-btn flat round class="q-ml-sm" color="white" icon="more_vert" :disable="allTasksSelected === false">
             <q-menu>
               <q-list style="min-width: 100px;">
