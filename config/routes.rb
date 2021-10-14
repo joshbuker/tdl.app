@@ -33,6 +33,10 @@ Rails.application.routes.draw do
       patch 'mark-incomplete' => 'tasks#mark_incomplete'
       patch 'tags' => 'tasks#update_tags'
       patch 'list' => 'tasks#update_list'
+      patch 'pre' => 'tasks#add_prerequisite'
+      patch 'post' => 'tasks#add_postrequisite'
+      delete 'pre/:pre_task_id' => 'tasks#remove_prerequisite'
+      delete 'post/:post_task_id' => 'tasks#remove_postrequisite'
     end
 
     resources :rules

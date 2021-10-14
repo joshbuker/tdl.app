@@ -15,11 +15,28 @@ class TasksController < ApplicationController
     @task = Task.new(task_params)
     @task.user = current_user
 
+    if params[:tag_ids].present?
+      unless params[:tag_ids].is_a?(Array)
+        raise ArgumentError, 'tag_ids must be an array'
+      end
+
+      @task.tags = []
+      allowed_tags = policy_scope(Tag)
+
+      params[:tag_ids].each do |tag_id|
+        tag = allowed_tags.find_by(id: tag_id)
+        raise Pundit::NotAuthorizedError if tag.nil?
+        @task.tags << tag
+      end
+    end
+
     authorize @task
 
     @task.save!
 
     render :show
+  rescue ArgumentError => e
+    not_processable(e)
   end
 
   def update
@@ -168,6 +185,72 @@ class TasksController < ApplicationController
     not_processable(e)
   end
 
+
+  # FIXME: Pre/post req stuff should live in the rules controller
+  def add_prerequisite
+    authorize @task
+
+    prereq = policy_scope(Task).find_by(id: params[:pre_task_id])
+
+    raise Pundit::NotAuthorizedError if prereq.nil?
+
+    Rule.create!(pre: prereq, post: @task)
+
+    # Reload so that we pick up on the new pre/post relationships
+    @tasks = [@task.reload, prereq.reload]
+
+    render :index
+  end
+
+  def add_postrequisite
+    authorize @task
+
+    postreq = policy_scope(Task).find_by(id: params[:post_task_id])
+
+    raise Pundit::NotAuthorizedError if postreq.nil?
+
+    Rule.create!(pre: @task, post: postreq)
+
+    # Reload so that we pick up on the new pre/post relationships
+    @tasks = [@task.reload, postreq.reload]
+
+    render :index
+  end
+
+  def remove_prerequisite
+    authorize @task
+
+    prereq = policy_scope(Task).find_by(id: params[:pre_task_id])
+
+    raise Pundit::NotAuthorizedError if prereq.nil?
+
+    # Raise a 404 error if no rule found
+    rule = Rule.find_by!(pre: prereq, post: @task)
+    rule.destroy!
+
+    # Reload so that we pick up on the new pre/post relationships
+    @tasks = [@task.reload, prereq.reload]
+
+    render :index
+  end
+
+  def remove_postrequisite
+    authorize @task
+
+    postreq = policy_scope(Task).find_by(id: params[:post_task_id])
+
+    raise Pundit::NotAuthorizedError if postreq.nil?
+
+    # Raise a 404 error if no rule found
+    rule = Rule.find_by!(pre: @task, post: postreq)
+    rule.destroy!
+
+    # Reload so that we pick up on the new pre/post relationships
+    @tasks = [@task.reload, postreq.reload]
+
+    render :index
+  end
+
   private
 
   def set_task
@@ -180,6 +263,7 @@ class TasksController < ApplicationController
       :title,
       :order,
       :list_id,
+      :tag_ids,
       :notes,
       :review_at,
       :remind_me_at,

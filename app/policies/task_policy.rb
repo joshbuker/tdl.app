@@ -25,6 +25,8 @@ class TaskPolicy < ApplicationPolicy
     matching_records?
   end
 
+  # FIXME: There should never be this many non-CRUD methods
+
   def bulk?
     index?
   end
@@ -46,6 +48,22 @@ class TaskPolicy < ApplicationPolicy
   end
 
   def update_list?
+    update?
+  end
+
+  def add_prerequisite?
+    update?
+  end
+
+  def add_postrequisite?
+    update?
+  end
+
+  def remove_prerequisite?
+    update?
+  end
+
+  def remove_postrequisite?
     update?
   end
 
