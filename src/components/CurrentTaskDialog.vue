@@ -111,7 +111,7 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-btn round color="negative" icon="fas fa-unlink" @click.stop="true" />
+                  <q-btn round color="negative" icon="fas fa-unlink" @click.stop="removePrereq(pre)" />
                 </q-item-section>
               </q-item>
             </q-list>
@@ -139,7 +139,7 @@
                 </q-item-section>
 
                 <q-item-section avatar>
-                  <q-btn round color="negative" icon="fas fa-unlink" @click.stop="true" />
+                  <q-btn round color="negative" icon="fas fa-unlink" @click.stop="removePostreq(post)" />
                 </q-item-section>
               </q-item>
             </q-list>
@@ -287,29 +287,43 @@ export default {
     }
 
     function deleteTask(task) {
-      $store.dispatch('tasks/delete', { id: task.id }).
-      then(
-        (response) => {
-          onDialogOK()
+      $q.dialog({
+        title: `Delete task: "${task.title}"`,
+        message: 'This cannot be undone! Are you sure?',
+        ok: {
+          label: 'Delete',
+          color: 'negative'
         },
-        (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to delete task: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+        cancel: {
+          color: 'grey'
         }
-      )
+      }).onOk(() => {
+        $store.dispatch('tasks/delete', { id: task.id }).
+        then(
+          (response) => {
+            onDialogOK()
+          },
+          (error) => {
+            let errorMessage = ''
+            if (typeof error.response !== 'undefined') {
+              errorMessage = error.response.data.error
+            } else {
+              errorMessage = `Failed to delete task: ${error.message}`
+            }
+            $q.notify({
+              color: 'negative',
+              position: 'top',
+              message: errorMessage,
+              icon: 'report_problem'
+            })
+          }
+        )
+      })
     }
 
     function updateTaskTitle() {
+      if (editTaskTitle.value === currentTask.value.title) { return }
+
       $store.dispatch('tasks/update', {
         id: currentTask.value.id,
         title: editTaskTitle.value
@@ -388,6 +402,8 @@ export default {
     }
 
     function updateTaskNotes() {
+      if (editTaskNotes.value === currentTask.value.notes) { return }
+
       $store.dispatch('tasks/update', {
         id: currentTask.value.id,
         notes: editTaskNotes.value
@@ -414,6 +430,8 @@ export default {
     }
 
     function updateTaskReviewAt() {
+      if (editTaskReviewAt.value === currentTask.value.review_at) { return }
+
       $store.dispatch('tasks/update', {
         id: currentTask.value.id,
         review_at: editTaskReviewAt.value
@@ -440,6 +458,8 @@ export default {
     }
 
     function updateTaskRemindMeAt() {
+      if (editTaskRemindMeAt.value === currentTask.value.remind_me_at) { return }
+
       $store.dispatch('tasks/update', {
         id: currentTask.value.id,
         remind_me_at: editTaskRemindMeAt.value
@@ -466,6 +486,8 @@ export default {
     }
 
     function updateTaskPrioritizeAt() {
+      if (editTaskPrioritizeAt.value === currentTask.value.prioritize_at) { return }
+
       $store.dispatch('tasks/update', {
         id: currentTask.value.id,
         prioritize_at: editTaskPrioritizeAt.value
@@ -492,6 +514,8 @@ export default {
     }
 
     function updateTaskDeadlineAt() {
+      if (editTaskDeadlineAt.value === currentTask.value.deadline_at) { return }
+
       $store.dispatch('tasks/update', {
         id: currentTask.value.id,
         deadline_at: editTaskDeadlineAt.value
@@ -523,7 +547,7 @@ export default {
 
         componentProps: {
           dialogTitle: 'Add Prerequisite',
-          taskTitle: currentTask.value.title,
+          task: currentTask.value,
           excludeFromSearch: [currentTask.value, ...currentTask.value.prereqs],
           onCreate: (payload) => { createPrereq(payload) },
           onSelect: (payload) => { addPrereq(payload) }
@@ -537,7 +561,7 @@ export default {
 
         componentProps: {
           dialogTitle: 'Add Postrequisite',
-          taskTitle: currentTask.value.title,
+          task: currentTask.value,
           excludeFromSearch: [currentTask.value, ...currentTask.value.postreqs],
           onCreate: (payload) => { createPostreq(payload) },
           onSelect: (payload) => { addPostreq(payload) }
@@ -545,20 +569,170 @@ export default {
       })
     }
 
-    function createPrereq(payload) {
-      console.log(payload)
+    function createPrereq(title) {
+      console.log(title)
     }
 
     function addPrereq(payload) {
-      console.log(payload)
+      $store.dispatch('tasks/addPrereq', {
+        id: currentTask.value.id,
+        pre_task_id: payload.task.id
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+          // hurr durr I'm a bad javascript programmer, but it works
+          payload.callback(payload.task)
+          $q.notify({
+            color: 'positive',
+            position: 'top',
+            message: 'Added Prerequisite',
+            icon: 'fas fa-link'
+          })
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to add prereq: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
     }
 
-    function createPostreq(payload) {
-      console.log(payload)
+    function createPostreq(title) {
+      console.log(title)
     }
 
     function addPostreq(payload) {
-      console.log(payload)
+      $store.dispatch('tasks/addPostreq', {
+        id: currentTask.value.id,
+        post_task_id: payload.task.id
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+          // hurr durr I'm a bad javascript programmer, but it works
+          payload.callback(payload.task)
+          $q.notify({
+            color: 'positive',
+            position: 'top',
+            message: 'Added Postrequisite',
+            icon: 'fas fa-link'
+          })
+        },
+        (error) => {
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to add postreq: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
+    function removePrereq(task) {
+      $q.dialog({
+        title: `Remove prerequisite`,
+        message: 'Are you sure?',
+        ok: {
+          label: 'Remove',
+          color: 'negative'
+        },
+        cancel: {
+          color: 'grey'
+        }
+      }).onOk(() => {
+        $store.dispatch('tasks/removePrereq', {
+          id: currentTask.value.id,
+          pre_task_id: task.id
+        }).
+        then(
+          (response) => {
+            setCurrentTask(currentTask.value)
+            $q.notify({
+              color: 'positive',
+              position: 'top',
+              message: 'Removed prerequisite',
+              icon: 'fas fa-unlink'
+            })
+          },
+          (error) => {
+            // TODO: This is reused, DRY it up
+            let errorMessage = ''
+            if (typeof error.response !== 'undefined') {
+              errorMessage = error.response.data.error
+            } else {
+              errorMessage = `Failed to remove prerequisite: ${error.message}`
+            }
+            $q.notify({
+              color: 'negative',
+              position: 'top',
+              message: errorMessage,
+              icon: 'report_problem'
+            })
+          }
+        )
+      })
+    }
+
+    function removePostreq(task) {
+      $q.dialog({
+        title: `Remove postrequisite`,
+        message: 'Are you sure?',
+        ok: {
+          label: 'Remove',
+          color: 'negative'
+        },
+        cancel: {
+          color: 'grey'
+        }
+      }).onOk(() => {
+        $store.dispatch('tasks/removePostreq', {
+          id: currentTask.value.id,
+          post_task_id: task.id
+        }).
+        then(
+          (response) => {
+            setCurrentTask(currentTask.value)
+            $q.notify({
+              color: 'positive',
+              position: 'top',
+              message: 'Removed postrequisite',
+              icon: 'fas fa-unlink'
+            })
+          },
+          (error) => {
+            // TODO: This is reused, DRY it up
+            let errorMessage = ''
+            if (typeof error.response !== 'undefined') {
+              errorMessage = error.response.data.error
+            } else {
+              errorMessage = `Failed to remove postrequisite: ${error.message}`
+            }
+            $q.notify({
+              color: 'negative',
+              position: 'top',
+              message: errorMessage,
+              icon: 'report_problem'
+            })
+          }
+        )
+      })
     }
 
     return {
@@ -590,6 +764,9 @@ export default {
       //
       openPrerequisiteDialog,
       openPostrequisiteDialog,
+      //
+      removePrereq,
+      removePostreq,
 
       // This is REQUIRED;
       // Need to inject these (from useDialogPluginComponent() call)

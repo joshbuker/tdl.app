@@ -116,6 +116,40 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
     )
   },
 
+  async create({ commit, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.post('/tasks',
+          {
+            title: options.title,
+            list_id: options.list_id,
+            tag_ids: options.tag_ids,
+            notes: options.notes,
+            review_at: options.review_at,
+            remind_me_at: options.remind_me_at,
+            prioritize_at: options.prioritize_at,
+            deadline_at: options.deadline_at
+          },
+          {
+            headers: {
+              Authorization: rootGetters['authentication/bearerToken']
+            }
+          }
+        ).
+        then(
+          (response) => {
+            commit('addTask', response.data)
+            this.$repo(Task).save(response.data)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
   async update({ commit, rootGetters }, options) {
     return new Promise(
       (resolve, reject) => {
@@ -191,6 +225,104 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         then(
           (response) => {
             commit('updateTask', response.data)
+            this.$repo(Task).save(response.data)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
+  async addPrereq({ commit, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.patch(`/tasks/${options.id}/pre`,
+          {
+            pre_task_id: options.pre_task_id
+          },
+          {
+            headers: {
+              Authorization: rootGetters['authentication/bearerToken']
+            }
+          }
+        ).
+        then(
+          (response) => {
+            commit('updateTasks', response.data)
+            this.$repo(Task).save(response.data)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
+  async addPostreq({ commit, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.patch(`/tasks/${options.id}/post`,
+          {
+            post_task_id: options.post_task_id
+          },
+          {
+            headers: {
+              Authorization: rootGetters['authentication/bearerToken']
+            }
+          }
+        ).
+        then(
+          (response) => {
+            commit('updateTasks', response.data)
+            this.$repo(Task).save(response.data)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
+  async removePrereq({ commit, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.delete(`/tasks/${options.id}/pre/${options.pre_task_id}`, {
+          headers: {
+            Authorization: rootGetters['authentication/bearerToken']
+          }
+        }).
+        then(
+          (response) => {
+            commit('updateTasks', response.data)
+            this.$repo(Task).save(response.data)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
+  async removePostreq({ commit, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        api.delete(`/tasks/${options.id}/post/${options.post_task_id}`, {
+          headers: {
+            Authorization: rootGetters['authentication/bearerToken']
+          }
+        }).
+        then(
+          (response) => {
+            commit('updateTasks', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },

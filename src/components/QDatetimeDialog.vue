@@ -1,7 +1,13 @@
 <template>
   <!-- notice dialogRef here -->
   <q-dialog ref="dialogRef" @hide="onDialogHide">
-    <q-datetime v-model="datetime" :label="label" @cancel="onCancelClick" @update:model-value="onSave" />
+    <q-datetime
+      v-model="datetime"
+      :label="label"
+      :display-clear-button="true"
+      @cancel="onCancelClick"
+      @update:model-value="onSave"
+    />
   </q-dialog>
 </template>
 

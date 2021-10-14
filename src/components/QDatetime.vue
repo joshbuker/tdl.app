@@ -38,6 +38,7 @@
       {{ label }}
     </div>
     <q-card-actions align="right">
+      <q-btn flat @click="clear" v-if="displayClearButton">Clear</q-btn>
       <template v-if="activeTab == 'date'">
         <q-btn flat @click="$emit('cancel')">Cancel</q-btn>
         <q-btn flat @click="activeTab = 'time'" :disable="!date">Next</q-btn>
@@ -79,6 +80,10 @@ export default {
     label: {
       type: String,
       default: ''
+    },
+    displayClearButton: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -132,6 +137,10 @@ export default {
       emit('update:modelValue', datetime)
     }
 
+    function clear() {
+      emit('update:modelValue', '')
+    }
+
     init(props.modelValue)
 
     watch(
@@ -141,7 +150,7 @@ export default {
       }
     )
 
-    return { activeTab, date, time, gotoTime, save }
+    return { activeTab, date, time, gotoTime, save, clear }
   }
 }
 </script>

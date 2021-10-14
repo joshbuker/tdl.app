@@ -12,8 +12,8 @@
       <q-card-section>
         <div class="row q-gutter-md q-pa-sm">
           <div class="col-12">
-            <template v-if="taskTitle">
-              <div class="text-h5 text-primary">{{ taskTitle }}</div>
+            <template v-if="task">
+              <div class="text-h5 text-primary">{{ task.title }}</div>
               <q-separator class="q-my-md" />
             </template>
 
@@ -24,7 +24,7 @@
               @update:model-value="searchForTasks"
               @keyup.enter="searchForTasks"
               debounce="1000"
-              label="Search"
+              :label="searchLabel"
             >
               <template v-slot:append>
                 <q-btn
@@ -36,19 +36,62 @@
                 />
               </template>
             </q-input>
+            <template v-if="advancedOptions">
+              <br>
+              <q-select
+                v-model="selectedTags"
+                filled
+                use-chips
+                multiple
+                clearable
+                :options="tags"
+                option-value="id"
+                option-label="title"
+                label="Tags"
+              />
+              <br>
+              <q-select
+                v-model="selectedList"
+                filled
+                :options="lists"
+                option-value="id"
+                option-label="title"
+                label="List"
+              />
+              <br>
+              <q-datetime-input v-model="reviewAt" label="Review at" />
+              <br>
+              <q-datetime-input v-model="remindMeAt" label="Remind me at" />
+              <br>
+              <q-datetime-input v-model="prioritizeAt" label="Prioritize at" />
+              <br>
+              <q-datetime-input v-model="deadlineAt" label="Deadline at" />
+            </template>
 
             <br>
 
-            <q-btn
-              icon="fas fa-plus"
-              label="Create New Task"
-              color="primary"
-              @click="createTask"
-            />
+            <div class="row">
+              <div class="col-grow">
+                <q-btn
+                  icon="fas fa-plus"
+                  label="Create New Task"
+                  color="primary"
+                  @click="createTask"
+                />
+              </div>
+              <div class="col text-right">
+                <q-toggle
+                  v-model="advancedOptions"
+                  class="q-mr-md"
+                  color="primary"
+                  label="Advanced Options"
+                />
+              </div>
+            </div>
 
             <template v-if="search">
               <q-separator class="q-my-md" />
-              <div class="text-h4 q-mb-md">Possible matches - {{ results.length }}</div>
+              <div class="text-h4 q-mb-md">{{ resultsTitle }} - {{ results.length }}</div>
               <q-list>
                 <q-item clickable v-ripple v-if="!results.length">
                   <q-item-section>No results found</q-item-section>
@@ -87,8 +130,10 @@
 
 <script>
 import { useDialogPluginComponent } from 'quasar'
-import QDatetime from 'components/QDatetime.vue'
+import QDatetimeInput from 'components/QDatetimeInput.vue';
+import List from '../models/list'
 import Task from '../models/task'
+import Tag from '../models/tag'
 import { useStore } from '../store'
 import {
   defineComponent,
@@ -101,15 +146,23 @@ import {
 import Fuse from 'fuse.js'
 
 export default {
-  components: { QDatetime },
+  components: { QDatetimeInput },
   props: {
     dialogTitle: {
       type: String,
       required: true
     },
-    taskTitle: {
+    searchLabel: {
       type: String,
-      default: ''
+      default: 'Search'
+    },
+    resultsTitle: {
+      type: String,
+      default: 'Possible matches'
+    },
+    task: {
+      type: Object,
+      default: {}
     },
     excludeFromSearch: {
       type: Array,
@@ -137,11 +190,12 @@ export default {
     //                    example: onDialogOK({ /*.../* }) - with payload
     // onDialogCancel - Function to call to settle dialog with "cancel" outcome
 
-    function onSave(value) {
-      onDialogOK({ datetime: value })
-    }
+    let excludeList = props.excludeFromSearch.map((task) => { return task.id })
 
-    const excludeList = props.excludeFromSearch.map((task) => { return task.id })
+    const reviewAt = ref('')
+    const remindMeAt = ref('')
+    const prioritizeAt = ref('')
+    const deadlineAt = ref('')
 
     const search = ref('')
     const results = ref([])
@@ -149,6 +203,37 @@ export default {
     const searchOptions = {
       // findAllMatches: true,
       keys: ['title']
+    }
+
+    const advancedOptions = ref(false)
+
+    const lists = computed({
+      get: () => $store.$repo(List).with('tasks').orderBy('order').orderBy('title').get()
+    })
+
+    const tags = computed({
+      get: () => $store.$repo(Tag).orderBy('order').orderBy('title').get()
+    })
+
+    let temp_list_object = {}
+
+    if (props.task && props.task.list) {
+      temp_list_object = { id: props.task.list.id, title: props.task.list.title }
+    } else {
+      temp_list_object = { id: lists.value[0].id, title: lists.value[0].title }
+    }
+
+    const selectedList = ref(temp_list_object)
+    const selectedTags = ref([])
+
+    if (props.task && props.task.tags) {
+      let temp = props.task.tags.map(
+        (tag) => {
+          let temp = { id: tag.id, title: tag.title }
+          return temp
+        }
+      )
+      selectedTags.value = temp
     }
 
     function searchForTasks() {
@@ -186,11 +271,20 @@ export default {
     }
 
     function createTask() {
-      emit('create', search.value)
+      emit('create', {
+        title: search.value,
+        list_id: selectedList.value.id,
+        tag_ids: selectedTags.value.map((tag) => { return tag.id })
+      })
     }
 
     function selectTask(task) {
-      emit('select', task)
+      emit('select', { task: task, callback: hideTask })
+    }
+
+    function hideTask(task) {
+      excludeList.push(task.id)
+      searchForTasks() // Rerun search so it hides what you just chose
     }
 
     function textColor(backgroundColor) {
@@ -215,12 +309,24 @@ export default {
 
     return {
       // Custom stuff
+      selectedTags,
+      selectedList,
+      //
       search,
       results,
       searchForTasks,
       createTask,
       selectTask,
       textColor,
+      advancedOptions,
+      //
+      reviewAt,
+      remindMeAt,
+      prioritizeAt,
+      deadlineAt,
+      //
+      tags,
+      lists,
 
       // This is REQUIRED;
       // Need to inject these (from useDialogPluginComponent() call)
