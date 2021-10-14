@@ -13,8 +13,15 @@
           color="primary"
           icon="fas fa-check-double"
           label="Multi select"
-          class="q-ml-sm"
+          class="q-mx-sm"
           @click="multiSelectEnabled = !multiSelectEnabled"
+        />
+        <q-btn
+          color="grey"
+          icon="fas fa-times-circle"
+          label="Clear Completed"
+          class="q-ml-sm"
+          @click="clearCompleted"
         />
       </div>
     </div>
@@ -172,8 +179,36 @@ export default defineComponent({
       })
     }
 
+    function clearCompleted() {
+      $store.dispatch('tasks/clearCompleted').
+      then(
+        (response) => {
+          $q.notify({
+            color: 'positive',
+            position: 'top',
+            message: 'Cleared completed tasks',
+            icon: 'fas fa-tasks'
+          })
+        },
+        (error) => {
+          // TODO: This is reused, DRY it up
+          let errorMessage = ''
+          if (typeof error.response !== 'undefined') {
+            errorMessage = error.response.data.error
+          } else {
+            errorMessage = `Failed to clear completed tasks: ${error.message}`
+          }
+          $q.notify({
+            color: 'negative',
+            position: 'top',
+            message: errorMessage,
+            icon: 'report_problem'
+          })
+        }
+      )
+    }
+
     function createTask(payload) {
-      console.log(payload)
       $store.dispatch('tasks/create', {
         title: payload.title,
         list_id: payload.list_id,
@@ -216,7 +251,17 @@ export default defineComponent({
       })
     }
 
-    return { beepBoopIn5, sessionToken, today, tomorrow, upcoming, someday, multiSelectEnabled, openCreateTaskDialog };
+    return {
+      beepBoopIn5,
+      clearCompleted,
+      sessionToken,
+      today,
+      tomorrow,
+      upcoming,
+      someday,
+      multiSelectEnabled,
+      openCreateTaskDialog
+    };
   }
 });
 </script>

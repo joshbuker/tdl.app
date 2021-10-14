@@ -16,6 +16,31 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
     return response
   },
 
+  async clearCompleted({ commit, getters, rootGetters }) {
+    return new Promise(
+      (resolve, reject) => {
+        api.post('/tasks/clear-completed',
+          {},
+          {
+            headers: {
+              Authorization: rootGetters['authentication/bearerToken']
+            }
+          }
+        ).
+        then(
+          (response) => {
+            commit('setTasks', response.data)
+            this.$repo(Task).fresh(response.data)
+            resolve(response)
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
   async markComplete({ commit, rootGetters }, options) {
     return new Promise(
       (resolve, reject) => {
