@@ -25,6 +25,8 @@ Rails.application.routes.draw do
     # Placeholder
     get 'username' => 'settings#username'
 
+    post 'tasks/clear-completed' => 'tasks#clear_completed'
+
     resources :lists
     resources :tags
 

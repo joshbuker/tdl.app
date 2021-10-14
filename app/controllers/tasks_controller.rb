@@ -1,10 +1,24 @@
 class TasksController < ApplicationController
-  before_action :set_task, except: [:index, :create, :sync_ordering, :bulk]
+  before_action :set_task,
+    except: [:index, :clear_completed, :create, :sync_ordering, :bulk]
 
   def index
     authorize Task
 
     @tasks = policy_scope(Task).order(order: :asc, title: :asc)
+  end
+
+  def clear_completed
+    authorize Task
+
+    policy_scope(Task).
+      where(user: current_user).
+      where.not(completed_at: nil).
+      destroy_all
+
+    @tasks = policy_scope(Task).order(order: :asc, title: :asc)
+
+    render :index
   end
 
   def show

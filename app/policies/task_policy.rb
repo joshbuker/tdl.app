@@ -27,6 +27,10 @@ class TaskPolicy < ApplicationPolicy
 
   # FIXME: There should never be this many non-CRUD methods
 
+  def clear_completed?
+    index?
+  end
+
   def bulk?
     index?
   end
