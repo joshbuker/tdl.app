@@ -52,6 +52,8 @@ import { useRouter } from 'vue-router'
 // import { Login } from 'components/models';
 import { computed, defineComponent, ref } from 'vue'
 import { api } from 'boot/axios'
+import { errorNotification } from '../hackerman/ErrorNotification'
+import { syncWithBackend } from '../hackerman/sync'
 
 export default defineComponent({
   name: 'PageLogin',
@@ -100,74 +102,11 @@ export default defineComponent({
             message: 'Logged in successfully',
             icon: 'fas fa-sign-out-alt'
           })
-          $store.dispatch('settings/fetchUsername').
-          catch(
-            (error) => {
-              let errorMessage = ''
-              if (typeof error.response !== 'undefined') {
-                errorMessage = error.response.data.error
-              } else {
-                errorMessage = `Failed to fetch username: ${error.message}`
-              }
-              Notify.create({
-                color: 'negative',
-                position: 'top',
-                message: errorMessage,
-                icon: 'report_problem'
-              })
-            }
-          )
-          $store.dispatch('lists/fetchLists').
-          catch(
-            (error) => {
-              let errorMessage = ''
-              if (typeof error.response !== 'undefined') {
-                errorMessage = error.response.data.error
-              } else {
-                errorMessage = `Failed to fetch lists: ${error.message}`
-              }
-              Notify.create({
-                color: 'negative',
-                position: 'top',
-                message: errorMessage,
-                icon: 'report_problem'
-              })
-            }
-          )
-          store.dispatch('tasks/fetchTasks').
-          catch(
-            (error) => {
-              let errorMessage = ''
-              if (typeof error.response !== 'undefined') {
-                errorMessage = error.response.data.error
-              } else {
-                errorMessage = `Failed to fetch tasks: ${error.message}`
-              }
-              Notify.create({
-                color: 'negative',
-                position: 'top',
-                message: errorMessage,
-                icon: 'report_problem'
-              })
-            }
-          )
+          syncWithBackend($store)
           void $router.push({ path: '/' })
         },
         (error) => {
-          var errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-            password.value = ''
-          } else {
-            errorMessage = `Failed to login: ${error.message}`
-          }
-          // $("input[name='password']").focus()
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to login')
         }
       )
     }

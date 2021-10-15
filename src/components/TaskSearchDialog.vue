@@ -154,19 +154,19 @@ export default {
     },
     searchLabel: {
       type: String,
-      default: 'Search'
+      default: () => 'Search'
     },
     resultsTitle: {
       type: String,
-      default: 'Possible matches'
+      default: () => 'Possible matches'
     },
     task: {
       type: Object,
-      default: {}
+      default: () => ({})
     },
     excludeFromSearch: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
 

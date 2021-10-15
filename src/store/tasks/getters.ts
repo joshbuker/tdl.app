@@ -1,23 +1,24 @@
 import { DateTime } from 'luxon'
-import { GetterTree } from 'vuex';
+import { Store as VuexStore, GetterTree } from 'vuex';
 import { StateInterface } from '../index';
 import { TasksStateInterface } from './state';
 import Task from '../../models/task'
+import {
+  Task as TaskInterface,
+  Tag as TagInterface,
+  List as ListInterface
+} from '../../components/models'
 
 const getters: GetterTree<TasksStateInterface, StateInterface> = {
-  tasks (state) {
-    return state.tasks;
-  },
-
-  allTasksCount: (state, getters) => (store) => {
+  allTasksCount: (state, getters) => (store: VuexStore<StateInterface>) => {
     return getters.nextUp(store, 'All Tasks', null).length;
   },
 
-  listTasks: (state) => (store, selectedList) => {
+  listTasks: (state) => (store: any, selectedList: string): Array<TaskInterface> => {
     return store.$repo(Task).
       with('list').with('prereqs').with('postreqs').with('tags').get().
     filter(
-      (task) => {
+      (task: TaskInterface) => {
         if(selectedList === 'All Tasks') {
           return true;
         } else if (selectedList !== undefined && task.list !== undefined) {
@@ -29,12 +30,12 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     )
   },
 
-  tasks: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
+  tasks: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, allTagsFilter: boolean): Array<TaskInterface> => {
     if (selectedTags == null || Array.isArray(selectedTags) !== true || selectedTags.length == 0) {
       return getters.listTasks(store, selectedList);
     } else if (selectedTags.includes('No Tags') === true) {
       return getters.listTasks(store, selectedList).filter(
-        (task) => { return (
+        (task: TaskInterface) => { return (
           task.tags == null ||
           (
             Array.isArray(task.tags) &&
@@ -45,7 +46,7 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     } else {
       return getters.listTasks(store, selectedList).filter(
         // For every task in the list
-        (task) => {
+        (task: TaskInterface) => {
           if(allTagsFilter === true) {
             return (
               // For every tag we're limiting by
@@ -66,7 +67,7 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
               selectedTags.some(
                 (tag) => { return (
                   task.tags.some(
-                    (task_tag) => { return (
+                    (task_tag: TagInterface) => { return (
                       task_tag.title == tag
                     )}
                   )
@@ -79,39 +80,39 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     }
   },
 
-  nextUp: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
+  nextUp: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, allTagsFilter: boolean): Array<TaskInterface> => {
     return getters.tasks(store, selectedList, selectedTags, allTagsFilter).
     filter(
-      (task) => {
+      (task: TaskInterface) => {
         return task.completed_at == null
       }
     ).filter(
-      (task) => {
+      (task: TaskInterface) => {
         return !task.prereqs.some(
-          (prereq) => { return prereq.completed_at == null }
+          (prereq: TaskInterface) => { return prereq.completed_at == null }
         )
       }
     )
   },
 
-  today: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
+  today: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, allTagsFilter: boolean): Array<TaskInterface> => {
     const endOfDay = DateTime.local().endOf('day').toMillis();
 
     return getters.nextUp(store, selectedList, selectedTags, allTagsFilter).filter(
-      (task) => { return (
+      (task: TaskInterface) => { return (
         task.review_at == null ||
         DateTime.fromISO(task.review_at).toMillis() <= endOfDay
       )}
     )
   },
 
-  tomorrow: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
+  tomorrow: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, allTagsFilter: boolean): Array<TaskInterface> => {
     const tomorrow = DateTime.local().plus({ days: 1 });
     const startOfTomorrow = tomorrow.startOf('day').toMillis();
     const endOfTomorrow = tomorrow.endOf('day').toMillis();
 
     return getters.nextUp(store, selectedList, selectedTags, allTagsFilter).filter(
-      (task) => {
+      (task: TaskInterface) => {
         if(task.review_at != null) {
           return (
             DateTime.fromISO(task.review_at).toMillis() >= startOfTomorrow &&
@@ -124,12 +125,12 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     )
   },
 
-  upcoming: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
+  upcoming: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, allTagsFilter: boolean): Array<TaskInterface> => {
     const startOfUpcoming = DateTime.local().plus({ days: 2 }).startOf('day').toMillis();
     const endOfUpcoming = DateTime.local().plus({ days: 31 }).endOf('day').toMillis();
 
     return getters.nextUp(store, selectedList, selectedTags, allTagsFilter).filter(
-      (task) => {
+      (task: TaskInterface) => {
         if(task.review_at != null) {
           return (
             DateTime.fromISO(task.review_at).toMillis() >= startOfUpcoming &&
@@ -142,11 +143,11 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     );
   },
 
-  someday: (state, getters) => (store, selectedList, selectedTags, allTagsFilter) => {
+  someday: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, allTagsFilter: boolean): Array<TaskInterface> => {
     const endOfUpcoming = DateTime.local().plus({ days: 31 }).endOf('day').toMillis();
 
     return getters.nextUp(store, selectedList, selectedTags, allTagsFilter).filter(
-      (task) => {
+      (task: TaskInterface) => {
         if(task.review_at != null) {
           return (
             DateTime.fromISO(task.review_at).toMillis() > endOfUpcoming

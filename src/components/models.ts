@@ -1,13 +1,24 @@
-export interface Todo {
+export interface Tag {
+  id: number,
+  title: string;
+  order: number;
+}
+
+export interface List {
   id: number;
-  content: string;
+  title: string;
+  order: number;
 }
 
-export interface Meta {
-  totalCount: number;
-}
-
-export interface Login {
-  username: string;
-  password: string;
+export interface Task {
+  id: number;
+  title: string;
+  list_id: number;
+  tag_ids: Array<number>;
+  list: List;
+  tags: Array<Tag>;
+  order: number;
+  review_at: string;
+  completed_at: string;
+  prereqs: Array<any>;
 }

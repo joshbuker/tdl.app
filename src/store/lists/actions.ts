@@ -83,7 +83,7 @@ const actions: ActionTree<ListsStateInterface, StateInterface> = {
   async syncOrdering({ commit, rootGetters }) {
     return new Promise(
       (resolve, reject) => {
-        api.patch(`/lists/sync-ordering`,
+        api.patch('/lists/sync-ordering',
           {
             lists: this.$repo(List).with('tasks').orderBy('order').orderBy('title').get().map((element, index, array) => {
               return { id: element.id, order: index }

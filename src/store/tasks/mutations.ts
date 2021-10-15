@@ -1,9 +1,10 @@
 import { MutationTree } from 'vuex';
 import { TasksStateInterface } from './state';
+import { Task } from '../../components/models'
 
-function sortTasks(state) {
+function sortTasks(state: TasksStateInterface) {
   // Sort via order first, then alphabetically
-  state.tasks = state.tasks.sort((a, b) => {
+  state.tasks = state.tasks.sort((a: Task, b: Task) => {
     if (a.order < b.order) {
       return -1
     } else if (a.order > b.order) {
@@ -23,11 +24,11 @@ const mutation: MutationTree<TasksStateInterface> = {
     sortTasks(state)
   },
 
-  setTasks(state, tasks: Array) {
+  setTasks(state, tasks: Array<Task>) {
     state.tasks = tasks
   },
 
-  updateTasks(state, tasks: Array) {
+  updateTasks(state, tasks: Array<Task>) {
     for (const task of tasks) {
       const index = state.tasks.findIndex(
         (element) => { return (element.id == task.id) }
@@ -47,7 +48,7 @@ const mutation: MutationTree<TasksStateInterface> = {
     sortTasks(state)
   },
 
-  removeTask(state, id: Integer) {
+  removeTask(state, id: number) {
     const index = state.tasks.findIndex(
       (element) => { return (element.id == id) }
     )

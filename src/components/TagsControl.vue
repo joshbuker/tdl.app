@@ -102,6 +102,7 @@ import { computed, defineComponent, ref } from 'vue'
 import { useStore } from '../store'
 import draggable from 'vuedraggable'
 import EditTagDialog from 'components/EditTagDialog.vue'
+import { Tag as TagInterface } from './models'
 import Tag from '../models/tag'
 import Task from '../models/task'
 
@@ -143,7 +144,7 @@ export default defineComponent({
       }
     })
 
-    function tagSelected(title) {
+    function tagSelected(title: string) {
       return selectedTags.value.some(
         (tag) => {
           return tag === title
@@ -151,7 +152,7 @@ export default defineComponent({
       )
     }
 
-    function toggleTag(title) {
+    function toggleTag(title: string) {
       $store.commit('settings/toggleSelectedTag', title);
     }
 
@@ -185,7 +186,7 @@ export default defineComponent({
       )
     }
 
-    function editTag(tag) {
+    function editTag(tag: TagInterface) {
       /* The order that you define the callbacks does matter - it will affect
        * the order of execution. e.g. Dismiss goes before or after other
        * callbacks
@@ -203,11 +204,12 @@ export default defineComponent({
           type: 'text',
           label: 'Title',
           model: tag.title,
+          // @ts-ignore
           placeholder: tag.title
         },
         persistent: true
       }).onOk(
-        (data) => {
+        (data: string) => {
           $store.dispatch('tags/update', { id: tag.id, title: data }).
           then(
             (response) => {
@@ -243,7 +245,7 @@ export default defineComponent({
       )
     }
 
-    function deleteTag(tag) {
+    function deleteTag(tag: TagInterface) {
       $q.dialog({
         title: `Delete tag: "${tag.title}"`,
         message: 'This cannot be undone! Are you sure?',
@@ -258,8 +260,8 @@ export default defineComponent({
         $store.dispatch('tags/delete', { id: tag.id }).
         then(
           (response) => {
-            if (selectedTag.value === tag.title) {
-              selectedTag.value = 'No Tags'
+            if (tagSelected(tag.title)) {
+              toggleTag(tag.title)
             }
 
             $q.notify({
@@ -317,11 +319,11 @@ export default defineComponent({
       )
     }
 
-    function taskCount(tag) {
+    function taskCount(tag: TagInterface) {
       return $store.getters['tasks/nextUp']($store, selectedList.value, [tag.title]).length;
     }
 
-    function textColor(backgroundColor) {
+    function textColor(backgroundColor: string) {
       if(!backgroundColor || 0 === backgroundColor.length) {
         return '#000000';
       } else {

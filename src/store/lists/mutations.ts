@@ -1,9 +1,10 @@
 import { MutationTree } from 'vuex';
 import { ListsStateInterface } from './state';
+import { List } from '../../components/models'
 
-function sortLists(state) {
+function sortLists(state: ListsStateInterface) {
   // Sort via order first, then alphabetically
-  state.lists = state.lists.sort((a, b) => {
+  state.lists = state.lists.sort((a: List, b: List) => {
     if (a.order < b.order) {
       return -1
     } else if (a.order > b.order) {
@@ -23,7 +24,7 @@ const mutation: MutationTree<ListsStateInterface> = {
     sortLists(state)
   },
 
-  setLists(state, lists: Array) {
+  setLists(state, lists: Array<List>) {
     state.lists = lists
   },
 
@@ -36,7 +37,7 @@ const mutation: MutationTree<ListsStateInterface> = {
     sortLists(state)
   },
 
-  removeList(state, id: Integer) {
+  removeList(state, id: number) {
     const index = state.lists.findIndex(
       (element) => { return (element.id == id) }
     )

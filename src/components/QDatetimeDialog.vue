@@ -2,7 +2,7 @@
   <!-- notice dialogRef here -->
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-datetime
-      v-model="datetime"
+      v-model="editDatetime"
       :label="label"
       :display-clear-button="true"
       @cancel="onCancelClick"
@@ -20,11 +20,11 @@ export default {
   props: {
     datetime: {
       type: String,
-      default: ''
+      default: () => ''
     },
     label: {
       type: String,
-      default: ''
+      default: () => ''
     }
   },
 
@@ -35,7 +35,7 @@ export default {
     'save'
   ],
 
-  setup () {
+  setup (props) {
     // REQUIRED; must be called inside of setup()
     const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
     // dialogRef      - Vue ref to be applied to QDialog
@@ -45,6 +45,8 @@ export default {
     //                    example: onDialogOK({ /*.../* }) - with payload
     // onDialogCancel - Function to call to settle dialog with "cancel" outcome
 
+    const editDatetime = ref(props.datetime)
+
     function onSave(value) {
       onDialogOK({ datetime: value })
     }
@@ -52,6 +54,7 @@ export default {
     return {
       // Custom stuff
       onSave,
+      editDatetime,
 
       // This is REQUIRED;
       // Need to inject these (from useDialogPluginComponent() call)

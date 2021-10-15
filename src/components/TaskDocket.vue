@@ -78,7 +78,7 @@ import {
 } from 'vue';
 import { useQuasar } from 'quasar'
 import { useStore } from '../store'
-import { Todo, Meta } from './models';
+import { Task as TaskInterface } from './models';
 import CurrentTaskDialog from 'components/CurrentTaskDialog.vue'
 import QDatetimeDialog from 'components/QDatetimeDialog.vue'
 
@@ -102,7 +102,7 @@ export default defineComponent({
     const $q = useQuasar()
     const $store = useStore()
 
-    function openTask(task) {
+    function openTask(task: TaskInterface) {
       $q.dialog({
         component: CurrentTaskDialog,
 
@@ -121,7 +121,7 @@ export default defineComponent({
           label: 'Bulk edit review at'
         }
       }).onOk(
-        (payload) => {
+        (payload: any) => {
           $store.dispatch('tasks/bulkUpdate', {
             task_ids: selectedTasks.value,
             review_at: payload.datetime
@@ -158,11 +158,13 @@ export default defineComponent({
         }
         let hasAll = props.tasks.every(
           (task) => {
+            // @ts-ignore
             return selectedTasks.value.includes(task.id)
           }
         )
         let hasSome = props.tasks.some(
           (task) => {
+            // @ts-ignore
             return selectedTasks.value.includes(task.id)
           }
         )
@@ -177,6 +179,7 @@ export default defineComponent({
       },
       set: (value) => {
         if (value) {
+          // @ts-ignore
           selectedTasks.value = props.tasks.map((task) => { return task.id })
         } else {
           selectedTasks.value = []
@@ -184,11 +187,11 @@ export default defineComponent({
       }
     })
 
-    function toggleTag(title) {
+    function toggleTag(title: string) {
       $store.commit('settings/toggleSelectedTag', title);
     }
 
-    function textColor(backgroundColor) {
+    function textColor(backgroundColor: string) {
       if(!backgroundColor || 0 === backgroundColor.length) {
         return '#000000';
       } else {

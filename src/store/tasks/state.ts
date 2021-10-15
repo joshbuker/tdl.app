@@ -1,5 +1,5 @@
 export interface TasksStateInterface {
-  tasks: array;
+  tasks: Array<any>;
 }
 
 function state(): TasksStateInterface {

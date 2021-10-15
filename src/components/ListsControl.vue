@@ -78,6 +78,8 @@ import EditListDialog from 'components/EditListDialog.vue'
 import List from '../models/list'
 import Task from '../models/task'
 
+import { List as ListInterface } from './models'
+
 export default defineComponent({
   name: 'ListsControl',
   components: { draggable },
@@ -85,9 +87,9 @@ export default defineComponent({
   setup() {
     const $q = useQuasar()
     const $store = useStore()
-    const allTasksCount = computed({
-      get: () => $store.getters['tasks/allTasksCount']($store)
-    })
+    const allTasksCount = computed(
+      () => $store.getters['tasks/allTasksCount']($store)
+    )
     const editMode = ref(false)
     const dragging = ref(false)
     const newList = ref('')
@@ -144,7 +146,7 @@ export default defineComponent({
       )
     }
 
-    function editList(list) {
+    function editList(list: ListInterface) {
       /* The order that you define the callbacks does matter - it will affect
        * the order of execution. e.g. Dismiss goes before or after other
        * callbacks
@@ -162,11 +164,12 @@ export default defineComponent({
           type: 'text',
           label: 'Title',
           model: list.title,
+          // @ts-ignore
           placeholder: list.title
         },
         persistent: true
       }).onOk(
-        (data) => {
+        (data: any) => {
           $store.dispatch('lists/update', { id: list.id, title: data }).
           then(
             (response) => {
@@ -201,7 +204,7 @@ export default defineComponent({
       )
     }
 
-    function deleteList(list) {
+    function deleteList(list: ListInterface) {
       $q.dialog({
         title: `Delete list: "${list.title}"`,
         message: 'This cannot be undone! Are you sure?',
@@ -275,7 +278,7 @@ export default defineComponent({
       )
     }
 
-    function taskCount(list) {
+    function taskCount(list: ListInterface) {
       return $store.getters['tasks/nextUp']($store, list.title).length;
     }
 

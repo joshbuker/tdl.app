@@ -61,18 +61,21 @@
 
 <script lang="ts">
 import { useQuasar } from 'quasar'
-import { Todo, Meta } from 'components/models';
+import { Task as TaskInterface } from 'components/models';
 import { computed, defineComponent, ref } from 'vue';
-import { useStore } from '../store'
+import { useStore, StateInterface } from '../store'
 import Task from '../models/task'
 
 import TaskDocket from 'components/TaskDocket.vue';
 import CurrentTaskDialog from 'components/CurrentTaskDialog.vue'
 import TaskSearchDialog from 'components/TaskSearchDialog.vue';
 
-let LocalNotifications = null
+import { errorNotification } from '../hackerman/ErrorNotification'
+
+let LocalNotifications: any = null
 
 if (process.env.MODE === 'capacitor') {
+  // @ts-ignore
   import('@capacitor/core').then(
     ({ Plugins }) => {
       LocalNotifications = Plugins.LocalNotifications
@@ -128,41 +131,41 @@ export default defineComponent({
     })
 
     const selectedList = computed({
-      get: () => $store.state.settings.selectedList,
+      get: (): string => $store.state.settings.selectedList,
       set: value => {
         $store.commit('settings/setSelectedList', value)
       }
     })
 
     const selectedTags = computed({
-      get: () => $store.state.settings.selectedTags,
+      get: (): Array<string> => $store.state.settings.selectedTags,
       set: value => {
         $store.commit('settings/setSelectedTags', value)
       }
     })
 
     const allTagsFilter = computed({
-      get: () => $store.state.settings.allTagsFilter,
+      get: (): boolean => $store.state.settings.allTagsFilter,
       set: value => {
         $store.commit('settings/setAllTagsFilter', value)
       }
     })
 
-    const today = computed({
-      get: () => $store.getters['tasks/today']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
-    })
+    const today = computed(
+      () => $store.getters['tasks/today']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
+    )
 
-    const tomorrow = computed({
-      get: () => $store.getters['tasks/tomorrow']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
-    })
+    const tomorrow = computed(
+      () => $store.getters['tasks/tomorrow']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
+    )
 
-    const upcoming = computed({
-      get: () => $store.getters['tasks/upcoming']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
-    })
+    const upcoming = computed(
+      () => $store.getters['tasks/upcoming']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
+    )
 
-    const someday = computed({
-      get: () => $store.getters['tasks/someday']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
-    })
+    const someday = computed(
+      () => $store.getters['tasks/someday']($store, selectedList.value, selectedTags.value, allTagsFilter.value)
+    )
 
     const multiSelectEnabled = ref(false)
 
@@ -173,8 +176,8 @@ export default defineComponent({
         componentProps: {
           dialogTitle: 'Create Task',
           searchLabel: 'Title',
-          onCreate: (payload) => { createTask(payload) },
-          onSelect: (payload) => { openTask(payload.task) }
+          onCreate: (payload: any) => { createTask(payload) },
+          onSelect: (payload: any) => { openTask(payload.task) }
         }
       })
     }
@@ -182,7 +185,7 @@ export default defineComponent({
     function clearCompleted() {
       $store.dispatch('tasks/clearCompleted').
       then(
-        (response) => {
+        (response: any) => {
           $q.notify({
             color: 'positive',
             position: 'top',
@@ -190,32 +193,20 @@ export default defineComponent({
             icon: 'fas fa-tasks'
           })
         },
-        (error) => {
-          // TODO: This is reused, DRY it up
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to clear completed tasks: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+        (error: any) => {
+          errorNotification(error, 'Failed to clear completed tasks')
         }
       )
     }
 
-    function createTask(payload) {
+    function createTask(payload: TaskInterface) {
       $store.dispatch('tasks/create', {
         title: payload.title,
         list_id: payload.list_id,
         tag_ids: payload.tag_ids
       }).
       then(
-        (response) => {
+        (response: any) => {
           $q.notify({
             color: 'positive',
             position: 'top',
@@ -223,25 +214,13 @@ export default defineComponent({
             icon: 'fas fa-tasks'
           })
         },
-        (error) => {
-          // TODO: This is reused, DRY it up
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to create task: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+        (error: any) => {
+          errorNotification(error, 'Failed to create task')
         }
       )
     }
 
-    function openTask(task) {
+    function openTask(task: TaskInterface) {
       $q.dialog({
         component: CurrentTaskDialog,
 

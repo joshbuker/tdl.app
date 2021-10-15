@@ -152,7 +152,6 @@
 
 <script>
 import { useDialogPluginComponent } from 'quasar'
-import { TaskModel } from 'components/models';
 import QDatetimeInput from 'components/QDatetimeInput.vue';
 import TaskSearchDialog from 'components/TaskSearchDialog.vue';
 import {
@@ -168,13 +167,14 @@ import Task from '../models/task'
 import Tag from '../models/tag'
 import { useQuasar } from 'quasar'
 import { useStore } from '../store'
+import { errorNotification } from '../hackerman/ErrorNotification'
 
 export default {
   components: { QDatetimeInput },
 
   props: {
     task: {
-      type: TaskModel,
+      type: Object,
       required: true
     }
   },
@@ -247,18 +247,7 @@ export default {
           onDialogOK()
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to mark task as complete: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to mark task as complete')
         }
       )
     }
@@ -270,18 +259,7 @@ export default {
           onDialogOK()
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to mark task as incomplete: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to mark task as incomplete')
         }
       )
     }
@@ -304,18 +282,7 @@ export default {
             onDialogOK()
           },
           (error) => {
-            let errorMessage = ''
-            if (typeof error.response !== 'undefined') {
-              errorMessage = error.response.data.error
-            } else {
-              errorMessage = `Failed to delete task: ${error.message}`
-            }
-            $q.notify({
-              color: 'negative',
-              position: 'top',
-              message: errorMessage,
-              icon: 'report_problem'
-            })
+            errorNotification(error, 'Failed to delete task')
           }
         )
       })
@@ -333,18 +300,7 @@ export default {
           setCurrentTask(currentTask.value)
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to update task title: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to update task title')
         }
       )
     }
@@ -359,18 +315,7 @@ export default {
           setCurrentTask(currentTask.value)
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to update task tags: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to update task tags')
         }
       )
     }
@@ -385,18 +330,7 @@ export default {
           setCurrentTask(currentTask.value)
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to update task list: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to update task list')
         }
       )
     }
@@ -413,18 +347,7 @@ export default {
           setCurrentTask(currentTask.value)
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to update task notes: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to update task notes')
         }
       )
     }
@@ -441,18 +364,7 @@ export default {
           setCurrentTask(currentTask.value)
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to update task review at: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to update task review at')
         }
       )
     }
@@ -469,18 +381,7 @@ export default {
           setCurrentTask(currentTask.value)
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to update task remind me at: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to update task remind me at')
         }
       )
     }
@@ -497,18 +398,7 @@ export default {
           setCurrentTask(currentTask.value)
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to update task prioritize at: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to update task prioritize at')
         }
       )
     }
@@ -525,18 +415,7 @@ export default {
           setCurrentTask(currentTask.value)
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to update task deadline at: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to update task deadline at')
         }
       )
     }
@@ -591,18 +470,7 @@ export default {
           })
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to add prereq: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to add prereq')
         }
       )
     }
@@ -629,25 +497,14 @@ export default {
           })
         },
         (error) => {
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to add postreq: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to add postreq')
         }
       )
     }
 
     function removePrereq(task) {
       $q.dialog({
-        title: `Remove prerequisite`,
+        title: 'Remove prerequisite',
         message: 'Are you sure?',
         ok: {
           label: 'Remove',
@@ -672,19 +529,7 @@ export default {
             })
           },
           (error) => {
-            // TODO: This is reused, DRY it up
-            let errorMessage = ''
-            if (typeof error.response !== 'undefined') {
-              errorMessage = error.response.data.error
-            } else {
-              errorMessage = `Failed to remove prerequisite: ${error.message}`
-            }
-            $q.notify({
-              color: 'negative',
-              position: 'top',
-              message: errorMessage,
-              icon: 'report_problem'
-            })
+            errorNotification(error, 'Failed to remove prerequisite')
           }
         )
       })
@@ -692,7 +537,7 @@ export default {
 
     function removePostreq(task) {
       $q.dialog({
-        title: `Remove postrequisite`,
+        title: 'Remove postrequisite',
         message: 'Are you sure?',
         ok: {
           label: 'Remove',
@@ -717,19 +562,7 @@ export default {
             })
           },
           (error) => {
-            // TODO: This is reused, DRY it up
-            let errorMessage = ''
-            if (typeof error.response !== 'undefined') {
-              errorMessage = error.response.data.error
-            } else {
-              errorMessage = `Failed to remove postrequisite: ${error.message}`
-            }
-            $q.notify({
-              color: 'negative',
-              position: 'top',
-              message: errorMessage,
-              icon: 'report_problem'
-            })
+            errorNotification(error, 'Failed to remove postrequisite')
           }
         )
       })

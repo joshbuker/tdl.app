@@ -83,7 +83,7 @@ const actions: ActionTree<TagsStateInterface, StateInterface> = {
   async syncOrdering({ commit, rootGetters }) {
     return new Promise(
       (resolve, reject) => {
-        api.patch(`/tags/sync-ordering`,
+        api.patch('/tags/sync-ordering',
           {
             tags: this.$repo(Tag).with('tasks').orderBy('order').orderBy('title').get().map((element, index, array) => {
               return { id: element.id, order: index }

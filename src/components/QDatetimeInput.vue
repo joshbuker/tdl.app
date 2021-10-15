@@ -56,30 +56,27 @@ export default defineComponent({
         }
       },
       set: (value) => {
-        console.log(value)
         if (!value) {
           datetime.value = ''
           return
         }
         let luxonDatetime = DateTime.fromFormat(value, DEFAULT_DATETIME_FORMAT)
-        console.log(luxonDatetime)
-        console.log(luxonDatetime.invalid)
-        console.log(luxonDatetime.invalid === null)
+        // @ts-ignore
         if (luxonDatetime.invalid === null) {
           parseDatetime(luxonDatetime)
         }
       }
     })
 
-    function parseDatetime(updatedDatetime) {
+    function parseDatetime(updatedDatetime: DateTime | Date | string) {
       if (updatedDatetime instanceof DateTime) {
         datetime.value = updatedDatetime.toISO()
       } else if (updatedDatetime instanceof Date) {
         datetime.value = DateTime.fromJSDate(updatedDatetime).toISO()
-      } else if (typeof updatedDatetime === 'string' || updatedDatetime instanceof String) {
+      } else if (typeof updatedDatetime === 'string') {
         datetime.value = updatedDatetime
       } else {
-        datetime.value = null
+        datetime.value = ''
       }
     }
 
@@ -87,11 +84,9 @@ export default defineComponent({
       showPicker.value = false
     }
 
-    function onSave(updatedDatetime) {
-      // console.log(updatedDatetime)
+    function onSave(updatedDatetime: string) {
       showPicker.value = false
       datetime.value = updatedDatetime
-      // parseDatetime(updatedDatetime)
     }
 
     watch(

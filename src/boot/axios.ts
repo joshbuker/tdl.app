@@ -14,7 +14,7 @@ declare module '@vue/runtime-core' {
 // "export default () => {}" function below (which runs individually
 // for each client)
 // FIXME: Nested if statements are a code smell, fix it.
-let api = null
+let api: AxiosInstance
 if (process.env.DEV) {
   if (process.env.MODE === 'capacitor') {
     api = axios.create({ baseURL: 'http://10.0.2.2:3000' })

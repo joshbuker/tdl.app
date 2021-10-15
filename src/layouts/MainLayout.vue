@@ -76,6 +76,7 @@ import { computed, defineComponent, ref } from 'vue'
 import { api } from 'boot/axios'
 import ListsControl from 'components/ListsControl.vue'
 import TagsControl from 'components/TagsControl.vue'
+import { errorNotification } from '../hackerman/ErrorNotification'
 
 export default defineComponent({
   name: 'MainLayout',
@@ -120,31 +121,23 @@ export default defineComponent({
           Accept: 'application/json'
         }
       }).
-      then(() => {
-        sessionToken.value = ''
-        void $router.push({ path: '/login' })
-        $q.notify({
-          color: 'positive',
-          position: 'top',
-          message: 'Logged out successfully',
-          icon: 'fas fa-sign-out-alt'
-        })
-      }).
-      catch((error) => {
-        sessionToken.value = '' // Remove token even if it fails
-        var errorMessage = ''
-        if (typeof error.response !== 'undefined') {
-          errorMessage = error.response.data.error
-        } else {
-          errorMessage = `Failed to logout: ${error.message}`
+      then(
+        () => {
+          sessionToken.value = ''
+          void $router.push({ path: '/login' })
+          $q.notify({
+            color: 'positive',
+            position: 'top',
+            message: 'Logged out successfully',
+            icon: 'fas fa-sign-out-alt'
+          })
+        },
+        (error) => {
+          sessionToken.value = '' // Remove token even if it fails
+          void $router.push({ path: '/login' })
+          errorNotification(error, 'Failed to logout properly')
         }
-        $q.notify({
-          color: 'negative',
-          position: 'top',
-          message: errorMessage,
-          icon: 'report_problem'
-        })
-      })
+      )
     }
 
     return {

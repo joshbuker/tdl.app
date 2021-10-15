@@ -1,5 +1,5 @@
 export interface TagsStateInterface {
-  tags: array;
+  tags: Array<any>;
 }
 
 function state(): TagsStateInterface {

@@ -1,9 +1,10 @@
 import { MutationTree } from 'vuex';
 import { TagsStateInterface } from './state';
+import { Tag } from '../../components/models'
 
-function sortTags(state) {
+function sortTags(state: TagsStateInterface) {
   // Sort via order first, then alphabetically
-  state.tags = state.tags.sort((a, b) => {
+  state.tags = state.tags.sort((a: Tag, b: Tag) => {
     if (a.order < b.order) {
       return -1
     } else if (a.order > b.order) {
@@ -23,7 +24,7 @@ const mutation: MutationTree<TagsStateInterface> = {
     sortTags(state)
   },
 
-  setTags(state, tags: Array) {
+  setTags(state, tags: Array<Tag>) {
     state.tags = tags
   },
 
@@ -36,7 +37,7 @@ const mutation: MutationTree<TagsStateInterface> = {
     sortTags(state)
   },
 
-  removeTag(state, id: Integer) {
+  removeTag(state, id: number) {
     const index = state.tags.findIndex(
       (element) => { return (element.id == id) }
     )

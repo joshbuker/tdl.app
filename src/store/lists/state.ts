@@ -1,5 +1,5 @@
 export interface ListsStateInterface {
-  lists: array;
+  lists: Array<any>;
 }
 
 function state(): ListsStateInterface {

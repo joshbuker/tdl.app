@@ -1,7 +1,7 @@
 export interface SettingsStateInterface {
   username: string;
   selectedList: string;
-  selectedTags: array;
+  selectedTags: Array<string>;
   allTagsFilter: boolean;
 }
 
