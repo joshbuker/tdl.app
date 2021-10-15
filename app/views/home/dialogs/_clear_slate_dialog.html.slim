@@ -1,0 +1,15 @@
+v-dialog[v-model='clearSlateDialog' persistent :fullscreen='$vuetify.breakpoint.mobile']
+  v-card.d-flex.flex-column[:tile='$vuetify.breakpoint.mobile']
+    v-toolbar[dark color='primary' style='max-height: 56px;']
+      v-spacer
+      v-btn[:disabled='reviewWaiting == true' fab dark @click='endReview']
+        v-icon
+          | fa-close
+    v-card-text.flex-grow-1
+      v-datetime-picker[label='Clear until' v-model='clearSlateUntil' @input='updateClearSlateUntil']
+    v-divider
+    v-card-actions.justify-center
+      v-btn color='primary'
+        | Clear Slate
+      v-btn color='secondary'
+        | Cancel

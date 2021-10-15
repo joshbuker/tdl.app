@@ -64,6 +64,7 @@ const getters = {
                 )}
               )
             )
+          // Otherwise match if it has ANY tag that matches
           } else {
             return (
               tags.some(

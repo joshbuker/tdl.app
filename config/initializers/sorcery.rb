@@ -12,7 +12,7 @@ Rails.application.config.sorcery.submodules = [
 
 # Here you can configure each submodule's features.
 Rails.application.config.sorcery.configure do |config|
-  config.cookie_domain = 'tdl.app'
+  config.cookie_domain = 'legacy.tdl.app'
   config.user_class = 'User'
 
   config.user_config do |user|
