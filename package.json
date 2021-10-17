@@ -7,16 +7,22 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "build": "quasar build",
+    "heroku-postbuild": "yarn install && yarn build",
+    "start": "node server.js"
   },
   "dependencies": {
     "@quasar/extras": "^1.10.8",
     "@vuex-orm/core": "^1.0.0-draft.14",
     "axios": "^0.21.1",
+    "connect-history-api-fallback": "^1.6.0",
     "core-js": "^3.6.5",
+    "express": "^4.17.1",
     "fuse.js": "^6.4.6",
     "luxon": "^2.0.2",
     "quasar": "^2.0.1",
+    "serve-static": "^1.14.1",
     "vue-i18n": "^9.0.0-beta.0",
     "vuedraggable": "^4.0.3",
     "vuex": "^4.0.1",
