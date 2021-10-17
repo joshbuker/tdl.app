@@ -4,6 +4,9 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in
   # config/application.rb.
 
+  # Only allow requests from the official domain
+  config.allowed_cors_origins = ['https://web.tdl.app']
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 

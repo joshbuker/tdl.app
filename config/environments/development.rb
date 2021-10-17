@@ -28,6 +28,15 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
+  # The capacitor simulation seems to struggle with CORS, so just allow everything
+  config.allowed_cors_origins = ['*']
+  # FIXME: Use something like this instead
+  # config.allowed_cors_origins = [
+  #   'http://localhost:8080',
+  #   'http://192.168.*.*:8080',
+  #   'http://127.0.0.1:*'
+  # ]
+
   # Store uploaded files on the local file system (see config/storage.yml for
   # options).
   config.active_storage.service = :local

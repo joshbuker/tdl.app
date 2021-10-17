@@ -23,6 +23,11 @@ Rails.application.configure do
     'Cache-Control' => "public, max-age=#{1.hour.to_i}"
   }
 
+  # This is a PITA to get right, so allow everything.
+  config.allowed_cors_origins = ['*']
+  # FIXME: Use something like this instead
+  # config.allowed_cors_origins = ['http://localhost:8080']
+
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
