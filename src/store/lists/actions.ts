@@ -69,7 +69,7 @@ const actions: ActionTree<ListsStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('updateList', response.data)
+            this.$repo(List).save(response.data)
             resolve(response)
           },
           (error) => {
@@ -112,8 +112,7 @@ const actions: ActionTree<ListsStateInterface, StateInterface> = {
       headers: { Authorization: rootGetters['authentication/bearerToken'] },
       params: {}
     })
-    commit('setLists', response.data)
-    this.$repo(List).save(response.data)
+    this.$repo(List).fresh(response.data)
     return response
   },
 };
