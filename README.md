@@ -1,4 +1,4 @@
-# TDL App (www.tdl.app)
+# TDL App (web.tdl.app)
 
 A todo list app with Big Brain Energy.
 
