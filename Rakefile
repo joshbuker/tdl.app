@@ -3,9 +3,12 @@
 # available to Rake.
 
 require_relative 'config/application'
-require 'rubocop/rake_task'
-RuboCop::RakeTask.new
+
+if Gem.loaded_specs.has_key?('rubocop-rspec')
+  require 'rubocop/rake_task'
+  RuboCop::RakeTask.new
+end
 
 Rails.application.load_tasks
 
-task default: [:rubocop, :spec]
+task default: [:rubocop, :spec] if Gem.loaded_specs.has_key?('rubocop-rspec')
