@@ -156,7 +156,7 @@
               :done="step > 4"
               :header-nav="step > 4"
             >
-              ReCAPTCHA box goes here
+              <q-recaptcha :site-key="recaptchaSiteKey" />
 
               <q-stepper-navigation>
                 <q-btn color="primary" :label="$t('requestAccess')" />
@@ -172,9 +172,11 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import QRecaptcha from 'components/QRecaptcha.vue'
 
 export default defineComponent({
   name: 'PageRegister',
+  components: { QRecaptcha },
 
   preFetch({ store, redirect }) {
     const isAuthenticated =
@@ -193,8 +195,9 @@ export default defineComponent({
     const email = ref('')
     const reasonForInterest = ref('')
     const versionInterest = ref('')
+    const recaptchaSiteKey = process.env.RECAPTCHA_SITE_KEY
 
-    return { step, name, email, reasonForInterest, versionInterest };
+    return { step, name, email, reasonForInterest, versionInterest, recaptchaSiteKey };
   }
 });
 </script>
