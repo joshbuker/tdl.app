@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   mount Rswag::Ui::Engine  => '/docs'
   mount Rswag::Api::Engine => '/docs'
 
+  root to: redirect('https://web.tdl.app')
+
   # Default to json for all requests
   defaults format: :json do
     # Sync Ordering
