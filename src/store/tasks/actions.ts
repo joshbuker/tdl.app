@@ -12,7 +12,7 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
       params: {}
     })
     commit('setTasks', response.data)
-    this.$repo(Task).save(response.data)
+    this.$repo(Task).fresh(response.data)
     return response
   },
 

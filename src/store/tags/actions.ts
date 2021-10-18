@@ -113,7 +113,7 @@ const actions: ActionTree<TagsStateInterface, StateInterface> = {
       params: {}
     })
     commit('setTags', response.data)
-    this.$repo(Tag).save(response.data)
+    this.$repo(Tag).fresh(response.data)
     return response
   },
 };
