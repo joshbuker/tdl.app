@@ -22,11 +22,14 @@ export default defineComponent({
       required: true
     }
   },
+  // https://github.com/DanSnow/vue-recaptcha/blob/master/src/Recaptcha.js
+  // https://v3.vuejs.org/api/composition-api.html#lifecycle-hooks
   setup(props) {
     onBeforeMount(
       () => {
         // Force rerender on hot reload by removing and re-adding script
         if(document.getElementById('recaptcha')) {
+          // @ts-ignore
           document.getElementById('recaptcha').remove()
         }
         let script = document.createElement('script')

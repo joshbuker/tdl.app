@@ -175,6 +175,58 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
     )
   },
 
+  async createPrereq({ commit, dispatch, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        dispatch('create', options.taskOptions).
+        then(
+          (response) => {
+            dispatch('addPrereq', {
+              id: options.id,
+              pre_task_id: response.data.id
+            }).then(
+              (response) => {
+                resolve(response)
+              },
+              (error) => {
+                reject(error)
+              }
+            )
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
+  async createPostreq({ commit, dispatch, rootGetters }, options) {
+    return new Promise(
+      (resolve, reject) => {
+        dispatch('create', options.taskOptions).
+        then(
+          (response) => {
+            dispatch('addPostreq', {
+              id: options.id,
+              post_task_id: response.data.id
+            }).then(
+              (response) => {
+                resolve(response)
+              },
+              (error) => {
+                reject(error)
+              }
+            )
+          },
+          (error) => {
+            reject(error)
+          }
+        )
+      }
+    )
+  },
+
   async update({ commit, rootGetters }, options) {
     return new Promise(
       (resolve, reject) => {

@@ -448,8 +448,26 @@ export default {
       })
     }
 
-    function createPrereq(title) {
-      console.log(title)
+    function createPrereq(payload) {
+      $store.dispatch('tasks/createPrereq', {
+        taskOptions: payload.options,
+        id: currentTask.value.id
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+          payload.callback()
+          $q.notify({
+            color: 'positive',
+            position: 'top',
+            message: 'Created new prereq',
+            icon: 'fas fa-tasks'
+          })
+        },
+        (error) => {
+          errorNotification(error, 'Failed to create prereq')
+        }
+      )
     }
 
     function addPrereq(payload) {
@@ -475,8 +493,26 @@ export default {
       )
     }
 
-    function createPostreq(title) {
-      console.log(title)
+    function createPostreq(payload) {
+      $store.dispatch('tasks/createPostreq', {
+        taskOptions: payload.options,
+        id: currentTask.value.id
+      }).
+      then(
+        (response) => {
+          setCurrentTask(currentTask.value)
+          payload.callback()
+          $q.notify({
+            color: 'positive',
+            position: 'top',
+            message: 'Created new postreq',
+            icon: 'fas fa-tasks'
+          })
+        },
+        (error) => {
+          errorNotification(error, 'Failed to create postreq')
+        }
+      )
     }
 
     function addPostreq(payload) {

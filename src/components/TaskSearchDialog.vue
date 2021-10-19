@@ -272,14 +272,21 @@ export default {
 
     function createTask() {
       emit('create', {
-        title: search.value,
-        list_id: selectedList.value.id,
-        tag_ids: selectedTags.value.map((tag) => { return tag.id })
+        options: {
+          title: search.value,
+          list_id: selectedList.value.id,
+          tag_ids: selectedTags.value.map((tag) => { return tag.id })
+        },
+        callback: clearSearch
       })
     }
 
     function selectTask(task) {
       emit('select', { task: task, callback: hideTask })
+    }
+
+    function clearSearch() {
+      search.value = ''
     }
 
     function hideTask(task) {

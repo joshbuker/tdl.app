@@ -199,14 +199,11 @@ export default defineComponent({
       )
     }
 
-    function createTask(payload: TaskInterface) {
-      $store.dispatch('tasks/create', {
-        title: payload.title,
-        list_id: payload.list_id,
-        tag_ids: payload.tag_ids
-      }).
+    function createTask(payload: any) {
+      $store.dispatch('tasks/create', payload.options).
       then(
         (response: any) => {
+          payload.callback()
           $q.notify({
             color: 'positive',
             position: 'top',
