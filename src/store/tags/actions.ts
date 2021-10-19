@@ -85,9 +85,11 @@ const actions: ActionTree<TagsStateInterface, StateInterface> = {
       (resolve, reject) => {
         api.patch('/tags/sync-ordering',
           {
-            tags: this.$repo(Tag).with('tasks').orderBy('order').orderBy('title').get().map((element, index, array) => {
-              return { id: element.id, order: index }
-            })
+            tags: this.$repo(Tag).orderBy('order').orderBy('title').get().map(
+              (element, index, array) => {
+                return { id: element.id, order: index }
+              }
+            )
           },
           {
             headers: {
