@@ -1,11 +1,7 @@
-export interface ListsStateInterface {
-  lists: Array<any>;
-}
+export interface ListsStateInterface {}
 
 function state(): ListsStateInterface {
-  return {
-    lists: []
-  }
+  return {}
 };
 
 export default state;

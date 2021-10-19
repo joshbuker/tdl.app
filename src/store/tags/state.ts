@@ -1,11 +1,7 @@
-export interface TagsStateInterface {
-  tags: Array<any>;
-}
+export interface TagsStateInterface {}
 
 function state(): TagsStateInterface {
-  return {
-    tags: []
-  }
+  return {}
 };
 
 export default state;

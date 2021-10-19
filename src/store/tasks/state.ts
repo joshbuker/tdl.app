@@ -1,11 +1,7 @@
-export interface TasksStateInterface {
-  tasks: Array<any>;
-}
+export interface TasksStateInterface {}
 
 function state(): TasksStateInterface {
-  return {
-    tasks: []
-  }
+  return {}
 };
 
 export default state;

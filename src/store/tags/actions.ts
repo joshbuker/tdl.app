@@ -22,7 +22,7 @@ const actions: ActionTree<TagsStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('addTag', response.data)
+            this.$repo(Tag).save(response.data)
             resolve(response)
           },
           (error) => {
@@ -43,7 +43,7 @@ const actions: ActionTree<TagsStateInterface, StateInterface> = {
         }).
         then(
           (response) => {
-            commit('removeTag', options.id)
+            this.$repo(Tag).destroy(options.id)
             resolve(response)
           },
           (error) => {
@@ -69,7 +69,7 @@ const actions: ActionTree<TagsStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('updateTag', response.data)
+            this.$repo(Tag).save(response.data)
             resolve(response)
           },
           (error) => {
@@ -97,6 +97,7 @@ const actions: ActionTree<TagsStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
+            // TODO: Does this need to be syncing?
             resolve(response)
           },
           (error) => {

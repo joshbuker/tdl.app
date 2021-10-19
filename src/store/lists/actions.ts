@@ -22,7 +22,7 @@ const actions: ActionTree<ListsStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('addList', response.data)
+            this.$repo(List).save(response.data)
             resolve(response)
           },
           (error) => {
@@ -43,7 +43,7 @@ const actions: ActionTree<ListsStateInterface, StateInterface> = {
         }).
         then(
           (response) => {
-            commit('removeList', options.id)
+            this.$repo(Task).destroy(options.id)
             resolve(response)
           },
           (error) => {
@@ -97,6 +97,7 @@ const actions: ActionTree<ListsStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
+            // TODO: Does this need to be syncing?
             resolve(response)
           },
           (error) => {

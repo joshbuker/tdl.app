@@ -32,8 +32,7 @@ export default {
   emits: [
     // REQUIRED; need to specify some events that your
     // component will emit through useDialogPluginComponent()
-    ...useDialogPluginComponent.emits,
-    'save'
+    ...useDialogPluginComponent.emits
   ],
 
   setup (props) {

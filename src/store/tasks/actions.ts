@@ -11,7 +11,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
       headers: { Authorization: rootGetters['authentication/bearerToken'] },
       params: {}
     })
-    commit('setTasks', response.data)
     this.$repo(Task).fresh(response.data)
     return response
   },
@@ -29,7 +28,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('setTasks', response.data)
             this.$repo(Task).fresh(response.data)
             resolve(response)
           },
@@ -54,7 +52,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('updateTask', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },
@@ -79,7 +76,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('updateTask', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },
@@ -101,7 +97,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         }).
         then(
           (response) => {
-            commit('removeTask', options.id)
             this.$repo(Task).destroy(options.id)
             resolve(response)
           },
@@ -129,7 +124,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('updateTasks', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },
@@ -163,7 +157,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('addTask', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },
@@ -247,7 +240,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('updateTask', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },
@@ -274,7 +266,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('updateTask', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },
@@ -301,7 +292,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('updateTask', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },
@@ -328,7 +318,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('updateTasks', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },
@@ -355,7 +344,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         ).
         then(
           (response) => {
-            commit('updateTasks', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },
@@ -377,7 +365,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         }).
         then(
           (response) => {
-            commit('updateTasks', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },
@@ -399,7 +386,6 @@ const actions: ActionTree<TasksStateInterface, StateInterface> = {
         }).
         then(
           (response) => {
-            commit('updateTasks', response.data)
             this.$repo(Task).save(response.data)
             resolve(response)
           },
