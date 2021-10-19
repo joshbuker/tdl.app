@@ -82,6 +82,8 @@ import { Task as TaskInterface } from './models';
 import CurrentTaskDialog from 'components/CurrentTaskDialog.vue'
 import QDatetimeDialog from 'components/QDatetimeDialog.vue'
 
+import { errorNotification } from '../hackerman/ErrorNotification'
+
 export default defineComponent({
   name: 'TaskDocket',
   props: {
@@ -131,19 +133,7 @@ export default defineComponent({
               // Should we do anything? Notification?
             },
             (error) => {
-              // TODO: This is reused, DRY it up
-              let errorMessage = ''
-              if (typeof error.response !== 'undefined') {
-                errorMessage = error.response.data.error
-              } else {
-                errorMessage = `Failed to bulk update review at: ${error.message}`
-              }
-              $q.notify({
-                color: 'negative',
-                position: 'top',
-                message: errorMessage,
-                icon: 'report_problem'
-              })
+              errorNotification(error, 'Failed to bulk update review at')
             }
           )
         }

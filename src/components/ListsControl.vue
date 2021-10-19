@@ -80,6 +80,8 @@ import Task from '../models/task'
 
 import { List as ListInterface } from './models'
 
+import { errorNotification } from '../hackerman/ErrorNotification'
+
 export default defineComponent({
   name: 'ListsControl',
   components: { draggable },
@@ -129,19 +131,7 @@ export default defineComponent({
           })
         },
         (error) => {
-          // TODO: This is reused, DRY it up
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to add list: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to add list')
         }
       )
     }
@@ -185,19 +175,7 @@ export default defineComponent({
               })
             },
             (error) => {
-              // TODO: This is reused, DRY it up
-              let errorMessage = ''
-              if (typeof error.response !== 'undefined') {
-                errorMessage = error.response.data.error
-              } else {
-                errorMessage = `Failed to update list: ${error.message}`
-              }
-              $q.notify({
-                color: 'negative',
-                position: 'top',
-                message: errorMessage,
-                icon: 'report_problem'
-              })
+              errorNotification(error, 'Failed to update list')
             }
           )
         }
@@ -231,19 +209,7 @@ export default defineComponent({
             })
           },
           (error) => {
-            // TODO: This is reused, DRY it up
-            let errorMessage = ''
-            if (typeof error.response !== 'undefined') {
-              errorMessage = error.response.data.error
-            } else {
-              errorMessage = `Failed to remove list: ${error.message}`
-            }
-            $q.notify({
-              color: 'negative',
-              position: 'top',
-              message: errorMessage,
-              icon: 'report_problem'
-            })
+            errorNotification(error, 'Failed to remove list')
           }
         )
       })
@@ -261,19 +227,7 @@ export default defineComponent({
           })
         },
         (error) => {
-          // TODO: This is reused, DRY it up
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to sync list ordering: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to sync list ordering')
         }
       )
     }

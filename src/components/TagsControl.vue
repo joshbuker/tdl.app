@@ -106,6 +106,8 @@ import { Tag as TagInterface } from './models'
 import Tag from '../models/tag'
 import Task from '../models/task'
 
+import { errorNotification } from '../hackerman/ErrorNotification'
+
 export default defineComponent({
   name: 'TagsControl',
   components: { draggable },
@@ -169,19 +171,7 @@ export default defineComponent({
           })
         },
         (error) => {
-          // TODO: This is reused, DRY it up
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to add tag: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to add tag')
         }
       )
     }
@@ -226,19 +216,7 @@ export default defineComponent({
               })
             },
             (error) => {
-              // TODO: This is reused, DRY it up
-              let errorMessage = ''
-              if (typeof error.response !== 'undefined') {
-                errorMessage = error.response.data.error
-              } else {
-                errorMessage = `Failed to update tag: ${error.message}`
-              }
-              $q.notify({
-                color: 'negative',
-                position: 'top',
-                message: errorMessage,
-                icon: 'report_problem'
-              })
+              errorNotification(error, 'Failed to update tag')
             }
           )
         }
@@ -272,19 +250,7 @@ export default defineComponent({
             })
           },
           (error) => {
-            // TODO: This is reused, DRY it up
-            let errorMessage = ''
-            if (typeof error.response !== 'undefined') {
-              errorMessage = error.response.data.error
-            } else {
-              errorMessage = `Failed to remove tag: ${error.message}`
-            }
-            $q.notify({
-              color: 'negative',
-              position: 'top',
-              message: errorMessage,
-              icon: 'report_problem'
-            })
+            errorNotification(error, 'Failed to remove tag')
           }
         )
       })
@@ -302,19 +268,7 @@ export default defineComponent({
           })
         },
         (error) => {
-          // TODO: This is reused, DRY it up
-          let errorMessage = ''
-          if (typeof error.response !== 'undefined') {
-            errorMessage = error.response.data.error
-          } else {
-            errorMessage = `Failed to sync tag ordering: ${error.message}`
-          }
-          $q.notify({
-            color: 'negative',
-            position: 'top',
-            message: errorMessage,
-            icon: 'report_problem'
-          })
+          errorNotification(error, 'Failed to sync tag ordering')
         }
       )
     }
