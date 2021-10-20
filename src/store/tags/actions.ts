@@ -115,7 +115,6 @@ const actions: ActionTree<TagsStateInterface, StateInterface> = {
       headers: { Authorization: rootGetters['authentication/bearerToken'] },
       params: {}
     })
-    commit('setTags', response.data)
     this.$repo(Tag).fresh(response.data)
     return response
   },

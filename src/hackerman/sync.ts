@@ -7,6 +7,18 @@ export function syncWithBackend(store: any) {
       errorNotification(error, 'Failed to fetch username')
     }
   )
+  store.dispatch('settings/fetchTimeZone').
+  catch(
+    (error: any) => {
+      errorNotification(error, 'Failed to fetch time zone')
+    }
+  )
+  store.dispatch('settings/fetchTimeZones').
+  catch(
+    (error: any) => {
+      errorNotification(error, 'Failed to fetch time zones')
+    }
+  )
   store.dispatch('lists/fetchLists').
   catch(
     (error: any) => {

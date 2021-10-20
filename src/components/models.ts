@@ -22,3 +22,8 @@ export interface Task {
   completed_at: string;
   prereqs: Array<any>;
 }
+
+export interface TimeZone {
+  name: string;
+  value: string;
+}

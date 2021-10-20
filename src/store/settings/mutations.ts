@@ -1,9 +1,21 @@
 import { MutationTree } from 'vuex';
 import { SettingsStateInterface } from './state';
+import { TimeZone } from '../../components/models'
+import { Settings } from 'luxon'
 
 const mutation: MutationTree<SettingsStateInterface> = {
   setUsername(state, username: string) {
     state.username = username
+  },
+
+  setTimeZone(state, timeZone: string) {
+    state.timeZone = timeZone
+    // Also set default time zone for Luxon
+    Settings.defaultZone = timeZone
+  },
+
+  setTimeZones(state, timeZones: Array<TimeZone>) {
+    state.timeZones = timeZones
   },
 
   setSelectedList(state, selectedList: string) {

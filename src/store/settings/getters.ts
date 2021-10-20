@@ -7,6 +7,14 @@ const getters: GetterTree<SettingsStateInterface, StateInterface> = {
     return state.username;
   },
 
+  timeZone (state) {
+    return state.timeZone;
+  },
+
+  timeZones (state) {
+    return state.timeZones;
+  },
+
   selectedList (state) {
     return state.selectedList;
   },
