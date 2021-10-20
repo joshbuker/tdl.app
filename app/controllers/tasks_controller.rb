@@ -5,7 +5,11 @@ class TasksController < ApplicationController
   def index
     authorize Task
 
-    @tasks = policy_scope(Task).order(order: :asc, title: :asc)
+    @tasks = policy_scope(Task).
+      includes(:tags).
+      includes(:prereqs).
+      includes(:postreqs).
+      order(order: :asc, title: :asc)
   end
 
   def clear_completed
