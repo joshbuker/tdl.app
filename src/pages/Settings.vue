@@ -44,6 +44,7 @@ import {
 import { useQuasar } from 'quasar'
 import { useStore } from '../store'
 import { DateTime } from 'luxon'
+import { errorNotification } from '../hackerman/ErrorNotification'
 
 export default defineComponent({
   name: 'PageSettings',
@@ -65,7 +66,8 @@ export default defineComponent({
       () => $store.state.settings.timeZones
     )
 
-    function timeZoneName(tzToFind) {
+    function timeZoneName(tzToFind: any) {
+      // @ts-ignore
       return timeZones.value.find(
         (tz) => {
           return tz.value === tzToFind
