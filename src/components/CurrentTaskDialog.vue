@@ -427,7 +427,7 @@ export default {
         componentProps: {
           dialogTitle: 'Add Prerequisite',
           task: currentTask.value,
-          excludeFromSearch: [currentTask.value, ...currentTask.value.prereqs, ...currentTask.value.postreqs],
+          excludeFromSearch: [currentTask.value],
           onCreate: (payload) => { createPrereq(payload) },
           onSelect: (payload) => { addPrereq(payload) }
         }
@@ -441,7 +441,7 @@ export default {
         componentProps: {
           dialogTitle: 'Add Postrequisite',
           task: currentTask.value,
-          excludeFromSearch: [currentTask.value, ...currentTask.value.prereqs, ...currentTask.value.postreqs],
+          excludeFromSearch: [currentTask.value],
           onCreate: (payload) => { createPostreq(payload) },
           onSelect: (payload) => { addPostreq(payload) }
         }

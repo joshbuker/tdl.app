@@ -201,7 +201,8 @@ export default {
     const results = ref([])
 
     const searchOptions = {
-      // findAllMatches: true,
+      isCaseSensitive: false,
+      ignoreLocation: true,
       keys: ['title']
     }
 
@@ -241,19 +242,22 @@ export default {
 
       const tasks = $store.$repo(Task).
         with('list').with('prereqs').with('postreqs').with('tags').get()
+
       const fuse = new Fuse(tasks, searchOptions)
+
       // unsanitized user input being fed into a library? what could go wrong.
       // FIXME: AKA this is a vuln waiting to happen, fix it.
       const run = fuse.search(search.value)
+
       results.value = tasks.filter(
         (task) => {
           return !excludeList.includes(task.id)
         }
       ).filter(
-        (task, index) => {
+        (task) => {
           return run.some(
-            (e) => {
-              return (e.refIndex === index)
+            (searchElement) => {
+              return (searchElement.item.id === task.id)
             }
           )
         }
