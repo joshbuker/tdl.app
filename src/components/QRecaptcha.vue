@@ -1,6 +1,5 @@
 <template>
   <div class="g-recaptcha" :data-sitekey="recaptchaSiteKey"></div>
-  <p v-if="true">{{ recaptchaSiteKey }}</p>
 </template>
 
 <script lang="ts">
