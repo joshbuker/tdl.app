@@ -1,5 +1,8 @@
 ---
 en:
+  access_requests:
+    create:
+      recaptcha_failed: Failed to verify recaptcha!
   user_sessions:
     create:
       failed: Failed to login

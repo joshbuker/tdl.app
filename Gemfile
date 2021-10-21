@@ -46,6 +46,9 @@ gem 'pundit'
 # Password Hashing
 gem 'sorcery-argon2'
 
+# Bot prevention
+gem 'recaptcha'
+
 ##########################
 ## Environment Specific ##
 ##########################

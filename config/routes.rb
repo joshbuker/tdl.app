@@ -24,6 +24,9 @@ Rails.application.routes.draw do
     post 'verify/token' => 'user_sessions#verify_auth_token'
     post 'verify/app' => 'user_sessions#verify_authy_app'
 
+    # Access requests
+    post 'access-request' => 'access_requests#create'
+
     # Settings (merge with users controller?)
     get 'username' => 'settings#username'
     get 'time-zones' => 'settings#time_zones'
