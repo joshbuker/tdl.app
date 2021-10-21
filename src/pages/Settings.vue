@@ -49,6 +49,17 @@ import { errorNotification } from '../hackerman/ErrorNotification'
 export default defineComponent({
   name: 'PageSettings',
 
+  preFetch({ store, redirect }) {
+    const isAuthenticated =
+      (
+        store.state.authentication.sessionToken !== null &&
+        store.state.authentication.sessionToken.length > 0
+      )
+    if (!isAuthenticated) {
+      redirect({ path: '/login' })
+    }
+  },
+
   setup () {
     const $q = useQuasar()
     const $store = useStore()

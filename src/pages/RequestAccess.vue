@@ -13,7 +13,7 @@
       </q-card-section>
 
       <q-card-section>
-        <q-form class="q-gutter-md" autofocus>
+        <q-form class="q-gutter-md" @submit="onSubmit" autofocus>
           <q-stepper
             v-model="step"
             vertical
@@ -34,6 +34,10 @@
                 filled
                 :label="$t('name')"
                 class="q-my-md"
+                lazy-rules
+                :rules="[
+                  (val) => present(val) || 'Please enter your name'
+                ]"
               >
                 <template v-slot:prepend>
                   <q-icon name="fas fa-user" />
@@ -43,8 +47,13 @@
               <q-input
                 v-model="email"
                 filled
+                name="email"
                 :label="$t('email')"
                 type="email"
+                :rules="[
+                  val => present(val) || 'Please enter your email',
+                  val => validEmail(val) || 'Invalid email format'
+                ]"
               >
                 <template v-slot:prepend>
                   <q-icon name="email" />
@@ -52,7 +61,7 @@
               </q-input>
 
               <q-stepper-navigation>
-                <q-btn @click="step = 2" color="primary" label="Continue" />
+                <q-btn :disable="!stepOneComplete()" @click="step = 2" color="primary" label="Continue" />
               </q-stepper-navigation>
             </q-step>
 
@@ -68,7 +77,9 @@
                 filled
                 :label="$t('reasonForInterest')"
                 type="textarea"
-                class="q-my-md"
+                :rules="[
+                  val => present(val) || 'Please enter why you are interested in TDL App'
+                ]"
               >
                 <template v-slot:prepend>
                   <q-icon name="help" />
@@ -76,7 +87,7 @@
               </q-input>
 
               <q-stepper-navigation>
-                <q-btn @click="step = 3" color="primary" label="Continue" />
+                <q-btn :disable="!stepTwoComplete()" @click="step = 3" color="primary" label="Continue" />
                 <q-btn flat @click="step = 1" color="primary" label="Back" class="q-ml-sm" />
               </q-stepper-navigation>
             </q-step>
@@ -144,7 +155,7 @@
               </q-list>
 
               <q-stepper-navigation>
-                <q-btn @click="step = 4" color="primary" label="Continue" />
+                <q-btn :disable="!stepThreeComplete()" @click="step = 4" color="primary" label="Continue" />
                 <q-btn flat @click="step = 2" color="primary" label="Back" class="q-ml-sm" />
               </q-stepper-navigation>
             </q-step>
@@ -156,10 +167,12 @@
               :done="step > 4"
               :header-nav="step > 4"
             >
-              <q-recaptcha :site-key="recaptchaSiteKey" />
-
+              <p>This site is protected by reCAPTCHA and the Google
+                <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+                <a href="https://policies.google.com/terms">Terms of Service</a> apply.
+              </p>
               <q-stepper-navigation>
-                <q-btn color="primary" :label="$t('requestAccess')" />
+                <q-btn color="primary" :label="$t('requestAccess')" type="submit" />
                 <q-btn flat @click="step = 3" color="primary" label="Back" class="q-ml-sm" />
               </q-stepper-navigation>
             </q-step>
@@ -172,11 +185,16 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import QRecaptcha from 'components/QRecaptcha.vue'
+import { useQuasar } from 'quasar'
+import { useStore } from '../store'
+import { useRouter } from 'vue-router'
+import { useReCaptcha } from 'vue-recaptcha-v3'
+import { api } from 'boot/axios'
+
+import { errorNotification } from '../hackerman/ErrorNotification'
 
 export default defineComponent({
   name: 'PageRegister',
-  components: { QRecaptcha },
 
   preFetch({ store, redirect }) {
     const isAuthenticated =
@@ -190,14 +208,87 @@ export default defineComponent({
   },
 
   setup() {
+    const $q = useQuasar()
+    const $store = useStore()
+    const $router = useRouter()
+    const { executeRecaptcha, recaptchaLoaded, instance } = useReCaptcha()
+
     const step = ref(1)
     const name = ref('')
     const email = ref('')
     const reasonForInterest = ref('')
     const versionInterest = ref('')
-    const recaptchaSiteKey = process.env.RECAPTCHA_SITE_KEY
+    const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-    return { step, name, email, reasonForInterest, versionInterest, recaptchaSiteKey };
+    function present(val) {
+      return val && val.length > 0
+    }
+
+    function validEmail(val) {
+      return emailRegex.test(val)
+    }
+
+    function stepOneComplete() {
+      return (
+        present(name.value) &&
+        present(email.value) &&
+        validEmail(email.value)
+      )
+    }
+
+    function stepTwoComplete() {
+      return present(reasonForInterest.value)
+    }
+
+    function stepThreeComplete() {
+      return present(versionInterest.value)
+    }
+
+    async function onSubmit() {
+      await recaptchaLoaded()
+      const recaptcha = await executeRecaptcha('accessRequest')
+
+      api.post('/access-request', {
+        name: name.value,
+        email: email.value,
+        reason_for_interest: reasonForInterest.value,
+        version: versionInterest.value,
+        recaptcha: recaptcha
+      }).then(
+        (response) => {
+          step.value = 1
+          name.value = ''
+          email.value = ''
+          reasonForInterest.value = ''
+          versionInterest.value = ''
+          void $router.push({ path: '/login' })
+          // clear out form and redirect to login
+          $q.notify({
+            color: 'positive',
+            position: 'top',
+            message: 'Successfully requested access!',
+            icon: 'fas fa-laptop-code'
+          })
+        },
+        (error) => {
+          errorNotification(error, 'Failed to request access')
+        }
+      )
+    }
+
+    return {
+      step,
+      name,
+      email,
+      present,
+      validEmail,
+      reasonForInterest,
+      versionInterest,
+      stepOneComplete,
+      stepTwoComplete,
+      stepThreeComplete,
+      onSubmit
+    };
   }
 });
 </script>
