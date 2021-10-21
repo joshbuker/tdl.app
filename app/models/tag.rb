@@ -11,4 +11,9 @@ class Tag < ApplicationRecord
 
   validates :title,
     uniqueness: { case_sensitive: false, scope: :user_id }
+
+  def randomize_color!
+    # Literal fucking witchcraft, turns three bytes into hexcode.
+    self.color = '#' + Random.bytes(3).unpack1('H*')
+  end
 end

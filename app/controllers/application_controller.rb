@@ -5,7 +5,8 @@ class ApplicationController < ActionController::API
   # Load Sorcery for Authentication
   authenticates_with_sorcery!
 
-  # Does JBuilder offer any on_load hooks that can let us do this in Sorcery?
+  # TODO: Does JBuilder offer any on_load hooks that can let us do this in
+  #       Sorcery?
   helper_method :current_user
 
   ##############################

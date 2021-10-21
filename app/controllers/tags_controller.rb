@@ -14,6 +14,7 @@ class TagsController < ApplicationController
   def create
     @tag = Tag.new(tag_params)
     @tag.user = current_user
+    @tag.randomize_color! if @tag.color.nil?
 
     authorize @tag
 

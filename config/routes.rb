@@ -24,8 +24,13 @@ Rails.application.routes.draw do
     post 'verify/token' => 'user_sessions#verify_auth_token'
     post 'verify/app' => 'user_sessions#verify_authy_app'
 
-    # Placeholder
+    # Settings (merge with users controller?)
     get 'username' => 'settings#username'
+    get 'time-zones' => 'settings#time_zones'
+
+    # TODO: Nest inside resources :users
+    get 'time-zone' => 'users#time_zone'
+    patch 'time-zone' => 'users#update_time_zone'
 
     post 'tasks/clear-completed' => 'tasks#clear_completed'
 
