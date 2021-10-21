@@ -1,7 +1,7 @@
 <template>
   <q-page class="row items-center justify-evenly">
     <q-card :class="$q.screen.lt.md ? 'fit': 'fit q-ma-md'" style="max-width: 1250px !important" :flat="$q.screen.lt.md" :square="$q.screen.lt.md">
-      <q-card-section class="bg-grey-8 text-white" v-if="!$q.screen.lt.sm">
+      <q-card-section class="bg-grey-8 text-white">
         <q-item>
           <q-item-section avatar>
             <q-icon name="fas fa-terminal" />
