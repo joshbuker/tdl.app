@@ -211,7 +211,8 @@ export default defineComponent({
     const $q = useQuasar()
     const $store = useStore()
     const $router = useRouter()
-    const { executeRecaptcha, recaptchaLoaded, instance } = useReCaptcha()
+    // @ts-ignore
+    const { executeRecaptcha, recaptchaLoaded } = useReCaptcha()
 
     const step = ref(1)
     const name = ref('')
@@ -220,11 +221,11 @@ export default defineComponent({
     const versionInterest = ref('')
     const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-    function present(val) {
+    function present(val: string) {
       return val && val.length > 0
     }
 
-    function validEmail(val) {
+    function validEmail(val: string) {
       return emailRegex.test(val)
     }
 
