@@ -56,6 +56,33 @@
               </q-chip>
             </div>
           </q-item-section>
+
+          <q-item-section avatar v-if="taskDue(task) || taskPriority(task)">
+            <template v-if="taskDue(task)">
+              <q-icon color="red" name="fas fa-exclamation-circle">
+                <q-tooltip
+                  anchor="center right"
+                  self="center left"
+                  :offset="[10, 10]"
+                  class="bg-red text-white"
+                >
+                  Task overdue!
+                </q-tooltip>
+              </q-icon>
+            </template>
+            <template v-else-if="taskPriority(task)">
+              <q-icon color="yellow" name="fas fa-exclamation-triangle">
+                <q-tooltip
+                  anchor="center right"
+                  self="center left"
+                  :offset="[10, 10]"
+                  class="bg-yellow text-black"
+                >
+                  Task high priority!
+                </q-tooltip>
+              </q-icon>
+            </template>
+          </q-item-section>
         </q-item>
         <template v-if="tasks.length == 0">
           <q-item clickable v-ripple>
@@ -79,6 +106,7 @@ import {
 import { useQuasar } from 'quasar'
 import { useStore } from '../store'
 import { Task as TaskInterface } from './models';
+import { DateTime } from 'luxon'
 import CurrentTaskDialog from 'components/CurrentTaskDialog.vue'
 import QDatetimeDialog from 'components/QDatetimeDialog.vue'
 
@@ -182,6 +210,20 @@ export default defineComponent({
       $store.commit('settings/toggleSelectedTag', title);
     }
 
+    function taskDue(task: TaskInterface) {
+      const currentTime = DateTime.local().toMillis()
+      const dueTime = DateTime.fromISO(task.deadline_at).toMillis()
+
+      return dueTime <= currentTime
+    }
+
+    function taskPriority(task: TaskInterface) {
+      const currentTime = DateTime.local().toMillis()
+      const dueTime = DateTime.fromISO(task.prioritize_at).toMillis()
+
+      return dueTime <= currentTime
+    }
+
     watch(
       () => props.tasks,
       (newValue) => {
@@ -195,7 +237,9 @@ export default defineComponent({
       selectedTasks,
       allTasksSelected,
       toggleTag,
-      textColor
+      textColor,
+      taskDue,
+      taskPriority
     };
   },
 });
