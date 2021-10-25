@@ -59,13 +59,12 @@
                 label="List"
               />
               <br>
-              <q-datetime-input v-model="reviewAt" label="Review at" />
-              <br>
-              <q-datetime-input v-model="remindMeAt" label="Remind me at" />
-              <br>
-              <q-datetime-input v-model="prioritizeAt" label="Prioritize at" />
-              <br>
-              <q-datetime-input v-model="deadlineAt" label="Deadline at" />
+              <q-input
+                v-model="notes"
+                filled
+                autogrow
+                label="Notes"
+              />
             </template>
 
             <br>
@@ -194,10 +193,7 @@ export default {
 
     let excludeList = props.excludeFromSearch.map((task) => { return task.id })
 
-    const reviewAt = ref('')
-    const remindMeAt = ref('')
-    const prioritizeAt = ref('')
-    const deadlineAt = ref('')
+    const notes = ref('')
 
     const search = ref('')
     const results = ref([])
@@ -281,7 +277,8 @@ export default {
         options: {
           title: search.value,
           list_id: selectedList.value.id,
-          tag_ids: selectedTags.value.map((tag) => { return tag.id })
+          tag_ids: selectedTags.value.map((tag) => { return tag.id }),
+          notes: notes.value
         },
         callback: clearSearch
       })
@@ -293,6 +290,7 @@ export default {
 
     function clearSearch() {
       search.value = ''
+      notes.value = ''
     }
 
     function hideTask(task) {
@@ -313,10 +311,7 @@ export default {
       textColor,
       advancedOptions,
       //
-      reviewAt,
-      remindMeAt,
-      prioritizeAt,
-      deadlineAt,
+      notes,
       //
       tags,
       lists,

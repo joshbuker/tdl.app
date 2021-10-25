@@ -108,6 +108,17 @@
               >
                 <q-item-section>
                   {{ pre.title }}
+                  <div>
+                    <q-chip
+                      clickable
+                      v-for="tag in pre.tags"
+                      :key="tag.id"
+                      icon="local_offer"
+                      :style="'color: ' + textColor(tag.color) + '; background-color: ' + tag.color"
+                    >
+                      {{ tag.title }}
+                    </q-chip>
+                  </div>
                 </q-item-section>
 
                 <q-item-section avatar>
@@ -136,6 +147,17 @@
               >
                 <q-item-section>
                   {{ post.title }}
+                  <div>
+                    <q-chip
+                      clickable
+                      v-for="tag in post.tags"
+                      :key="tag.id"
+                      icon="local_offer"
+                      :style="'color: ' + textColor(tag.color) + '; background-color: ' + tag.color"
+                    >
+                      {{ tag.title }}
+                    </q-chip>
+                  </div>
                 </q-item-section>
 
                 <q-item-section avatar>
@@ -225,7 +247,12 @@ export default {
     })
 
     function setCurrentTask(newTask) {
-      currentTask.value = $store.$repo(Task).with('list').with('prereqs').with('postreqs').with('tags').find(newTask.id)
+      currentTask.value = $store.$repo(Task).
+        with('list').
+        with('prereqs', (query) => { query.with('tags') }).
+        with('postreqs', (query) => { query.with('tags') }).
+        with('tags').
+        find(newTask.id)
       editTaskTitle.value = currentTask.value.title
       editTaskNotes.value = currentTask.value.notes
       editTaskReviewAt.value = currentTask.value.review_at

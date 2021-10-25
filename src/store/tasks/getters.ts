@@ -16,7 +16,11 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
 
   listTasks: (state) => (store: any, selectedList: string): Array<TaskInterface> => {
     return store.$repo(Task).
-      with('list').with('prereqs').with('postreqs').with('tags').get().
+      with('list').
+      with('prereqs', (query) => { query.with('tags') }).
+      with('postreqs', (query) => { query.with('tags') }).
+      with('tags').
+      get().
     filter(
       (task: TaskInterface) => {
         if(selectedList === 'All Tasks') {
