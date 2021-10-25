@@ -153,7 +153,7 @@ export default defineComponent({
     })
 
     const tagsFilter = computed({
-      get: (): boolean => $store.state.settings.tagsFilter,
+      get: (): string => $store.state.settings.tagsFilter,
       set: value => {
         $store.commit('settings/setTagsFilter', value)
       }
