@@ -23,8 +23,8 @@ const getters: GetterTree<SettingsStateInterface, StateInterface> = {
     return state.selectedTags;
   },
 
-  allTagsFilter (state) {
-    return state.allTagsFilter;
+  tagsFilter (state) {
+    return state.tagsFilter;
   }
 };
 

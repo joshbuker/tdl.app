@@ -1,11 +1,12 @@
 <template>
   <div class="row q-ma-sm justify-center">
     <q-btn-toggle
-      v-model="allTagsFilter"
+      v-model="tagsFilter"
       toggle-color="primary"
       :options="[
-        { label: 'All', value: true },
-        { label: 'Any', value: false }
+        { label: 'All', value: 'all' },
+        { label: 'Any', value: 'any' },
+        { label: 'None', value: 'none' }
       ]"
     />
   </div>
@@ -131,10 +132,10 @@ export default defineComponent({
         $store.commit('settings/setSelectedTags', value)
       }
     })
-    const allTagsFilter = computed({
-      get: () => $store.state.settings.allTagsFilter,
+    const tagsFilter = computed({
+      get: () => $store.state.settings.tagsFilter,
       set: value => {
-        $store.commit('settings/setAllTagsFilter', value)
+        $store.commit('settings/setTagsFilter', value)
       }
     })
 
@@ -283,7 +284,7 @@ export default defineComponent({
     }
 
     return {
-      allTagsFilter,
+      tagsFilter,
       clearTags,
       createTag,
       editMode,

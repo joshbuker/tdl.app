@@ -26,8 +26,8 @@ const mutation: MutationTree<SettingsStateInterface> = {
     state.selectedTags = selectedTags
   },
 
-  setAllTagsFilter(state, allTagsFilter: boolean) {
-    state.allTagsFilter = allTagsFilter
+  setTagsFilter(state, tagsFilter: boolean) {
+    state.tagsFilter = tagsFilter
   },
 
   clearTags(state) {

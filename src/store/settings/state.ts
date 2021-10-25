@@ -6,7 +6,7 @@ export interface SettingsStateInterface {
   timeZones: Array<TimeZone>;
   selectedList: string;
   selectedTags: Array<string>;
-  allTagsFilter: boolean;
+  tagsFilter: string;
 }
 
 function state(): SettingsStateInterface {
@@ -16,7 +16,7 @@ function state(): SettingsStateInterface {
     timeZones: [],
     selectedList: 'All Tasks',
     selectedTags: [],
-    allTagsFilter: true
+    tagsFilter: 'all'
   }
 };
 
