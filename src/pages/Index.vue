@@ -3,24 +3,31 @@
     <div class="row items-start justify-center text-right q-col-gutter-md q-ma-md">
       <div class="col-grow">
         <q-btn
+          icon="fas fa-sync"
+          label="Refresh"
+          color="primary"
+          class="q-ma-sm"
+          @click="refresh"
+        />
+        <q-btn
           icon="fas fa-plus"
           label="Create Task"
           color="positive"
-          class="q-mr-sm"
+          class="q-ma-sm"
           @click="openCreateTaskDialog"
         />
         <q-btn
           color="primary"
           icon="fas fa-check-double"
           label="Multi select"
-          class="q-mx-sm"
+          class="q-ma-sm"
           @click="multiSelectEnabled = !multiSelectEnabled"
         />
         <q-btn
           color="grey"
           icon="fas fa-times-circle"
           label="Clear Completed"
-          class="q-ml-sm"
+          class="q-ml-sm q-my-sm"
           @click="clearCompleted"
         />
       </div>
@@ -71,6 +78,7 @@ import CurrentTaskDialog from 'components/CurrentTaskDialog.vue'
 import TaskSearchDialog from 'components/TaskSearchDialog.vue';
 
 import { errorNotification } from '../hackerman/ErrorNotification'
+import { syncWithBackend } from '../hackerman/sync'
 
 let LocalNotifications: any = null
 
@@ -227,6 +235,10 @@ export default defineComponent({
       })
     }
 
+    function refresh() {
+      syncWithBackend($store)
+    }
+
     return {
       beepBoopIn5,
       clearCompleted,
@@ -236,7 +248,8 @@ export default defineComponent({
       upcoming,
       someday,
       multiSelectEnabled,
-      openCreateTaskDialog
+      openCreateTaskDialog,
+      refresh
     };
   }
 });
