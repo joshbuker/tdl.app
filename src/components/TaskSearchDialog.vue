@@ -129,7 +129,6 @@
 
 <script>
 import { useDialogPluginComponent } from 'quasar'
-import QDatetimeInput from 'components/QDatetimeInput.vue';
 import List from '../models/list'
 import Task from '../models/task'
 import Tag from '../models/tag'
@@ -147,7 +146,6 @@ import Fuse from 'fuse.js'
 import { textColor } from '../hackerman/TextColor'
 
 export default {
-  components: { QDatetimeInput },
   props: {
     dialogTitle: {
       type: String,
