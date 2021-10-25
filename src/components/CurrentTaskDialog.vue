@@ -168,6 +168,7 @@ import Tag from '../models/tag'
 import { useQuasar } from 'quasar'
 import { useStore } from '../store'
 import { errorNotification } from '../hackerman/ErrorNotification'
+import { textColor } from '../hackerman/TextColor'
 
 export default {
   components: { QDatetimeInput },
@@ -636,6 +637,8 @@ export default {
       //
       removePrereq,
       removePostreq,
+      //
+      textColor,
 
       // This is REQUIRED;
       // Need to inject these (from useDialogPluginComponent() call)

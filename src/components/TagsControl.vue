@@ -107,6 +107,7 @@ import Tag from '../models/tag'
 import Task from '../models/task'
 
 import { errorNotification } from '../hackerman/ErrorNotification'
+import { textColor } from '../hackerman/TextColor'
 
 export default defineComponent({
   name: 'TagsControl',
@@ -275,26 +276,6 @@ export default defineComponent({
 
     function taskCount(tag: TagInterface) {
       return $store.getters['tasks/nextUp']($store, selectedList.value, [tag.title]).length;
-    }
-
-    function textColor(backgroundColor: string) {
-      if(!backgroundColor || 0 === backgroundColor.length) {
-        return '#000000';
-      } else {
-        let input = backgroundColor.toString().replace('#', '');
-        if(input.length != 6) {
-          return '#000000';
-        } else {
-          let red = parseInt(input.substr(0,2), 16);
-          let green = parseInt(input.substr(2,2), 16);
-          let blue = parseInt(input.substr(4,2), 16);
-          // Luminance values for different hues are not equal.
-          let greyscale = red * 0.299 + green * 0.587 + blue * 0.114;
-          // Perceived midpoint for grey is higher than 128. (around 186)
-          let midpoint = 152;
-          return (greyscale > midpoint) ? '#000000' : '#ffffff';
-        }
-      }
     }
 
     function clearTags() {
