@@ -5,20 +5,20 @@ class TasksController < ApplicationController
   def index
     authorize Task
 
-    @tasks = policy_scope(Task).
-      includes(:tags).
-      includes(:prereqs).
-      includes(:postreqs).
-      order(order: :asc, title: :asc)
+    @tasks = policy_scope(Task)
+             .includes(:tags)
+             .includes(:prereqs)
+             .includes(:postreqs)
+             .order(order: :asc, title: :asc)
   end
 
   def clear_completed
     authorize Task
 
-    policy_scope(Task).
-      where(user: current_user).
-      where.not(completed_at: nil).
-      destroy_all
+    policy_scope(Task)
+      .where(user: current_user)
+      .where.not(completed_at: nil)
+      .destroy_all
 
     @tasks = policy_scope(Task).order(order: :asc, title: :asc)
 
@@ -44,6 +44,7 @@ class TasksController < ApplicationController
       params[:tag_ids].each do |tag_id|
         tag = allowed_tags.find_by(id: tag_id)
         raise Pundit::NotAuthorizedError if tag.nil?
+
         @task.tags << tag
       end
     end
@@ -148,6 +149,7 @@ class TasksController < ApplicationController
       params[:tags].each do |potential_tag|
         tag = allowed_tags.find { |t| t.id == potential_tag[:id] }
         raise Pundit::NotAuthorizedError if tag.nil?
+
         task_tags << tag
       end
     end
@@ -178,7 +180,10 @@ class TasksController < ApplicationController
     # TODO: Find the best way to test these edge cases / move them into the
     #       model so it can be unit tested.
     # :nocov:
-    raise ActionController::ParameterMissing, :task_ids if params[:task_ids].blank?
+    if params[:task_ids].blank?
+      raise ActionController::ParameterMissing,
+        :task_ids
+    end
 
     unless params[:task_ids].is_a?(Array)
       raise ArgumentError, 'Tasks must be an array'
@@ -202,7 +207,6 @@ class TasksController < ApplicationController
   rescue ArgumentError => e
     not_processable(e)
   end
-
 
   # FIXME: Pre/post req stuff should live in the rules controller
   def add_prerequisite

@@ -64,14 +64,14 @@ class Task < ApplicationRecord
     iso_8601(review_at)
   end
 
-  def get_all_pres
+  def all_pres
     # rtree - Recursive Tree
     sql = <<-SQL
       WITH RECURSIVE task_tree(id, rtree) AS (
         SELECT t1.id, ARRAY[t1.id]
         FROM tasks t1
           INNER JOIN rules t2 ON t1.id = t2.pre_id
-        WHERE post_id = #{self.id}
+        WHERE post_id = #{id}
         UNION ALL
         SELECT t1.id, rtree || t1.id
         FROM tasks t1
@@ -88,13 +88,13 @@ class Task < ApplicationRecord
     Task.find_by_sql(sql)
   end
 
-  def get_all_posts
+  def all_posts
     sql = <<-SQL
       WITH RECURSIVE task_tree(id, rtree) AS (
         SELECT t1.id, ARRAY[t1.id]
-        FROM tasks t1 
+        FROM tasks t1#{' '}
           INNER JOIN rules t2 ON t1.id = t2.post_id
-        WHERE pre_id = #{self.id}
+        WHERE pre_id = #{id}
         UNION ALL
         SELECT t1.id, rtree || t1.id
         FROM tasks AS t1

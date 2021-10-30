@@ -19,7 +19,7 @@ RSpec.describe AccessRequest do
     # FIXME: Not a fan of how enums work in Rails...
 
     context 'with good version' do
-      ['alpha', 'beta', 'release'].each do |version|
+      %w[alpha beta release].each do |version|
         context "\"#{version}\"" do
           subject(:record) { build :access_request, version: version }
 
@@ -35,12 +35,12 @@ RSpec.describe AccessRequest do
     end
 
     context 'with bad version' do
-      ['fake', 'rELeAsE', 'Beta'].each do |version|
+      %w[fake rELeAsE Beta].each do |version|
         context "\"#{version}\"" do
           subject(:record) { build :access_request, version: version }
 
-          it 'should raise an ArgumentError' do
-            expect{ subject }.to raise_error ArgumentError
+          it 'raises an ArgumentError' do
+            expect { subject }.to raise_error ArgumentError
           end
         end
       end

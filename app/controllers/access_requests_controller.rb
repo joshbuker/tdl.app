@@ -18,7 +18,7 @@ class AccessRequestsController < ApplicationController
   def recaptcha_passed?
     verify_recaptcha(
       response: params['recaptcha'],
-      action: 'accessRequest'
+      action:   'accessRequest'
     )
   end
 

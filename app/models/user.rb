@@ -83,6 +83,7 @@ class User < ApplicationRecord
 
   def js_time_zone
     return nil unless time_zone.present?
+
     ActiveSupport::TimeZone[time_zone].tzinfo.name
   end
 end

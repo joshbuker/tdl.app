@@ -28,7 +28,7 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
-  # The capacitor simulation seems to struggle with CORS, so just allow everything
+  # Capacitor simulation seems to struggle with CORS, so just allow everything
   config.allowed_cors_origins = ['*']
   # FIXME: Use something like this instead
   # config.allowed_cors_origins = [

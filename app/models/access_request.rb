@@ -4,7 +4,7 @@ class AccessRequest < ApplicationRecord
   validates :email,
     presence:         true,
     email_formatting: true,
-    uniqueness: { case_sensitive: false }
+    uniqueness:       { case_sensitive: false }
 
   validates :name, :reason_for_interest, :version,
     presence: true

@@ -14,6 +14,7 @@ class Rule < ApplicationRecord
 
   def different_tasks
     return unless pre == post
+
     errors.add(:base, 'A task cannot be its own pre/post!')
   end
 
@@ -25,9 +26,9 @@ class Rule < ApplicationRecord
     return unless pre.present? && post.present?
     return unless pre.persisted? && post.persisted?
 
-    if post.get_all_posts.include?(pre) || pre.get_all_pres.include?(post)
-      errors.add(:base, "Candidate prerequisite \"#{pre.title}\" is already a postrequisite of candidate postrequisite \"#{post.title}\"")
-    end
+	unless post.all_posts.exclude?(pre) && pre.all_pres.exclude?(post)
+   	  errors.add(:base, "\"#{pre.title}\" is already a postrequisite of \"#{post.title}\"")
+   	end
   end
 
   def redundant_rules
@@ -38,53 +39,18 @@ class Rule < ApplicationRecord
     return unless pre.present? && post.present?
     return unless pre.persisted? && post.persisted?
 
-    if post.get_all_pres.include?(pre) ||  pre.get_all_posts.include?(post)
-      errors.add(:base, "Candidate postrequisite \"#{post.title}\" is already a postrequisite of \"#{pre.title}\"")
-    end
+	unless post.all_pres.exclude?(pre) && pre.all_posts.exclude?(post)
+	  errors.add(:base, "\"#{post.title}\" is already a postrequisite of \"#{pre.title}\"")
+	end
   end
 
   def prune_redundant_rules
-    #validation
-    # B -> C -> D -> E
-    # A -> E
-    # A -> B (removes A -> E) pre: pre, post: post.get_all_posts
-    # if you're doing this: remove rules where pre: pre and post: post.get_all_posts
-    # remove rules where pre: post.get_all_posts and post: the post of that one ^
-
-    # getPosts().removeIf(t -> {
-    #     if(task.findBelow(t) != null) {
-    #         t.DEPENDENCY.removePre(this);
-    #         t.flagBelow();
-    #         flagAbove();
-    #         return true;
-    #     }
-    #     return false;
-    # });
-
-
-    # A -> B
-    # A -> C
-    # B -> C
-    # A -> B -> C (removes A -> C)
-
-
-    # task.getPres().removeIf(t -> {
-    #     if (findAbove(t) != null) {
-    #         t.DEPENDENCY.removePost(task);
-    #         t.flagAbove();
-    #         flagBelow();
-    #         return true;
-    #     }
-    #     return false;
-    # });
-
-    Rule.where(pre: pre.get_all_pres, post: post).each do |rule|
+    Rule.where(pre: pre.all_pres, post: post).find_each do |rule|
       rule.destroy! if rule.invalid?
     end
 
-    Rule.where(pre: pre, post: post.get_all_posts).each do |rule|
+    Rule.where(pre: pre, post: post.all_posts).find_each do |rule|
       rule.destroy! if rule.invalid?
     end
   end
-
 end
