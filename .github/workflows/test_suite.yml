@@ -1,7 +1,8 @@
 name: Test Suite
 
 # Run against all commits and pull requests.
-on: [ push, pull_request ]
+# on: [ push, pull_request ]
+on: [ push ]
 
 jobs:
   specs:
@@ -29,6 +30,7 @@ jobs:
       RAILS_ENV: test
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      SECRET_KEY_BASE: totally_secret_value_for_testing_56709_69420
 
     steps:
       - uses: actions/checkout@v2
