@@ -36,8 +36,6 @@ class ListsController < ApplicationController
     @list.destroy!
 
     head :ok
-  rescue ActiveRecord::DeleteRestrictionError => e
-    not_processable(e)
   end
 
   # FIXME: This level of complexity is a code smell, fix it.

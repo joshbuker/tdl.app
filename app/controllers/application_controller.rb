@@ -18,7 +18,7 @@ class ApplicationController < ActionController::API
   rescue_from Pundit::NotAuthorizedError, with: :not_authorized
   rescue_from ActiveRecord::RecordInvalid, with: :not_processable
   # FIXME: This breaks on heroku for some fucking reason, idk
-  # rescue_from ActiveRecord::DeleteRestrictionError, with: :not_processable
+  rescue_from "ActiveRecord::DeleteRestrictionError", with: :not_processable
   rescue_from NotImplementedError, with: :endpoint_not_implemented
 
   ######################
