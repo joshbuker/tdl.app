@@ -1,5 +1,8 @@
 ---
 ja:
+  access_requests:
+    create:
+      recaptcha_failed: recaptchaを検証できませんでした！
   user_sessions:
     create:
       failed: ログインに失敗しました
