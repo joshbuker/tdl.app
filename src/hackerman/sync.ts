@@ -1,4 +1,5 @@
 import { errorNotification } from './ErrorNotification'
+import { scheduleNotification } from './ScheduledNotifications'
 
 export function syncWithBackend(store: any) {
   store.dispatch('settings/fetchUsername').
@@ -37,4 +38,8 @@ export function syncWithBackend(store: any) {
       errorNotification(error, 'Failed to fetch tasks')
     }
   )
+}
+
+export function syncNotifications(store: any) {
+  console.log('sync notifications here')
 }

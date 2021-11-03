@@ -1,10 +1,18 @@
 {
-  "appId": "app.tdl",
-  "appName": "TDL App",
-  "bundledWebRuntime": false,
-  "npmClient": "yarn",
-  "webDir": "www",
-  "server": {
-    "url": "http://192.168.7.74:8080"
-  }
+	"appId": "app.tdl",
+	"appName": "TDL App",
+	"bundledWebRuntime": false,
+	"npmClient": "yarn",
+	"webDir": "www",
+	"cordova": {},
+	"plugins": {
+		"LocalNotifications": {
+			"smallIcon": "ic_stat_icon_config_sample",
+			"iconColor": "#00FF00",
+			"sound": "tuturu.wav"
+		}
+	},
+	"server": {
+		"url": "http://192.168.7.74:8080"
+	}
 }
