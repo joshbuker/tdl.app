@@ -66,20 +66,16 @@ class Task < ApplicationRecord
 
   def all_pres
     # rtree - Recursive Tree
-    sql = <<-SQL
+    sql = <<-SQL.quish
       WITH RECURSIVE task_tree(id, rtree) AS (
-        SELECT t1.id, ARRAY[t1.id]
-        FROM tasks t1
-          INNER JOIN rules t2 ON t1.id = t2.pre_id
-        WHERE post_id = #{id}
+        SELECT t1.id, ARRAY[t1.id] FROM tasks t1#{' '}
+        INNER JOIN rules t2 ON t1.id = t2.pre_id WHERE post_id = #{id}
         UNION ALL
-        SELECT t1.id, rtree || t1.id
-        FROM tasks t1
+        SELECT t1.id, rtree || t1.id FROM tasks t1
           INNER JOIN rules t2 ON t1.id = t2.pre_id
           INNER JOIN task_tree ptree ON t2.post_id = ptree.id
         WHERE NOT (t1.id = ANY(ptree.rtree))
       )
-
       SELECT * FROM tasks WHERE id IN (SELECT DISTINCT(id) FROM task_tree);
     SQL
     # FIXME: Sanitize this query!
@@ -89,15 +85,13 @@ class Task < ApplicationRecord
   end
 
   def all_posts
-    sql = <<-SQL
+    sql = <<-SQL.squish
       WITH RECURSIVE task_tree(id, rtree) AS (
-        SELECT t1.id, ARRAY[t1.id]
-        FROM tasks t1#{' '}
+        SELECT t1.id, ARRAY[t1.id] FROM tasks t1#{' '}
           INNER JOIN rules t2 ON t1.id = t2.post_id
         WHERE pre_id = #{id}
         UNION ALL
-        SELECT t1.id, rtree || t1.id
-        FROM tasks AS t1
+        SELECT t1.id, rtree || t1.id FROM tasks AS t1
           INNER JOIN rules AS t2 ON t1.id = t2.post_id
           INNER JOIN task_tree AS ptree ON t2.pre_id = ptree.id
         WHERE NOT (t1.id = ANY(ptree.rtree))

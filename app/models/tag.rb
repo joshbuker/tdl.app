@@ -14,6 +14,6 @@ class Tag < ApplicationRecord
 
   def randomize_color!
     # Literal fucking witchcraft, turns three bytes into hexcode.
-    self.color = '#' + Random.bytes(3).unpack1('H*')
+    self.color = "##{Random.bytes(3).unpack1('H*')}"
   end
 end
