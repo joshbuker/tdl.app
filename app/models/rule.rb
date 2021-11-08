@@ -28,7 +28,6 @@ class Rule < ApplicationRecord
     return unless post.all_posts.include?(pre) && pre.all_pres.include?(post)
 
     errors.add(:base, "\"#{pre.title}\" is already a postrequisite of \"#{post.title}\"")
-    end
   end
 
   def redundant_rules
@@ -39,9 +38,8 @@ class Rule < ApplicationRecord
     return unless pre.present? && post.present?
     return unless pre.persisted? && post.persisted?
     return unless post.all_pres.include?(pre) && pre.all_posts.include?(post)
-    
+
     errors.add(:base, "\"#{post.title}\" is already a postrequisite of \"#{pre.title}\"")
-    end
   end
 
   def prune_redundant_rules

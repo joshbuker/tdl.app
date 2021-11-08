@@ -66,11 +66,11 @@ RSpec.describe HexColorFormattingValidator do
 
   context 'when input fails regex match entirely' do
     [
-      'red'
-      '3.14'
+      'red',
+      '3.14',
       'According to all known laws of aviation, there is no way that a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyways.'
     ].each do |invalid_color|
-      context invalid_email.to_s do
+      context invalid_color.to_s do
         let(:value) { invalid_color }
 
         it { should be_invalid }

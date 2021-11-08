@@ -1,4 +1,4 @@
-class HexColorValidator < ActiveModel::EachValidator
+class HexColorFormattingValidator < ActiveModel::EachValidator
 	def validate_each(record, field, value)
 		return if value.blank?
 		# FIXME: create a Hex Color concern to store Hex Color logic.
