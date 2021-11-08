@@ -17,7 +17,9 @@ class Tag < ApplicationRecord
     uniqueness: { case_sensitive: false, scope: :user_id }
 
   def randomize_color!
-    # Literal fucking witchcraft, turns three bytes into hexcode.
-    self.color = "##{Random.bytes(3).unpack1('H*')}"
+    temp = self.color
+    while temp.casecmp self.color == 0 do
+      self.color = "##{Random.hex(3)}"
+    end
   end
 end
