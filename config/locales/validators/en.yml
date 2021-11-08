@@ -4,6 +4,9 @@ en:
     email_formatting:
       invalid_format: is not in a valid email format
       must_be_lowercase: is not lowercase
+    hex_color_formatting:
+      invalid_format: wrong format for css rgb colorcode
+      must_be_prefixed_with_octothorpe: 'colorcode must begin with #'
     locale_availability:
       unavailable: is not available currently
     password_complexity:

@@ -23,15 +23,18 @@ RSpec.describe Tag do
 
   describe 'instance method' do
     describe 'randomize_color' do
+
+      REGEX_HEX_COLOR = /\A#(\h{3}){1,2}\z/
+
       context 'when color value is empty string' do
         subject(:color) do
           tag = build :tag
           tag.color = ''
           tag.randomize_color!
-          tag.color =~ /\A#(\h{3}){1,2}\z/
+          expect REGEX_HEX_COLOR.match?(tag.color).to be true
         end
 
-        it { should be_truthy }
+        #it { should be_truthy }
       end
 
       context 'when color value is nil' do
@@ -39,16 +42,16 @@ RSpec.describe Tag do
           tag = build :tag
           tag.color = nil
           tag.randomize_color!
-          tag.color =~ /\A#(\h{3}){1,2}\z/
+          expect REGEX_HEX_COLOR.match?(tag.color).to be true
         end
 
-        it { should be_truthy }
+        #it { should be_truthy }
       end
 
       context 'when color value is already set' do
         subject(:color) do
           tag = build :tag
-          tag2 = build :tag2
+          tag2 = build :tag
           tag2.color = tag.color
           tag.randomize_color!
           tag.color != tag2.color

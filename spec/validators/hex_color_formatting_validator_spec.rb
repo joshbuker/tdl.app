@@ -74,7 +74,9 @@ RSpec.describe HexColorFormattingValidator do
         let(:value) { invalid_color }
 
         it { should be_invalid }
-        it { should_not have_validation_error(I18n.t('validators.hex_color_formatting.must_be_prefixed_with_octothorpe')) }
+        if invalid_color[0] != "#"
+          it { should have_validation_error(I18n.t('validators.hex_color_formatting.must_be_prefixed_with_octothorpe')) }
+        end
         it { should have_validation_error(I18n.t('validators.hex_color_formatting.invalid_format')) }
       end
     end
