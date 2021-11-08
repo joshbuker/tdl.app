@@ -25,7 +25,7 @@ class Rule < ApplicationRecord
 
     return unless pre.present? && post.present?
     return unless pre.persisted? && post.persisted?
-    return if post.all_posts.include?(pre) && pre.all_pres.include?(post)
+    return unless post.all_posts.include?(pre) && pre.all_pres.include?(post)
 
     errors.add(:base, "\"#{pre.title}\" is already a postrequisite of \"#{post.title}\"")
     end
@@ -38,7 +38,7 @@ class Rule < ApplicationRecord
 
     return unless pre.present? && post.present?
     return unless pre.persisted? && post.persisted?
-    return unless post.all_pres.exclude?(pre) && pre.all_posts.exclude?(post)
+    return unless post.all_pres.include?(pre) && pre.all_posts.include?(post)
     
     errors.add(:base, "\"#{post.title}\" is already a postrequisite of \"#{pre.title}\"")
     end

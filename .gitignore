@@ -30,9 +30,3 @@
 /config/master.key
 
 /config/credentials/production.key
-
-# Ignore node
-/node_modules
-
-# Ignore yarn lock
-yarn.lock
