@@ -66,7 +66,7 @@ class Task < ApplicationRecord
 
   def all_pres
     # rtree - Recursive Tree
-    sql = <<-SQL.quish
+    sql = <<-SQL.squish
       WITH RECURSIVE task_tree(id, rtree) AS (
         SELECT t1.id, ARRAY[t1.id] FROM tasks t1
         INNER JOIN rules t2 ON t1.id = t2.pre_id WHERE post_id = #{id}

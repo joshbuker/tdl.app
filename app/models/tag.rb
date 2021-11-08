@@ -6,8 +6,12 @@ class Tag < ApplicationRecord
   has_many :tasks,
     through: :taggings
 
-  validates :title, :color,
+  validates :title,
     presence: true
+
+  validates :color,
+    presence:             true,
+    hex_color_formatting: true
 
   validates :title,
     uniqueness: { case_sensitive: false, scope: :user_id }
