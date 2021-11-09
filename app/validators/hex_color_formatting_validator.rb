@@ -12,7 +12,7 @@ class HexColorFormattingValidator < ActiveModel::EachValidator
       )
     end
 
-    return if value =~ /\A#(\h{3}){1,2}\z/
+    return if /\A#(\h{3}){1,2}\z/.match?(value)
 
 		record.errors.add(
 		  field,

@@ -38,28 +38,27 @@ RSpec.describe HexColorFormattingValidator do
     it { should be_valid }
   end
 
-  # rubocop:disable Layout/LineLength
   context 'when color has 3 or 6 hexadecimal digits but lacks octothorpe' do
-    [
-      'aaa',
-      'aaA',
-      '0aA',
-      '000',
-      'aaaaaa',
-      'aaaAaa',
-      '0aA0aA',
-      '000000',
-      '012345',
-      '6789ab',
-      'cdefAB',
-      'CDEF01'
+    %w[
+      aaa
+      aaA
+      0aA
+      000
+      aaaaaa
+      aaaAaa
+      0aA0aA
+      000000
+      012345
+      6789ab
+      cdefAB
+      CDEF01
     ].each do |prefixed_hex_color|
       context prefixed_hex_color.to_s do
         let(:value) { prefixed_hex_color }
 
         it { should be_invalid }
-        it { should have_validation_error (I18n.t('validators.hex_color_formatting.must_be_prefixed_with_octothorpe')) }
-        it { should have_validation_error (I18n.t('validators.hex_color_formatting.invalid_format')) }
+        it { should have_validation_error(I18n.t('validators.hex_color_formatting.must_be_prefixed_with_octothorpe')) }
+        it { should have_validation_error(I18n.t('validators.hex_color_formatting.invalid_format')) }
       end
     end
   end
@@ -68,18 +67,20 @@ RSpec.describe HexColorFormattingValidator do
     [
       'red',
       '3.14',
-      'According to all known laws of aviation, there is no way that a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyways.'
+      'According to all known laws of aviation, there is no way that a bee '\
+      'should be able to fly. Its wings are too small to get its fat little '\
+      'body off the ground. The bee, of course, flies anyways.'
     ].each do |invalid_color|
       context invalid_color.to_s do
         let(:value) { invalid_color }
 
         it { should be_invalid }
-        if invalid_color[0] != "#"
+
+        if invalid_color[0] != '#'
           it { should have_validation_error(I18n.t('validators.hex_color_formatting.must_be_prefixed_with_octothorpe')) }
         end
         it { should have_validation_error(I18n.t('validators.hex_color_formatting.invalid_format')) }
       end
     end
   end
-  # rubocop:enable Layout/LineLenth
 end

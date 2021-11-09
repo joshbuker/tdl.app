@@ -40,7 +40,7 @@ RSpec.describe AccessRequest do
           subject(:record) { build :access_request, version: version }
 
           it 'raises an ArgumentError' do
-            expect { subject }.to raise_error ArgumentError
+            expect { record }.to raise_error ArgumentError
           end
         end
       end

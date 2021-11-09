@@ -24,40 +24,38 @@ RSpec.describe Tag do
   describe 'instance method' do
     describe 'randomize_color' do
 
-      REGEX_HEX_COLOR = /\A#(\h{3}){1,2}\z/
+      let(:regex_hex_color) { /\A#(\h{3}){1,2}\z/ }
 
       context 'when color value is empty string' do
         subject(:color) do
-          tag = build :tag
-          tag.color = ''
+          tag = build :tag, color: ''
           tag.randomize_color!
-          expect REGEX_HEX_COLOR.match?(tag.color).to be true
+          tag.color # ye
         end
 
-        #it { should be_truthy }
+        it { should match(regex_hex_color) }
       end
 
       context 'when color value is nil' do
         subject(:color) do
-          tag = build :tag
-          tag.color = nil
+          tag = build :tag, color: nil
           tag.randomize_color!
-          expect REGEX_HEX_COLOR.match?(tag.color).to be true
+          tag.color # implicitly returns last thing called # todo: export obsidian
         end
 
-        #it { should be_truthy }
+        it { should match(regex_hex_color) }
       end
 
       context 'when color value is already set' do
         subject(:color) do
-          tag = build :tag
-          tag2 = build :tag
-          tag2.color = tag.color
+          tag = build :tag, color: original_color
           tag.randomize_color!
-          tag.color != tag2.color
+          tag.color
         end
 
-        it { should be_truthy }
+        let(:original_color) { Faker::Color.hex_color }
+
+        it { should_not eq(original_color) }
       end
     end
   end

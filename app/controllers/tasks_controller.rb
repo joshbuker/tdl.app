@@ -1,3 +1,9 @@
+# FIXME: class length 192 > 100
+# rubocop:disable Metrics/MethodLength
+# rubocop:disable Metrics/ClassLength
+# rubocop:disable Metrics/AbcSize
+# rubocop:disable Metrics/CyclomaticComplexity
+# rubocop:disable Metrics/PerceivedComplexity
 class TasksController < ApplicationController
   before_action :set_task,
     except: [:index, :clear_completed, :create, :sync_ordering, :bulk]
@@ -75,7 +81,6 @@ class TasksController < ApplicationController
   end
 
   # FIXME: This level of complexity is a code smell, fix it.
-  # rubocop:disable Metrics
   def sync_ordering
     authorize Task
 
@@ -109,7 +114,6 @@ class TasksController < ApplicationController
   rescue ArgumentError => e
     not_processable(e)
   end
-  # rubocop:enable Metrics
 
   def mark_complete
     authorize @task
@@ -145,13 +149,11 @@ class TasksController < ApplicationController
     allowed_tags = policy_scope(Tag)
     task_tags = []
 
-    unless params[:tags].nil?
-      params[:tags].each do |potential_tag|
-        tag = allowed_tags.find { |t| t.id == potential_tag[:id] }
-        raise Pundit::NotAuthorizedError if tag.nil?
+    params[:tags]&.each do |potential_tag|
+      tag = allowed_tags.find { |t| t.id == potential_tag[:id] }
+      raise Pundit::NotAuthorizedError if tag.nil?
 
-        task_tags << tag
-      end
+      task_tags << tag
     end
 
     @task.tags = task_tags
@@ -294,3 +296,8 @@ class TasksController < ApplicationController
     )
   end
 end
+# rubocop:enable Metrics/MethodLength
+# rubocop:enable Metrics/ClassLength
+# rubocop:enable Metrics/AbcSize
+# rubocop:enable Metrics/CyclomaticComplexity
+# rubocop:enable Metrics/PerceivedComplexity

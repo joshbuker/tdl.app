@@ -9,8 +9,6 @@ RSpec.describe I18n do
   let(:non_normalized) { i18n.non_normalized_paths }
 
   it 'does not have missing keys' do
-    # TODO: learn japanese i guess
-    pending 'Japanese translation is WIP'
     error_message =
       "Missing #{missing_keys.leaves.count} i18n keys.\n"\
       'Run `i18n-tasks missing` to show them.'
