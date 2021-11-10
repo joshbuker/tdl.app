@@ -4,11 +4,8 @@
 	"bundledWebRuntime": false,
 	"npmClient": "yarn",
 	"webDir": "www",
-	"cordova": {},
 	"plugins": {
 		"LocalNotifications": {
-			"smallIcon": "ic_stat_icon_config_sample",
-			"iconColor": "#00FF00",
 			"sound": "tuturu.wav"
 		}
 	},

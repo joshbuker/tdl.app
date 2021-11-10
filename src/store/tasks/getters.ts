@@ -14,6 +14,22 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     return getters.nextUp(store, 'All Tasks', null).length;
   },
 
+  tasksWithReminders: (state, getters) => (store: VuexStore<StateInterface>) => {
+    const currentTime = DateTime.local().toMillis()
+
+    return store.$repo(Task).
+      where(
+        (task) => {
+          if (task.remind_me_at) {
+            return (DateTime.fromISO(task.remind_me_at).toMillis() > currentTime)
+          } else {
+            return false
+          }
+        }
+      ).
+      get()
+  },
+
   listTasks: (state) => (store: any, selectedList: string): Array<TaskInterface> => {
     return store.$repo(Task).
       with('list').

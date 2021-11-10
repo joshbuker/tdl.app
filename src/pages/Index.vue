@@ -3,11 +3,6 @@
     <div class="row items-start justify-center text-right q-col-gutter-md q-ma-md">
       <div class="col-grow">
         <q-btn
-          label="Tuturu"
-          class="q-ma-sm"
-          @click="tuturu"
-        />
-        <q-btn
           icon="fas fa-sync"
           label="Refresh"
           color="primary"
@@ -84,7 +79,6 @@ import TaskSearchDialog from 'components/TaskSearchDialog.vue';
 
 import { errorNotification } from '../hackerman/ErrorNotification'
 import { syncWithBackend } from '../hackerman/sync'
-import { scheduleNotification } from '../hackerman/ScheduledNotifications'
 
 export default defineComponent({
   name: 'PageIndex',
@@ -213,17 +207,7 @@ export default defineComponent({
       syncWithBackend($store)
     }
 
-    function tuturu() {
-      scheduleNotification({
-        id: 1,
-        title: 'Tuturu',
-        body: 'Tuuuutuuuruuuu',
-        schedule_at: new Date(Date.now() + 1000 * 2)
-      })
-    }
-
     return {
-      tuturu,
       clearCompleted,
       sessionToken,
       today,

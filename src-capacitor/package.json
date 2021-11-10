@@ -9,7 +9,7 @@
     "@capacitor/app": "^1.0.0",
     "@capacitor/cli": "^3.0.0",
     "@capacitor/core": "^3.0.0",
-    "@capacitor/local-notifications": "^1.0.8",
+    "@capacitor/local-notifications": "^1.0.0",
     "@capacitor/splash-screen": "^1.0.0"
   }
 }

@@ -1,5 +1,5 @@
 import { errorNotification } from './ErrorNotification'
-import { scheduleNotification } from './ScheduledNotifications'
+import { syncNotifications } from './ScheduledNotifications'
 
 export function syncWithBackend(store: any) {
   store.dispatch('settings/fetchUsername').
@@ -33,13 +33,18 @@ export function syncWithBackend(store: any) {
     }
   )
   store.dispatch('tasks/fetchTasks').
-  catch(
+  then(
+    () => {
+      // @ts-ignore
+      syncNotifications(store).
+      catch(
+        (error: any) => {
+          errorNotification(error, 'Failed to sync notifications')
+        }
+      )
+    },
     (error: any) => {
       errorNotification(error, 'Failed to fetch tasks')
     }
   )
-}
-
-export function syncNotifications(store: any) {
-  console.log('sync notifications here')
 }

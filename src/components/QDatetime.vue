@@ -116,8 +116,6 @@ export default {
         return
       }
 
-      console.log(datetime)
-      console.log(initDateTime)
       date.value = initDateTime.toFormat(DATE_FORMAT)
       time.value = initDateTime.toFormat(TIME_FORMAT)
     }

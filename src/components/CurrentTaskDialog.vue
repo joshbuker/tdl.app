@@ -191,6 +191,7 @@ import { useQuasar } from 'quasar'
 import { useStore } from '../store'
 import { errorNotification } from '../hackerman/ErrorNotification'
 import { textColor } from '../hackerman/TextColor'
+import { scheduleTaskNotification, cancelTaskNotification } from '../hackerman/ScheduledNotifications'
 
 export default {
   components: { QDatetimeInput },
@@ -407,6 +408,12 @@ export default {
       then(
         (response) => {
           setCurrentTask(currentTask.value)
+          // Do this after we refresh current task, otherwise value will be outdated
+          if (currentTask.value.remind_me_at) {
+            scheduleTaskNotification(currentTask.value)
+          } else {
+            cancelTaskNotification(currentTask.value)
+          }
         },
         (error) => {
           errorNotification(error, 'Failed to update task remind me at')
