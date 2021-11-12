@@ -64,6 +64,8 @@ class Task < ApplicationRecord
     iso_8601(review_at)
   end
 
+  # rubocop:disable Metrics/MethodLength
+  # FIXME: due to the big query stuck in here
   def all_pres
     # rtree - Recursive Tree
     sql = <<-SQL.squish
@@ -104,6 +106,7 @@ class Task < ApplicationRecord
     sql.chomp
     Task.find_by_sql(sql)
   end
+  # rubocop:enable Metrics/MethodLength
 
   private
 

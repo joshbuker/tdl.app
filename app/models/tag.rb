@@ -17,9 +17,13 @@ class Tag < ApplicationRecord
     uniqueness: { case_sensitive: false, scope: :user_id }
 
   def randomize_color!
-    temp = self.color.blank? ? "#FFFFFF" : self.color
-    while temp.casecmp(self&.color) == 0 do
-      self.color = "##{Random.hex(3)}"
-    end
+    temp = color.presence || ' '
+    self.color = temp
+    self.color = "##{Random.hex(3)}" while temp.casecmp(color).zero?
+
+    # expectations:
+    # ''      | #random
+    # nil     | #random
+    # #any    | #random
   end
 end

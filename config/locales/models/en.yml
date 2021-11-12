@@ -3,5 +3,7 @@ en:
   activerecord:
     errors:
       models:
+        rule:
+          tasks_must_differ: A Task cannot be its own pre/post
         task:
           list_and_task_owner_match: List and Task must belong to the same user.

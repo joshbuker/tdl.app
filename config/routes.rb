@@ -1,3 +1,5 @@
+# rubocop:disable Metrics/BlockLength
+# FIXME: block length max is set to 25
 Rails.application.routes.draw do
   mount Rswag::Ui::Engine  => '/docs'
   mount Rswag::Api::Engine => '/docs'
@@ -58,4 +60,5 @@ Rails.application.routes.draw do
     patch '*unmatched_route', to: 'application#not_found'
     delete '*unmatched_route', to: 'application#not_found'
   end
+  # rubocop:enable Metrics/BlockLength
 end

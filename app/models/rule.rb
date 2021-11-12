@@ -15,9 +15,12 @@ class Rule < ApplicationRecord
   def different_tasks
     return unless pre == post
 
-    errors.add(:base, 'A task cannot be its own pre/post!')
+    errors.add(:base, I18n.t('activerecord.errors.models.rule.tasks_must_differ'))
   end
 
+  # rubocop:disable Metrics/AbcSize
+  # FIXME: consider relying on a master presence/persisted test
+  #   to avoid redundancy and AbcSize conflicts
   def circular_rules
     # validation
     # A -> B -> C -> D
@@ -27,7 +30,9 @@ class Rule < ApplicationRecord
     return unless pre.persisted? && post.persisted?
     return unless post.all_posts.include?(pre) && pre.all_pres.include?(post)
 
-    errors.add(:base, "\"#{pre.title}\" is already a postrequisite of \"#{post.title}\"")
+    # rubocop:disable Metrics/LineLength
+    # FIXME: need to figure out how to add I18n with interpolation
+    errors.add(:rule, "\"#{pre.title}\" is already a postrequisite of \"#{post.title}\"")
   end
 
   def redundant_rules
@@ -39,8 +44,10 @@ class Rule < ApplicationRecord
     return unless pre.persisted? && post.persisted?
     return unless post.all_pres.include?(pre) && pre.all_posts.include?(post)
 
-    errors.add(:base, "\"#{post.title}\" is already a postrequisite of \"#{pre.title}\"")
+    errors.add(:rule, "\"#{post.title}\" is already a postrequisite of \"#{pre.title}\"")
+    # rubocop:enable Metrics/LineLength
   end
+  # rubocop:enable Metrics/AbcSize
 
   def prune_redundant_rules
     Rule.where(pre: pre.all_pres, post: post).find_each do |rule|
