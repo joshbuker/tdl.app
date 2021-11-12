@@ -3,5 +3,7 @@ ja:
   activerecord:
     errors:
       models:
+        rule:
+          tasks_must_differ: タスクはそれ自身の事前または投稿にすることはできません
         task:
           list_and_task_owner_match: リストとタスクは同じユーザーに属している必要があります。

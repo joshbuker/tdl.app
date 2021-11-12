@@ -4,6 +4,9 @@ ja:
     email_formatting:
       invalid_format: 有効なメールではありません
       must_be_lowercase: 小文字ではありません
+    hex_color_formatting:
+      invalid_format: CSSカラーの間違ったフォーマット
+      must_be_prefixed_with_octothorpe: 色は＃から始める必要があります
     locale_availability:
       unavailable: 現在利用できません
     password_complexity:
