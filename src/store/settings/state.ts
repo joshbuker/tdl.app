@@ -2,6 +2,7 @@ import { TimeZone } from '../../components/models'
 
 export interface SettingsStateInterface {
   username: string;
+  taskSearch: string;
   timeZone: string;
   timeZones: Array<TimeZone>;
   selectedList: string;
@@ -12,6 +13,7 @@ export interface SettingsStateInterface {
 function state(): SettingsStateInterface {
   return {
     username: '',
+    taskSearch: '',
     timeZone: '',
     timeZones: [],
     selectedList: 'All Tasks',

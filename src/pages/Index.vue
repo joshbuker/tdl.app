@@ -127,20 +127,51 @@ export default defineComponent({
       }
     })
 
+    const taskSearch = computed({
+      get: () => $store.state.settings.taskSearch,
+      set: value => {
+        $store.commit('settings/setTaskSearch', value)
+      }
+    })
+
     const today = computed(
-      () => $store.getters['tasks/today']($store, selectedList.value, selectedTags.value, tagsFilter.value)
+      () => $store.getters['tasks/today'](
+        $store,
+        selectedList.value,
+        selectedTags.value,
+        tagsFilter.value,
+        taskSearch.value
+      )
     )
 
     const tomorrow = computed(
-      () => $store.getters['tasks/tomorrow']($store, selectedList.value, selectedTags.value, tagsFilter.value)
+      () => $store.getters['tasks/tomorrow'](
+        $store,
+        selectedList.value,
+        selectedTags.value,
+        tagsFilter.value,
+        taskSearch.value
+      )
     )
 
     const upcoming = computed(
-      () => $store.getters['tasks/upcoming']($store, selectedList.value, selectedTags.value, tagsFilter.value)
+      () => $store.getters['tasks/upcoming'](
+        $store,
+        selectedList.value,
+        selectedTags.value,
+        tagsFilter.value,
+        taskSearch.value
+      )
     )
 
     const someday = computed(
-      () => $store.getters['tasks/someday']($store, selectedList.value, selectedTags.value, tagsFilter.value)
+      () => $store.getters['tasks/someday'](
+        $store,
+        selectedList.value,
+        selectedTags.value,
+        tagsFilter.value,
+        taskSearch.value
+      )
     )
 
     const multiSelectEnabled = ref(false)

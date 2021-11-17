@@ -8,6 +8,10 @@ const mutation: MutationTree<SettingsStateInterface> = {
     state.username = username
   },
 
+  setTaskSearch(state, taskSearch: string) {
+    state.taskSearch = taskSearch
+  },
+
   setTimeZone(state, timeZone: string) {
     state.timeZone = timeZone
     // Also set default time zone for Luxon

@@ -25,6 +25,10 @@ const getters: GetterTree<SettingsStateInterface, StateInterface> = {
 
   tagsFilter (state) {
     return state.tagsFilter;
+  },
+
+  taskSearch (state) {
+    return state.taskSearch;
   }
 };
 

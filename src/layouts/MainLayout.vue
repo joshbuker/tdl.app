@@ -17,6 +17,22 @@
           </div>
         </q-toolbar-title>
 
+        <q-space />
+
+        <q-input
+          v-model="taskSearch"
+          borderless
+          placeholder="Task search"
+          input-class="text-right"
+          class="q-mx-md"
+          debounce="500"
+        >
+          <template v-slot:append>
+            <q-icon v-if="taskSearch === ''" name="search" />
+            <q-icon v-else name="clear" class="cursor-pointer" @click="taskSearch = ''" />
+          </template>
+        </q-input>
+
         <q-btn color='green' @click="logout">{{ $t('logout') }}</q-btn>
       </q-toolbar>
     </q-header>
@@ -104,6 +120,13 @@ export default defineComponent({
       }
     })
 
+    const taskSearch = computed({
+      get: () => $store.state.settings.taskSearch,
+      set: value => {
+        $store.commit('settings/setTaskSearch', value)
+      }
+    })
+
     function logout() {
       if(sessionToken.value === null || sessionToken.value === '') {
         $q.notify({
@@ -144,6 +167,7 @@ export default defineComponent({
       leftDrawerOpen,
       drawerTabs,
       username,
+      taskSearch,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
       },

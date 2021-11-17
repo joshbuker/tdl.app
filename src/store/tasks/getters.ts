@@ -8,6 +8,7 @@ import {
   Tag as TagInterface,
   List as ListInterface
 } from '../../components/models'
+import Fuse from 'fuse.js'
 
 const getters: GetterTree<TasksStateInterface, StateInterface> = {
   allTasksCount: (state, getters) => (store: VuexStore<StateInterface>) => {
@@ -30,8 +31,8 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
       get()
   },
 
-  listTasks: (state) => (store: any, selectedList: string): Array<TaskInterface> => {
-    return store.$repo(Task).
+  listTasks: (state) => (store: any, selectedList: string, taskSearch: string): Array<TaskInterface> => {
+    const tasks = store.$repo(Task).
       with('list').
       with('prereqs', (query: any) => { query.with('tags') }).
       with('postreqs', (query: any) => { query.with('tags') }).
@@ -48,13 +49,44 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
         }
       }
     )
+
+    if (taskSearch) {
+      // FIXME: DRY this up, copied from TaskSearchDialog.vue
+      const searchOptions = {
+        isCaseSensitive: false,
+        ignoreLocation: true,
+        keys: ['title']
+      }
+
+      const fuse = new Fuse(tasks, searchOptions)
+
+      // unsanitized user input being fed into a library? what could go wrong.
+      // FIXME: AKA this is a vuln waiting to happen, fix it.
+      const run = fuse.search(taskSearch)
+
+      return tasks.filter(
+        (task: TaskInterface) => {
+          if(taskSearch) {
+            return run.some(
+              (searchElement: any) => {
+                return (searchElement.item.id === task.id)
+              }
+            )
+          } else {
+            return true
+          }
+        }
+      )
+    } else {
+      return tasks
+    }
   },
 
-  tasks: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string): Array<TaskInterface> => {
+  tasks: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string, taskSearch: string): Array<TaskInterface> => {
     if (selectedTags == null || Array.isArray(selectedTags) !== true || selectedTags.length == 0) {
-      return getters.listTasks(store, selectedList);
+      return getters.listTasks(store, selectedList, taskSearch);
     } else if (selectedTags.includes('No Tags') === true) {
-      return getters.listTasks(store, selectedList).filter(
+      return getters.listTasks(store, selectedList, taskSearch).filter(
         (task: TaskInterface) => { return (
           task.tags == null ||
           (
@@ -64,7 +96,7 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
         )}
       )
     } else {
-      return getters.listTasks(store, selectedList).filter(
+      return getters.listTasks(store, selectedList, taskSearch).filter(
         // For every task in the list
         (task: TaskInterface) => {
           if(tagsFilter === 'all') {
@@ -112,8 +144,8 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     }
   },
 
-  nextUp: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string): Array<TaskInterface> => {
-    return getters.tasks(store, selectedList, selectedTags, tagsFilter).
+  nextUp: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string, taskSearch: string): Array<TaskInterface> => {
+    return getters.tasks(store, selectedList, selectedTags, tagsFilter, taskSearch).
     filter(
       (task: TaskInterface) => {
         return task.completed_at == null
@@ -127,10 +159,10 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     )
   },
 
-  today: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string): Array<TaskInterface> => {
+  today: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string, taskSearch: string): Array<TaskInterface> => {
     const endOfDay = DateTime.local().endOf('day').toMillis();
 
-    return getters.nextUp(store, selectedList, selectedTags, tagsFilter).filter(
+    return getters.nextUp(store, selectedList, selectedTags, tagsFilter, taskSearch).filter(
       (task: TaskInterface) => { return (
         task.review_at == null ||
         DateTime.fromISO(task.review_at).toMillis() <= endOfDay
@@ -138,12 +170,12 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     )
   },
 
-  tomorrow: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string): Array<TaskInterface> => {
+  tomorrow: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string, taskSearch: string): Array<TaskInterface> => {
     const tomorrow = DateTime.local().plus({ days: 1 });
     const startOfTomorrow = tomorrow.startOf('day').toMillis();
     const endOfTomorrow = tomorrow.endOf('day').toMillis();
 
-    return getters.nextUp(store, selectedList, selectedTags, tagsFilter).filter(
+    return getters.nextUp(store, selectedList, selectedTags, tagsFilter, taskSearch).filter(
       (task: TaskInterface) => {
         if(task.review_at != null) {
           return (
@@ -157,11 +189,11 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     )
   },
 
-  upcoming: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string): Array<TaskInterface> => {
+  upcoming: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string, taskSearch: string): Array<TaskInterface> => {
     const startOfUpcoming = DateTime.local().plus({ days: 2 }).startOf('day').toMillis();
     const endOfUpcoming = DateTime.local().plus({ days: 31 }).endOf('day').toMillis();
 
-    return getters.nextUp(store, selectedList, selectedTags, tagsFilter).filter(
+    return getters.nextUp(store, selectedList, selectedTags, tagsFilter, taskSearch).filter(
       (task: TaskInterface) => {
         if(task.review_at != null) {
           return (
@@ -175,10 +207,10 @@ const getters: GetterTree<TasksStateInterface, StateInterface> = {
     );
   },
 
-  someday: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string): Array<TaskInterface> => {
+  someday: (state, getters) => (store: VuexStore<StateInterface>, selectedList: string, selectedTags: Array<string>, tagsFilter: string, taskSearch: string): Array<TaskInterface> => {
     const endOfUpcoming = DateTime.local().plus({ days: 31 }).endOf('day').toMillis();
 
-    return getters.nextUp(store, selectedList, selectedTags, tagsFilter).filter(
+    return getters.nextUp(store, selectedList, selectedTags, tagsFilter, taskSearch).filter(
       (task: TaskInterface) => {
         if(task.review_at != null) {
           return (
