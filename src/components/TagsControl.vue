@@ -276,7 +276,7 @@ export default defineComponent({
     }
 
     function taskCount(tag: TagInterface) {
-      return $store.getters['tasks/nextUp']($store, selectedList.value, [tag.title]).length;
+      return $store.getters['tasks/nextUp']($store, selectedList.value, [tag.title], 'all').length;
     }
 
     function clearTags() {
