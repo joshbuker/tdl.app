@@ -1,5 +1,5 @@
 {
-	"appId": "app.tdl",
+	"appId": "app.tdl.mobile",
 	"appName": "TDL App",
 	"bundledWebRuntime": false,
 	"npmClient": "yarn",
@@ -10,6 +10,7 @@
 		}
 	},
 	"server": {
-		"url": "http://192.168.7.74:8080"
+		"hostname": "mobile.tdl.app",
+		"androidScheme": "https"
 	}
 }

@@ -1,5 +1,5 @@
 {
-  "appId": "app.tdl",
+  "appId": "app.tdl.mobile",
   "appName": "TDL App",
   "bundledWebRuntime": false,
   "npmClient": "yarn",
@@ -8,5 +8,9 @@
     "LocalNotifications": {
       "sound": "tuturu.wav"
     }
+  },
+  "server": {
+    "hostname": "mobile.tdl.app",
+    "androidScheme": "https"
   }
 }
