@@ -38,7 +38,7 @@ RSpec.describe RuleAcyclicValidator do
         end
 
         context 'when A --> B --> C' do
-          let!(:bc) { create :rule, pre: b, post: c }
+          before { create :rule, pre: b, post: c }
 
           it 'raises an error when C --> A is attempted' do
             expect { create :rule, pre: c, post: a }.to raise_error(ActiveRecord::RecordInvalid, /#{I18n.t('validators.rule.redundant_rule', task_i_title: c.title, task_ii_title: a.title)}/)

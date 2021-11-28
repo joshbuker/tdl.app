@@ -22,7 +22,7 @@ RSpec.describe RuleRedundancyValidator do
       end
 
       context 'when A --> B --> C' do
-        let!(:bc) { create :rule, pre: b, post: c }
+        before { create :rule, pre: b, post: c }
 
         # FIXME: we'll talk
         # rubocop:disable RSpec/NestedGroups
