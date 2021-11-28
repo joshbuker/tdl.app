@@ -57,3 +57,7 @@ Metrics/BlockLength:
     - 'path'
     - 'patch'
     - 'post'
+
+Layout/LineLength:
+  IgnoredPatterns: ['it { should', 'I18n.t']
+  Max: 80

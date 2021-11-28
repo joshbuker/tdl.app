@@ -6,14 +6,24 @@ class Tag < ApplicationRecord
   has_many :tasks,
     through: :taggings
 
-  validates :title, :color,
+  validates :title,
     presence: true
+
+  validates :color,
+    presence:             true,
+    hex_color_formatting: true
 
   validates :title,
     uniqueness: { case_sensitive: false, scope: :user_id }
 
   def randomize_color!
-    # Literal fucking witchcraft, turns three bytes into hexcode.
-    self.color = '#' + Random.bytes(3).unpack1('H*')
+    temp = color.presence || ' '
+    self.color = temp
+    self.color = "##{Random.hex(3)}" while temp.casecmp(color).zero?
+
+    # expectations:
+    # ''      | #random
+    # nil     | #random
+    # #any    | #random
   end
 end

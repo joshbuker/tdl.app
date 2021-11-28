@@ -35,7 +35,7 @@ RSpec.describe 'Tags' do
       let(:tag) do
         {
           title: Faker::String.random,
-          color: [Faker::Color.hex_color, Faker::Color.color_name].sample
+          color: Faker::Color.hex_color
         }
       end
 
