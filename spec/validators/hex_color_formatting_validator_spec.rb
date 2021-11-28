@@ -85,6 +85,11 @@ RSpec.describe HexColorFormattingValidator do
     [
       '#red',
       '#3.14',
+      '#DEEZNUTS', # I will have my memes, or I will have death
+      '# FFF',
+      '# ff00ff',
+      '#12345',
+      '#',
       '#According to all known laws of aviation, there is no way that a bee '\
       'should be able to fly. Its wings are too small to get its fat little '\
       'body off the ground. The bee, of course, flies anyways.'
