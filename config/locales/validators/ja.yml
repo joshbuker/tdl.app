@@ -11,6 +11,10 @@ ja:
       unavailable: 現在利用できません
     password_complexity:
       not_enough_complexity: '十分に複雑ではありません (次の 4 つのうち 3 つを含める必要があります: A-Z、a-z、0-9、特殊文字、例: @#$%)'
+    rule:
+      duplicate_rule: ルールはすでに存在します
+      pre_and_post_cant_be_same: タスクは自分自身に依存できません
+      redundant_rule: "%{task_i_title}はすでに%{task_ii_title}の後に来ています"
     time_zone:
       invalid: は有効なタイムゾーンではありません
     username_formatting:

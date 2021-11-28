@@ -75,10 +75,25 @@ RSpec.describe HexColorFormattingValidator do
         let(:value) { invalid_color }
 
         it { should be_invalid }
+        it { should have_validation_error(I18n.t('validators.hex_color_formatting.must_be_prefixed_with_octothorpe')) }
+        it { should have_validation_error(I18n.t('validators.hex_color_formatting.invalid_format')) }
+      end
+    end
+  end
 
-        if invalid_color[0] != '#'
-          it { should have_validation_error(I18n.t('validators.hex_color_formatting.must_be_prefixed_with_octothorpe')) }
-        end
+  context 'when input is invalid but has octothorpe' do
+    [
+      '#red',
+      '#3.14',
+      '#According to all known laws of aviation, there is no way that a bee '\
+      'should be able to fly. Its wings are too small to get its fat little '\
+      'body off the ground. The bee, of course, flies anyways.'
+    ].each do |invalid_color|
+      context invalid_color.to_s do
+        let(:value) { invalid_color }
+
+        it { should be_invalid }
+        it { should_not have_validation_error(I18n.t('validators.hex_color_formatting.must_be_prefixed_with_octothorpe')) }
         it { should have_validation_error(I18n.t('validators.hex_color_formatting.invalid_format')) }
       end
     end
