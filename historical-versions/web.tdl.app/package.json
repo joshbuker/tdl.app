@@ -1,0 +1,82 @@
+{
+  "name": "web-tdl-app",
+  "version": "0.0.1",
+  "description": "TDL App by Big Brain Energy",
+  "productName": "TDL App",
+  "contributors": [
+    {
+      "name": "Josh Buker",
+      "url": "https://joshbuker.com"
+    },
+    {
+      "name": "Kurt Apple",
+      "url": "https://kurtapple.com"
+    }
+  ],
+  "private": true,
+  "scripts": {
+    "lint": "eslint",
+    "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
+    "dev": "yarn exec quasar dev",
+    "build": "yarn exec quasar build -m spa",
+    "test:unit": "vitest",
+    "test:unit:ci": "vitest run",
+    "start": "node server.js",
+    "test:e2e": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://127.0.0.1:8080 \"cypress open --e2e\"",
+    "test:e2e:ci": "cross-env NODE_ENV=test start-test \"quasar dev\" http-get://127.0.0.1:8080 \"cypress run --e2e\"",
+    "test:component": "cross-env NODE_ENV=test cypress open --component",
+    "test:component:ci": "cross-env NODE_ENV=test cypress run --component",
+    "test:everything": "yarn audit && yarn lint && yarn test:unit:ci && yarn test:component:ci && yarn test:e2e:ci"
+  },
+  "dependencies": {
+    "@capacitor/core": "latest",
+    "@capacitor/local-notifications": "latest",
+    "@quasar/cli": "latest",
+    "@quasar/extras": "latest",
+    "@types/luxon": "latest",
+    "@vueuse/core": "latest",
+    "axios": "latest",
+    "axios-mock-adapter": "latest",
+    "d3": "latest",
+    "fuse.js": "latest",
+    "luxon": "latest",
+    "pinia": "latest",
+    "pinia-orm": "latest",
+    "pinia-plugin-persistedstate": "3.x",
+    "postcss": "latest",
+    "quasar": "latest",
+    "vue": "latest",
+    "vue-i18n": "latest",
+    "vue-recaptcha-v3": "latest",
+    "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "latest",
+    "@eslint/js": "latest",
+    "@quasar/app-vite": "beta",
+    "@quasar/quasar-app-extension-testing-e2e-cypress": "latest",
+    "@quasar/quasar-app-extension-testing-unit-vitest": "latest",
+    "@types/body-parser": "latest",
+    "@types/d3": "latest",
+    "@types/eslint__js": "latest",
+    "@types/node": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "@vue/test-utils": "latest",
+    "autoprefixer": "latest",
+    "cypress": "latest",
+    "eslint": "latest",
+    "eslint-plugin-cypress": "latest",
+    "eslint-plugin-vue": "latest",
+    "globals": "latest",
+    "prettier": "latest",
+    "typescript": "5.5.x",
+    "typescript-eslint": "latest",
+    "vitest": "latest"
+  },
+  "engines": {
+    "node": "20.x",
+    "npm": "latest",
+    "yarn": "1.x"
+  }
+}
