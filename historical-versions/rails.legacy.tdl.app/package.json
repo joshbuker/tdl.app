@@ -1,0 +1,41 @@
+{
+  "name": "tdl_app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@rails/actioncable": "^6.0.0-alpha",
+    "@rails/activestorage": "^6.0.0-alpha",
+    "@rails/ujs": "^6.0.0-alpha",
+    "@rails/webpacker": "^4.0.7",
+    "axios": "^0.21.0",
+    "bootstrap": "4.3.1",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.5.1",
+    "luxon": "^1.24.1",
+    "popper.js": "^1.16.0",
+    "rails-erb-loader": "^5.5.2",
+    "sass-loader": "^9.0.3",
+    "toastr": "^2.1.4",
+    "turbolinks": "^5.2.0",
+    "vue": "^2.6.10",
+    "vue-loader": "^15.7.1",
+    "vue-template-compiler": "^2.6.10",
+    "vuedraggable": "^2.24.0",
+    "vuetify": "^2.2.29",
+    "vuetify-datetime-picker": "^2.1.1",
+    "vuex": "^3.5.1",
+    "webpack": "^4.1.0",
+    "webpacker-pwa": "^0.1.2",
+    "weekstart": "^1.0.1"
+  },
+  "engines": {
+    "yarn": "1.x",
+    "node": "14.x"
+  },
+  "devDependencies": {
+    "deepmerge": "^4.2.2",
+    "fibers": "^5.0.0",
+    "sass": "^1.26.10",
+    "webpack-dev-server": "^3.9.0"
+  }
+}

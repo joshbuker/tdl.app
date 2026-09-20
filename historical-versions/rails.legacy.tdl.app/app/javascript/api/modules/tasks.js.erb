@@ -1,0 +1,328 @@
+import axios from 'axios'
+import $ from 'jquery'
+
+<% tasks_url = Rails.application.routes.url_helpers.tasks_url %>
+
+const token = $('meta[name="csrf-token"]').attr('content');
+
+export default {
+  async addPostreq(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id) + '/post', {
+      post_task_id: options.post_task_id,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async addPrereq(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id) + '/pre', {
+      pre_task_id: options.pre_task_id,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async clearCompleted(onSuccess, onFailure) {
+    return axios.post('<%= tasks_url %>/clear-completed', {
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async createTask(options, onSuccess, onFailure) {
+    return axios.post('<%= tasks_url %>', {
+      title: options.title,
+      list: options.list,
+      tags: options.tags,
+      // Used by create dialog
+      review_at: options.review_at,
+      remind_me: options.remind_me,
+      // Used by quick create
+      time: options.time,
+      //
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async deleteTask(options, onSuccess, onFailure) {
+    return axios.delete('<%= tasks_url %>/' + options.id, {
+      headers: {
+        credentials: 'same-origin',
+        'X-CSRF-Token': token,
+        'authenticity_token': token
+      }
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async fetchPostreqs(options, onSuccess, onFailure) {
+    return axios.get('<%= tasks_url %>/' + String(options.id) + '/postreqs').
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async fetchPrereqs(options, onSuccess, onFailure) {
+    return axios.get('<%= tasks_url %>/' + String(options.id) + '/prereqs').
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async fetchTreePostreqs(options, onSuccess, onFailure) {
+    return axios.get('<%= tasks_url %>/' + String(options.id) + '/tree-postreqs').
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async markTaskComplete(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id) + '/complete', {
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async markTaskIncomplete(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id) + '/incomplete', {
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  // TODO: Clean up this request/endpoint to just return tasks without params
+  async refreshTasks(onSuccess, onFailure) {
+    return axios.post('<%= tasks_url %>/next-up', {
+      limiter_type: 'list',
+      limiter_value: 'All Tasks',
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async refreshTreeview(options, onSuccess, onFailure) {
+    return axios.post('<%= tasks_url %>/treeview', {
+      limiter_type: options.limiter_type,
+      limiter_value: options.limiter_value,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async removePostreq(options, onSuccess, onFailure) {
+    return axios.delete('<%= tasks_url %>/' + String(options.id) + '/post/' + options.post_task_id, {
+      headers: {
+        credentials: 'same-origin',
+        'X-CSRF-Token': token,
+        'authenticity_token': token
+      }
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async removePrereq(options, onSuccess, onFailure) {
+    return axios.delete('<%= tasks_url %>/' + String(options.id) + '/pre/' + options.pre_task_id, {
+      headers: {
+        credentials: 'same-origin',
+        'X-CSRF-Token': token,
+        'authenticity_token': token
+      }
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async resetReviewAt(onSuccess, onFailure) {
+    return axios.post('<%= tasks_url %>/reset-review-at', {
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async updateTask(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id), {
+      // TODO: consolidate the other task update methods into this one
+      title: options.title,
+      order: options.order,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async updateTaskList(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id) + '/list', {
+      list_title: options.list_title,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async updateTaskNotes(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id) + '/notes', {
+      notes: options.notes,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async updateTaskRemindMe(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id) + '/remind-me', {
+      remind_me: options.remind_me,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async updateTaskReviewAt(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id) + '/review-at', {
+      review_at: options.review_at,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async updateTaskTags(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id) + '/tags', {
+      tag_titles: options.tag_titles,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async updateTaskTitle(options, onSuccess, onFailure) {
+    return axios.patch('<%= tasks_url %>/' + String(options.id), {
+      title: options.title,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async search(options, onSuccess, onFailure) {
+    return axios.post('<%= tasks_url %>/search', {
+      title: options.title,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  }
+}

@@ -1,0 +1,63 @@
+import axios from 'axios'
+import $ from 'jquery'
+
+<% lists_url = Rails.application.routes.url_helpers.lists_url %>
+
+const token = $('meta[name="csrf-token"]').attr('content');
+
+export default {
+  async createList(options, onSuccess, onFailure) {
+    return axios.post('<%= lists_url %>', {
+      title: options.title,
+      order: options.order,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async deleteList(options, onSuccess, onFailure) {
+    return axios.delete('<%= lists_url %>/' + String(options.id), {
+      headers: {
+        credentials: 'same-origin',
+        'X-CSRF-Token': token,
+        'authenticity_token': token
+      }
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async refreshLists(onSuccess, onFailure) {
+    return axios.get('<%= lists_url %>').
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  },
+  async updateList(options, onSuccess, onFailure) {
+    return axios.patch('<%= lists_url %>/' + String(options.id), {
+      title: options.title,
+      order: options.order,
+      credentials: 'same-origin',
+      'X-CSRF-Token': token,
+      'authenticity_token': token
+    }).
+    then(response => {
+      onSuccess(response);
+    }).
+    catch(error => {
+      onFailure(error);
+    });
+  }
+}

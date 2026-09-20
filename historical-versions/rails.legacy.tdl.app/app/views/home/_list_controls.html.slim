@@ -1,0 +1,37 @@
+template v-if='editControls != true'
+  v-list[nav]
+    v-list-item-group[v-model='selectedList' color='primary' mandatory]
+      v-list-item[value='All Tasks' link]
+        v-list-item-content
+          v-list-item-title
+            | All Tasks
+          v-list-item-subtitle
+            | {{ allTasksCount }} tasks
+      v-list-item[link v-for='list in lists' :key='list.id' :value='list.title']
+        v-list-item-content
+          v-list-item-title
+            | {{ list.title }}
+          v-list-item-subtitle
+            | {{ list.task_count }} tasks
+template[v-else]
+  v-list[nav]
+    v-list-item-group
+      draggable[v-model='lists' handle='.handle' @change='syncListOrdering' delay='200' delay-on-touch-only='true' force-fallback='true']
+        v-list-item[v-for='list in lists' :key='list.id']
+          v-list-item-icon.handle
+            v-icon
+              | fa-bars
+          v-list-item-content
+            v-list-item-title
+              | {{ list.title }}
+            v-list-item-subtitle
+              | {{ list.task_count }} tasks
+          v-list-item-action
+            v-btn[icon color='primary' @click.stop='editList(list)']
+              v-icon
+                | fa-pencil
+          v-list-item-action
+            v-btn[icon color='red' @click.stop='deleteList(list)']
+              v-icon
+                | fa-trash
+  v-text-field.mx-4[v-model='newList' label='Create new list' append-icon='fa-arrow-up' @keyup.enter='createList' filled dense rounded]

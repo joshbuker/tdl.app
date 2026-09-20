@@ -1,0 +1,25 @@
+v-navigation-drawer[v-model='drawer' app clipped v-if='view == 0 || view == 1' width='300px']
+  v-tabs[v-model='controls' fixed-tabs icons-and-text]
+    v-tab[:disabled='editControls == true']
+      | Lists
+      v-icon
+        | fa-th-list
+    v-tab[:disabled='editControls == true']
+      | Tags
+      v-icon
+        | fa-tags
+  template[v-if='controls == 0']
+    = render partial: 'list_controls'
+  template[v-else]
+    = render partial: 'tag_controls'
+  .d-flex.align-end.justify-center.mt-5.mb-7
+    template v-if='editControls == true'
+      v-btn[small @click='editControls = false']
+        v-icon[small left]
+          | fa-check
+        | Done
+    template[v-else]
+      v-btn[small @click='editControls = true']
+        v-icon[small left]
+          | fa-pencil
+        | Edit

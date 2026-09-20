@@ -1,0 +1,97 @@
+# Use auto generated file to ignore existing warnings.
+inherit_from: '.rubocop_todo.yml'
+
+############################
+## General Rubocop Config ##
+############################
+
+require:
+  - rubocop-faker
+  - rubocop-rspec
+  - rubocop-performance
+
+AllCops:
+  Exclude:
+    - 'bin/**/*'
+    - 'config/**/*'
+    - 'coverage/**/*'
+    - 'db/**/*'
+    - 'lib/templates/**/*'
+    - 'log/**/*'
+    - 'node_modules/**/*'
+    - 'tmp/**/*'
+    - 'storage/**/*'
+    - 'vendor/**/*'
+    - 'Gemfile'
+  TargetRubyVersion: 2.7.2
+Rails:
+  Enabled: true
+
+###########################
+## Custom Rubocop Config ##
+###########################
+
+# TODO: Get to 80 (or 90) chars
+Metrics/LineLength:
+  IgnoredPatterns: ['it { is_expected.', 'I18n.t']
+  Max: 90
+# Variable assignment can be indented weirdly, so align to the ending statement instead
+Layout/CaseIndentation:
+  EnforcedStyle: end
+# Lines can get stupidly long if we indent it to the other params
+Layout/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+# It can be unclear if a line is truly ended unless the dot is on the method receiver
+Layout/DotPosition:
+  EnforcedStyle: trailing
+# Allow extra spaces when aligning to other operators...
+# (doesn't seem to work all the time though)
+Layout/SpaceAroundOperators:
+  AllowForAlignment: true
+# Short word arrays look bad, Mmmk.
+Style/WordArray:
+  EnforcedStyle: percent
+  MinSize: 3
+# Try and make rubocop follow our internal guidelines on hash styling...
+# Style/HashSyntax:
+#   EnforcedStyle: ruby19_no_mixed_keys
+#   UseHashRocketsWithSymbolValues: true
+# FIXME: The above does not work as advertised, disabling cop for now.
+Style/HashSyntax:
+  Enabled: false
+# ¯\_(ツ)_/¯
+Style/AsciiComments:
+  AllowedChars: ['ツ', '¯']
+# Don't care that much about redundant returns, as they improve readablity and don't affect functionality
+Style/RedundantReturn:
+  Enabled: false
+# Use raise outside of specs
+Style/SignalException:
+  Exclude:
+    - 'spec/**/*'
+# Useless assignments can often improve readability in specs
+Lint/UselessAssignment:
+  Exclude:
+    - 'spec/**/*'
+# This should only care when blocks are passed with {} and not do/end, disabling.
+Style/MultilineIfModifier:
+  Enabled: false
+# https://github.com/bbatsov/ruby-style-guide/issues/556
+Style/ModuleFunction:
+  EnforcedStyle: extend_self
+# This makes sense, except when you have get_* / set_* that aren't actually attributes...Maybe change later?
+Naming/AccessorMethodName:
+  Enabled: false
+# Allow: `do_thing and return if <conditional>`
+Style/AndOr:
+  EnforcedStyle: conditionals
+# SiteAdmin nesting
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+# The readability of [:some, :various, :symbols] is superior to %i[some various symbols]
+Style/SymbolArray:
+  EnforcedStyle: brackets
+# For some reason rubocop inline disabling is non-functional for this cop, see:
+# - app/controllers/oauths_controller.rb:76
+Metrics/BlockNesting:
+  Enabled: false

@@ -1,0 +1,35 @@
+v-dialog[v-model='createTaskDialog' :fullscreen='$vuetify.breakpoint.mobile']
+  v-card[:tile='$vuetify.breakpoint.mobile']
+    template[v-if='$vuetify.breakpoint.mobile']
+      v-card-title.headline.justify-center.mt-1 Create new tasks
+    template[v-else]
+      v-card-title.headline.float-left.mt-1 Create new tasks
+    v-row.pt-3[justify='center' no-gutters]
+      v-btn.ma-2[@click='createTaskDialog = false' color='secondary' :small='$vuetify.breakpoint.mobile'] Close
+    v-divider
+    v-card-text
+      v-select[label='Tags' v-model='createTaskTags' :items='tags' item-text='title' item-value='title' multiple clearable]
+        template v-slot:selection="{ item, index }"
+          v-chip[:color='item.color' :text-color='item.text_color' :key='item.title']
+            | {{ item.title }}
+      v-select[label='List' v-model='createTaskList' :items='lists' item-text='title' item-value='title']
+      v-row style='flex-wrap: nowrap;'
+        v-col.flex-grow-1.flex-shrink-0
+          v-datetime-picker[label='Review at' v-model='createTaskReviewAt']
+        v-col.flex-grow-0.flex-shrink-1
+          v-switch[label='Remind me' v-model='createTaskRemindMe' style='white-space: nowrap;']
+      v-text-field[label='Task title' :value='newTask' @change='value => newTask = value' @keyup.enter='addTask']
+      v-switch[v-model='searchEnabled' label='Auto Search']
+      v-btn[@click='searchForTasks(newTask)' text-with-icon]
+        v-icon[left]
+          | fa-search
+        | Search
+      v-divider
+      h3
+        | Possible Matches - {{ search.length }}
+      v-list
+        v-list-item-group
+          v-list-item[v-for='task in search' :key='task.title']
+            v-list-item-content[@click.stop='setCurrentTask(task)']
+              v-list-item-title
+                | {{ task.title }}

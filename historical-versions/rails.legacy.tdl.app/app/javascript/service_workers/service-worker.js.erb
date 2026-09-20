@@ -1,0 +1,61 @@
+<% root_url = Rails.application.routes.url_helpers.root_url[0..-2] %>
+<% appIconPath = ActionController::Base.helpers.asset_path('favicon/android-chrome-192x192.png') %>
+<% badgeIconPath = ActionController::Base.helpers.asset_path('badge.png') %>
+<% appIcon = root_url + appIconPath %>
+<% badgeIcon = root_url + badgeIconPath %>
+
+function urlB64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (var i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+self.addEventListener('install', function(event) {
+  console.log('Service Worker installing.');
+  // Allow auto update on new version detection
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', async function(event) {
+  console.log('Service Worker activated.');
+  try {
+    const applicationServerKey = urlB64ToUint8Array("<%= ENV['VAPID_PUBLIC_KEY'] %>")
+    const options = { applicationServerKey, userVisibleOnly: true }
+    const subscription = await self.registration.pushManager.subscribe(options)
+    console.log('Subscription:', JSON.stringify(subscription))
+  } catch (err) {
+    console.log('Error', err)
+  }
+});
+
+self.addEventListener('fetch', function(event) {
+  console.log('Service Worker fetching.');
+});
+
+self.addEventListener('push', function(event) {
+  console.log('[Service Worker] Push Received.');
+  try {
+    var message = event.data.json();
+  } catch (e) {
+    var message = { title: event.data.text() };
+    console.log(e);
+  }
+  console.log(`[Service Worker] Push had this data: "${message}"`);
+  const title = message.title;
+  const options = {
+    // body: message.body,
+    icon: '<%= appIcon %>',
+    badge: '<%= badgeIcon %>'
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});

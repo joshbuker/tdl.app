@@ -1,0 +1,65 @@
+import Vue from 'vue/dist/vue.esm'
+import App from '../app.vue'
+import Vuetify from 'vuetify'
+
+import toastr from 'toastr'
+import axios from 'axios'
+import $ from 'jquery'
+import _ from 'lodash'
+
+Vue.use(Vuetify)
+
+const token = $('meta[name="csrf-token"]').attr('content');
+
+const opts = {
+  icons: {
+    iconfont: 'fa4'
+  },
+  theme: {
+    dark: true,
+    themes: {
+      dark: {
+        primary: "#33cc33"
+      }
+    }
+  }
+}
+
+export default new Vuetify(opts)
+
+<% login_url = Rails.application.routes.url_helpers.login_url %>
+
+document.addEventListener('DOMContentLoaded', () => {
+  const app = new Vue({
+    el:'main#root',
+    vuetify: new Vuetify(),
+    data: {
+      username: '',
+      password: '',
+      logging_in: false
+    },
+    methods: {
+      submitForm() {
+        this.logging_in = true;
+        axios.post('<%= login_url %>', {
+          username: this.username,
+          password: this.password,
+          credentials: 'same-origin',
+          dataType: 'json',
+          contentType: 'application/json',
+          'X-CSRF-Token': token,
+          'authenticity_token': token
+        }).
+        then(response => {
+          window.location.reload();
+        }).
+        catch(error => {
+          this.logging_in = false;
+          this.password = '';
+          $("input[name='password']").focus();
+          toastr.error(error.message);
+        })
+      }
+    }
+  })
+})

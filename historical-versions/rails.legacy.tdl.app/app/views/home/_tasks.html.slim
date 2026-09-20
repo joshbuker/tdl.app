@@ -1,0 +1,31 @@
+main#root
+  v-app
+    = render partial: 'app_bar'
+    = render partial: 'navigation_drawer'
+    v-main[no-gutters]
+      - if browser.device.mobile?
+        = render partial: 'mobile_tasks'
+      - else
+        template v-if='$vuetify.breakpoint.mobile'
+          = render partial: 'mobile_tasks'
+        template[v-else]
+          = render partial: 'desktop_tasks'
+    = render partial: 'dialogs'
+    v-bottom-navigation[v-model='view' color='primary' scroll-target='main' hide-on-scroll app]
+      v-btn
+        span Tasks
+        v-icon
+          | fa-tasks
+      v-btn
+        span Treeview
+        v-icon
+          | fa-tree
+      v-btn
+        span Calendar
+        v-icon
+          | fa-calendar
+      v-btn
+        span Settings
+        v-icon
+          | fa-gear
+= javascript_pack_tag 'tasks'

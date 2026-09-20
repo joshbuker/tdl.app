@@ -1,0 +1,32 @@
+#############
+## English ##
+#############
+en:
+  ##################
+  ## Time Formats ##
+  ##################
+  # For symbols, reference: http://apidock.com/ruby/DateTime/strftime
+
+  time:
+    formats:
+      # Used when no format is specified
+      default: "%B %-d, %Y"
+      # DateTime Formats
+      iso_8601: "%FT%T%:z"
+      datetime_human_readable: "%B %-d, %Y - %T"
+      datetime_javascript: '%Y-%m-%d %H:%M'
+      # Date Formats
+      date_standard: "%-m/%-d/%Y"
+      date_full: "%B %-d, %Y"
+      date_iso_8601: "%Y-%m-%d"
+      date_filename: "%^b-%d-%Y"
+      # Time Formats
+      time_zone: "%Z"
+      time_12_hours: "%r"
+      time_24_hours: "%T"
+  date:
+    formats:
+      date_standard: "%-m/%-d/%Y"
+      date_full: "%B %-d, %Y"
+      date_iso_8601: "%Y-%m-%d"
+      date_filename: "%^b-%d-%Y"

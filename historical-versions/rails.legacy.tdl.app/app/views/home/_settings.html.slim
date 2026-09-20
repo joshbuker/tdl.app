@@ -1,0 +1,19 @@
+v-card-title.headline
+  v-row[justify='center']
+    h2 Settings
+v-divider
+v-card-text
+  v-row[justify='center']
+    p
+      span> Current Timezone:
+      | {{ timezone }}
+  v-row[justify='center']
+    p
+      span> Current Time:
+      | {{ currentTime }}
+  v-select[v-model='timezone' :items='timezones' item-text='name' item-value='value' single-line]
+  v-row.mt-5[justify='center']
+    v-btn[color='indigo' @click='notifyMe' small]
+      v-icon[small left]
+        | fa-bell
+      | Test Notification

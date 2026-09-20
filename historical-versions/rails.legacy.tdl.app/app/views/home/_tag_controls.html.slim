@@ -1,0 +1,47 @@
+template v-if='editControls != true'
+  v-container
+    v-row[align='center' justify='center']
+      v-btn-toggle.mt-2[v-model='allTags' color='primary' mandatory]
+        v-btn[:value='true' small]
+          | All
+        v-btn[:value='false' small]
+          | Any
+    v-row[align='center' justify='center']
+      v-btn.mt-2[@click='selectedTags = []' small]
+        | Clear Tags
+  v-list[nav]
+    v-list-item-group[v-model='selectedTags' color='primary' multiple]
+      v-list-item[value='No Tags' link color='white']
+        v-list-item-content
+          v-list-item-title
+            | No Tags
+          v-list-item-subtitle
+            | {{ noTagsCount }} tasks
+      v-list-item[link v-for='tag in tags' :key='tag.id' :value='tag.title' :color='tag.color']
+        v-list-item-content
+          v-list-item-title
+            | {{ tag.title }}
+          v-list-item-subtitle
+            | {{ tag.task_count }} tasks
+template[v-else]
+  v-list[nav]
+    v-list-item-group
+      draggable[v-model='tags' handle='.handle' @change='syncTagOrdering' delay='200' delay-on-touch-only='true' force-fallback='true']
+        v-list-item[v-for='tag in tags' :key='tag.id']
+          v-list-item-icon.handle
+            v-icon
+              | fa-bars
+          v-list-item-content
+            v-list-item-title
+              | {{ tag.title }}
+            v-list-item-subtitle
+              | {{ tag.task_count }} tasks
+          v-list-item-action
+            v-btn[icon color='primary' @click.stop='editTag(tag)']
+              v-icon
+                | fa-pencil
+          v-list-item-action
+            v-btn[icon color='red' @click.stop='deleteTag(tag)']
+              v-icon
+                | fa-trash
+  v-text-field.mx-4[v-model='newTag' label='Create new tag' append-icon='fa-arrow-up' @keyup.enter='createTag' filled dense rounded]

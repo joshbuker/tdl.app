@@ -1,0 +1,29 @@
+- %w[Pre Post].each do |dry|
+  v-dialog[v-model="add#{dry}Dialog" :fullscreen='$vuetify.breakpoint.mobile']
+    v-card[:tile='$vuetify.breakpoint.mobile']
+      template[v-if='$vuetify.breakpoint.mobile']
+        v-card-title.headline.justify-center = "Add #{dry}requisite"
+      template[v-else]
+        v-card-title.headline.float-left.mt-1 = "Add #{dry}requisite"
+      v-row.pt-3[justify='center' no-gutters]
+        v-btn.ma-2[@click="add#{dry}Dialog = false" color='secondary' :small='$vuetify.breakpoint.mobile'] Close
+      v-divider
+      v-card-text
+        h5.primary--text
+          | {{ currentTask.title }}
+        v-divider
+        v-text-field[label='Task title' :value="new#{dry}Task" @change="value => new#{dry}Task = value" @keyup.enter="add#{dry}Task"]
+        v-switch[v-model='searchEnabled' label='Auto Search']
+        v-btn[@click="searchForTasks(new#{dry}Task)" text-with-icon]
+          v-icon[left]
+            | fa-search
+          | Search
+        v-divider
+        h3
+          | Possible Matches - {{ search.length }}
+        v-list
+          v-list-item-group
+            v-list-item[v-for='task in search' :key='task.title']
+              v-list-item-content[@click.stop="add#{dry}requisite(task)"]
+                v-list-item-title
+                  | {{ task.title }}

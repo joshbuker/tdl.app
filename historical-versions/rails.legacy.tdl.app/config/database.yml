@@ -1,0 +1,24 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  <% if ENV['TDL_DATABASE_USERNAME'].present? %>
+  username: <%= ENV['TDL_DATABASE_USERNAME'] %>
+  <% end %>
+  <% if ENV['TDL_DATABASE_HOST'].present? %>
+  host: <%= ENV['TDL_DATABASE_HOST'] %>
+  <% end %>
+
+development:
+  <<: *default
+  database: tdl_app_development
+
+test:
+  <<: *default
+  database: tdl_app_test
+
+production:
+  <<: *default
+  database: tdl_app_production
+  username: tdl_app
+  password: <%= ENV['TDL_DATABASE_PASSWORD'] %>
