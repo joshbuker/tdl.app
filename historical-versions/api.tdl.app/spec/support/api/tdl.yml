@@ -1,0 +1,375 @@
+openapi: 3.0.1
+info:
+  title: TDL App API
+  version: v0
+  description: Provides a REST API backend for arbitrary TDL App front-ends.
+  contact:
+    name: TDL App Support
+    email: support@tdl.app
+
+servers:
+  - url: https://api.tdl.app
+    description: Production Server
+  - url: http://localhost:3000
+    description: Localhost Server
+  # FIXME: RSwag doesn't play nicely with api versioning / route scopes
+  # - url: https://api.tdl.app/v0
+  #   description: Production Server
+  # TODO: Is it worth implementing a sandbox server?
+  # - url: https://sandbox.tdl.app/v0
+  #   description: >
+  #     Sandbox server (that resets daily? not implementing until it's useful)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    #########################
+    ## Error Response Body ##
+    #########################
+    # Schema for error response body. See components -> responses
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+    ###########
+    ## Tasks ##
+    ###########
+    ArrayOfTasks:
+      type: array
+      items:
+        $ref: '#/components/schemas/Task'
+      uniqueItems: true
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        status_id:
+          type: integer
+          nullable: true
+        list_id:
+          type: integer
+          nullable: true
+        title:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        order:
+          type: integer
+        completed:
+          type: boolean
+        remind_me_at:
+          type: string
+          nullable: true
+        mental_energy_required:
+          type: integer
+        physical_energy_required:
+          type: integer
+      required:
+        - id
+        - title
+        - order
+        - completed
+        - mental_energy_required
+        - physical_energy_required
+    ##############
+    ## Subtasks ##
+    ##############
+    ArrayOfSubtasks:
+      type: array
+      items:
+        $ref: '#/components/schemas/Subtask'
+      uniqueItems: true
+    Subtask:
+      type: object
+      properties:
+        id:
+          type: integer
+        task_id:
+          type: integer
+        title:
+          type: string
+        completed:
+          type: boolean
+        order:
+          type: integer
+      required:
+        - id
+        - task_id
+        - title
+        - completed
+        - order
+    ###########
+    ## Lists ##
+    ###########
+    # ArrayOfListIDs:
+    #   type: object
+    #   properties:
+    #     list_ids:
+    #       type: array
+    #       items:
+    #         type: integer
+    #     title:
+    #       type: string
+    #     order:
+    #       type: integer
+    #   required:
+    #     - list_ids
+    ArrayOfLists:
+      type: array
+      items:
+        $ref: '#/components/schemas/List'
+      uniqueItems: true
+    List:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        order:
+          type: integer
+        icon:
+          type: string
+        created_at:
+          type: datetime
+        updated_at:
+          type: datetime
+      required:
+        - id
+        - title
+        - order
+        - icon
+    ##############
+    ## Statuses ##
+    ##############
+    ArrayOfStatuses:
+      type: array
+      items:
+        $ref: '#/components/schemas/Status'
+      uniqueItems: true
+    Status:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        order:
+          type: integer
+        icon:
+          type: string
+        created_at:
+          type: datetime
+        updated_at:
+          type: datetime
+      required:
+        - id
+        - title
+        - order
+        - icon
+    ##############
+    ## Contexts ##
+    ##############
+    ArrayOfContexts:
+      type: array
+      items:
+        $ref: '#/components/schemas/Context'
+      uniqueItems: true
+    Context:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        color:
+          type: string
+        icon:
+          type: string
+        order:
+          type: integer
+      required:
+        - id
+        - title
+        - color
+        - icon
+        - order
+    ###########
+    ## Users ##
+    ###########
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        locale:
+          type: string
+        time_zone:
+          type: string
+      required:
+        - id
+        - username
+        - locale
+        - time_zone
+    ####################
+    ## Authentication ##
+    ####################
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    SessionToken:
+      type: object
+      properties:
+        session_token:
+          type: string
+        user_id:
+          type: integer
+      required:
+        - session_token
+        - user_id
+  responses:
+    BadRequest:
+      description: Missing parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    PaymentRequired:
+      description: Your subscription has expired, app in readonly mode
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnprocessableEntity:
+      description: The changes requested could not be processed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: You don't have permission to do that
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotImplemented:
+      description: Endpoint not implemented yet
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServiceUnavailable:
+      description: API is currently unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+# Apply security scheme to all endpoints
+security:
+  - bearerAuth: []
+
+# FIXME: RSwag doesn't support requestBody description
+paths:
+  /tasks:
+    post:
+      requestBody:
+        description: Task to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+  /tasks/{id}:
+    patch:
+      requestBody:
+        description: Updates for existing task
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+  /lists:
+    post:
+      requestBody:
+        description: List to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+  /lists/{id}:
+    patch:
+      requestBody:
+        description: Updates for existing list
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/List'
+  /contexts:
+    post:
+      requestBody:
+        description: Context to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Context'
+  /contexts/{id}:
+    patch:
+      requestBody:
+        description: Updates for existing context
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Context'
+  /users/{id}:
+    patch:
+      requestBody:
+        description: Updates for existing user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+  /login:
+    post:
+      requestBody:
+        description: Username and password
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'

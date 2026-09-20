@@ -1,0 +1,12 @@
+{
+  "name": "Ruby on Rails & Postgres",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+  "forwardPorts": [3000],
+
+  "initializeCommand": "bash .devcontainer/init.sh",
+  "postCreateCommand": "bash .devcontainer/postcreate.sh",
+  "postStartCommand": "bash .devcontainer/poststart.sh"
+}
