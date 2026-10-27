@@ -8,6 +8,8 @@ TDL App (https://tdl.app) is a todo/task-management app, now on **attempt #4**. 
 
 - `docs/features/`: one spec per feature. This is the source of truth for behavior.
 - `docs/design-decisions/`: one evergreen record per decision.
+- `docs/open-items.md`: cross-cutting open questions, next steps and stack constraints. Check it at the start of a session.
+- `docs/lessons-from-previous-attempts.md`: bugs and pitfalls from attempts #1 to #3 to avoid.
 - `historical-versions/`: the three previous attempts, imported with `git subtree`. This is **read-only reference**; don't modify it unless asked.
 
 ## Workflow
@@ -22,6 +24,8 @@ Follow `docs/design-decisions/test-driven-development.md`:
 When a change makes or reverses a significant choice, update `docs/design-decisions/` in the same change (format in its README). Check there before changing an established pattern.
 
 Specs and decision records are evergreen: edit them in place, delete them when they no longer apply, and rely on Git for history.
+
+When resolving open questions with the user, ask in small batches of multiple-choice questions, each with a recommendation and what earlier attempts did. Apply answers to the docs after each batch. If an answer defers a choice, record it as an open question listing every option.
 
 ## Historical versions
 

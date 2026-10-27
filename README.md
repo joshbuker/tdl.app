@@ -12,4 +12,6 @@ This is attempt #4 at building TDL App, built test-first from the outset:
 
 - [`docs/features/`](docs/features/): what the app does and why. This is the source of truth for behavior.
 - [`docs/design-decisions/`](docs/design-decisions/): what we chose, what we chose it over, and why. Start with [test-driven development](docs/design-decisions/test-driven-development.md).
+- [`docs/open-items.md`](docs/open-items.md): cross-cutting questions and next steps.
+- [`docs/lessons-from-previous-attempts.md`](docs/lessons-from-previous-attempts.md): pitfalls from earlier attempts to avoid.
 - [`historical-versions/`](historical-versions/): previous attempts, with full codebases.
