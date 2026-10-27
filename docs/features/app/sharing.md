@@ -1,7 +1,7 @@
 # Sharing
 
 Status: Proposed
-Related: [Lists](../organization/lists.md), [Link tasks](../dependencies/link-tasks.md), [Delegation](../organization/delegation.md)
+Related: [Federation](federation.md), [Lists](../organization/lists.md), [Link tasks](../dependencies/link-tasks.md), [Delegation](../organization/delegation.md)
 
 ## Summary
 
@@ -26,7 +26,7 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
 - A task in a shared list can be assigned to one of the list's collaborators or its owner. Each user can filter for tasks assigned to them.
 - Losing access to a list hides its tasks. Links to them from the user's own tasks remain and show as hidden blockers.
 - People are invited by username, and accept or decline the invitation. The owner can also create an invite link, which anyone with an account can use to join until it is revoked. Both ways set the role (editor or viewer).
-- Users on different servers can share lists with each other (see [Self-hosting](../../design-decisions/self-hosting.md)).
+- Users on different servers can share lists with each other (see [Federation](federation.md)).
 - A shared list has its own tags and statuses, used by everyone with access (see [Tags](../organization/tags.md) and [Statuses](../organization/statuses.md)).
 - The owner can transfer ownership to an editor, who becomes the owner. The previous owner becomes an editor.
 
@@ -70,5 +70,4 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
 
 ## Open questions
 
-- How do users on different servers find and invite each other (e.g. `alice@tdl.example.com`), and which protocol syncs between servers?
 - Are routines per user or shared with a list?

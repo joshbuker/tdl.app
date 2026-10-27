@@ -17,5 +17,5 @@ Self-hosting is supported: anyone can run their own TDL App server, and the apps
 - The backend must be easy to deploy (e.g. a container image with documented configuration).
 - Server-level settings such as invite-only mode (see `docs/features/account/sign-up.md`) are needed.
 - Clients must handle servers running different versions.
-- Users on different servers can share lists (see `docs/features/app/sharing.md`), so servers must talk to each other: user addresses that include the server, and a server-to-server protocol.
+- Users on different servers can share lists (see `docs/features/app/federation.md`), so servers must talk to each other: user addresses that include the server, and a server-to-server protocol.
 - Cross-origin access must be opened deliberately, with that considered in the threat model.
