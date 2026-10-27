@@ -13,7 +13,7 @@ A task can be marked as delegated to someone, usually with a "Waiting" status, a
 
 ## Rules
 
-- A task can record who it is delegated to.
+- A task can record who it is delegated to: a collaborator on its list (see [Sharing](../app/sharing.md)), or free text for someone outside the app.
 - Delegation doesn't require any particular status, but is typically paired with a "Waiting" status.
 - Scheduling a delegated task sets when to follow up.
 
@@ -27,5 +27,4 @@ A task can be marked as delegated to someone, usually with a "Waiting" status, a
 
 ## Open questions
 
-- Is "delegated to" free text, or chosen from a list of people (and later, other users, see [Sharing](../app/sharing.md))?
 - Should tasks that are waiting on someone else count as next up?

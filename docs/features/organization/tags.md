@@ -14,6 +14,7 @@ Lists and tags both exist because they answer different questions. A list is whe
 ## Rules
 
 - Tag titles are unique per user, ignoring case.
+- A shared list has its own set of tags, used by everyone with access to it (see [Sharing](../app/sharing.md)). The user's own tags apply to tasks in their unshared lists.
 - Tags have a color (random by default) and an order.
 - Filtering by tags can require all selected tags, any of them, or none of them.
 - A "no tags" filter shows untagged tasks.
@@ -31,3 +32,7 @@ Lists and tags both exist because they answer different questions. A list is whe
 - Given "A" is tagged @Home and @Phone, and "B" is tagged @Home
 - When the user filters by @Home and @Phone with "all"
 - Then only "A" is shown
+
+## Open questions
+
+- When filtering by a tag across lists, do a shared list's tag and the user's own tag with the same name count as the same tag?

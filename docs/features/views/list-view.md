@@ -13,7 +13,7 @@ The default view in every attempt. #3 showed each task's count of incomplete pos
 
 ## Rules
 
-- Each row shows the title, whether it has notes, and how many tasks it blocks.
+- Each row shows the title, whether it has notes, its list and tags, its schedule and deadline (including an implied deadline), its status, and how many tasks it blocks.
 - Completing from the list works without opening the task.
 
 ## Scenarios
@@ -31,4 +31,4 @@ The default view in every attempt. #3 showed each task's count of incomplete pos
 
 ## Open questions
 
-- Should rows show dates, list and tags?
+- How does a row show completion: a checkbox, a status, or either depending on the list? See [Statuses](../organization/statuses.md).

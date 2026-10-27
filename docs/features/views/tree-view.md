@@ -18,6 +18,7 @@ In #1 and #3. Because the graph is not a tree, a task with several prerequisites
 - A task with several prerequisites appears under each.
 - Reversed: roots are tasks with no incomplete postrequisites, and expanding shows prerequisites.
 - Expanded branches are remembered.
+- Completed tasks are hidden by default, with a toggle to show them.
 
 ## Scenarios
 
@@ -32,7 +33,3 @@ In #1 and #3. Because the graph is not a tree, a task with several prerequisites
 - Given "A" before "B"
 - When the user reverses the tree
 - Then "B" is a root and "A" is under it
-
-## Open questions
-
-- Should completed tasks be shown?

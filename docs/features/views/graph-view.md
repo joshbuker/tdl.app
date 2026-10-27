@@ -17,11 +17,17 @@ Partly built in #3 as a force-directed graph. Nodes were sized by how many tasks
 - Node size reflects how many incomplete tasks it blocks.
 - Completed, next-up and blocked tasks look different.
 - Clicking a node opens the task.
+- The graph is for viewing, not editing. Links are made in task details and [Quick sort](../dependencies/quick-sort.md).
 
 ## Scenarios
 
-- To be defined.
+### Open a task from the graph
 
-## Open questions
+- Given "A" before "B"
+- When the user clicks "B" in the graph
+- Then "B" opens
 
-- Is this useful day to day, or mainly a visualization?
+### Bottlenecks stand out
+
+- Given "A" blocks 5 tasks and "C" blocks none
+- Then "A" is drawn larger than "C"

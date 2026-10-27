@@ -13,7 +13,8 @@ Built in #3 to cut decision fatigue: instead of a list, show the single most imp
 
 ## Rules
 
-- The focused task is the next-up task with the most incomplete postrequisites.
+- Focus works over the selected preset (Today, Agenda, a list, and so on), like every other page.
+- The focused task is the next-up task in that preset with the most incomplete postrequisites.
 - "Up next" is the best remaining next-up task, or a task that the focused task alone is blocking.
 
 ## Scenarios
@@ -28,7 +29,3 @@ Built in #3 to cut decision fatigue: instead of a list, show the single most imp
 - Given "A" is in focus
 - When the user completes "A"
 - Then the next most important task is in focus
-
-## Open questions
-
-- Should focus respect scheduled dates (only tasks for today)?

@@ -23,6 +23,7 @@ Here, completion is part of the status rather than a separate flag, so there's o
 - The user can add, rename, recolor, reorder and delete statuses. Titles are unique per user, ignoring case.
 - A status in use cannot be deleted, and there is always at least one incomplete and one complete status.
 - The time a task's status last changed is recorded.
+- A shared list has its own set of statuses, used by everyone with access to it (see [Sharing](../app/sharing.md)). The user's own statuses apply to tasks in their unshared lists.
 
 ## Scenarios
 
@@ -38,6 +39,8 @@ Here, completion is part of the status rather than a separate flag, so there's o
 - Then its status is "Done"
 
 ## Open questions
+
+- Checkbox or status? A plain complete checkbox is simpler; statuses add detail. The model above makes completion a status, but this isn't settled. One option is a per-list setting (like Todoist's per-project choice) for whether tasks in that list use a simple checkbox or full statuses.
 
 - Can there be several complete statuses (e.g. "Done" and "Won't do")? If so, which one does the complete checkbox set?
 - When a task is marked incomplete again, which status does it return to: its previous status, or the default?

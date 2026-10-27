@@ -9,7 +9,7 @@ On the login screen, the user can enter which server to connect to, so the app w
 
 ## Design intent
 
-Added in #3: the API's stated audience was "arbitrary TDL App front-ends", and the client let users pick their server. #3 opened the API to cross-origin requests from anywhere to allow this.
+Self-hosting is a goal (see [Self-hosting](../../design-decisions/self-hosting.md)). Added in #3: the API's stated audience was "arbitrary TDL App front-ends", and the client let users pick their server.
 
 ## Rules
 
@@ -22,7 +22,3 @@ Added in #3: the API's stated audience was "arbitrary TDL App front-ends", and t
 
 - When the user enters a server address and valid credentials for it
 - Then they are logged in to that server
-
-## Open questions
-
-- Is self-hosting a goal for attempt #4?

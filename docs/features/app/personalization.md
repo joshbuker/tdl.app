@@ -12,6 +12,7 @@ From #3, where each of these was a setting. #3 also played a sound when checking
 
 ## Rules
 
+- Settings are stored on the account, so they follow the user across devices. Any setting can be overridden on a single device (e.g. a different default page on a phone).
 - The default page is chosen from the enabled pages.
 - Navigation can be reset to the default set of pages.
 
@@ -22,4 +23,3 @@ From #3, where each of these was a setting. #3 also played a sound when checking
 ## Open questions
 
 - Which of these are worth keeping?
-- Stored per device, or on the account?

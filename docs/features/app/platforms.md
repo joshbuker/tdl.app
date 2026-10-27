@@ -5,7 +5,7 @@ Related: [Reminders](../scheduling/reminders.md)
 
 ## Summary
 
-The app runs on the web, Android, and desktop.
+The app runs on the web, Android, iOS and desktop, all at launch.
 
 ## Design intent
 
@@ -13,13 +13,10 @@ Attempt #1 ended because it was "web only" and "couldn't compile down to mobile/
 
 ## Rules
 
+- Web, Android, iOS and desktop (Windows, macOS, Linux) are all supported at launch.
+- The web app is not an installable PWA. Native mobile and desktop packages cover installed use.
 - Same features on every platform, except where a platform can't support one (e.g. scheduled notifications on web).
 
 ## Scenarios
 
 - To be defined per platform once the stack is chosen.
-
-## Open questions
-
-- Which platforms at launch: web, Android, iOS, desktop?
-- Installable web app (PWA)?
