@@ -1,46 +1,87 @@
 # Statuses
 
 Status: Proposed
-Related: [Complete a task](../tasks/complete-task.md), [Delegation](delegation.md)
+Related: [Complete a task](../tasks/complete-task.md), [Delegation](delegation.md), [Lists](lists.md)
 
 ## Summary
 
-Every task has a status from the user's set of statuses (e.g. To do, In progress, Waiting, Done). Completion is a status.
+Every task has a status (e.g. To do, In progress, Waiting, Done), and completion is a status. Each list has its own statuses, and chooses how tasks are shown: as a simple checkbox, or as a workflow with a full status picker.
 
 ## Design intent
 
-Added in #3 after the GTD rework was reverted, partly to cover "waiting for". #3 kept a separate completed flag alongside statuses, with "TODO" and "Done" as intended defaults, and never built a UI.
+The app serves two quite different uses. One is a simple todo list, like Todoist, where a checkbox marks a task done. The other is a Jira-style workflow, with several statuses and more detail about who is doing what and when. Each list picks the style that fits, the way Todoist lets each project choose between a checklist and a board.
 
-Here, completion is part of the status rather than a separate flag, so there's one place that describes where a task stands. Each status counts as either incomplete or complete, and that is what the rest of the app (next up, filters, the graph rules) uses.
+Different projects need different workflows, so statuses belong to the list rather than the user, as in Jira and most kanban trackers, where each board's columns are its statuses.
+
+Statuses were added in #3 after the GTD rework was reverted, partly to cover "waiting for". #3 kept a separate completed flag on tasks alongside statuses, and gave each status its own completed flag. It used "TODO" and "Done" as the intended defaults, kept statuses per user, and never built a UI.
+
+Here, completion is part of the status, not a separate flag, so one field says where a task stands. Each status counts as either incomplete or complete, and that is what the rest of the app (next up, filters, the graph rules) uses. Simple and workflow lists share this model, so a list can switch between them in either direction without converting or losing anything.
 
 ## Rules
 
-- Every task has exactly one status.
+- Each list has its own set of statuses. A new list starts with "To do" (default incomplete) and "Done" (default complete).
+- Every task has exactly one status, from its list's set.
 - Each status is either an incomplete status or a complete status.
 - A task is completed when its status is a complete status.
-- New users start with "To do" (incomplete) and "Done" (complete).
-- New tasks get the user's default incomplete status.
-- The user can add, rename, recolor, reorder and delete statuses. Titles are unique per user, ignoring case.
-- A status in use cannot be deleted, and there is always at least one incomplete and one complete status.
-- The time a task's status last changed is recorded.
-- A shared list has its own set of statuses, used by everyone with access to it (see [Sharing](../app/sharing.md)). The user's own statuses apply to tasks in their unshared lists.
+- There can be several complete statuses (e.g. "Done" and "Won't do"). One complete status is the default, and it is what the checkbox sets.
+- One incomplete status is the default. New tasks get it.
+- When a completed task is marked incomplete, it returns to the incomplete status it had before. If that status no longer exists, it gets the default incomplete status.
+- The user can add, rename, recolor, reorder and delete a list's statuses. Titles are unique within the list, ignoring case.
+- A status in use cannot be deleted, and a list always has at least one incomplete and one complete status.
+- Each list is either a simple list or a workflow list (see [Lists](lists.md)):
+  - In a simple list, tasks show a checkbox. Checking it sets the default complete status, and unchecking it marks the task incomplete as above.
+  - In a workflow list, tasks show their status and can be set to any of the list's statuses. The checkbox is still available as a shortcut.
+  - Switching a list between simple and workflow keeps its statuses and every task's status. A simple list only hides them.
+- Moving a task to another list keeps a status with the same title in the new list, ignoring case. Otherwise the task gets the new list's default status for whether it is complete or incomplete.
+- Every status change is recorded in the task's history: from which status, to which, by whom, and when. This shows who is doing what and how long a task spent in each status.
+- On a shared list, everyone with access uses the list's statuses (see [Sharing](../app/sharing.md)).
+- "Waiting" has no special meaning. A waiting task counts as next up like any other, and the user can filter it out (see [Delegation](delegation.md)).
 
 ## Scenarios
 
 ### Set a status
 
-- Given the user has a status "In progress"
+- Given "Paint fence" is in a workflow list with a status "In progress"
 - When the user sets "Paint fence" to "In progress"
 - Then "Paint fence" shows "In progress" and is still incomplete
 
-### Completing sets a complete status
+### Completing sets the default complete status
 
+- Given "Paint fence" is in a simple list
 - When the user completes "Paint fence"
 - Then its status is "Done"
 
+### Another complete status
+
+- Given "Paint fence" is in a list with a complete status "Won't do"
+- When the user sets "Paint fence" to "Won't do"
+- Then "Paint fence" is completed
+
+### Reopen returns to the previous status
+
+- Given "Paint fence" was "In progress" and was then completed
+- When the user marks it incomplete
+- Then its status is "In progress"
+
+### Lists have their own statuses
+
+- Given the list "Home" has statuses "To do" and "Done", and the list "Work" has "Backlog", "In review" and "Shipped"
+- When the user sets a task in "Work" to a status
+- Then the choices are "Backlog", "In review" and "Shipped"
+
+### Switching to simple keeps statuses
+
+- Given "Paint fence" is "In progress" in a workflow list
+- When the list is switched to simple, then back to workflow
+- Then "Paint fence" is still "In progress"
+
+### Status changes are recorded
+
+- When the user moves "Paint fence" from "To do" to "In progress"
+- Then the task's history shows the change, who made it, and when
+
 ## Open questions
 
-- Checkbox or status? A plain complete checkbox is simpler; statuses add detail. The model above makes completion a status, but this isn't settled. One option is a per-list setting (like Todoist's per-project choice) for whether tasks in that list use a simple checkbox or full statuses.
-
-- Can there be several complete statuses (e.g. "Done" and "Won't do")? If so, which one does the complete checkbox set?
-- When a task is marked incomplete again, which status does it return to: its previous status, or the default?
+- Should a user be able to save a set of statuses as a template, or set the statuses that new lists start with?
+- Which metrics should status history feed (e.g. time in each status, cycle time), and where are they shown?
+- Should filters be able to select by status across lists, given each list has its own statuses (e.g. by title, or by complete vs incomplete only)?

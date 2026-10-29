@@ -1,7 +1,7 @@
 # Lists
 
 Status: Proposed
-Related: [Create a task](../tasks/create-task.md)
+Related: [Create a task](../tasks/create-task.md), [Statuses](statuses.md)
 
 ## Summary
 
@@ -21,6 +21,8 @@ Lists were in every attempt as the folder-style grouping, with Inbox as the catc
 - A list has an icon, chosen from a predefined set. There is a default icon.
 - Lists can be reordered.
 - Each list shows its count of next-up tasks.
+- A list is either a simple list, where tasks show a checkbox, or a workflow list, where tasks show a full status picker (see [Statuses](statuses.md)). New lists are simple. The user can switch a list between the two without losing any statuses.
+- Each list has its own set of statuses.
 - The default list cannot be deleted.
 - Deleting a list moves it and all its tasks to the Trash (see [Delete a task](../tasks/delete-task.md)). Restoring the list restores its tasks. Restoring one of its tasks also restores the list.
 

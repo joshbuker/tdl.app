@@ -13,7 +13,7 @@ Completing a task is the most frequent action, so it should be one tap with imme
 
 ## Rules
 
-- Completing a task sets its status to a complete status (see [Statuses](../organization/statuses.md)). Marking it incomplete sets an incomplete status.
+- Completing a task sets its status to the default complete status (see [Statuses](../organization/statuses.md)). Marking it incomplete returns it to the incomplete status it had before.
 - A completed task can be marked incomplete again.
 - Completing a task cancels its pending reminders.
 - Completing a task may unblock its postrequisites. Marking it incomplete blocks them again.

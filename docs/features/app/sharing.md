@@ -27,7 +27,7 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
 - Losing access to a list hides its tasks. Links to them from the user's own tasks remain and show as hidden blockers.
 - People are invited by username, and accept or decline the invitation. The owner can also create an invite link, which anyone with an account can use to join until it is revoked. Both ways set the role (editor or viewer).
 - Users on different servers can share lists with each other (see [Federation](federation.md)).
-- A shared list has its own tags and statuses, used by everyone with access (see [Tags](../organization/tags.md) and [Statuses](../organization/statuses.md)).
+- A shared list has its own tags, used by everyone with access (see [Tags](../organization/tags.md)). Statuses already belong to each list (see [Statuses](../organization/statuses.md)).
 - The owner can transfer ownership to an editor, who becomes the owner. The previous owner becomes an editor.
 
 ## Scenarios
