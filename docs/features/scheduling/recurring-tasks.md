@@ -20,7 +20,7 @@ Never built, but planned repeatedly. #3 had pending tests: "should allow setting
 - Completing a recurring task brings the same task back at its next occurrence: it gets the default incomplete status, its schedule moves to the next occurrence, and all its subtasks are unchecked.
 - Recurring tasks stay outside the dependency graph: a recurring task can't have prerequisites or postrequisites (see [Link tasks](../dependencies/link-tasks.md)). Adding a recurrence to a linked task is rejected, with an explanation, until its links are removed.
 - Relative reminders move to each new occurrence (see [Reminders](reminders.md)).
-- Each completion is recorded in the task's status history (see [Statuses](../organization/statuses.md)).
+- Each completion is recorded in the task's history (see [Task history](../tasks/task-history.md)).
 - Recurrence can be typed in natural language, in a new task's title or in a date field, as well as set with a picker (see [Natural-language entry](../tasks/natural-language-entry.md)).
 
 ## Scenarios

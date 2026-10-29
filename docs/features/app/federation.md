@@ -12,7 +12,7 @@ Users on different TDL App servers can share lists and work on them together, as
 
 Self-hosting shouldn't mean isolation. Someone running their own server should still be able to share a list with a friend on the official server. Without federation, self-hosting forces a choice between owning your data and collaborating.
 
-Federation reuses the device sync protocol from [Offline use](offline.md): a collaborator's server syncs a shared list with the owner's server the way a device does. ActivityPub was considered, but it is built for broadcasting posts, not for editing shared data, and Matrix would bring a large protocol and data model of its own. A custom protocol means one sync mechanism to build and test.
+Federation reuses the device sync protocol from [Offline use](offline.md): a collaborator's server syncs a shared list with the owner's server the way a device does. ActivityPub was considered, but it is built for broadcasting posts, not for editing shared data, and Matrix would bring a large protocol and data model of its own. A custom protocol means one sync mechanism to build and test (see [Federation reuses sync](../../design-decisions/federation-reuses-sync.md)).
 
 ## Rules
 

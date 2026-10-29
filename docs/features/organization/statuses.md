@@ -36,7 +36,7 @@ Here, completion is part of the status, not a separate flag, so one field says w
   - In a workflow list, tasks show their status and can be set to any of the list's statuses. The checkbox is still available as a shortcut.
   - Switching a list between simple and workflow keeps its statuses and every task's status. A simple list only hides them.
 - Moving a task to another list keeps a status with the same title in the new list, ignoring case. Otherwise the task gets the new list's default status for whether it is complete or incomplete.
-- Every status change is recorded in the task's history: from which status, to which, by whom, and when. Changes made concurrently while offline are all kept, and flagged (see [Offline use](../app/offline.md)). This shows who is doing what and how long a task spent in each status.
+- Every status change is recorded in the task's history: from which status, to which, by whom, and when. Changes made concurrently while offline are all kept, and flagged (see [Task history](../tasks/task-history.md)). This shows who is doing what and how long a task spent in each status.
 - On a shared list, everyone with access uses the list's statuses (see [Sharing](../app/sharing.md)). The owner's default set only applied when the list was created.
 - "Waiting" has no special meaning. A waiting task counts as next up like any other, and the user can filter it out (see [Assignment](assignment.md)).
 
@@ -88,7 +88,3 @@ Here, completion is part of the status, not a separate flag, so one field says w
 
 - When the user moves "Paint fence" from "To do" to "In progress"
 - Then the task's history shows the change, who made it, and when
-
-## Open questions
-
-- Which metrics should status history feed (e.g. time in each status, cycle time), and where are they shown?

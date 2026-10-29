@@ -27,7 +27,7 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
   - **Viewer or above**: the task as normal.
   - **Outline viewer**: a placeholder showing that a task exists and how it links, with no title or details.
   - **No access**: no sign at all. The linked task and its links are not shown, and are ignored for that user's cycle checks, rejection messages and blocked indicators.
-- Each user's next up, blocked indicators and graph-rule checks consider only tasks and links they can see (as a viewer, or as an outline viewer).
+- Each user's next up, blocked indicators and graph-rule checks consider only tasks and links they can see (as a viewer, or as an outline viewer). See [Visibility-scoped graph](../../design-decisions/visibility-scoped-graph.md).
 - A task in a shared list can be assigned to one of the list's collaborators or its owner (see [Assignment](../organization/assignment.md)).
 - Losing access to a list hides its tasks. Links to them from the user's own tasks remain and show as hidden blockers.
 - People are invited by username, and accept or decline the invitation. The owner can also create an invite link, which anyone with an account can use to join until it is revoked. Both ways set the role (editor, viewer or outline viewer).
