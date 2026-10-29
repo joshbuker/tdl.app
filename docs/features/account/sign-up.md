@@ -16,6 +16,7 @@ Anyone can create an account, unless the server is in invite-only mode, in which
 
 - Sign-up asks for the account details in [Account details](user-validation.md) and acceptance of the terms.
 - In invite-only mode, sign-up is not available and visitors are directed to request access.
+- A new account must verify its email address before it can be used. A server admin can turn this off, e.g. on a self-hosted server without email set up.
 
 ## Scenarios
 
@@ -31,6 +32,8 @@ Anyone can create an account, unless the server is in invite-only mode, in which
 - When a visitor tries to sign up
 - Then they are offered the request access form instead
 
-## Open questions
+### Email must be verified
 
-- Is email verification required before the account can be used?
+- Given "carol" has just signed up
+- When she tries to use the app before opening the verification email
+- Then she is asked to verify her email first

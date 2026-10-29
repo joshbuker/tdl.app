@@ -16,6 +16,9 @@ Planned since #2: the #2 and #3 APIs had stub endpoints for hardware tokens (Web
 
 - Multi-factor authentication is optional per user.
 - When set up, logging in requires the second factor after the password.
+- Supported factors are an authenticator app (TOTP) and passkeys or hardware keys (WebAuthn). A user can set up several, and any one of them works.
+- Setting up the first factor gives the user a set of single-use recovery codes. Each code can be used once in place of a factor. The user can generate a new set, which invalidates the old one.
+- Removing the last factor turns MFA off, and requires the password.
 
 ## Scenarios
 
@@ -25,7 +28,8 @@ Planned since #2: the #2 and #3 APIs had stub endpoints for hardware tokens (Web
 - When she logs in with the correct password
 - Then she is asked for her second factor before seeing her tasks
 
-## Open questions
+### Log in with a recovery code
 
-- Which factors: authenticator app (TOTP), passkeys/hardware keys (WebAuthn), or both?
-- Recovery codes for a lost device?
+- Given "alice" has MFA set up and has lost her device
+- When she logs in with her password and an unused recovery code
+- Then she is logged in, and that code can't be used again

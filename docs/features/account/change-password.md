@@ -19,6 +19,7 @@ From #3. The checks are specific so the user knows exactly what went wrong.
 - The current password must be correct.
 - The new password must meet the password rules.
 - The new password is entered twice and both entries must match.
+- Changing the password logs out all of the user's other sessions. The current session stays logged in.
 
 ## Scenarios
 
@@ -32,6 +33,8 @@ From #3. The checks are specific so the user knows exactly what went wrong.
 - When the user enters an incorrect current password
 - Then the password is not changed and the user is told the current password is wrong
 
-## Open questions
+### Other sessions are logged out
 
-- Should changing the password log out other sessions?
+- Given "alice" is logged in on her phone and her laptop
+- When she changes her password on the laptop
+- Then the phone is logged out and the laptop stays logged in
