@@ -1,6 +1,7 @@
 # Board view
 
 Status: Proposed
+Release: v1
 Related: [Statuses](../organization/statuses.md), [Filtering and sorting](filtering-and-sorting.md), [Lists](../organization/lists.md)
 
 ## Summary

@@ -1,6 +1,7 @@
 # Time zone
 
 Status: Proposed
+Release: v1
 Related: [Schedule](../scheduling/schedule.md)
 
 ## Summary

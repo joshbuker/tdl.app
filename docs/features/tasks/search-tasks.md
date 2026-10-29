@@ -1,6 +1,7 @@
 # Search tasks
 
 Status: Proposed
+Release: v1
 Related: [Create a task](create-task.md)
 
 ## Summary

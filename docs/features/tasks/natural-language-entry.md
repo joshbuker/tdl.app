@@ -1,6 +1,7 @@
 # Natural-language entry
 
 Status: Proposed
+Release: v1
 Related: [Create a task](create-task.md), [Schedule](../scheduling/schedule.md), [Deadlines](../scheduling/deadlines.md), [Recurring tasks](../scheduling/recurring-tasks.md), [Reminders](../scheduling/reminders.md)
 
 ## Summary
@@ -26,7 +27,8 @@ Modeled on Todoist's quick add, so capture stays a single line of typing. #3 had
 - Text that isn't recognized stays in the title.
 - A `#List` or `@tag` that doesn't exist is offered as a suggestion to create it. It is only created if the user chooses that; otherwise it stays in the title.
 - Clicking a highlighted part dismisses it, leaving that text in the title as typed.
-- Parsing supports English at launch. Other languages come after launch.
+- Parsing supports English.
+- Parsing supports other languages (v2).
 
 ## Scenarios
 

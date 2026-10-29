@@ -1,6 +1,7 @@
 # Recurring tasks
 
 Status: Proposed
+Release: v1
 Related: [Schedule](schedule.md), [Subtasks](../tasks/subtasks.md), [Statuses](../organization/statuses.md)
 
 ## Summary

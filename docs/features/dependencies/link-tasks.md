@@ -1,6 +1,7 @@
 # Link tasks
 
 Status: Proposed
+Release: v1
 Related: [Next up](next-up.md), [Dependency graph with dates](../../design-decisions/dependency-graph-with-dates.md), [Soft dependencies](soft-dependencies.md)
 
 ## Summary

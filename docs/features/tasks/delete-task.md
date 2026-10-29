@@ -1,6 +1,7 @@
 # Delete a task
 
 Status: Proposed
+Release: v1
 Related: [Link tasks](../dependencies/link-tasks.md)
 
 ## Summary

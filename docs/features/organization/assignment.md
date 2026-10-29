@@ -1,6 +1,7 @@
 # Assignment
 
 Status: Proposed
+Release: v1
 Related: [Sharing](../app/sharing.md), [Statuses](statuses.md), [Schedule](../scheduling/schedule.md), [Deadlines](../scheduling/deadlines.md), [Prioritize date](../scheduling/prioritize-date.md)
 
 ## Summary

@@ -1,6 +1,7 @@
 # Import and export
 
 Status: Proposed
+Release: v1
 
 ## Summary
 
@@ -32,4 +33,4 @@ Planned in Slipstream with its own file format (lists, tasks, links, dates, tags
 ## Open questions
 
 - Importing into an account that already has data: merge, or replace?
-- Other formats (e.g. iCalendar VTODO, Todoist) after launch?
+- Which other formats (e.g. iCalendar VTODO, Todoist) in v2?

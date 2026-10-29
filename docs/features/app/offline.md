@@ -1,6 +1,7 @@
 # Offline use
 
 Status: Proposed
+Release: v1
 Related: [Platforms](platforms.md), [Offline first](../../design-decisions/offline-first.md)
 
 ## Summary

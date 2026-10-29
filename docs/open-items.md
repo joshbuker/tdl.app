@@ -10,16 +10,14 @@ Like the rest of `docs/`, this file is evergreen: remove an item once it's resol
 
 ## Next steps
 
-- Finish the remaining per-feature open questions. Most are on idea-stage features: auto-scheduler, triage review and energy levels.
+- Finish the remaining per-feature open questions. Most remaining ones are in v1 specs.
 - Promote the core specs to Specified: link tasks, next up, create, complete and delete tasks, lists, and schedule.
 - Choose a stack, recording the choice as a design decision (see "Stack constraints" below).
 
 ## Cross-cutting questions
 
-- **Launch scope.** Web, Android, iOS and desktop, offline-first editing, list sharing across servers, MFA and natural-language entry are all planned for launch. Consider an MVP cut before choosing a stack. Federation and offline-first are the heaviest.
-- **Post-launch items have no home.** Items such as natural-language parsing in languages other than English, or other import formats, are currently written as rules inside specs. Options: a `Planned` status, or a roadmap document.
+- **Launch scope.** Web, Android, iOS and desktop, offline-first editing, list sharing across servers, MFA and natural-language entry are all planned for launch. Consider an MVP cut before choosing a stack, marking deferred specs `Release: v2` (see [Features](features/README.md)). Federation and offline-first are the heaviest.
 - **Tags per shared list.** A shared list has its own tags, while a user's unshared lists use their own. Filtering by a tag across lists is undefined. Statuses avoid this with fixed categories (see [Statuses](features/organization/statuses.md)).
-- **Energy levels** have no feature that uses them. Delete unless the auto-scheduler needs them.
 
 ## Design decisions to write
 

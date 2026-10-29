@@ -1,6 +1,7 @@
 # Soft dependencies
 
 Status: Proposed
+Release: v1
 Related: [Link tasks](link-tasks.md), [Next up](next-up.md), [Agenda](../views/agenda.md)
 
 ## Summary

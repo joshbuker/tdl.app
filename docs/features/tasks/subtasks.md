@@ -1,6 +1,7 @@
 # Subtasks
 
 Status: Proposed
+Release: v1
 Related: [Link tasks](../dependencies/link-tasks.md)
 
 ## Summary

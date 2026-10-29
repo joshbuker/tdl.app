@@ -1,6 +1,7 @@
 # Choose a server
 
 Status: Proposed
+Release: v1
 Related: [Login](login.md), [Federation](../app/federation.md)
 
 ## Summary

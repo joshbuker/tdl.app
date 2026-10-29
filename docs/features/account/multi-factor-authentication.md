@@ -1,6 +1,7 @@
 # Multi-factor authentication
 
 Status: Proposed
+Release: v1
 Related: [Login](login.md)
 
 ## Summary

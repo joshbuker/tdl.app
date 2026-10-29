@@ -1,6 +1,7 @@
 # Prioritize date
 
 Status: Proposed
+Release: v1
 Related: [Deadlines](deadlines.md), [Schedule](schedule.md)
 
 ## Summary

@@ -1,6 +1,7 @@
 # Change password
 
 Status: Proposed
+Release: v1
 Related: [Account details](user-validation.md)
 
 ## Summary

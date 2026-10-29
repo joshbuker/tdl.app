@@ -1,6 +1,7 @@
 # Login
 
 Status: Proposed
+Release: v1
 Related: [Sign up](sign-up.md), [Multi-factor authentication](multi-factor-authentication.md), [Change password](change-password.md), [Choose a server](choose-server.md)
 
 ## Summary

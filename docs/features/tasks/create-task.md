@@ -1,6 +1,7 @@
 # Create a task
 
 Status: Proposed
+Release: v1
 Related: [Search tasks](search-tasks.md), [Natural-language entry](natural-language-entry.md), [Lists](../organization/lists.md)
 
 ## Summary

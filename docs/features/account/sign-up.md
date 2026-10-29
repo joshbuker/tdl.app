@@ -1,6 +1,7 @@
 # Sign up
 
 Status: Proposed
+Release: v1
 Related: [Login](login.md), [Request access](request-access.md), [Account details](user-validation.md)
 
 ## Summary

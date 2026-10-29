@@ -1,6 +1,7 @@
 # Sharing
 
 Status: Proposed
+Release: v1
 Related: [Federation](federation.md), [Lists](../organization/lists.md), [Link tasks](../dependencies/link-tasks.md), [Assignment](../organization/assignment.md)
 
 ## Summary

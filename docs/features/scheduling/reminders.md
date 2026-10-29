@@ -1,6 +1,7 @@
 # Reminders
 
 Status: Proposed
+Release: v1
 Related: [Schedule](schedule.md)
 
 ## Summary

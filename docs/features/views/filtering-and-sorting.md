@@ -1,6 +1,7 @@
 # Filtering and sorting
 
 Status: Proposed
+Release: v1
 Related: [Dependency graph with dates](../../design-decisions/dependency-graph-with-dates.md)
 
 ## Summary

@@ -12,6 +12,15 @@ One file per feature, grouped by area: `docs/features/<area>/<feature>.md` (e.g.
 - **Specified**: scenarios agreed, ready for acceptance tests.
 - **Implemented**: all scenarios' acceptance tests pass.
 
+## Release
+
+Each spec says which release it belongs to:
+
+- **v1**: needed at launch.
+- **v2**: after launch.
+
+A single rule that comes later than the rest of its spec ends with "(v2)", e.g. support for more languages in a v1 feature. When a release ships, the next one becomes the target, so add v3 only when something is planned beyond v2.
+
 Specs are evergreen. When behavior changes, edit the spec in place. When a feature is removed, delete its spec and tests. Git holds the history.
 
 ## Writing a spec
@@ -26,6 +35,7 @@ Specs are evergreen. When behavior changes, edit the spec in place. When a featu
 # <Feature name>
 
 Status: Proposed | Specified | Implemented
+Release: v1 | v2
 Related: <links to features or design decisions>
 
 ## Summary

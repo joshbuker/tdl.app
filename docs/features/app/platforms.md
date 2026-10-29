@@ -1,6 +1,7 @@
 # Platforms
 
 Status: Proposed
+Release: v1
 Related: [Reminders](../scheduling/reminders.md)
 
 ## Summary

@@ -1,6 +1,7 @@
 # Calendar view
 
 Status: Proposed
+Release: v1
 Related: [Schedule](../scheduling/schedule.md), [Deadlines](../scheduling/deadlines.md), [Auto-scheduler](../scheduling/auto-scheduler.md)
 
 ## Summary

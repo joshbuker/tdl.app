@@ -1,6 +1,7 @@
 # Federation
 
 Status: Proposed
+Release: v1
 Related: [Sharing](sharing.md), [Choose a server](../account/choose-server.md), [Self-hosting](../../design-decisions/self-hosting.md), [Offline use](offline.md)
 
 ## Summary

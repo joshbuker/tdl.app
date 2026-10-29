@@ -1,6 +1,7 @@
 # List view
 
 Status: Proposed
+Release: v1
 Related: [Filtering and sorting](filtering-and-sorting.md), [Next up](../dependencies/next-up.md)
 
 ## Summary

@@ -1,6 +1,7 @@
 # Complete a task
 
 Status: Proposed
+Release: v1
 Related: [Next up](../dependencies/next-up.md), [Statuses](../organization/statuses.md)
 
 ## Summary

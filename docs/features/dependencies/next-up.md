@@ -1,6 +1,7 @@
 # Next up
 
 Status: Proposed
+Release: v1
 Related: [Link tasks](link-tasks.md), [List view](../views/list-view.md)
 
 ## Summary

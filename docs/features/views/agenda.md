@@ -1,6 +1,7 @@
 # Agenda
 
 Status: Proposed
+Release: v1
 Related: [Next up](../dependencies/next-up.md), [Filtering and sorting](filtering-and-sorting.md)
 
 ## Summary

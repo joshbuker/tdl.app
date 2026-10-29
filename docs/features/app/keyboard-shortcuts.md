@@ -1,6 +1,7 @@
 # Keyboard shortcuts
 
 Status: Proposed
+Release: v1
 
 ## Summary
 

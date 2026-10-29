@@ -1,6 +1,7 @@
 # Graph view
 
 Status: Proposed
+Release: v1
 Related: [Tree view](tree-view.md)
 
 ## Summary

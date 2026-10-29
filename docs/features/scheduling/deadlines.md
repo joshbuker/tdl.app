@@ -1,6 +1,7 @@
 # Deadlines
 
 Status: Proposed
+Release: v1
 Related: [Schedule](schedule.md), [Prioritize date](prioritize-date.md), [Agenda](../views/agenda.md)
 
 ## Summary

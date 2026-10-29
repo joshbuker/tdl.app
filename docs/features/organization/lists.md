@@ -1,6 +1,7 @@
 # Lists
 
 Status: Proposed
+Release: v1
 Related: [Create a task](../tasks/create-task.md), [Statuses](statuses.md)
 
 ## Summary

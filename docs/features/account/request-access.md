@@ -1,6 +1,7 @@
 # Request access
 
 Status: Proposed
+Release: v1
 Related: [Sign up](sign-up.md)
 
 ## Summary

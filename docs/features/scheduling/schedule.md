@@ -1,6 +1,7 @@
 # Schedule
 
 Status: Proposed
+Release: v1
 Related: [Dependency graph with dates](../../design-decisions/dependency-graph-with-dates.md), [Deadlines](deadlines.md), [Auto-scheduler](auto-scheduler.md), [Calendar view](../views/calendar-view.md)
 
 ## Summary

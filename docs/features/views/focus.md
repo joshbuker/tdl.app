@@ -1,6 +1,7 @@
 # Focus
 
 Status: Proposed
+Release: v1
 Related: [Agenda](agenda.md), [Next up](../dependencies/next-up.md)
 
 ## Summary

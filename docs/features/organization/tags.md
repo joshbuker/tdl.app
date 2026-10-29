@@ -1,6 +1,7 @@
 # Tags
 
 Status: Proposed
+Release: v1
 Related: [Lists](lists.md), [Filtering and sorting](../views/filtering-and-sorting.md)
 
 ## Summary

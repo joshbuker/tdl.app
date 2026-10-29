@@ -1,6 +1,7 @@
 # Personalization
 
 Status: Proposed
+Release: v1
 
 ## Summary
 
