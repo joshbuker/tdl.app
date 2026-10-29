@@ -2,7 +2,7 @@
 
 Status: Proposed
 Release: v1
-Related: [Link tasks](link-tasks.md), [Next up](next-up.md), [Agenda](../views/agenda.md)
+Related: [Link tasks](link-tasks.md), [Next up](next-up.md), [Filtering and sorting](../views/filtering-and-sorting.md)
 
 ## Summary
 
@@ -19,7 +19,7 @@ Here, hard and soft are an attribute of the one link between two tasks, not sepa
 - Every link is either hard or soft. New links are hard unless the user chooses soft.
 - The user can switch a link between hard and soft in one action, from either task. Switching never changes the shape of the graph, so it is always allowed.
 - A soft prerequisite never blocks: a task whose only incomplete prerequisites are soft is next up (see [Next up](next-up.md)).
-- Soft prerequisites still order tasks: in [Agenda](../views/agenda.md) order, a task comes after its incomplete soft prerequisites.
+- Soft prerequisites still order tasks: in [dependency order](../views/filtering-and-sorting.md), a task comes after its incomplete soft prerequisites.
 - A task shows its incomplete soft prerequisites as a hint (e.g. "ideally after Buy paint").
 - Completing a task with incomplete soft prerequisites gives no warning.
 - Hard and soft links form one graph for the cycle and redundancy rules, which ignore whether a link is hard or soft. A link that would create a cycle, or that duplicates an existing path, is rejected whatever mix of hard and soft links is involved.
@@ -32,10 +32,10 @@ Here, hard and soft are an attribute of the one link between two tasks, not sepa
 - Given "Buy paint" is a soft prerequisite of "Paint fence", both incomplete
 - Then "Paint fence" is next up
 
-### Soft prerequisite orders the agenda
+### Soft prerequisite orders dependency order
 
 - Given "Buy paint" is a soft prerequisite of "Paint fence", both incomplete
-- When the user selects the Agenda preset
+- When the user sorts by dependency order
 - Then "Buy paint" appears before "Paint fence"
 
 ### Soft links can't create cycles

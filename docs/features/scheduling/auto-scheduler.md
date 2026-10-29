@@ -2,7 +2,7 @@
 
 Status: Proposed
 Release: v2
-Related: [Agenda](../views/agenda.md), [Calendar view](../views/calendar-view.md)
+Related: [Schedule](schedule.md), [Calendar view](../views/calendar-view.md)
 
 ## Summary
 

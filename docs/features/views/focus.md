@@ -2,7 +2,7 @@
 
 Status: Proposed
 Release: v1
-Related: [Agenda](agenda.md), [Next up](../dependencies/next-up.md)
+Related: [Filtering and sorting](filtering-and-sorting.md), [Next up](../dependencies/next-up.md)
 
 ## Summary
 
@@ -14,7 +14,7 @@ Built in #3 to cut decision fatigue: instead of a list, show the single most imp
 
 ## Rules
 
-- Focus works over the selected preset (Today, Agenda, a list, and so on), like every other page.
+- Focus works over the selected preset (Today, a list, a saved preset, and so on), like every other page.
 - The focused task is the next-up task in that preset with the most incomplete postrequisites.
 - "Up next" is the best remaining next-up task, or a task that the focused task alone is blocking.
 

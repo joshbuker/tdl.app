@@ -15,7 +15,7 @@ From #2, where a task showed a "high priority" icon once its prioritize date pas
 ## Rules
 
 - An incomplete task whose prioritize date has passed is flagged as high priority.
-- In [Agenda](../views/agenda.md) order, flagged tasks come before unflagged ones when everything else is tied.
+- Tasks can be sorted by whether they are flagged (see [Filtering and sorting](../views/filtering-and-sorting.md)).
 
 ## Scenarios
 

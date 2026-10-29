@@ -2,7 +2,7 @@
 
 Status: Proposed
 Release: v1
-Related: [Schedule](schedule.md), [Prioritize date](prioritize-date.md), [Agenda](../views/agenda.md)
+Related: [Schedule](schedule.md), [Prioritize date](prioritize-date.md), [Filtering and sorting](../views/filtering-and-sorting.md)
 
 ## Summary
 
@@ -19,7 +19,7 @@ In a dependency graph, a deadline on a task is effectively a deadline on everyth
 - An incomplete task past its deadline is shown as overdue.
 - A task's implied deadline is the latest time it can finish and still leave room for the incomplete tasks it blocks: for each task it directly blocks, that task's effective deadline minus its duration, and the earliest of those. Tasks without a duration count as zero. It is computed from the graph, not stored.
 - A task's effective deadline is the earlier of its own deadline and its implied deadline.
-- Effective deadlines break ties in [Agenda](../views/agenda.md) order.
+- Tasks can be sorted by effective deadline (see [Filtering and sorting](../views/filtering-and-sorting.md)).
 
 ## Scenarios
 
