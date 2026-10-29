@@ -1,7 +1,7 @@
 # Sharing
 
 Status: Proposed
-Related: [Federation](federation.md), [Lists](../organization/lists.md), [Link tasks](../dependencies/link-tasks.md), [Delegation](../organization/delegation.md)
+Related: [Federation](federation.md), [Lists](../organization/lists.md), [Link tasks](../dependencies/link-tasks.md), [Assignment](../organization/assignment.md)
 
 ## Summary
 
@@ -23,7 +23,7 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
 - Access to a task follows access to its list.
 - A task can be linked to any task the user can edit, even if collaborators can't see it. Collaborators see such a link as "blocked by a task you can't see", with no title or details.
 - Rejected links never reveal tasks the user can't see (e.g. "would create a cycle through a task you can't see").
-- A task in a shared list can be assigned to one of the list's collaborators or its owner. Each user can filter for tasks assigned to them.
+- A task in a shared list can be assigned to one of the list's collaborators or its owner (see [Assignment](../organization/assignment.md)).
 - Losing access to a list hides its tasks. Links to them from the user's own tasks remain and show as hidden blockers.
 - People are invited by username, and accept or decline the invitation. The owner can also create an invite link, which anyone with an account can use to join until it is revoked. Both ways set the role (editor or viewer).
 - Users on different servers can share lists with each other (see [Federation](federation.md)).
@@ -61,12 +61,6 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
 - Given "bob" is an editor of "House"
 - When "alice" transfers ownership to "bob"
 - Then "bob" owns "House" and "alice" is an editor
-
-### Assign a task
-
-- Given "bob" is an editor of "House"
-- When "alice" assigns "Paint fence" to "bob"
-- Then "Paint fence" shows up when "bob" filters for tasks assigned to him
 
 ## Open questions
 

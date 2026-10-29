@@ -22,6 +22,8 @@ From #3's design notes: views are "modeled based on a presentation layer", using
   - **Agenda**: incomplete tasks in [agenda](agenda.md) order.
   - One preset per list.
 - Filters combine (e.g. a list and a tag at the same time).
+- Tasks can be filtered by status category (To do, In progress, Done) across lists, or by a specific status within one list (see [Statuses](../organization/statuses.md)).
+- Tasks can be filtered by assignee (including "assigned to me") and by participant (see [Assignment](../organization/assignment.md)).
 - Sorts combine, with each later sort breaking ties in the ones before it.
 - Completed tasks can be shown or hidden.
 - Blocked tasks can be shown or hidden.

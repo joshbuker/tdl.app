@@ -1,7 +1,7 @@
 # Statuses
 
 Status: Proposed
-Related: [Complete a task](../tasks/complete-task.md), [Delegation](delegation.md), [Lists](lists.md)
+Related: [Complete a task](../tasks/complete-task.md), [Assignment](assignment.md), [Lists](lists.md)
 
 ## Summary
 
@@ -11,18 +11,20 @@ Every task has a status (e.g. To do, In progress, Waiting, Done), and completion
 
 The app serves two quite different uses. One is a simple todo list, like Todoist, where a checkbox marks a task done. The other is a Jira-style workflow, with several statuses and more detail about who is doing what and when. Each list picks the style that fits, the way Todoist lets each project choose between a checklist and a board.
 
-Different projects need different workflows, so statuses belong to the list rather than the user, as in Jira and most kanban trackers, where each board's columns are its statuses.
+Different projects need different workflows, so statuses belong to the list rather than the user, as in Jira and most kanban trackers, where each board's columns are its statuses. To still compare tasks across lists, each status belongs to one of a few fixed categories, as in Jira's To Do, In Progress and Done.
 
 Statuses were added in #3 after the GTD rework was reverted, partly to cover "waiting for". #3 kept a separate completed flag on tasks alongside statuses, and gave each status its own completed flag. It used "TODO" and "Done" as the intended defaults, kept statuses per user, and never built a UI.
 
-Here, completion is part of the status, not a separate flag, so one field says where a task stands. Each status counts as either incomplete or complete, and that is what the rest of the app (next up, filters, the graph rules) uses. Simple and workflow lists share this model, so a list can switch between them in either direction without converting or losing anything.
+Here, completion is part of the status, not a separate flag, so one field says where a task stands. Each status's category says whether it counts as complete, and that is what the rest of the app (next up, filters, the graph rules) uses. Simple and workflow lists share this model, so a list can switch between them in either direction without converting or losing anything.
 
 ## Rules
 
-- Each list has its own set of statuses. A new list starts with "To do" (default incomplete) and "Done" (default complete).
+- Each list has its own set of statuses. A new list starts with a copy of the user's default set, which the user edits in settings. New users' default set is "To do" (default incomplete) and "Done" (default complete).
+- Changing the default set doesn't change existing lists.
 - Every task has exactly one status, from its list's set.
-- Each status is either an incomplete status or a complete status.
-- A task is completed when its status is a complete status.
+- Each status belongs to one fixed category: To do, In progress or Done. These categories are the same for every list and user.
+- A status in the Done category is a complete status, and the others are incomplete statuses. A task is completed when its status is a complete status.
+- Filters across lists select statuses by category (see [Filtering and sorting](../views/filtering-and-sorting.md)).
 - There can be several complete statuses (e.g. "Done" and "Won't do"). One complete status is the default, and it is what the checkbox sets.
 - One incomplete status is the default. New tasks get it.
 - When a completed task is marked incomplete, it returns to the incomplete status it had before. If that status no longer exists, it gets the default incomplete status.
@@ -34,8 +36,8 @@ Here, completion is part of the status, not a separate flag, so one field says w
   - Switching a list between simple and workflow keeps its statuses and every task's status. A simple list only hides them.
 - Moving a task to another list keeps a status with the same title in the new list, ignoring case. Otherwise the task gets the new list's default status for whether it is complete or incomplete.
 - Every status change is recorded in the task's history: from which status, to which, by whom, and when. This shows who is doing what and how long a task spent in each status.
-- On a shared list, everyone with access uses the list's statuses (see [Sharing](../app/sharing.md)).
-- "Waiting" has no special meaning. A waiting task counts as next up like any other, and the user can filter it out (see [Delegation](delegation.md)).
+- On a shared list, everyone with access uses the list's statuses (see [Sharing](../app/sharing.md)). The owner's default set only applied when the list was created.
+- "Waiting" has no special meaning. A waiting task counts as next up like any other, and the user can filter it out (see [Assignment](assignment.md)).
 
 ## Scenarios
 
@@ -75,6 +77,12 @@ Here, completion is part of the status, not a separate flag, so one field says w
 - When the list is switched to simple, then back to workflow
 - Then "Paint fence" is still "In progress"
 
+### Filter by category across lists
+
+- Given "Paint fence" is "In progress" in "Home", and "Fix bug" is "In review" in "Work", both in the In progress category
+- When the user filters all lists for the In progress category
+- Then both tasks are shown
+
 ### Status changes are recorded
 
 - When the user moves "Paint fence" from "To do" to "In progress"
@@ -82,6 +90,5 @@ Here, completion is part of the status, not a separate flag, so one field says w
 
 ## Open questions
 
-- Should a user be able to save a set of statuses as a template, or set the statuses that new lists start with?
 - Which metrics should status history feed (e.g. time in each status, cycle time), and where are they shown?
-- Should filters be able to select by status across lists, given each list has its own statuses (e.g. by title, or by complete vs incomplete only)?
+- Are To do, In progress and Done the right categories, or are more needed (e.g. Waiting, or Cancelled for statuses like "Won't do")?

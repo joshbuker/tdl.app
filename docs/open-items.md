@@ -18,10 +18,8 @@ Like the rest of `docs/`, this file is evergreen: remove an item once it's resol
 
 - **Launch scope.** Web, Android, iOS and desktop, offline-first editing, list sharing across servers, MFA and natural-language entry are all planned for launch. Consider an MVP cut before choosing a stack. Federation and offline-first are the heaviest.
 - **Post-launch items have no home.** Items such as natural-language parsing in languages other than English, or other import formats, are currently written as rules inside specs. Options: a `Planned` status, or a roadmap document.
-- **Overlapping features to reconcile:**
-  - delegation's "delegated to" and sharing's assignee;
-  - routines and recurring tasks.
-- **Tags per shared list.** A shared list has its own tags, while a user's unshared lists use their own. Filtering by a tag across lists is undefined. Statuses are now per list too, so filtering by status across lists has the same problem.
+- **Overlapping features to reconcile:** routines and recurring tasks.
+- **Tags per shared list.** A shared list has its own tags, while a user's unshared lists use their own. Filtering by a tag across lists is undefined. Statuses avoid this with fixed categories (see [Statuses](features/organization/statuses.md)).
 - **Board view.** Workflow lists suggest a kanban board with one column per status, but there's no spec for it yet. Swimlanes (rows grouped by e.g. assignee) could be part of it.
 - **Energy levels** have no feature that uses them. Delete unless the auto-scheduler needs them.
 
