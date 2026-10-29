@@ -14,8 +14,9 @@ A placeholder tab in #1 and a stub page in #3 ("Calendar goes here", with a note
 
 ## Rules
 
+- The calendar has day, week and month layouts. Day and week show times, and month shows dates only.
 - A task appears on its scheduled date. With a time it appears at that time, and with a duration as a block of that length.
-- A task with a deadline also appears on its deadline date, marked as a deadline.
+- A task with a deadline also appears on its deadline date, marked as a deadline. Only explicit deadlines appear: implied deadlines would flood the calendar, and are shown on each task instead (see [Deadlines](../scheduling/deadlines.md)).
 - When a task's scheduled date and deadline fall on the same day, it appears once, showing both.
 - Dragging a task's deadline moves the deadline. Dragging the task anywhere else moves its schedule.
 - Reminders are not shown.
@@ -48,8 +49,3 @@ A placeholder tab in #1 and a stub page in #3 ("Calendar goes here", with a note
 - Given "Call plumber" is scheduled for Monday
 - When the user drags it to Tuesday
 - Then it is scheduled for Tuesday
-
-## Open questions
-
-- Should implied deadlines appear too?
-- Day, week and month views?

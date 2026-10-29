@@ -24,7 +24,8 @@ Waiting is just a status a list can have (see [Statuses](statuses.md)). Follow-u
 - Assignment doesn't require any particular status. A delegated task is typically paired with a "Waiting" status.
 - Scheduling a delegated task sets when to follow up. Its deadline and prioritize date work as on any other task.
 - Assigned and waiting tasks get no special treatment: they count as next up like any other task. A user who wants them out of the way filters them out.
-- When someone loses access to a list, they are no longer the assignee or a participant of its tasks.
+- When someone loses access to a list, their assignments and participations on its tasks become free text with their name, so the record of who was responsible is kept and the task can be reassigned.
+- Free-text names the user has entered before are suggested as they type, matched ignoring case, so the same outside person is picked and filtered on consistently. There is no separate contacts list to manage.
 
 ## Scenarios
 
@@ -52,7 +53,14 @@ Waiting is just a status a list can have (see [Statuses](statuses.md)). Follow-u
 - When "alice" adds "carol" as a participant
 - Then "Paint fence" shows "bob" as assignee and "carol" as a participant
 
-## Open questions
+### Lost access keeps the name
 
-- When an assignee loses access to a list, should their tasks become unassigned, or keep their name as free text?
-- Are free-text names remembered per list, so "Plumber" can be picked again and filtered on consistently?
+- Given "Paint fence" in "House" is assigned to "bob"
+- When "bob" loses access to "House"
+- Then "Paint fence" is assigned to "bob" as free text
+
+### Suggest a previous name
+
+- Given the user has assigned a task to "Plumber" before
+- When the user starts typing "plu" as an assignee
+- Then "Plumber" is suggested

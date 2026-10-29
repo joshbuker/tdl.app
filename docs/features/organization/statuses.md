@@ -23,7 +23,7 @@ Here, completion is part of the status, not a separate flag, so one field says w
 - Each list has its own set of statuses. A new list starts with a copy of the user's default set, which the user edits in settings. New users' default set is "To do" (default incomplete) and "Done" (default complete).
 - Changing the default set doesn't change existing lists.
 - Every task has exactly one status, from its list's set.
-- Each status belongs to one fixed category: To do, In progress or Done. These categories are the same for every list and user.
+- Each status belongs to one fixed category: To do, In progress or Done. These categories are the same for every list and user. Statuses like "Won't do" go in Done, and "Waiting" goes in To do or In progress as the list prefers.
 - A status in the Done category is a complete status, and the others are incomplete statuses. A task is completed when its status is a complete status.
 - Filters across lists select statuses by category (see [Filtering and sorting](../views/filtering-and-sorting.md)).
 - There can be several complete statuses (e.g. "Done" and "Won't do"). One complete status is the default, and it is what the checkbox sets.
@@ -92,4 +92,3 @@ Here, completion is part of the status, not a separate flag, so one field says w
 ## Open questions
 
 - Which metrics should status history feed (e.g. time in each status, cycle time), and where are they shown?
-- Are To do, In progress and Done the right categories, or are more needed (e.g. Waiting, or Cancelled for statuses like "Won't do")?
