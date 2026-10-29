@@ -16,5 +16,7 @@ The app is **offline first**: every device keeps its own copy of the user's data
 ## Consequences
 
 - Domain logic, including the graph rules, must run on the device as well as the server. It should be one shared implementation, not two that drift apart like #3's.
-- Sync and conflict resolution are core features with their own tests.
+- Sync and conflict resolution are core features with their own tests. Simple conflicts merge automatically, and conflicts without a clear answer go to the user (see [Offline use](../features/app/offline.md)).
+- Graph rules are enforced in the order changes reach the server, so the graph is always valid there. Devices must be able to undo a local change the server rejected.
+- The server keeps the full change history with no expiry, so a device can sync after any length of time offline. Storage grows with history, so compaction may be needed later.
 - Stack choices (client storage, sync engine, ID scheme) must support this.
