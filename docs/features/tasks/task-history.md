@@ -21,6 +21,7 @@ Workflow lists are for tracking who is doing what and when (see [Statuses](../or
 - Each completion of a recurring task is recorded (see [Recurring tasks](../scheduling/recurring-tasks.md)).
 - Anyone who can view the task can see its history. History entries about tasks or links the user can't see are not shown (see [Sharing](../app/sharing.md)).
 - History is never deleted while the task exists. Permanently deleting the task deletes its history.
+- History feeds metrics such as time in each status and cycle time (v2). Where they are shown is decided then.
 
 ## Scenarios
 
@@ -28,7 +29,7 @@ Workflow lists are for tracking who is doing what and when (see [Statuses](../or
 
 - Given "bob" changes "Paint fence" from "To do" to "In progress"
 - When "alice" opens the history of "Paint fence"
-- Then she sees the change, that "bob" made it, and when
+- Then they see the change, that "bob" made it, and when
 
 ### Double completion
 
@@ -41,7 +42,3 @@ Workflow lists are for tracking who is doing what and when (see [Statuses](../or
 - Given one offline device renames "Paint fence" to "Paint the fence" and another renames it to "Stain fence"
 - When the user resolves the conflict by keeping "Stain fence"
 - Then the history shows both renames, with "Paint the fence" marked as overridden
-
-## Open questions
-
-- Which metrics should history feed (e.g. time in each status, cycle time), and where are they shown?

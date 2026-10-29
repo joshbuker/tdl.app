@@ -18,6 +18,7 @@ From #2, where a task showed a "high priority" icon once its prioritize date pas
 - A task's effective prioritize date is the earlier of its own prioritize date and its implied one.
 - An incomplete task whose effective prioritize date has passed is flagged as high priority.
 - Tasks can be sorted by whether they are flagged (see [Filtering and sorting](../views/filtering-and-sorting.md)).
+- The Today preset includes flagged tasks even when they aren't scheduled for today, since the flag means the task should be getting attention now.
 
 ## Scenarios
 
@@ -31,6 +32,8 @@ From #2, where a task showed a "high priority" icon once its prioritize date pas
 - Given "A" is a prerequisite of "B", and "B" has a prioritize date of yesterday
 - Then "A" is flagged as high priority
 
-## Open questions
+### Flagged task shows in Today
 
-- Should the flag affect presets (e.g. Today)?
+- Given "Renew passport" has no schedule and a prioritize date of yesterday
+- When the user selects Today
+- Then "Renew passport" is shown, flagged as high priority

@@ -15,6 +15,8 @@ From #3: `q` to create a task and `/` to search.
 
 - Shortcuts don't fire while typing in a text field.
 - Shortcuts don't open a second dialog on top of one they opened.
+- The user can change any shortcut. Shortcuts are stored on the account with other settings, and can be reset to the defaults (see [Personalization](personalization.md)).
+- The full list of default shortcuts is decided during UI design.
 
 ## Scenarios
 
@@ -30,6 +32,8 @@ From #3: `q` to create a task and `/` to search.
 - When they type "q"
 - Then "q" is typed and no dialog opens
 
-## Open questions
+### Change a shortcut
 
-- Full shortcut list, and should they be customizable?
+- Given the user changes the create-task shortcut from "q" to "n"
+- When they press "n" with no text field focused
+- Then the create-task dialog opens

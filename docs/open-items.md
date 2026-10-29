@@ -10,7 +10,8 @@ Like the rest of `docs/`, this file is evergreen: remove an item once it's resol
 
 ## Next steps
 
-- Finish the remaining per-feature open questions. Most remaining ones are in v1 specs.
+- Resolve the last v1 open question: a link that closes a loop only another user can see (see [Sharing](features/app/sharing.md)). The remaining per-feature questions are in v2 specs or are marked (v2).
+- Write scenarios for [Personalization](features/app/personalization.md), which has none yet.
 - Promote the core specs to Specified: link tasks, next up, create, complete and delete tasks, lists, and schedule.
 - Choose a stack, recording the choice as a design decision (see "Stack constraints" below).
 

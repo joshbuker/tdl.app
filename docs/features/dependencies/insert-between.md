@@ -2,7 +2,7 @@
 
 Status: Proposed
 Release: v1
-Related: [Link tasks](link-tasks.md)
+Related: [Link tasks](link-tasks.md), [Soft dependencies](soft-dependencies.md)
 
 ## Summary
 
@@ -15,6 +15,7 @@ Restructuring the graph is common when a plan gets refined ("oh, I need to do X 
 ## Rules
 
 - The A to B link is replaced by A to X and X to B, all at once.
+- Both new links copy the replaced link's hard or soft setting (see [Soft dependencies](soft-dependencies.md)). Its reason is dropped, since it described A to B directly.
 - X can be an existing task or a new one.
 - It can be started from either task: from A's postrequisites or from B's prerequisites. The result is the same.
 - If the new links would break a rule from [Link tasks](link-tasks.md), nothing changes.
@@ -28,6 +29,9 @@ Restructuring the graph is common when a plan gets refined ("oh, I need to do X 
 - Then "Buy paint" comes before "Sand fence", which comes before "Paint fence"
 - And "Buy paint" is no longer a direct prerequisite of "Paint fence"
 
-## Open questions
+### New links keep the soft setting
 
-- Do the two new links copy the replaced link's hard or soft setting and reason?
+- Given "Buy paint" is a soft prerequisite of "Paint fence", with the reason "Need the right color first"
+- When the user inserts "Sand fence" between them
+- Then "Buy paint" is a soft prerequisite of "Sand fence", and "Sand fence" is a soft prerequisite of "Paint fence"
+- And neither new link has a reason

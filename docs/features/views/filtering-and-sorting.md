@@ -14,13 +14,16 @@ From #3's design notes: views are "modeled based on a presentation layer", using
 
 #3 also had an Agenda page answering "if I work top to bottom, what order makes sense?": prerequisites first, then the task blocking the most work, then the earliest deadline. Every part of it is now an ordinary sort, so it needs no page or preset of its own. The one part a field sort can't express is "prerequisites come first", which is why dependency order is a sort option.
 
+When tasks from several lists are shown together, each one shows its list, so the user can tell them apart without grouping by list. This follows Todoist, which shows each task's project on the task itself in views that span projects. #2's task rows had a list chip in the code, but it was commented out, and only tag chips were shown. #3's task rows showed only a count of incomplete postrequisites.
+
 ## Rules
 
 - Pages are List, Board, Focus, Tree, Graph and Calendar. Any preset can be used with any page.
+- When the tasks shown span several lists, each task shows its list (icon and name) as a chip, on every page.
 - Presets:
   - **All Tasks**: every task.
   - **Inbox**: the user's default list, where new tasks land (see [Lists](../organization/lists.md)).
-  - **Today**: incomplete tasks scheduled for today or earlier. Unscheduled tasks are not included. A task scheduled for an earlier day shows that date.
+  - **Today**: incomplete tasks scheduled for today or earlier, plus incomplete tasks flagged as high priority (see [Prioritize date](../scheduling/prioritize-date.md)). Other unscheduled tasks are not included. A task scheduled for an earlier day shows that date.
   - **Upcoming**: tasks scheduled after today, in date order.
   - One preset per list.
 - The user can save any combination of filters and sorts as a named preset of their own, shown alongside the built-in ones. Saved presets can be renamed, reordered and deleted.
