@@ -12,7 +12,7 @@ Planned in Slipstream with its own file format (lists, tasks, links, dates, tags
 
 ## Rules
 
-- Export produces a JSON file containing everything: tasks, links, lists, tags, statuses, schedules, deadlines, reminders, recurrence, routines and settings.
+- Export produces a JSON file containing everything: tasks, links, lists, tags, statuses, schedules, deadlines, reminders, recurrence and settings.
 - An export can be imported without loss.
 - An import is validated before anything is changed. If any part is invalid, nothing is imported.
 

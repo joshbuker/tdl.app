@@ -61,7 +61,3 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
 - Given "bob" is an editor of "House"
 - When "alice" transfers ownership to "bob"
 - Then "bob" owns "House" and "alice" is an editor
-
-## Open questions
-
-- Are routines per user or shared with a list?
