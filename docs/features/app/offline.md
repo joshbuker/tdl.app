@@ -25,6 +25,8 @@ Everything works without a connection. Changes made offline sync when the device
   - When only one side changed a field, or both changed it to the same value, that value is kept.
   - Edits to non-overlapping parts of a task's notes are merged.
   - When both sides changed the same field to different values, or overlapping parts of the notes, the task is marked as conflicting and the user chooses which version to keep. Until then, the most recent edit is shown.
+- Conflicts are resolved per user: the user whose device detects the conflict while syncing (because the other change reached the server first) is the one asked. This applies on shared lists too.
+- Every synced change is kept in the task's history, including changes that were overridden or that duplicated another. Changes made concurrently on different devices are flagged as such, e.g. a task completed twice by two people while offline shows both completions, flagged as a double completion.
 - When changes that are each valid on their own would together break a graph rule (e.g. two offline devices each add a link, and together they form a cycle), the change that reaches the server first wins. The other is undone on the device that made it, and its user is told why.
 - When a task is deleted on one device and edited on another, the delete wins and the edit is applied to the task in the Trash, so nothing is lost and it can be restored.
 
@@ -68,7 +70,8 @@ Everything works without a connection. Changes made offline sync when the device
 - When both devices sync
 - Then "Buy oat milk" is in the Trash
 
-## Open questions
+### Double completion is recorded
 
-- On a shared list, who is asked to resolve a conflict: the user whose change synced second, or anyone with edit access?
-- Does a conflict on a field like status or schedule need the user, or should those use the most recent edit (e.g. two people completing the same task)?
+- Given "alice" and "bob" both complete "Buy milk" while offline
+- When both devices sync
+- Then "Buy milk" is completed, and its history shows both completions, flagged as a double completion

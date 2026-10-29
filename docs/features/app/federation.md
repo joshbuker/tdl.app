@@ -23,8 +23,8 @@ Federation reuses the device sync protocol from [Offline use](offline.md): a col
 - A shared list lives on its owner's server. Collaborators' servers keep a synced copy.
 - When a remote server is unreachable, collaborators keep working on their copy, and changes sync once it's reachable again, as with [Offline use](offline.md).
 - Server admins can turn federation off, or block specific servers.
-- When a user on one server links their private task to a task in a list owned on another server, their server shares an opaque placeholder for each hidden task and link that touches the shared list: an ID, with no title or details. The owner's server uses the placeholders to check the graph rules and to show "blocked by a task you can't see", as on a single server.
-- If the owner's server has been unreachable for 30 days, an editor can take over the list. It moves to their server with them as owner, and other collaborators follow it. If the old server comes back, its copy of the list becomes read-only.
+- When a user on one server links their private task to a task in a list owned on another server, their server shares an opaque placeholder for each hidden task and link that touches the shared list: an ID, with no title or details. The owner's server uses the placeholders to check the graph rules. What each user sees of those tasks depends on their access, as on a single server (see [Sharing](sharing.md)): the task as normal, a placeholder for outline viewers, or nothing.
+- If the owner's server has been unreachable for 30 days, an editor can take over the list. It moves to their server with them as owner, and other collaborators follow it. If the old server comes back, its copy of the list becomes read-only, and the previous owner appears as a request for access, which the new owner approves or declines. Nothing changes without the new owner's approval.
 
 ## Scenarios
 
@@ -65,7 +65,9 @@ Federation reuses the device sync protocol from [Offline use](offline.md): a col
 - When `bob@tdl.app`, an editor, takes over "House"
 - Then "House" lives on `tdl.app` with "bob" as owner
 
-## Open questions
+### Old owner returns
 
-- Opaque placeholders reveal that hidden tasks exist and how they connect. Is that acceptable, or should the shape be hidden too (e.g. by collapsing a hidden path into one placeholder)?
-- When an editor takes over a list, what happens to the previous owner's role if their server comes back?
+- Given "bob" took over "House" after `tdl.example.com` was unreachable for 30 days
+- When `tdl.example.com` comes back
+- Then "alice" appears to "bob" as a request for access to "House"
+- And "alice" has no access until "bob" approves
