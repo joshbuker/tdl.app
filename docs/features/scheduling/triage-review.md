@@ -16,9 +16,9 @@ The GTD decision tree is the chosen model, because it turns an unclear backlog i
 
 ## Rules
 
-- The review steps through tasks one at a time, and the user can stop at any point.
+- The review steps through the tasks of the current preset or filter (typically the Inbox) one at a time, and the user can stop at any point.
 - For each task, the questions are asked in order, and each answer either finishes the task's review or moves to the next question:
-  1. **Is it actionable?** If not: delete it, or keep it unscheduled for someday.
+  1. **Is it actionable?** If not, it isn't a task but something to keep as a note (e.g. in Obsidian), and it is deleted. Before deleting, the review offers to copy its title and notes so they can be pasted elsewhere. The app has no "someday" state, because that would misrepresent a note as a task.
   2. **Is it more than one step?** If so: break it into tasks, linked as its prerequisites (see [Link tasks](../dependencies/link-tasks.md)).
   3. **Can it be done in under two minutes?** If so: do it now, then complete it.
   4. **Should someone else do it?** If so: assign it (see [Assignment](../organization/assignment.md)) and optionally set a waiting status and follow-up date.
@@ -54,11 +54,11 @@ The GTD decision tree is the chosen model, because it turns an unclear backlog i
 
 ### Not actionable
 
-- Given "Learn piano someday" is being reviewed
-- When the user answers that it isn't actionable and chooses to delete it
-- Then "Learn piano someday" is in the Trash
+- Given "Idea for blog post" is being reviewed
+- When the user answers that it isn't actionable
+- Then the user can copy its title and notes
+- And "Idea for blog post" is in the Trash
 
 ## Open questions
 
-- Which tasks are reviewed: the Inbox, Today, the current filter, or everything due for review?
-- How is "someday" represented: unscheduled, a "Someday" list or tag, or a status?
+- Should non-actionable items be sent straight to a notes app (e.g. an Obsidian integration) in v2?
