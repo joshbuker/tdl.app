@@ -18,7 +18,8 @@ The user deletes a task, which moves it to the Trash. Tasks in the Trash can be 
 - A trashed task does not block its postrequisites.
 - A trashed task's links are kept, so restoring it restores its place in the graph. They count in the cycle check like any other link, so restoring a task can never create a cycle.
 - Restoring a task puts it back as it was, including its links.
-- Permanently deleting a task (from the Trash, or by emptying the Trash) asks for confirmation and removes its links. Linked tasks remain and are not reconnected to each other, so deleting a middle task unblocks what came after it.
+- Items in the Trash are permanently deleted 30 days after being trashed. The user can also empty the Trash at any time.
+- Permanently deleting a task removes its links. Doing it by hand (from the Trash, or by emptying the Trash) asks for confirmation first. Linked tasks remain and are not reconnected to each other, so deleting a middle task unblocks what came after it.
 
 ## Scenarios
 
@@ -48,6 +49,7 @@ The user deletes a task, which moves it to the Trash. Tasks in the Trash can be 
 - Then "B" no longer exists
 - And "A" and "C" still exist and are not linked to each other
 
-## Open questions
+### Trash empties after 30 days
 
-- Should the Trash empty itself automatically after some time?
+- Given "Buy milk" was trashed 30 days ago
+- Then "Buy milk" no longer exists

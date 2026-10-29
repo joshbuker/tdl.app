@@ -10,7 +10,7 @@ Like the rest of `docs/`, this file is evergreen: remove an item once it's resol
 
 ## Next steps
 
-- Finish the remaining per-feature open questions. Most are on idea-stage features: soft dependencies, auto-scheduler, triage review, energy levels, and how recurring tasks fit the graph.
+- Finish the remaining per-feature open questions. Most are on idea-stage features: soft dependencies, auto-scheduler, triage review and energy levels.
 - Promote the core specs to Specified: link tasks, next up, create, complete and delete tasks, lists, and schedule.
 - Choose a stack, recording the choice as a design decision (see "Stack constraints" below).
 

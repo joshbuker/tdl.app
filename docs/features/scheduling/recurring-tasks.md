@@ -17,6 +17,8 @@ Never built, but planned repeatedly. #3 had pending tests: "should allow setting
 
 - A task can recur on a fixed schedule ("every Monday at 9", "the 1st of every month") or at an interval after completion ("2 weeks after I finish it").
 - Completing a recurring task brings the same task back at its next occurrence: it gets the default incomplete status, its schedule moves to the next occurrence, and all its subtasks are unchecked.
+- Recurring tasks stay outside the dependency graph: a recurring task can't have prerequisites or postrequisites (see [Link tasks](../dependencies/link-tasks.md)). Adding a recurrence to a linked task is rejected, with an explanation, until its links are removed.
+- Relative reminders move to each new occurrence (see [Reminders](reminders.md)).
 - Each completion is recorded in the task's status history (see [Statuses](../organization/statuses.md)).
 - Recurrence can be typed in natural language, in a new task's title or in a date field, as well as set with a picker (see [Natural-language entry](../tasks/natural-language-entry.md)).
 
@@ -40,14 +42,13 @@ Never built, but planned repeatedly. #3 had pending tests: "should allow setting
 - When the user checks both subtasks and completes "Do laundry"
 - Then "Do laundry" is scheduled for the following Saturday, and "Wash" and "Fold" are unchecked
 
+### Recurring tasks can't be linked
+
+- Given "Take out trash" recurs every Monday
+- When the user tries to make it a prerequisite of "Clean garage"
+- Then the link is rejected with a message explaining that recurring tasks can't be linked
+
 ### Natural-language entry
 
 - When the user creates a task titled "Water plants every Monday at 9am"
 - Then the task is titled "Water plants" and recurs every Monday at 09:00
-
-## Open questions
-
-- How do recurring tasks fit in the dependency graph? When a recurring task comes back, are its postrequisites blocked again? Options:
-  - Links stay, and postrequisites are blocked again until the next completion.
-  - Links stay, but a recurring task only blocks its postrequisites until it is first completed.
-  - Recurring tasks can't be linked: they stay outside the graph.
