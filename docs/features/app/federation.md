@@ -23,7 +23,7 @@ Federation reuses the device sync protocol from [Offline use](offline.md): a col
 - A shared list lives on its owner's server. Collaborators' servers keep a synced copy.
 - When a remote server is unreachable, collaborators keep working on their copy, and changes sync once it's reachable again, as with [Offline use](offline.md).
 - Server admins can turn federation off, or block specific servers.
-- When a user on one server links their private task to a task in a list owned on another server, their server shares an opaque placeholder for each hidden task and link that touches the shared list: an ID, with no title or details. The owner's server uses the placeholders to check the graph rules. What each user sees of those tasks depends on their access, as on a single server (see [Sharing](sharing.md)): the task as normal, a placeholder for outline viewers, or nothing.
+- When a user on one server links their private task to a task in a list owned on another server, their server shares an opaque placeholder for each hidden task and link that touches the shared list: an ID, with no title or details. The owner's server uses the placeholders to show outline viewers the shape, and to detect loops only some users can see (see [Sharing](sharing.md)). What each user sees of those tasks depends on their access, as on a single server (see [Sharing](sharing.md)): the task as normal, a placeholder for outline viewers, or nothing.
 - If the owner's server has been unreachable for 30 days, an editor can take over the list. It moves to their server with them as owner, and other collaborators follow it. If the old server comes back, its copy of the list becomes read-only, and the previous owner appears as a request for access, which the new owner approves or declines. Nothing changes without the new owner's approval.
 
 ## Scenarios
@@ -51,13 +51,6 @@ Federation reuses the device sync protocol from [Offline use](offline.md): a col
 - Given `tdl.example.com` and `tdl.app` run different major protocol versions
 - When "alice" invites `bob@tdl.app`
 - Then the invitation fails, and "alice" is told the servers are incompatible
-
-### Cycle through a hidden task on another server
-
-- Given "Paint fence" is in "House", owned on `tdl.example.com`
-- And `bob@tdl.app` makes his private task "Get paid" a prerequisite of "Paint fence"
-- When "alice" tries to make "Paint fence" a prerequisite of a task that "Get paid" depends on
-- Then the link is rejected for creating a cycle through a task she can't see
 
 ### Editor takes over a lost list
 

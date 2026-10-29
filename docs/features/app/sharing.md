@@ -26,8 +26,8 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
 - A task can be linked to any task the user can edit, even if collaborators can't see it. What a collaborator sees of a linked task in another list depends on their access to that list:
   - **Viewer or above**: the task as normal.
   - **Outline viewer**: a placeholder showing that a task exists and how it links, with no title or details.
-  - **No access**: nothing. The linked task and its links are not shown at all, though a task it blocks still shows as blocked.
-- Rejected links never reveal tasks the user can't see (e.g. "would create a cycle through a task you can't see").
+  - **No access**: no sign at all. The linked task and its links are not shown, and are ignored for that user's cycle checks, rejection messages and blocked indicators.
+- Each user's next up, blocked indicators and graph-rule checks consider only tasks and links they can see (as a viewer, or as an outline viewer).
 - A task in a shared list can be assigned to one of the list's collaborators or its owner (see [Assignment](../organization/assignment.md)).
 - Losing access to a list hides its tasks. Links to them from the user's own tasks remain and show as hidden blockers.
 - People are invited by username, and accept or decline the invitation. The owner can also create an invite link, which anyone with an account can use to join until it is revoked. Both ways set the role (editor, viewer or outline viewer).
@@ -54,7 +54,7 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
 - Given "Paint fence" is in the shared list "House"
 - And "alice" makes her private task "Get paid" a prerequisite of "Paint fence"
 - And "bob" has no access to alice's list containing "Get paid"
-- Then "bob" sees "Paint fence" as blocked, and doesn't see "Get paid"
+- Then "bob" doesn't see "Get paid", and "Paint fence" is next up for him
 
 ### Outline viewer sees the shape
 
@@ -76,4 +76,7 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
 
 ## Open questions
 
-- With no access, a task still shows as blocked, and a rejected link still says it would create a cycle. Both reveal that something hidden exists. Is that acceptable, or should a user with no access see no sign of it?
+- A link that is valid from one user's view can close a loop that only another user sees. Example: in the shared list "Kitchen remodel", Bob links `Finalize budget → Scope the job → Send estimate` through his private task "Scope the job". Alice, who can't see it, then adds `Send estimate → Finalize budget`. Alice sees no loop, but Bob sees all three tasks stuck. Options:
+  - Suspend the hidden link that closes the loop (Bob's `Scope the job → Send estimate`), so it stops blocking, and tell its owner why.
+  - Allow the loop, flag it to the user who can see it, and let them fix it.
+  - Reject the visible link with a generic message and no reason.

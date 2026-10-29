@@ -23,7 +23,7 @@ The rules keep the graph meaningful. A cycle would mean nothing can ever be star
 - A link that already exists cannot be added again.
 - A link that would create a cycle is rejected (B already comes before A, so A before B is rejected). The cycle check includes completed tasks, so marking a task incomplete can never create a cycle.
 - A redundant link is rejected (A already comes before C through incomplete tasks, so a direct A before C is rejected). The redundancy check ignores completed tasks: a path through finished work no longer orders anything, so making the remaining ordering explicit is allowed.
-- Rejections explain why, naming both tasks, but never reveal a task the user can't see.
+- Rejections explain why, naming both tasks. The rules only consider tasks and links the user can see, so a rejection never reveals anything hidden (see [Sharing](../app/sharing.md)).
 - When a new link makes an existing link redundant, the existing link is kept and shown as redundant. It is never removed without the user asking (see [Prune redundant links](prune-redundant-links.md)).
 - When searching for a task to link, tasks that can't be linked (itself, recurring, already linked, would create a cycle, would be redundant) are shown disabled, with the reason.
 - Deleting a task removes its links. The tasks on the other side remain.
