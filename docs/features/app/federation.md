@@ -12,13 +12,19 @@ Users on different TDL App servers can share lists and work on them together, as
 
 Self-hosting shouldn't mean isolation. Someone running their own server should still be able to share a list with a friend on the official server. Without federation, self-hosting forces a choice between owning your data and collaborating.
 
+Federation reuses the device sync protocol from [Offline use](offline.md): a collaborator's server syncs a shared list with the owner's server the way a device does. ActivityPub was considered, but it is built for broadcasting posts, not for editing shared data, and Matrix would bring a large protocol and data model of its own. A custom protocol means one sync mechanism to build and test.
+
 ## Rules
 
-- A user is identified across servers by their username plus their server's address (e.g. `alice@tdl.example.com`).
+- A user is identified across servers by their username plus their server's address (e.g. `alice@tdl.example.com`), and found with WebFinger.
+- Servers talk over a custom protocol that reuses device sync. Each server publishes a public key at a well-known URL and signs its requests with HTTP Message Signatures (RFC 9421). Unsigned or wrongly signed requests are rejected.
+- Federation only works between servers on the same major protocol version. A user inviting someone on an incompatible server is told why it failed.
 - Everything in [Sharing](sharing.md) works the same between servers: invitations, roles, assignment, hidden blockers and ownership transfer.
 - A shared list lives on its owner's server. Collaborators' servers keep a synced copy.
 - When a remote server is unreachable, collaborators keep working on their copy, and changes sync once it's reachable again, as with [Offline use](offline.md).
 - Server admins can turn federation off, or block specific servers.
+- When a user on one server links their private task to a task in a list owned on another server, their server shares an opaque placeholder for each hidden task and link that touches the shared list: an ID, with no title or details. The owner's server uses the placeholders to check the graph rules and to show "blocked by a task you can't see", as on a single server.
+- If the owner's server has been unreachable for 30 days, an editor can take over the list. It moves to their server with them as owner, and other collaborators follow it. If the old server comes back, its copy of the list becomes read-only.
 
 ## Scenarios
 
@@ -40,10 +46,26 @@ Self-hosting shouldn't mean isolation. Someone running their own server should s
 - When a user on `spam.example.com` invites a user on `tdl.app`
 - Then the invitation is not delivered
 
+### Incompatible versions
+
+- Given `tdl.example.com` and `tdl.app` run different major protocol versions
+- When "alice" invites `bob@tdl.app`
+- Then the invitation fails, and "alice" is told the servers are incompatible
+
+### Cycle through a hidden task on another server
+
+- Given "Paint fence" is in "House", owned on `tdl.example.com`
+- And `bob@tdl.app` makes his private task "Get paid" a prerequisite of "Paint fence"
+- When "alice" tries to make "Paint fence" a prerequisite of a task that "Get paid" depends on
+- Then the link is rejected for creating a cycle through a task she can't see
+
+### Editor takes over a lost list
+
+- Given "House" is owned on `tdl.example.com`, which has been unreachable for 30 days
+- When `bob@tdl.app`, an editor, takes over "House"
+- Then "House" lives on `tdl.app` with "bob" as owner
+
 ## Open questions
 
-- Which server-to-server protocol: an existing one such as ActivityPub, or a custom one?
-- How do servers verify each other's identity?
-- How are servers on different versions handled?
-- How do hidden blockers work across servers, given a server can't see another server's private tasks?
-- What happens to a shared list if its owner's server shuts down permanently?
+- Opaque placeholders reveal that hidden tasks exist and how they connect. Is that acceptable, or should the shape be hidden too (e.g. by collapsing a hidden path into one placeholder)?
+- When an editor takes over a list, what happens to the previous owner's role if their server comes back?
