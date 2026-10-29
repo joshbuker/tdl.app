@@ -13,7 +13,7 @@ Blocked work is noise when deciding what to do next. Every attempt used this set
 
 ## Rules
 
-- A task is next up when it is incomplete and every one of its prerequisites is completed (or it has none).
+- A task is next up when it is incomplete and every one of its hard prerequisites is completed (or it has none). Soft prerequisites don't block (see [Soft dependencies](soft-dependencies.md)).
 - Completing a task can make its postrequisites next up. Marking it incomplete again blocks them again.
 - Counts shown next to lists and filters count next-up tasks.
 
@@ -34,7 +34,3 @@ Blocked work is noise when deciding what to do next. Every attempt used this set
 - Given "A" is a prerequisite of "B", both incomplete
 - When the user completes "A"
 - Then "B" is next up
-
-## Open questions
-
-- With soft dependencies (see [Soft dependencies](soft-dependencies.md)), does a soft prerequisite block next up?

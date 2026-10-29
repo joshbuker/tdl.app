@@ -13,8 +13,8 @@ Built in #3 as its own page. It answers "if I work top to bottom, what order mak
 
 ## Rules
 
-- A task never appears before any of its incomplete prerequisites.
-- Among tasks whose prerequisites are all listed already, the one with the most incomplete postrequisites comes first.
+- A task never appears before any of its incomplete prerequisites, hard or soft (see [Soft dependencies](../dependencies/soft-dependencies.md)).
+- Among tasks whose prerequisites are all listed already, the one with the most incomplete hard postrequisites comes first.
 - Ties are broken by earliest effective deadline (see [Deadlines](../scheduling/deadlines.md)).
 - The Agenda preset shows incomplete tasks in agenda order.
 

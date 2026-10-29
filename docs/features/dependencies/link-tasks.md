@@ -1,7 +1,7 @@
 # Link tasks
 
 Status: Proposed
-Related: [Next up](next-up.md), [Dependency graph with dates](../../design-decisions/dependency-graph-with-dates.md)
+Related: [Next up](next-up.md), [Dependency graph with dates](../../design-decisions/dependency-graph-with-dates.md), [Soft dependencies](soft-dependencies.md)
 
 ## Summary
 
@@ -15,6 +15,7 @@ The rules keep the graph meaningful. A cycle would mean nothing can ever be star
 
 ## Rules
 
+- A link is one record between two tasks, with attributes: whether it is hard or soft (see [Soft dependencies](soft-dependencies.md)), and an optional reason describing why it exists.
 - A task cannot be linked to itself.
 - A recurring task cannot be linked (see [Recurring tasks](../scheduling/recurring-tasks.md)).
 - The user must be able to edit both tasks. With [Sharing](../app/sharing.md), the two tasks can be in lists shared with different people.
@@ -34,6 +35,12 @@ The rules keep the graph meaningful. A cycle would mean nothing can ever be star
 - When the user makes "Buy paint" a prerequisite of "Paint fence"
 - Then "Buy paint" is listed as a prerequisite of "Paint fence"
 - And "Paint fence" is listed as a postrequisite of "Buy paint"
+
+### Give a link a reason
+
+- Given "Buy paint" is a prerequisite of "Paint fence"
+- When the user gives the link the reason "Need the right color first"
+- Then the link shows that reason
 
 ### Reject a cycle
 
