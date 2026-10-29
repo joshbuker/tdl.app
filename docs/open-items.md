@@ -35,7 +35,8 @@ Requirements gathered so far that the stack must support:
 
 - One shared implementation of domain logic (graph rules, filtering and sorting, sync) running on both device and server.
 - Offline sync with IDs generated on the device.
-- A server-to-server protocol for sharing across servers (see [Federation](features/app/federation.md)).
+- A sync protocol that serves both devices and other servers, with field-level change tracking, automatic merges plus user-resolved conflicts, a text merge for notes, and full change history (see [Offline use](features/app/offline.md) and [Federation](features/app/federation.md)).
+- Server-to-server request signing (HTTP Message Signatures) and WebFinger lookup.
 - Web, Android, iOS and desktop.
 - Good tooling for both unit and acceptance tests.
 - An open-licence icon set that works on every platform (e.g. Material Symbols or Lucide), for list icons.
