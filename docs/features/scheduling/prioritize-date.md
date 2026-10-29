@@ -15,6 +15,7 @@ From #2, where a task showed a "high priority" icon once its prioritize date pas
 ## Rules
 
 - An incomplete task whose prioritize date has passed is flagged as high priority.
+- In [Agenda](../views/agenda.md) order, flagged tasks come before unflagged ones when everything else is tied.
 
 ## Scenarios
 
@@ -25,5 +26,5 @@ From #2, where a task showed a "high priority" icon once its prioritize date pas
 
 ## Open questions
 
-- Should the flag affect [Agenda](../views/agenda.md) order or presets?
+- Should the flag affect presets (e.g. Today)?
 - Should prioritize dates propagate to prerequisites like deadlines do?

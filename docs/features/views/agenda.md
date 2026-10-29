@@ -16,7 +16,7 @@ Built in #3 as its own page. It answers "if I work top to bottom, what order mak
 
 - A task never appears before any of its incomplete prerequisites, hard or soft (see [Soft dependencies](../dependencies/soft-dependencies.md)).
 - Among tasks whose prerequisites are all listed already, the one with the most incomplete hard postrequisites comes first.
-- Ties are broken by earliest effective deadline (see [Deadlines](../scheduling/deadlines.md)).
+- Ties are broken by earliest effective deadline (see [Deadlines](../scheduling/deadlines.md)), then by tasks flagged as high priority by a passed [prioritize date](../scheduling/prioritize-date.md), then by oldest creation time.
 - The Agenda preset shows incomplete tasks in agenda order.
 
 ## Scenarios
@@ -36,4 +36,3 @@ Built in #3 as its own page. It answers "if I work top to bottom, what order mak
 ## Open questions
 
 - Should scheduled dates affect the order?
-- Final tiebreaker after deadlines: title, creation time, or something else?

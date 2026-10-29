@@ -17,11 +17,16 @@ In a dependency graph, a deadline on a task is effectively a deadline on everyth
 ## Rules
 
 - An incomplete task past its deadline is shown as overdue.
-- A task's implied deadline is the earliest deadline among the incomplete tasks it blocks, directly or through other tasks. It is computed from the graph, not stored.
+- A task's implied deadline is the latest time it can finish and still leave room for the incomplete tasks it blocks: for each task it directly blocks, that task's effective deadline minus its duration, and the earliest of those. Tasks without a duration count as zero. It is computed from the graph, not stored.
 - A task's effective deadline is the earlier of its own deadline and its implied deadline.
 - Effective deadlines break ties in [Agenda](../views/agenda.md) order.
 
 ## Scenarios
+
+### Implied deadline subtracts durations
+
+- Given "A" is a prerequisite of "B", "B" takes 2 days, and "B" is due Friday
+- Then "A" has an implied deadline of Wednesday
 
 ### Overdue task is highlighted
 
@@ -37,7 +42,3 @@ In a dependency graph, a deadline on a task is effectively a deadline on everyth
 
 - Given "Buy paint" is due Wednesday and blocks "Paint fence", due Friday
 - Then "Buy paint" shows Wednesday as its deadline
-
-## Open questions
-
-- Should implied deadlines account for the durations of tasks in between (e.g. a 2-day task before a Friday deadline implies Wednesday)?

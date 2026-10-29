@@ -16,7 +16,7 @@ From #3's schema: "Simple bullet list for a next action. Anything more complicat
 
 - Subtasks have a title, an order and a completed flag.
 - Subtasks cannot have links, dates or subtasks of their own.
-- A subtask can be converted into a real task. The new task becomes a prerequisite of the original, and the subtask is removed.
+- A subtask can be converted into a real task. The new task's form is prefilled with the subtask's title and the original task's details (list, tags, dates and so on), which the user can edit before saving. On save, the new task becomes a prerequisite of the original, and the subtask is removed.
 
 ## Scenarios
 
@@ -32,7 +32,3 @@ From #3's schema: "Simple bullet list for a next action. Anything more complicat
 - When the user converts "Buy adapter" into a task
 - Then "Buy adapter" is a task and a prerequisite of "Pack for trip"
 - And it is no longer a subtask
-
-## Open questions
-
-- Does the new task inherit the original's list and tags?

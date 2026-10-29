@@ -17,7 +17,7 @@ Big tasks are easier to start when broken into chunks. #3 built this: slicing "W
 - N must be at least 2.
 - The new pieces copy the original's list, notes, dates and other details.
 - The pieces are linked in order, and the original becomes the last piece.
-- The original's prerequisites come before the first piece.
+- Only the first piece gets the original's prerequisites, and the original (as the last piece) keeps its postrequisites. The chain already orders the other pieces, so this adds no redundant links. (#3 linked every piece to every prerequisite.)
 
 ## Scenarios
 
@@ -26,7 +26,3 @@ Big tasks are easier to start when broken into chunks. #3 built this: slicing "W
 - Given a task "Write report"
 - When the user slices it into 3
 - Then "Write report (1/3)" comes before "Write report (2/3)", which comes before "Write report"
-
-## Open questions
-
-- #3 also linked every slice to all of the original's prerequisites, creating redundant links. Should only the first slice get them?
