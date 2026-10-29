@@ -22,6 +22,7 @@ From #3's design notes: views are "modeled based on a presentation layer", using
   - **Upcoming**: tasks scheduled after today, in date order.
   - **Agenda**: incomplete tasks in [agenda](agenda.md) order.
   - One preset per list.
+- The user can save any combination of filters and sorts as a named preset of their own, shown alongside the built-in ones. Saved presets can be renamed, reordered and deleted.
 - Filters combine (e.g. a list and a tag at the same time).
 - Tasks can be filtered by status category (To do, In progress, Done) across lists, or by a specific status within one list (see [Statuses](../organization/statuses.md)).
 - Tasks can be filtered by assignee (including "assigned to me") and by participant (see [Assignment](../organization/assignment.md)).
@@ -45,12 +46,14 @@ From #3's design notes: views are "modeled based on a presentation layer", using
 - Then "Call plumber" is shown, noting yesterday's date
 - And "Buy milk" is not shown
 
+### Save a preset
+
+- Given the user has filtered for the tag @Errands and sorted by deadline
+- When the user saves this as "Errands by deadline"
+- Then "Errands by deadline" appears among their presets and shows the same tasks in the same order
+
 ### Tiebreak sorting
 
 - Given two tasks with the same priority and different titles
 - When sorted by priority, then by title
 - Then the two are shown in title order
-
-## Open questions
-
-- Can users save their own presets?

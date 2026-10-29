@@ -17,8 +17,16 @@ The task detail view is where most editing happens, so it needs to show the task
 - Changes are saved without a separate Save step.
 - Moving a task to another list only works for lists the user owns.
 - Linked tasks are shown, and choosing one opens it in place.
+- Every date field is editable, grouped in one Dates section: the schedule (date, time and duration, see [Schedule](../scheduling/schedule.md)), deadline (see [Deadlines](../scheduling/deadlines.md)), prioritize date (see [Prioritize date](../scheduling/prioritize-date.md)), recurrence (see [Recurring tasks](../scheduling/recurring-tasks.md)) and reminders (see [Reminders](../scheduling/reminders.md)).
+- The implied deadline is shown read-only, naming the task it comes from.
 
 ## Scenarios
+
+### Implied deadline is shown
+
+- Given "A" is a prerequisite of "B", and "B" is due Friday
+- When the user opens "A"
+- Then "A" shows an implied deadline of Friday, from "B", which can't be edited
 
 ### Rename a task
 
@@ -36,7 +44,3 @@ The task detail view is where most editing happens, so it needs to show the task
 - Given "A" is a prerequisite of "B" and "B" is open
 - When the user chooses "A" from the prerequisites
 - Then "A" is shown
-
-## Open questions
-
-- Which date fields are editable here? See [Schedule](../scheduling/schedule.md) and [Deadlines](../scheduling/deadlines.md).

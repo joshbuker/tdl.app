@@ -19,7 +19,7 @@ Lists were in every attempt as the folder-style grouping, with Inbox as the catc
 - List titles are required and unique per user, ignoring case.
 - A list has a color. If none is chosen, a random one is assigned. Text on a colored background is black or white, whichever contrasts better.
 - Colors are hex codes (`#abc` or `#aabbcc`).
-- A list has an icon, chosen from a predefined set. There is a default icon.
+- A list has an icon, chosen from a predefined set. There is a default icon. The set is chosen with the stack (see [Open items](../../open-items.md)).
 - Lists can be reordered.
 - Each list shows its count of next-up tasks.
 - A list is either a simple list, where tasks show a checkbox, or a workflow list, where tasks show a full status picker (see [Statuses](statuses.md)). New lists are simple. The user can switch a list between the two without losing any statuses.
@@ -56,7 +56,3 @@ Lists were in every attempt as the folder-style grouping, with Inbox as the catc
 
 - When the user tries to delete their default list
 - Then it is not deleted and the user is told why
-
-## Open questions
-
-- Which icon set?

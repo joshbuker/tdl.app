@@ -39,5 +39,6 @@ Requirements gathered so far that the stack must support:
 - A server-to-server protocol for sharing across servers (see [Federation](features/app/federation.md)).
 - Web, Android, iOS and desktop.
 - Good tooling for both unit and acceptance tests.
+- An open-licence icon set that works on every platform (e.g. Material Symbols or Lucide), for list icons.
 
 See also [Lessons from previous attempts](lessons-from-previous-attempts.md).
