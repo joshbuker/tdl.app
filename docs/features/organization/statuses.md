@@ -1,7 +1,7 @@
 # Statuses
 
 Status: Proposed
-Related: [Complete a task](../tasks/complete-task.md), [Assignment](assignment.md), [Lists](lists.md)
+Related: [Complete a task](../tasks/complete-task.md), [Assignment](assignment.md), [Lists](lists.md), [Board view](../views/board-view.md)
 
 ## Summary
 

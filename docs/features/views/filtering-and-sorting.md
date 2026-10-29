@@ -13,7 +13,7 @@ From #3's design notes: views are "modeled based on a presentation layer", using
 
 ## Rules
 
-- Pages are List, Focus, Tree, Graph and Calendar. Any preset can be used with any page.
+- Pages are List, Board, Focus, Tree, Graph and Calendar. Any preset can be used with any page.
 - Presets:
   - **All Tasks**: every task.
   - **Inbox**: the user's default list, where new tasks land (see [Lists](../organization/lists.md)).

@@ -25,4 +25,5 @@ The **task dependency graph** is the core model. A task's prerequisites must be 
 ## Consequences
 
 - Graph rules (no cycles, no redundant links, completed tasks stop blocking) are core domain logic and get the most thorough unit tests.
+- Links are records with their own attributes (see [Links are records](links-are-records.md)).
 - Every view is a filter and sort over the same task set. See `docs/features/views/filtering-and-sorting.md`.
