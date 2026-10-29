@@ -23,7 +23,3 @@ The user chooses the app's language.
 
 - When the user switches to 日本語
 - Then the settings title shows "設定"
-
-## Open questions
-
-- Which languages at launch?

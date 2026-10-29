@@ -28,7 +28,7 @@ Modeled on Todoist's quick add, so capture stays a single line of typing. #3 had
 - A `#List` or `@tag` that doesn't exist is offered as a suggestion to create it. It is only created if the user chooses that; otherwise it stays in the title.
 - Clicking a highlighted part dismisses it, leaving that text in the title as typed.
 - Parsing supports English.
-- Parsing supports other languages (v2).
+- Parsing supports Japanese and other languages (v2).
 
 ## Scenarios
 

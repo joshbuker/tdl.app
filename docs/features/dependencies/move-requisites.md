@@ -1,4 +1,4 @@
-# Move postrequisites
+# Move postrequisites and prerequisites
 
 Status: Proposed
 Release: v1
@@ -6,7 +6,7 @@ Related: [Link tasks](link-tasks.md)
 
 ## Summary
 
-From a task's postrequisites, the user can pick one and move all the other postrequisites under it.
+From a task's postrequisites, the user can pick one and move all the other postrequisites under it. The mirror works for prerequisites: pick one and move the others before it.
 
 ## Design intent
 
@@ -15,7 +15,8 @@ When several tasks all wait on A, and one of them (the "MVP postrequisite") shou
 ## Rules
 
 - Given A with postrequisites B, C and D, choosing B gives A before B, and B before C and D.
-- Only incomplete postrequisites are moved.
+- The mirror: given D with prerequisites A, B and C, choosing B gives B before D, and A and C before B.
+- Only incomplete postrequisites (or prerequisites) are moved.
 - If any move would break a rule from [Link tasks](link-tasks.md), nothing changes.
 
 ## Scenarios
@@ -27,6 +28,9 @@ When several tasks all wait on A, and one of them (the "MVP postrequisite") shou
 - Then "A" is a prerequisite of "B" only
 - And "B" is a prerequisite of "C" and "D"
 
-## Open questions
+### Move prerequisites before one of them
 
-- Is the reverse (move prerequisites) useful too?
+- Given "A", "B" and "C" are prerequisites of "D"
+- When the user moves the prerequisites of "D" before "B"
+- Then "B" is the only prerequisite of "D"
+- And "A" and "C" are prerequisites of "B"

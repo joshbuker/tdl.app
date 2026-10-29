@@ -17,6 +17,7 @@ In every attempt. What counts as "today", and when reminders fire, depend on it.
 - The default is UTC.
 - Only valid time zones are accepted.
 - Changing the time zone immediately updates what counts as today and the times shown.
+- When the device's time zone differs from the account's, the app offers to switch. The user can switch, keep the account's time zone, or dismiss the offer for that time zone. The time zone never changes without the user choosing it, so travelling doesn't shift dates by surprise.
 
 ## Scenarios
 
@@ -26,6 +27,8 @@ In every attempt. What counts as "today", and when reminders fire, depend on it.
 - And a task is scheduled for Tuesday
 - Then the task does not count as today's, even though it is already Monday 14:30 in UTC
 
-## Open questions
+### Suggest the device's time zone
 
-- Should the app suggest the device's time zone when it differs?
+- Given the account's time zone is Tokyo and the device is in Paris
+- When the user opens the app
+- Then the app offers to switch to Paris, and nothing changes until the user accepts

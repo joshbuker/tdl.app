@@ -10,12 +10,13 @@ From a linked pair (A before B), the user can insert a task X so that the order 
 
 ## Design intent
 
-Restructuring the graph is common when a plan gets refined ("oh, I need to do X before B but after A"). Doing it as three manual link edits is tedious and error-prone. #3 built this for prerequisites; the postrequisite side was a "Coming soon" stub.
+Restructuring the graph is common when a plan gets refined ("oh, I need to do X before B but after A"). Doing it as three manual link edits is tedious and error-prone. #3 built this for prerequisites; the postrequisite side was a "Coming soon" stub. Here it works from either task.
 
 ## Rules
 
 - The A to B link is replaced by A to X and X to B, all at once.
 - X can be an existing task or a new one.
+- It can be started from either task: from A's postrequisites or from B's prerequisites. The result is the same.
 - If the new links would break a rule from [Link tasks](link-tasks.md), nothing changes.
 
 ## Scenarios
@@ -29,4 +30,4 @@ Restructuring the graph is common when a plan gets refined ("oh, I need to do X 
 
 ## Open questions
 
-- Should this work from either end (from the prerequisite or the postrequisite)?
+- Do the two new links copy the replaced link's hard or soft setting and reason?
