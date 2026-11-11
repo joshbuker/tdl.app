@@ -1,4 +1,11 @@
 {
   "files": [],
-  "references": [{ "path": "packages/domain" }]
+  "references": [
+    {
+      "path": "packages/domain"
+    },
+    {
+      "path": "tools/scenario-check"
+    }
+  ]
 }
