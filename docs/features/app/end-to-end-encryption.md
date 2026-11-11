@@ -69,3 +69,66 @@ Like Signal, Proton and 1Password, the server holds the user's data without bein
 - When she resets her account without recovery and confirms the warning
 - Then "Money" is deleted
 - And once "bob" approves, "alice" can read "House" again and still owns it
+
+### View the recovery key again
+
+- Given "alice" is logged in on her phone
+- When she asks to see her recovery key
+- Then she is shown the same recovery key
+
+### Replace the recovery key
+
+- Given "alice" is logged in on her phone
+- When she replaces her recovery key
+- Then the old key no longer unlocks her account, and the new one does
+
+### Unlock a new device with a passkey
+
+- Given "alice" has a passkey
+- When she logs in on a new laptop with it
+- Then her tasks appear on the laptop
+
+### Unlock a new device with a password and second factor
+
+- Given "alice" has multi-factor authentication set up
+- When she logs in on a new laptop with her password and second factor
+- Then her tasks appear on the laptop
+
+### Recover by approving from a logged-in device
+
+- Given "alice" forgot her password, and is logged in on her phone
+- When she approves the recovery from her phone
+- Then she can set a new password, and all her tasks are there
+
+### Change the password keeps data
+
+- Given "alice" has tasks in "House" and "Money"
+- When she changes her password
+- Then all her tasks are still there
+
+### Reset warns what will be lost
+
+- Given "alice" forgot her password and has no recovery key, passkey or logged-in device
+- When she starts resetting her account by email
+- Then she is shown what will be lost, and nothing is deleted until she confirms
+
+### Collaborator is told about the reset
+
+- Given "alice" reset her account without recovery, and "bob" can read her list "House"
+- When "bob" is asked to approve giving her access again
+- Then he is told that her account was reset and its keys changed
+
+### Admins can't recover data
+
+- Given "alice" forgot her password and has no recovery key, passkey or logged-in device
+- Then the server's admin can't give her back access to her tasks
+
+### Export is readable
+
+- When "alice" exports her data
+- Then the export file contains her tasks in readable form
+
+### Imported tasks are encrypted
+
+- When "alice" imports a file of tasks
+- Then the server's records of them contain no titles or notes

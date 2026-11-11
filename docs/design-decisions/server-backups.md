@@ -1,0 +1,21 @@
+# Server backups
+
+## Context
+
+Users trust the server with their only copy of shared lists, and devices only hold what each user can see. Losing the server's database would lose data. A Todoist task for an earlier attempt called for database backups for tdl.app.
+
+## Decision
+
+- tdl.app has automated database and attachment backups, kept off the server, and restoring from them is tested regularly.
+- Self-hosting documentation explains how to back up and restore a server, and the server makes that easy (e.g. one command to export a consistent backup).
+- Backups are in place before anyone other than the author has data on tdl.app.
+- Backups contain only what the server holds, which is end-to-end encrypted, so they reveal no user content (see [End-to-end encryption](end-to-end-encryption.md)).
+
+## Alternatives considered
+
+- **Rely on devices' copies**: each device only has what its user can see, and permanently deleted data or attachments may not be on any device.
+
+## Consequences
+
+- Restoring a backup can bring back data deleted after it was taken, so restores must reapply later deletions where possible.
+- Backup retention must respect account deletion and the non-paying retention period (see [Billing](../features/account/billing.md)).

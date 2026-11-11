@@ -95,3 +95,64 @@ When tasks from several lists are shown together, each one shows its list, so th
 - Given two tasks with the same priority and different titles
 - When sorted by priority, then by title
 - Then the two are shown in title order
+
+### Upcoming shows later tasks in date order
+
+- Given "Pay rent" is scheduled for today, "Call plumber" for next Friday, and "Buy milk" for tomorrow
+- When the user selects Upcoming
+- Then "Buy milk" is shown, then "Call plumber"
+- And "Pay rent" is not shown
+
+### Inbox shows the default list
+
+- Given "Buy milk" is in the user's default list, and "Paint fence" is in "House"
+- When the user selects Inbox
+- Then only "Buy milk" is shown
+
+### Shared with me
+
+- Given "bob" shared "Paint fence" directly with "alice", and she can't see its list "House"
+- When she selects Shared with me
+- Then "Paint fence" is shown, without its list
+
+### Assigned to me
+
+- Given "Paint fence" is assigned to "alice" and "Mow lawn" to "bob"
+- When "alice" filters for tasks assigned to her
+- Then only "Paint fence" is shown
+
+### Filter by participant
+
+- Given "carol" is a participant on "Paint fence" and not on "Mow lawn"
+- When the user filters for tasks "carol" participates in
+- Then only "Paint fence" is shown
+
+### Tasks show their list across lists
+
+- Given "Buy milk" is in "Groceries" and "Paint fence" is in "House"
+- When the user selects All Tasks
+- Then each task shows its list's icon and name
+
+### Presets work on every page
+
+- Given "Call plumber" is scheduled for today and "Write report" for next week
+- When the user selects Today on the Tree page
+- Then the tree shows "Call plumber" and not "Write report"
+
+### Delete a saved preset
+
+- Given the user saved a preset "Errands by deadline"
+- When they delete it
+- Then it no longer appears among their presets
+
+### Hide completed tasks
+
+- Given "Buy milk" is completed
+- When the user hides completed tasks
+- Then "Buy milk" is not shown
+
+### Hide blocked tasks
+
+- Given "Paint fence" waits on its incomplete prerequisite "Buy paint"
+- When the user selects All Tasks and hides blocked tasks
+- Then "Paint fence" is not shown, and "Buy paint" is

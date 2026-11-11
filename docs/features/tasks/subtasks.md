@@ -32,3 +32,20 @@ From #3's schema: "Simple bullet list for a next action. Anything more complicat
 - When the user converts "Buy adapter" into a task
 - Then "Buy adapter" is a task and a prerequisite of "Pack for trip"
 - And it is no longer a subtask
+
+### Reorder subtasks
+
+- Given "Pack for trip" has subtasks "Toothbrush" then "Charger"
+- When the user moves "Charger" above "Toothbrush"
+- Then the subtasks show "Charger" first
+
+### Subtasks have no links, dates or subtasks
+
+- Given "Pack for trip" has a subtask "Toothbrush"
+- Then "Toothbrush" can't be given a date, a link or a subtask of its own
+
+### Converted subtask is prefilled
+
+- Given "Pack for trip" is in "Travel", tagged @Errands, with a subtask "Buy adapter"
+- When the user converts "Buy adapter" into a task
+- Then the new task's form shows the title "Buy adapter", the list "Travel" and the tag @Errands, and can be edited before saving

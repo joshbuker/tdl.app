@@ -20,4 +20,17 @@ Attempt #1 ended because it was "web only" and "couldn't compile down to mobile/
 
 ## Scenarios
 
-- To be defined per platform once the stack is chosen.
+### Available on every platform at launch
+
+- When the app launches
+- Then it can be used on the web, Android, iOS, Windows, macOS and Linux
+
+### Web app isn't installable
+
+- When "alice" opens the web app in a browser
+- Then it doesn't offer to be installed as an app
+
+### Same features on every platform
+
+- Given "alice" uses the Android app and the web app
+- Then both offer the same features, except those a platform can't support, such as scheduled notifications on the web

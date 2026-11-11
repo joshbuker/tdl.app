@@ -52,3 +52,43 @@ Planned since #2: the #2 and #3 APIs had stub endpoints for hardware tokens (Web
 
 - When "alice" sets up multi-factor authentication
 - Then the factors offered are an authenticator app and passkeys, not SMS
+
+### MFA is optional
+
+- Given "alice" has not set up multi-factor authentication
+- When she logs in with the correct password
+- Then she is logged in without being asked for a second factor
+
+### Any factor works
+
+- Given "alice" has an authenticator app and a hardware key set up
+- When she logs in with her password
+- Then she can confirm with either one
+
+### Several passkeys
+
+- Given "alice" has a passkey on her phone and another on her laptop
+- Then she can log in with either one
+
+### Recovery codes come with the first factor
+
+- When "alice" sets up her first factor
+- Then she is given a set of single-use recovery codes
+
+### New recovery codes replace the old ones
+
+- Given "alice" has a set of recovery codes
+- When she generates a new set
+- Then none of her old codes work, and the new ones do
+
+### Remove the last factor
+
+- Given "alice" has only an authenticator app set up
+- When she removes it and confirms with her password
+- Then multi-factor authentication is off, and she logs in with her password alone
+
+### Removing the last factor needs the password
+
+- Given "alice" has only an authenticator app set up
+- When she tries to remove it without entering her password
+- Then it isn't removed

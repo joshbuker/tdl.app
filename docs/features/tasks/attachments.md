@@ -44,3 +44,44 @@ Attachments were one of the gaps in Todoist the author cared about (notes: Top P
 - Given "alice" is offline
 - When she attaches a photo to "Paint fence"
 - Then it shows on the task, and uploads once she is back online
+
+### Over the storage limit
+
+- Given "alice" has 10 MB of storage left
+- When she attaches a 20 MB video
+- Then she is told it would go over her storage, and nothing is uploaded
+
+### Remove an attachment
+
+- Given "Paint fence" has a photo attached
+- When "alice" removes the photo
+- Then it is no longer on the task, and the file is deleted
+
+### Trashed task keeps its attachments
+
+- Given "Paint fence" has a photo attached
+- When "alice" moves it to the Trash and restores it
+- Then the photo is still attached
+
+### Permanently deleting a task deletes its attachments
+
+- Given "Paint fence" is in the Trash with a photo attached
+- When "alice" deletes it permanently
+- Then the photo's file is deleted too
+
+### Other files show their details
+
+- When "alice" attaches "quote.pdf" to "Paint fence"
+- Then the task shows the file's name, type and size
+
+### Opened attachments stay available offline
+
+- Given "alice" has opened the photo on "Paint fence"
+- When she is offline
+- Then she can still open the photo
+
+### Attach from the camera
+
+- Given "alice" is using her phone
+- When she takes a photo with the camera from "Paint fence"
+- Then the photo is attached to the task

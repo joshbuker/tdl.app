@@ -63,18 +63,6 @@ Sources: earlier notes (titles in brackets) and Todoist tasks (marked "Todoist")
 - **Calls context**: store a phone number on a task and call in one tap. [2021-12-22 TDL x GTD]
 - **Agendas** for people and meetings, added and removed ad hoc. Partly covered by tags. [2021-12-22 TDL x GTD]
 
-## Design decisions to write
-
-These choices from earlier attempts have written reasoning in `historical-versions/` and look worth keeping, but have no decision record yet:
-
-- Server-side, revocable sessions.
-- Error contract: 401 unauthenticated, 403 forbidden, 404 not found, with the trade-off that 403 reveals a record exists.
-- Strict input validation, with no silent normalization.
-- Translations from day one.
-- Version pins must say when they can be lifted.
-- Releases on version tags, with CI also run weekly to catch vulnerable dependencies.
-- Server backups (of encrypted data, including attachments): automated, tested database backups for tdl.app, and documented backup and restore for self-hosters, before anyone else's data is on the server. From a Todoist task.
-
 ## Decisions to make with the stack
 
 Technical choices the specs leave open, to settle while choosing the stack:

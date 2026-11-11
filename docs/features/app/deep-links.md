@@ -39,3 +39,27 @@ From earlier notes (TDL App Features): like Obsidian's links, any part of the ap
 - Given "bob" has no access to "Paint fence"
 - When he opens its link
 - Then he is told it can't be opened, with no title or other details
+
+### Link to a trashed task
+
+- Given "alice" copied the link to "Paint fence", then moved it to the Trash
+- When she opens the link
+- Then the app opens "Paint fence" in the Trash
+
+### Links work offline
+
+- Given "Paint fence" is on alice's phone, and she is offline
+- When she opens its link
+- Then the app opens "Paint fence"
+
+### Link to a saved preset
+
+- Given "alice" copied the link to her preset "Errands by deadline"
+- When she opens it
+- Then the app opens that preset
+
+### Opens the web app without the installed app
+
+- Given "alice" has no app installed on her work laptop
+- When she opens the link to "Paint fence" there
+- Then the web app opens "Paint fence"

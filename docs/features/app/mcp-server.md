@@ -38,3 +38,30 @@ MCP is the common way for AI assistants (such as Claude) to use outside tools. A
 - Given "alice" revoked her assistant's access
 - When the assistant tries to read her tasks
 - Then it is refused
+
+### Standalone program
+
+- When "alice" runs the standalone MCP program with her API token, and adds it to her assistant
+- Then the assistant can list her next-up tasks
+
+### Read-only assistant
+
+- Given "alice" connected her assistant with a read-only token
+- When the assistant tries to complete "Buy milk"
+- Then it is refused
+
+### Assistant acts as its user
+
+- Given "bob" shared "Paint fence" with "alice" as a viewer
+- When her assistant tries to complete "Paint fence"
+- Then it is refused, as it would be for her in the app
+
+### Assistant creates linked tasks
+
+- When the assistant creates "Buy paint" and makes it a prerequisite of "Paint fence" for "alice"
+- Then "alice" sees "Buy paint" linked before "Paint fence" in the app
+
+### No account security actions
+
+- When the assistant tries to change alice's password
+- Then it can't, as the API offers no way to

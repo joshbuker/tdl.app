@@ -29,3 +29,8 @@ The default view in every attempt. #3 showed each task's count of incomplete pos
 
 - Given no tasks match the current filter
 - Then an empty message is shown
+
+### Row details
+
+- Given "Paint fence" has notes, is in "House", is tagged @Weekend, is scheduled for Saturday with a deadline on Sunday, and blocks 2 tasks in total
+- Then its row shows that it has notes, "House", @Weekend, Saturday, Sunday and 2

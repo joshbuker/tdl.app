@@ -63,3 +63,38 @@ Every server, tdl.app or self-hosted, needs someone to invite people, give free 
 - Given "alice" is the only admin
 - When she tries to remove her own admin role
 - Then it isn't allowed
+
+### Make another admin
+
+- Given "alice" is an admin
+- When she makes "bob" an admin
+- Then "bob" can manage the server's accounts and settings
+
+### Remove an admin
+
+- Given "alice" and "bob" are admins
+- When "alice" removes bob's admin role
+- Then "bob" can no longer manage the server's accounts and settings
+
+### Admin deletes an account
+
+- Given "bob" owns an unshared list "Personal"
+- When an admin deletes bob's account and confirms
+- Then his account and "Personal" no longer exist
+
+### Admin log can't be changed
+
+- Given the admin log shows that "alice" gave "carol" free access
+- When "alice" tries to edit or delete that entry
+- Then it isn't allowed
+
+### Change the sign-up mode
+
+- When an admin switches the server to invite-only
+- Then visitors who try to sign up are told sign-up is closed
+
+### Unavailable features are shown
+
+- Given a self-hosted server has no email configured
+- When the admin views the server settings
+- Then they are told email invites and reset by email are unavailable

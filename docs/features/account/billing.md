@@ -107,3 +107,56 @@ Billing belongs to each server, and apps can connect to any server, many of whic
 - When "bob", who is paying, edits "Paint fence"
 - Then his change is saved
 - And "alice" can see it but can't make changes herself
+
+### Pay yearly
+
+- Given $40 a year is above the server's minimum
+- When "carol" chooses to pay $40 a year
+- Then she is charged $40 once a year and has full access
+
+### Change the amount
+
+- Given "carol" pays $5 a month
+- When she changes it to $8 a month
+- Then her next payment is $8, and nothing is charged before then
+
+### Admin gives free access
+
+- Given "carol" is non-paying
+- When an admin gives her free access
+- Then she has full access without paying
+
+### Admin takes free access away
+
+- Given "carol" has free access
+- When an admin takes it away
+- Then her account is read-only, and she is told why
+
+### Admins always have free access
+
+- Given billing is on, and "alice" is an admin
+- Then she has full access without paying
+
+### Read-only still allows account actions
+
+- Given "carol" is non-paying
+- When she changes her password, revokes a token and leaves a list shared with her
+- Then each of these is allowed
+
+### Reminders still fire when read-only
+
+- Given "carol" is non-paying, and "Call plumber" has a reminder at 9:00
+- When it is 9:00
+- Then the reminder fires, and she can snooze it
+
+### Trials need no payment details
+
+- Given trials are on and last 30 days
+- When "carol" signs up
+- Then she has full access, and isn't asked for payment details
+
+### Apps don't sell
+
+- Given "carol" is non-paying and uses the iOS app
+- Then the app shows that her account is read-only
+- And it offers no way to pay inside the app

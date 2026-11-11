@@ -30,3 +30,14 @@ Check both apps' current behavior before implementing.
 
 - When the user enters a server address and valid credentials for it
 - Then they are logged in to that server
+
+### Official server by default
+
+- When the user opens the login screen for the first time
+- Then the server address is the official one
+
+### Chosen server is remembered
+
+- Given the user logged in to a self-hosted server, then logged out
+- When they open the login screen again
+- Then the server address is still their self-hosted server

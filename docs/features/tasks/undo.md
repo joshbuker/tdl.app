@@ -45,3 +45,34 @@ Mistaps on a phone are easy, and changes save without a Save step, so changes to
 
 - When the user changes the schedule of "Call plumber" and chooses Undo
 - Then the task's history shows both the change and the undo
+
+### No Undo for other actions
+
+- When the user renames the list "Home"
+- Then no Undo is offered
+
+### Told what couldn't be undone
+
+- Given "alice" renamed "Paint fence" to "Stain fence"
+- And "bob" then renamed it to "Repaint fence"
+- When "alice" chooses Undo
+- Then the title stays "Repaint fence", and she is told the title couldn't be undone
+
+### Undo offline
+
+- Given the user is offline
+- When they complete "Buy milk" and choose Undo
+- Then "Buy milk" is incomplete, and the undo syncs once they are back online
+
+### Undo follows the graph rules
+
+- Given "alice" removed the link "Buy paint" before "Paint fence"
+- And "bob" then made "Paint fence" a prerequisite of "Buy paint"
+- When "alice" chooses Undo
+- Then it is rejected with the usual cycle explanation
+
+### Undo with a shortcut
+
+- Given the Undo notice for completing "Buy milk" is showing
+- When the user presses the undo shortcut
+- Then "Buy milk" is incomplete again

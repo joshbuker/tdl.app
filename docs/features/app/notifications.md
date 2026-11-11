@@ -54,3 +54,45 @@ Once tasks are shared, people need to know when something needs them without che
 - Given "carol" turned off completion notifications
 - When "bob" completes a task "carol" participates in
 - Then "carol" gets no notification for it
+
+### Invited to a list
+
+- When "alice" invites "bob" to her list "House"
+- Then "bob" is notified, and opening the notification opens the invitation
+
+### Read later in the in-app list
+
+- Given "alice" assigned "Paint fence" to "bob" while he was away
+- When he opens his in-app notification list
+- Then the notification is there, unread
+
+### Opening marks it read
+
+- Given "bob" has an unread notification that he was assigned "Paint fence"
+- When he opens it from the in-app list
+- Then "Paint fence" opens, and the notification is marked read
+
+### Push and in-app list are set separately
+
+- Given "carol" turned off push for completion notifications, but kept them in the in-app list
+- When "bob" completes a task "carol" participates in
+- Then "carol" gets no push, and the notification is in her in-app list
+
+### No notifications about tasks you can't see
+
+- Given "carol" was a participant on "Paint fence", and has since lost access to it
+- When "bob" completes it
+- Then "carol" is not notified
+
+### Pushes carry no readable content
+
+- When "bob" is notified that he was assigned "Paint fence"
+- Then the push sent through the server contains no title
+- And his device shows "Paint fence"
+
+### Self-hosted server without the push relay
+
+- Given alice's self-hosted server doesn't use the push relay, and bob's phone app is closed
+- When "alice" assigns "Paint fence" to "bob"
+- Then he gets no push
+- And he sees the notification once he opens the app and it syncs

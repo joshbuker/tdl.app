@@ -49,3 +49,49 @@ A commenter role sits between editor and viewer, so someone can take part in the
 - Given "bob" commented "Which color?"
 - When he edits it to "Which shade of white?"
 - Then the comment shows the new text and that it was edited
+
+### Delete your own comment
+
+- Given "bob" commented "Which color?" on "Paint fence"
+- When he deletes it
+- Then the comment is gone for everyone
+
+### Owner deletes someone else's comment
+
+- Given "bob" commented "Which color?" on alice's task "Paint fence"
+- When "alice" deletes his comment
+- Then the comment is gone for everyone
+
+### Editors can't delete others' comments
+
+- Given "carol" is an editor of alice's list "House", and "bob" commented on "Paint fence"
+- Then "carol" can't delete bob's comment
+
+### Mentioned person is notified
+
+- Given "carol" can view "Paint fence", and isn't its assignee, a participant or a commenter on it
+- When "bob" mentions "carol" in a comment on it
+- Then "carol" is notified of the comment
+
+### Earlier commenters are notified, not the author
+
+- Given "carol" has commented on "Paint fence"
+- When "bob" comments on it
+- Then "carol" is notified of bob's comment
+- And "bob" is not
+
+### Comment offline
+
+- Given "bob" is offline
+- When he comments on "Paint fence"
+- Then the comment shows on the task, and others see it once he is back online
+
+### Attach a file to a comment
+
+- When "bob" attaches a photo to his comment on "Paint fence"
+- Then everyone who can see the comment can open the photo
+
+### Comments use markdown
+
+- When "bob" comments "**Which** color?"
+- Then the comment shows "Which" in bold

@@ -32,3 +32,33 @@ In every attempt. What counts as "today", and when reminders fire, depend on it.
 - Given the account's time zone is Tokyo and the device is in Paris
 - When the user opens the app
 - Then the app offers to switch to Paris, and nothing changes until the user accepts
+
+### New account uses the device's time zone
+
+- Given "carol"'s device is set to Paris
+- When she signs up
+- Then her time zone is Paris
+
+### UTC when the time zone can't be detected
+
+- Given the device's time zone can't be detected
+- When "carol" signs up
+- Then her time zone is UTC
+
+### Invalid time zone
+
+- When the user sets their time zone to "Mars/Olympus"
+- Then it is rejected
+
+### Changing the time zone updates today
+
+- Given the user's time zone is Paris and it is 23:30 on Monday in Paris (07:30 Tuesday in Tokyo)
+- And "Call plumber" is scheduled for Tuesday
+- When the user changes their time zone to Tokyo
+- Then "Call plumber" counts as today's at once
+
+### Dismiss the offer for a time zone
+
+- Given the account's time zone is Tokyo, the device is in Paris, and the user dismissed the offer to switch to Paris
+- When the user opens the app again in Paris
+- Then the app doesn't offer to switch to Paris again

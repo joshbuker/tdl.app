@@ -34,3 +34,31 @@ In #1 and #3. Because the graph is not a tree, a task with several prerequisites
 - Given "A" before "B"
 - When the user reverses the tree
 - Then "B" is a root and "A" is under it
+
+### Several prerequisites
+
+- Given "A" before "C", and "B" before "C"
+- When the user expands "A" and "B"
+- Then "C" is shown under each
+
+### Completed prerequisites don't hide a root
+
+- Given "A" before "B", and "A" is completed
+- Then "B" is a root
+
+### Loop tasks are roots
+
+- Given "alice" can see a flagged loop between "A" and "B"
+- Then "A" and "B" are both roots, marked as part of the loop
+
+### Expanded branches are remembered
+
+- Given the user expanded "A"
+- When they leave the tree and come back
+- Then "A" is still expanded
+
+### Completed tasks hidden by default
+
+- Given "A" is completed
+- Then "A" is not shown in the tree
+- And when the user turns on showing completed tasks, "A" is shown

@@ -24,3 +24,8 @@ The user chooses the app's language.
 - Given Japanese is available (v2)
 - When the user switches to 日本語
 - Then the settings title shows "設定"
+
+### English by default
+
+- When a new user opens the app
+- Then its text is in English

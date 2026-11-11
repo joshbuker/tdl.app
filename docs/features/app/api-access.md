@@ -23,7 +23,7 @@ Users and other programs can read and change their data through a documented pub
 - The API is versioned. Breaking changes only come with a new major version, and the previous one keeps working for a stated period.
 - The API is documented in OpenAPI, generated from the tests so it can't drift from what the server does. The client library's documentation shows how to read and write decrypted data.
 - Requests are rate limited per token, and clients are told their remaining allowance.
-- Errors use the same contract as the apps (see "Design decisions to write" in [Open items](../../open-items.md)).
+- Errors use the same contract as the apps (see [Error contract](../../design-decisions/error-contract.md)).
 
 ## Scenarios
 
@@ -50,3 +50,54 @@ Users and other programs can read and change their data through a documented pub
 - Given "alice" revoked her "Home automation" token
 - When a program uses it
 - Then it is refused as unauthorized
+
+### Authorize another app
+
+- When another app asks "alice" for read-only access with OAuth, and she approves
+- Then the app can read her tasks, without her copying a token by hand
+
+### Revoke another app
+
+- Given "alice" gave another app access with OAuth
+- When she revokes its access
+- Then the app's requests are refused
+
+### Previous major version keeps working
+
+- Given a program uses version 1 of the API, and version 2 has been released with breaking changes
+- When it makes a request within version 1's stated period
+- Then the request works as before
+
+### Remaining allowance
+
+- When a program makes a request with alice's token
+- Then the response tells it how many requests it has left
+
+### Over the rate limit
+
+- Given a program has used up the allowance of alice's token
+- When it makes another request
+- Then it is refused as rate limited
+
+### No account security actions
+
+- Given "alice" has a read-write token
+- When a program uses it to change her password
+- Then it is refused
+
+### Expired token
+
+- Given "alice" created a token that expired yesterday
+- When a program uses it
+- Then it is refused as unauthorized
+
+### See when a token was last used
+
+- Given a program used alice's "Home automation" token yesterday
+- Then her settings show it was last used yesterday
+
+### Responses stay encrypted
+
+- When a program reads "Paint fence" with alice's token through the client library
+- Then the server's response contains no readable title
+- And the client library shows the title "Paint fence"
