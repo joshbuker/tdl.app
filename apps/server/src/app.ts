@@ -11,17 +11,19 @@ import {
 import Fastify, { type FastifyInstance } from 'fastify';
 import type { FieldError } from '@tdl/domain';
 import { z } from 'zod';
+import { createAuth, registerAuthRoutes } from './auth.ts';
 import type { Config } from './config.ts';
 import type { Db } from './db/client.ts';
 import { sendError } from './errors.ts';
+import { registerMeRoutes } from './routes/me.ts';
+import { registerSessionRoutes } from './routes/sessions.ts';
+import { createSessionGuard } from './session-guard.ts';
 
 export interface AppDeps {
   db: Db;
   now?: () => number;
 }
 
-// `deps` is used by the routes added in later tasks.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyInstance> {
   const app = Fastify({ logger: false, trustProxy: config.trustProxy });
   app.setValidatorCompiler(validatorCompiler);
@@ -67,6 +69,12 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
     { schema: { response: { 200: z.object({ ok: z.literal(true) }) } } },
     () => ({ ok: true as const }),
   );
+
+  const auth = createAuth(config, { db: deps.db, now: deps.now ?? Date.now });
+  const requireSession = createSessionGuard(auth, deps.db);
+  registerAuthRoutes(app, auth, config);
+  registerMeRoutes(app, deps.db, requireSession);
+  registerSessionRoutes(app, deps.db, auth, requireSession);
 
   return app;
 }

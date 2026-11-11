@@ -26,8 +26,8 @@ export const user = pgTable('user', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   username: text('username').unique(),
   displayUsername: text('display_username'),
-  givenName: text('given_name'),
-  familyName: text('family_name'),
+  givenName: text('given_name').notNull(),
+  familyName: text('family_name').notNull(),
   termsAcceptedAt: timestamp('terms_accepted_at', { withTimezone: true }),
   defaultListId: uuid('default_list_id'),
 });

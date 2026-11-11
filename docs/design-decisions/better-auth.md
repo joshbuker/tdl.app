@@ -27,4 +27,6 @@ The version is pinned to one that includes every published security fix, and the
 ## Consequences
 
 - One library covers every login feature, in-process, with a Vue client for the apps.
+- Only the Better Auth endpoints the apps use are exposed over HTTP (sign-up, the two sign-ins and sign-out); the rest answer 404, so none of them can bypass our validation of [Account details](../features/account/user-validation.md) or the tombstone that revoking a session writes. Errors are translated into the [Error contract](error-contract.md).
+- Account details are validated by `@tdl/domain` first, counting characters. Better Auth counts UTF-16 code units, so its length limits are widened (the maximum password length is doubled) to never reject what the domain accepts.
 - Vercel acquired Better Auth in July 2026; it stays MIT. Its OAuth provider is new, and a passkey vulnerability was fixed in 2026, so watch its security advisories. If it stops being suitable, the fallback is assembling from parts as above.
