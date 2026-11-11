@@ -46,7 +46,7 @@ This plan has only unit tests. Acceptance tests named after spec scenarios start
 - Produces: root scripts `pnpm lint`, `pnpm typecheck`, and `pnpm test`, which writes a Vitest JSON report to `reports/vitest.json`. Workspace globs are `packages/*`, `apps/*` and `tools/*`. Package name `@tdl/domain`, whose entry is `src/index.ts` (consumed as TypeScript source through workspace links; no build step yet).
 
 - [ ] **Step 0: Create the development shell.**
-  - `shell.nix` uses a pinned nixpkgs tarball with its sha256, and provides `nodejs_26` and pnpm. If nixpkgs has no `nodejs_26`, stop and report.
+  - `shell.nix` takes `{ pkgs ? import (fetchTarball "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz") {} }`, and provides `nodejs_26` and pnpm. If nixpkgs has no `nodejs_26`, stop and report.
   - Its `shellHook` sets `COREPACK_ENABLE_DOWNLOAD_PROMPT=0` and puts `./node_modules/.bin` on `PATH`.
   - `.npmrc` sets `store-dir=.pnpm-store`.
   - `.gitignore` adds `.pnpm-store`.
