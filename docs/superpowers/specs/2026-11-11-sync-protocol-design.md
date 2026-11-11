@@ -17,12 +17,12 @@ The slice syncs four record types. Each field is either **metadata**, which the 
 | Link | `prerequisiteId`, `postrequisiteId` (fixed at creation) | `kind`, `reason` |
 | Grant | user, target (list or task), role | none |
 
-Every device and the server keep two separate things:
+Every device and the server keep two separate things (see [Current state and history](../../design-decisions/current-state-and-history.md)):
 
 - **Current state:** the records that exist now. Next up, the graph rules and access checks read only this.
-- **History:** every operation ever accepted, kept forever. Task history is built from it.
+- **History:** every operation ever accepted, kept forever unless its record is permanently deleted. Task history is built from it.
 
-Removing a link or revoking a grant deletes it from current state. Its operations stay in history, and each link's operations record which two tasks it joined, so both tasks' history shows the link being added and removed. Linking the same tasks again later makes a new link.
+Each record's creation time is part of its current state, taken from the clock of the operation that created it. Removing a link or revoking a grant deletes it from current state. Its operations stay in history, and each link's operations record which two tasks it joined, so both tasks' history shows the link being added and removed. Linking the same tasks again later makes a new link.
 
 ## Operations
 
@@ -32,7 +32,6 @@ A device changes data only by creating operations:
 interface Operation {
   id: Id;            // UUIDv7 made on the device. A retry reuses it, so pushing twice changes nothing.
   hlc: string;       // hybrid logical clock, compared as a string
-  baseSeq: number;   // the last feed entry the device had applied when it made this operation
   record: { type: 'list' | 'task' | 'link' | 'grant'; id: Id };
   meta: MetaChange | null;      // routing metadata, plaintext forever
   content: ContentChange | null; // { field, value }, encrypted from v2
@@ -52,7 +51,7 @@ A content change sets one field to a JSON value. Creating a task is a `createTas
 
 **Hybrid logical clock.** The format is `<wall-clock ms, 15 digits>:<counter, 6 digits>:<device ID>`, so string order is clock order, and the device ID breaks ties. Devices follow the standard algorithm: they advance the clock on every local operation, and on every operation they receive.
 
-**`baseSeq`** records what the author had already seen. A device can then tell whether two operations on the same field were concurrent (neither author had seen the other) without vector clocks. History uses this to mark an edit as overridden, or two completions as a double completion.
+The slice doesn't detect concurrent edits, so history doesn't yet mark an edit as overridden or flag a double completion. See "Detecting concurrent edits" in [Open items](../../open-items.md).
 
 ## Merging on the device
 
@@ -68,9 +67,11 @@ The visible state merges confirmed and pending operations:
 - Each content field takes the value of its operation with the highest HLC (newest wins).
 - A link or grant with a `removeLink` or `revokeGrant` operation isn't in the state at all.
 
-History for a task is the operations on the task and on any link that joined it, sorted by HLC. An operation is **overridden** if a later operation on the same field didn't include it in its `baseSeq`.
+History for a task is the operations on the task and on any link that joined it, sorted by HLC.
 
 When the server rejects an operation, the device moves it from pending to rejected and recomputes the state, which undoes the change locally. Nothing the user typed is lost.
+
+**Forgetting.** A `forget` entry deletes the record from current state and drops its operations from history, along with those of any link that joined it. Losing access to a task means losing its history too.
 
 **Duplicate links.** If the server refuses a link because the same link already exists, the reply carries the existing link's ID. The device folds its link into that one: it re-sends its `kind` and `reason` as content operations on the existing link, keeping their original HLCs so newest-wins stays fair, and drops its own link. A link in the **opposite** direction isn't a duplicate. It forms a loop, which is kept and flagged ([Offline use](../../features/app/offline.md), "Links that together form a cycle").
 
@@ -78,7 +79,7 @@ When the server rejects an operation, the device moves it from pending to reject
 
 **Storage** (Postgres, through Drizzle):
 
-- An `operations` table that keeps every accepted operation forever, numbered by a global sequence.
+- An `operations` table that keeps every accepted operation, numbered by a global sequence. Operations are only removed when their record is permanently deleted, which the slice doesn't build.
 - Current-state tables for authorization: lists, tasks, links and grants, holding only the metadata of records that exist now. Removing a link or revoking a grant deletes its row.
 - A `feed` table: one row per user per operation they can see, plus `forget` rows.
 - Better Auth's own tables, and a `revoked_sessions` tombstone table.
@@ -99,7 +100,7 @@ When the server rejects an operation, the device moves it from pending to reject
 4. **Uniqueness.** `createLink` is rejected as `duplicate-link` if a link already runs between the same two tasks in the same direction (a unique index on the pair). The reply includes `existingLinkId`. An operation on a link or grant that no longer exists, such as an offline edit to a removed link's reason, is rejected as `not-found`, so the device shows it under "couldn't sync".
 5. **Store and fan out.** Assign the next sequence number, update the metadata tables, and add a feed row for each user who can now see the record.
    - **Audience:** a list's audience is its owner and its list grantees. A task's audience is its list's audience plus its task grantees. A link's audience is everyone who can see both of its tasks.
-   - **Visibility changes:** `grant`, `revokeGrant` and `moveTask` can change who sees which records. For each affected user, the server compares what they could see before and after. Records that became visible get all their earlier operations added to that user's feed. Records that stopped being visible get a `forget` row.
+   - **Visibility changes:** `grant`, `revokeGrant` and `moveTask` can change who sees which records. For each affected user, the server compares what they could see before and after. Records that became visible get all their earlier operations added to that user's feed. Records that stopped being visible get a `forget` row. Removed links whose two tasks just became visible are included too, so a new collaborator sees the same task history as everyone else.
 
 The server never undoes a link for breaking a graph rule. Graph rules run on devices ([Offline first](../../design-decisions/offline-first.md)).
 

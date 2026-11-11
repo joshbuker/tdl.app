@@ -30,7 +30,7 @@ Here, completion is part of the status, not a separate flag, so one field says w
 - Filters across lists select statuses by category (see [Filtering and sorting](../views/filtering-and-sorting.md)).
 - There can be several complete statuses (e.g. "Done" and "Won't do"). One complete status is the default, and it is what the checkbox sets.
 - One incomplete status is the default. New tasks get it.
-- When a completed task is marked incomplete, it returns to the incomplete status it had before. If that status no longer exists, it gets the default incomplete status.
+- When a completed task is marked incomplete, it returns to the incomplete status it had before, which the task keeps as a field while completed. If that status no longer exists, it gets the default incomplete status.
 - The user can add, rename, recolor, reorder and delete a list's statuses. Titles are unique within the list, ignoring case.
 - A status in use cannot be deleted, and a list always has at least one incomplete and one complete status.
 - Each list is either a simple list or a workflow list (see [Lists](lists.md)):

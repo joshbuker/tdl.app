@@ -6,7 +6,7 @@ The app is offline first: every device keeps its own copy, and changes sync in t
 
 - let the server check every change against the sharing grants (see [Container and item grants](container-and-item-grants.md));
 - merge field by field;
-- keep the full change history forever;
+- keep the full change history, until a record is permanently deleted;
 - push live updates to open apps;
 - in v2, carry end-to-end encrypted content with plaintext routing metadata (see [End-to-end encryption](end-to-end-encryption.md));
 - in v2, serve servers as well as devices (see [Federation reuses sync](federation-reuses-sync.md)).
@@ -24,7 +24,7 @@ The 2025 prototype stalled building an auth proxy around PouchDB and CouchDB. In
 Sync is our own small protocol, built on well-established parts:
 
 - Each change is an operation on one field of one record, stamped with a hybrid logical clock (a timestamp that orders changes correctly across devices). Operations wait in an outbox on the device until the server accepts them.
-- The server checks each operation against the grants, gives accepted ones a sequence number, stores them forever, and tells open apps over a websocket that there is something new. Devices pull everything after the last sequence number they have.
+- The server checks each operation against the grants, gives accepted ones a sequence number, stores them (until their record is permanently deleted, see [Current state and history](current-state-and-history.md)), and tells open apps over a websocket that there is something new. Devices pull everything after the last sequence number they have.
 - Each user has their own feed (fan-out on write). When the server accepts an operation, it adds it to the feed of every user who can see the record. When a user gains access to a list or task, the record's earlier operations are added to their feed then. When they lose access, a "forget" entry is added instead. A device reads its user's feed from where it left off, so a pull never re-checks access over the whole log.
 - Merging is newest-wins per field, as described in [Offline use](../features/app/offline.md). Text merging for notes in v2 uses a CRDT library (e.g. Yjs or Loro).
 - Each operation separates its content from its routing metadata, so content can be encrypted in v2 without changing what the server routes on. From v1, the plaintext metadata is exactly the list under "Visible to the server" in [End-to-end encryption](end-to-end-encryption.md): record IDs, the owning account, each task's list, the two tasks a link joins, grants and roles, trash time, attachment records and sizes, and notification recipients. Everything else, including a link's kind and reason, is content. The server reads only metadata to route, authorize and do housekeeping.

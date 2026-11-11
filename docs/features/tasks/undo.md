@@ -10,7 +10,7 @@ After a change to a task, a notice offers Undo, which reverts that change.
 
 ## Design intent
 
-Mistaps on a phone are easy, and changes save without a Save step, so changes to tasks should be easy to take back (from a Todoist task: "undo last action" for mobile misclicks). #3 had an Undo toast for completing, written but later orphaned. Sync already records every change with its previous value (see [Task history](task-history.md)), so undo reapplies the previous values rather than keeping a separate undo stack.
+Mistaps on a phone are easy, and changes save without a Save step, so changes to tasks should be easy to take back (from a Todoist task: "undo last action" for mobile misclicks). #3 had an Undo toast for completing, written but later orphaned. Sync keeps every change in history (see [Current state and history](../../design-decisions/current-state-and-history.md)), so undo finds each field's previous value there and reapplies it, rather than keeping a separate undo stack.
 
 ## Rules
 
@@ -20,6 +20,7 @@ Mistaps on a phone are easy, and changes save without a Save step, so changes to
 - Undo only reverts the user's own change. If someone else, or another of the user's devices, has since changed the same field, that newer change is kept, and the user is told which parts couldn't be undone.
 - Undoing is itself a change: it is recorded in history and synced, and works offline.
 - Undo follows the same rules as making the change by hand. For example, undoing an unlink that would now create a cycle the user can see is rejected with the usual explanation.
+- Undoing an unlink creates a new link with the old link's kind and reason, since a removed link doesn't come back.
 - A shortcut undoes the most recent change while its notice is showing (see [Keyboard shortcuts](../app/keyboard-shortcuts.md)).
 
 ## Scenarios

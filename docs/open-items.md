@@ -20,10 +20,36 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
 
 ## Deferred past the thin slice
 
+- **Detecting concurrent edits**, for history's "overridden" and "double completion" flags (see [Task history](features/tasks/task-history.md)). The slice's history lists operations in clock order, without the flags. Options:
+  - **Parent operation ID:** each content operation names the operation it replaces, like a Git parent commit. Two operations with the same parent are concurrent. Adds one field to the operation format.
+  - **What the author had seen:** each operation records the last feed position its device had applied. Feed positions are numbered per person, so this breaks on shared tasks unless the server translates them.
+  - **Vector clocks:** exact, but each operation carries a counter per device.
+
 - **Breached-password check** at sign-up (see [Account details](features/account/user-validation.md)). The slice checks length only. Options:
   - **Allow the password if Have I Been Pwned can't be reached**, logging a warning. Self-hosted servers without internet still work.
   - **Refuse sign-up if it can't be reached.** Strict, but self-hosters without outbound internet couldn't sign anyone up.
   - **Make it a server setting**, on by default, so self-hosters without internet can turn it off.
+
+## Current state and history: open questions
+
+From an audit of every spec against [Current state and history](design-decisions/current-state-and-history.md) on 2026-11-11. Clear-cut fixes were applied; these need a decision.
+
+- **Permanently deleted vs edited offline.** [Delete a task](features/tasks/delete-task.md) asks the user whether to recreate a permanently deleted task that a device edited. But the [Error contract](design-decisions/error-contract.md) says clients can't tell a deleted record from one they lost access to. Options: drop the special prompt and show every not-found change under "couldn't sync", where copying it as a new task is the same as recreating; or add a separate "deleted" code, which reveals that the record once existed.
+- **Permanently deleting one end of a link.** Options: keep the link's operations in the surviving task's history, showing "a deleted task"; or purge them with the deleted task.
+- **Importing history.** [Import and export](features/app/import-export.md) exports history, but imported records get new IDs, and old operations carry old IDs, authors and clocks. Options: export history as a read-only archive and start fresh history on import; import it as "imported history" attached to the new IDs; or leave history out of the export.
+- **Deleting a comment.** If its operations stay in history, its text stays readable there, which contradicts "gone for everyone" in [Comments](features/tasks/comments.md). Options: treat deleting a comment as permanent deletion (purging its history); or keep it in history, visible to anyone who can see the task's history. Also decide whether comment changes appear in task history at all.
+- **Which records are removed, trashed or permanently deleted.** Decide per type, in each spec: comments, attachments (history shows the name and size but the file is gone), tags (deleting a tag has no rules yet; is tagging a record or a set field on the task?), statuses (do trashed tasks count as "in use"?), subtasks (records or a field?), saved presets, reminders, in-app notifications, and invitations and invite links (server-only, deleted outright?).
+- **Recurring tasks.** Completing and skipping are both field changes, so history can't tell them apart. Options: an explicit completion or skip field, or an occurrence record per completion. Also: two offline completions of an "after completion" task may compute different next dates.
+- **Trash in the graph rules.** [Delete a task](features/tasks/delete-task.md) and [Next up](features/dependencies/next-up.md) cover blocking and cycles; say how redundancy and loop flags treat trashed tasks.
+- **Lists in the Trash** are permanently deleted after 30 days, which purges their tasks and all their history. Say so in [Lists](features/organization/lists.md).
+- **Deleting an account**, or deleting a non-paying account's data ([Billing](features/account/billing.md)), is permanent deletion. Decide whether the user's changes in the history of other people's tasks stay, attributed to "a deleted user" as their comments are.
+- **"The owner can see that they left"** ([Sharing](features/app/sharing.md)): the grant is gone from current state, so say where this shows, e.g. a sharing panel built from grant history, or a notification.
+- **Assignment becoming free text** when the assignee loses access ([Assignment](features/organization/assignment.md)): decide who writes that change, since from v2 the server can't write content, or show it at display time instead.
+- **Backup restores** "reapply later deletions where possible" ([Server backups](design-decisions/server-backups.md)), but permanent deletion leaves no history to reapply. Options: keep a minimal deletion log (record ID and time) outside history; or accept that restores can bring deleted records back. Also say that backups keep purged history until they expire.
+- **Purging devices.** Permanent deletion needs a feed entry that makes devices delete the record's history too, not just hide it (a "forget" does both today). Not needed in the slice.
+- **Compaction** ("may be needed later", [Offline first](design-decisions/offline-first.md)) must not drop operations that task history, undo or metrics need.
+- **v2 encryption:** after re-keying, older history is under older keys, so new collaborators and recovery through a collaborator need those keys too. Belongs with the cryptographic design below.
+- **v2 federation:** permanent deletion, purges and forgetting must reach other servers' copies. And when an editor takes over a list, its history moves with it, possibly incomplete, since their server only has what its own users could see.
 
 ## Follow-ups from plan 1
 

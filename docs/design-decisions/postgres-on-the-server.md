@@ -2,7 +2,7 @@
 
 ## Context
 
-The server stores the sync operation log forever, the sharing grants, accounts and sessions, and attachment metadata (see [Custom sync](custom-sync.md)). It checks each operation against the grants and pushes changes to open apps. Devices store their copy in SQLite. #1 to #3 used Postgres. Self-hosting must stay simple, with documented backup and restore (see [Self-hosting](self-hosting.md) and [Server backups](server-backups.md)).
+The server stores the sync operation log, the sharing grants, accounts and sessions, and attachment metadata (see [Custom sync](custom-sync.md)). It checks each operation against the grants and pushes changes to open apps. Devices store their copy in SQLite. #1 to #3 used Postgres. Self-hosting must stay simple, with documented backup and restore (see [Self-hosting](self-hosting.md) and [Server backups](server-backups.md)).
 
 ## Decision
 

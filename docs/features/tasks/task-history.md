@@ -19,7 +19,7 @@ Offline sync and sharing mean several people and devices can change a task concu
 - Changes that were overridden by a conflicting edit, or that duplicated another change, are kept and shown as such.
 - Changes made concurrently on different devices or by different people are flagged (e.g. a double completion).
 - Each completion of a recurring task is recorded (see [Recurring tasks](../scheduling/recurring-tasks.md)).
-- Anyone who can view the task can see its history. History entries about tasks or links the user can't see are not shown (see [Sharing](../app/sharing.md)).
+- Anyone who can view the task can see its history. History entries about tasks or links the user can't see are not shown (see [Sharing](../app/sharing.md)). Entries about a removed link are shown to anyone who can now see both of its tasks.
 - History is never deleted while the task exists. Permanently deleting the task deletes its history.
 - History feeds metrics such as cycle time (v2). Where they are shown is decided then.
 

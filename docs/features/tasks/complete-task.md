@@ -19,7 +19,7 @@ Completing a task is the most frequent action, so it should be one tap with imme
 - Completing a task cancels its pending reminders.
 - Completing a task may unblock its postrequisites. Marking it incomplete blocks them again.
 - The completion time is recorded.
-- Completed tasks are hidden by default, and kept as history rather than deleted. They can be shown with a filter.
+- Completed tasks are hidden by default, and kept rather than deleted. They can be shown with a filter.
 - A task with incomplete hard prerequisites can still be completed, because plans change and a prerequisite can turn out to be unnecessary. The user is warned first, and can complete or unlink those prerequisites at the same time. Incomplete soft prerequisites give no warning (see [Soft dependencies](../dependencies/soft-dependencies.md)).
 
 ## Scenarios
