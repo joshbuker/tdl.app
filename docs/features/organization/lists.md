@@ -1,6 +1,6 @@
 # Lists
 
-Status: Proposed
+Status: Specified
 Release: v1
 Related: [Create a task](../tasks/create-task.md), [Sharing](../app/sharing.md), [IDs, not titles](../../design-decisions/ids-not-titles.md)
 
@@ -23,7 +23,7 @@ Lists were in every attempt as the folder-style grouping, with Inbox as the catc
 - A list has an icon, chosen from a predefined set. There is a default icon. The set is chosen with the stack (see [Open items](../../open-items.md)).
 - Lists can be reordered. Each user orders their own lists, including lists shared with them.
 - Each list shows its count of next-up tasks.
-- The user's current default list cannot be deleted.
+- Only a list's owner can delete it (see [Sharing](../app/sharing.md)). The user's current default list cannot be deleted.
 - Deleting a list moves it and all its tasks to the Trash (see [Delete a task](../tasks/delete-task.md)). Restoring the list restores its tasks. Restoring one of its tasks also restores the list, so only someone who can restore the list (its owner) can restore tasks from a trashed list.
 
 ## Scenarios

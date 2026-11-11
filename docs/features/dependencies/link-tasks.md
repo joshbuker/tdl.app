@@ -1,6 +1,6 @@
 # Link tasks
 
-Status: Proposed
+Status: Specified
 Release: v1
 Related: [Next up](next-up.md), [Delete a task](../tasks/delete-task.md), [Dependency graph with dates](../../design-decisions/dependency-graph-with-dates.md), [Soft dependencies](soft-dependencies.md)
 

@@ -1,6 +1,6 @@
 # Delete a task
 
-Status: Proposed
+Status: Specified
 Release: v1
 Related: [Link tasks](../dependencies/link-tasks.md), [Sharing](../app/sharing.md)
 

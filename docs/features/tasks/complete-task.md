@@ -1,6 +1,6 @@
 # Complete a task
 
-Status: Proposed
+Status: Specified
 Release: v1
 Related: [Next up](../dependencies/next-up.md), [Completion before statuses](../../design-decisions/completion-before-statuses.md), [Soft dependencies](../dependencies/soft-dependencies.md), [Personalization](../app/personalization.md)
 

@@ -1,8 +1,8 @@
 # Schedule
 
-Status: Proposed
+Status: Specified
 Release: v1
-Related: [Dependency graph with dates](../../design-decisions/dependency-graph-with-dates.md), [Deadlines](deadlines.md), [Auto-scheduler](auto-scheduler.md), [Calendar view](../views/calendar-view.md)
+Related: [Dependency graph with dates](../../design-decisions/dependency-graph-with-dates.md), [Floating dates, zoned times](../../design-decisions/floating-dates-zoned-times.md), [Deadlines](deadlines.md), [Auto-scheduler](auto-scheduler.md), [Calendar view](../views/calendar-view.md)
 
 ## Summary
 
@@ -17,7 +17,7 @@ The schedule says when the user intends to do a task. Views such as Today or Upc
 ## Rules
 
 - A task's date, time and duration are each optional, and can be set in any combination, except that a time needs a date. A time without a date is only allowed on a [recurring task](recurring-tasks.md) (e.g. "every day at 9") or as part of a time window for the [Auto-scheduler](auto-scheduler.md).
-- Dates are interpreted in the user's time zone.
+- A date without a time is a calendar date (e.g. 2026-11-17), the same for everyone with access, and shown with its day of the week. It counts as today when it is today in the viewer's time zone. A date with a time records the time zone it was set in, and is shown in each viewer's own time zone (see [Floating dates, zoned times](../../design-decisions/floating-dates-zoned-times.md)).
 - A scheduled date in the past is a missed plan, not overdue. "Overdue" applies only to [Deadlines](deadlines.md). Missed tasks stay in Today while they are next up, showing the date they were scheduled for.
 - Changing one part of the schedule keeps the others.
 - A task can be scheduled earlier than one of its prerequisites. Both dates are kept, and the task shows a warning that a prerequisite is scheduled after it.
@@ -58,11 +58,19 @@ The schedule says when the user intends to do a task. Views such as Today or Upc
 - Then it is shown in Today with yesterday's date
 - And it is not marked overdue
 
-### Dates follow the user's time zone
+### A date is the same date for everyone
 
-- Given "alice"'s time zone is Asia/Tokyo
-- And she schedules "Call plumber" for Thursday
-- Then it is in Today from midnight Thursday Tokyo time
+- Given "alice" in Tokyo and "bob" in New York can both see "Call plumber"
+- When "alice" schedules it for Thursday 2026-11-19
+- Then both see it scheduled for Thursday 2026-11-19
+- And it is in each one's Today on that date in their own time zone
+
+### Times are shown in each viewer's time zone
+
+- Given "alice" in Tokyo and "bob" in New York can both see "Team call"
+- When "alice" schedules it for Thursday 2026-11-19 at 15:00
+- Then "alice" sees Thursday 15:00
+- And "bob" sees Thursday 01:00
 
 ### Scheduled before a prerequisite
 

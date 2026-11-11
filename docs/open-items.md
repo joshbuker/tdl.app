@@ -10,7 +10,6 @@ Like the rest of `docs/`, this file is evergreen: remove an item once it's resol
 
 ## Next steps
 
-- Promote the core specs to Specified: link tasks, next up, create, complete and delete tasks, lists, and schedule. Their review is done, apart from this rework of sharing.
 - Choose a stack, recording the choice as a design decision (see "Stack constraints" below).
 
 ## Cross-cutting questions
@@ -38,6 +37,7 @@ Requirements gathered so far that the stack must support:
 - Server-to-server request signing (HTTP Message Signatures) and WebFinger lookup.
 - Web, Android, iOS and desktop.
 - Good tooling for both unit and acceptance tests.
+- Calendar dates and RFC 9557 zoned date-times, with the IANA time zone database (see [Floating dates, zoned times](design-decisions/floating-dates-zoned-times.md)).
 - An open-licence icon set that works on every platform (e.g. Material Symbols or Lucide), for list icons.
 
 See also [Lessons from previous attempts](lessons-from-previous-attempts.md).

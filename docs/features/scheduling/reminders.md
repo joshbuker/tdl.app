@@ -14,6 +14,7 @@ Built twice: #1 sent web push notifications to every subscribed device, and #2 s
 
 ## Rules
 
+- Dates and times work as in [Schedule](schedule.md): a date alone is a calendar date, and a time records its time zone (see [Floating dates, zoned times](../../design-decisions/floating-dates-zoned-times.md)).
 - A task can have any number of reminders, each with its own date and time, separate from the task's schedule.
 - A reminder can be set relative to the scheduled time (e.g. "at the scheduled time" or "15 minutes before"). A relative reminder moves when the schedule changes, including to each new occurrence of a [recurring task](recurring-tasks.md). A reminder set at a fixed date and time stays put.
 - A reminder fires once at its time.

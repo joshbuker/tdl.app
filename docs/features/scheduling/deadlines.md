@@ -16,6 +16,7 @@ In a dependency graph, a deadline on a task is effectively a deadline on everyth
 
 ## Rules
 
+- Dates and times work as in [Schedule](schedule.md): a date alone is a calendar date, and a time records its time zone (see [Floating dates, zoned times](../../design-decisions/floating-dates-zoned-times.md)).
 - An incomplete task past its deadline is shown as overdue.
 - A task's implied deadline is the latest time it can finish and still leave room for the incomplete tasks it blocks: for each task it directly blocks, that task's effective deadline minus its duration, and the earliest of those. Tasks without a duration count as zero. It is computed from the graph, not stored.
 - A task's effective deadline is the earlier of its own deadline and its implied deadline.
