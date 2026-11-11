@@ -14,7 +14,7 @@ The stack is chosen (each choice is a record in `design-decisions/`), except the
 
 Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from its plans, in order. It proves sync, auth and sharing end to end before features, per [Lessons from previous attempts](lessons-from-previous-attempts.md).
 
-1. [Foundation and domain](superpowers/plans/2026-11-10-thin-slice-1-foundation-and-domain.md): done on branch `thin-slice-1-foundation` (reviewed, CI green). Deferred review findings are listed below under "Follow-ups from plan 1".
+1. [Foundation and domain](superpowers/plans/2026-11-10-thin-slice-1-foundation-and-domain.md): done and merged into `main` (reviewed, CI green). Deferred review findings are listed below under "Follow-ups from plan 1".
 2. Sync and server: write this plan next, against plan 1's real interfaces in `packages/domain`.
 3. Apps (Quasar web, Android, Electron) and the homelab deployment: write this plan once plan 2 is done. When setting up Quasar, follow its [guide for AI agents](https://quasar.dev/start/ai-agents), which covers Claude Code.
 
