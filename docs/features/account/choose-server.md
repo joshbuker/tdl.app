@@ -6,7 +6,7 @@ Related: [Login](login.md), [Federation](../app/federation.md)
 
 ## Summary
 
-On the login screen, the user can enter which server to connect to, so the app works with a self-hosted backend.
+Before logging in or signing up, the user chooses the official server or a self-hosted one, so the app works with any TDL App server.
 
 ## Design intent
 
@@ -21,23 +21,36 @@ Check both apps' current behavior before implementing.
 
 ## Rules
 
-- The server address defaults to the official one.
-- The chosen server is remembered.
+- The first screen asks whether to use the official server (tdl.app) or a self-hosted one.
+- Choosing Official goes straight to logging in or signing up on tdl.app.
+- Choosing Self-hosted asks for the server's address first. The app checks that it is a TDL App server running a compatible version, and says why if it isn't. Then it goes to logging in or signing up on that server.
+- The chosen server is remembered, so next time the app opens straight to logging in on it. The user can go back and choose a different server.
 
 ## Scenarios
 
-### Log in to a self-hosted server
+### Official server
 
-- When the user enters a server address and valid credentials for it
-- Then they are logged in to that server
+- When the user opens the app for the first time and chooses Official
+- Then they are asked to log in or sign up on tdl.app
 
-### Official server by default
+### Self-hosted server
 
-- When the user opens the login screen for the first time
-- Then the server address is the official one
+- When the user chooses Self-hosted and enters "tdl.example.com"
+- Then they are asked to log in or sign up on tdl.example.com
+- And after logging in with valid credentials, they are logged in to that server
+
+### Not a TDL App server
+
+- When the user chooses Self-hosted and enters an address that isn't a TDL App server
+- Then they are told it isn't a TDL App server, and stay on the address step
+
+### Incompatible server version
+
+- When the user enters the address of a TDL App server running an incompatible version
+- Then they are told the server's version isn't supported by this app
 
 ### Chosen server is remembered
 
-- Given the user logged in to a self-hosted server, then logged out
-- When they open the login screen again
-- Then the server address is still their self-hosted server
+- Given the user logged in to "tdl.example.com", then logged out
+- When they open the app again
+- Then it opens on logging in to "tdl.example.com", with an option to choose a different server
