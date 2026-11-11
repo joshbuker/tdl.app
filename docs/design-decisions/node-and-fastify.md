@@ -12,7 +12,7 @@ It runs as one container next to Postgres (see [Postgres on the server](postgres
 
 ## Decision
 
-The server runs on **Node.js** (26 LTS at the time of writing, with Temporal built in) using the **Fastify** HTTP framework, with its websocket support for live updates. The OpenAPI document is generated from the routes' schemas, which come from the shared domain package.
+The server runs on **Node.js** (26 LTS at the time of writing, with Temporal built in) using the **Fastify** HTTP framework, with its websocket support for live updates. The OpenAPI document is generated from the routes' schemas, which are shared with the clients (see [Zod schemas](zod-schemas.md)).
 
 ## Alternatives considered
 
@@ -24,5 +24,5 @@ The server runs on **Node.js** (26 LTS at the time of writing, with Temporal bui
 ## Consequences
 
 - A mature, well-documented framework with a large plugin ecosystem.
-- Routes need schemas to generate OpenAPI and validate input, so the schema library must have a Fastify adapter (e.g. for Zod).
+- Routes need schemas to generate OpenAPI and validate input, so the schema library must have a Fastify adapter (see [Zod schemas](zod-schemas.md)).
 - Node LTS upgrades are part of regular dependency updates.
