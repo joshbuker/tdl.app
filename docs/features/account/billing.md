@@ -26,6 +26,8 @@ Billing belongs to each server, and apps can connect to any server, many of whic
 - Admin accounts always have free access.
 - An admin can give any account free access, and take it away.
 - Free trials are a server setting: on or off, and how long they last (e.g. 7 or 30 days). They can only be turned on while billing is on. With trials on, new accounts start with a trial and full access, unless they have free access.
+- A trial never asks for payment details, so nobody is charged for a trial they forgot about. Users can add payment details during the trial, but are still asked to confirm when it ends before anything is charged. Until they confirm, the account is non-paying.
+- When an account becomes read-only, the user sees one dialog explaining why, that the account is now read-only, and how to pay to keep editing. The same dialog confirms payment at the end of a trial.
 - Sign-up invite links and email invites can be set to give free access, so the account starts with it (see [Sign up](sign-up.md)).
 - Payments go through a payment provider. The server never stores card details.
 - Payment happens on the server's website only. The phone and desktop apps never sell anything, since the server they connect to may not charge at all. They show the account's status, and where store rules allow, link to the server's website to pay.
@@ -55,6 +57,13 @@ Billing belongs to each server, and apps can connect to any server, many of whic
 - Given trials last 7 days, and "carol" signed up 7 days ago without paying
 - Then her account is read-only
 - And she can still export her data
+
+### Payment details added during a trial still need confirming
+
+- Given "carol" added her card during her trial
+- When the trial ends
+- Then she isn't charged yet, and is asked to confirm that she wants to pay and keep editing
+- And until she confirms, her account is read-only
 
 ### Read-only until paying again
 

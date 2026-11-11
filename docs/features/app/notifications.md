@@ -27,7 +27,7 @@ Once tasks are shared, people need to know when something needs them without che
 - People who can't see a task get no notifications about it.
 - The device that makes a change works out who to notify, and tells the server only whom to send to, with an encrypted body. Each person's notification settings are applied on their own devices.
 - Push notifications carry no readable content.
-- Self-hosted servers can't send pushes to the Android and iOS apps directly, since that needs the app publisher's credentials. They can opt in to a push relay run by tdl.app, which only ever sees encrypted payloads and device tokens. Without it, the apps get changes when they're open and sync, and reminders still fire, since they're scheduled on the device. The device decrypts what it needs to show (see [End-to-end encryption](end-to-end-encryption.md)).
+- Self-hosted servers can't send pushes to the Android and iOS apps directly, since that needs the app publisher's credentials. They can opt in to a push relay run by tdl.app, free of charge, which only ever sees encrypted payloads and device tokens. Without it, the apps get changes when they're open and sync, and reminders still fire, since they're scheduled on the device. The device decrypts what it needs to show (see [End-to-end encryption](end-to-end-encryption.md)).
 
 ## Scenarios
 
@@ -54,7 +54,3 @@ Once tasks are shared, people need to know when something needs them without che
 - Given "carol" turned off completion notifications
 - When "bob" completes a task "carol" participates in
 - Then "carol" gets no notification for it
-
-## Open questions
-
-- Running the push relay has a cost (Apple and Google don't charge for sending pushes, but the relay has to be hosted). Options: free for all self-hosted servers, free up to a usage limit, or a paid add-on.
