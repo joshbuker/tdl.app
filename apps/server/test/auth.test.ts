@@ -97,8 +97,31 @@ describe('accounts', () => {
       });
     });
 
-    test('a missing name gives 422 required', async () => {
-      expect(await invalid({ ...signUpInput('bob'), name: undefined })).toEqual({ code: 'invalid', errors: [{ field: 'name', code: 'required' }] });
+    test('fields other than the account details give 422 unknown-field, and nothing is stored', async () => {
+      expect(await invalid({ ...signUpInput('mallory'), displayUsername: 'alice', image: 'https://example.com/x.png' })).toEqual({
+        code: 'invalid',
+        errors: [
+          { field: 'displayUsername', code: 'unknown-field' },
+          { field: 'image', code: 'unknown-field' },
+        ],
+      });
+      const users = await server.db.execute<{ n: number }>(sql`select count(*)::int as n from "user" where username = 'mallory'`);
+      expect(users.rows).toEqual([{ n: 0 }]);
+    });
+
+    test('the stored name comes from the validated given and family names, never from the client', async () => {
+      const token = await signUp(server.app, 'frank', { name: 'x'.repeat(10_000), givenName: '  Frank ', familyName: ' Example  ' });
+      const me = await server.app.inject({ url: '/me', headers: auth(token) });
+      expect(me.json()).toMatchObject({ username: 'frank' });
+      const result = await server.db.execute<{ name: string; display_username: string; given_name: string; family_name: string; image: string | null }>(
+        sql`select name, display_username, given_name, family_name, image from "user" where username = 'frank'`,
+      );
+      expect(result.rows).toEqual([{ name: 'Frank Example', display_username: 'frank', given_name: 'Frank', family_name: 'Example', image: null }]);
+    });
+
+    test('a sign-up without a name is accepted', async () => {
+      const response = await signUpRequest(server.app, { ...signUpInput('grace'), name: undefined });
+      expect(response.statusCode).toBe(200);
     });
 
     test('Better Auth sees the client IP from Fastify, not from a client-sent header', async () => {

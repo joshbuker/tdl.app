@@ -28,6 +28,11 @@ export const CLIENT_IP_HEADER = 'x-tdl-client-ip';
 const SIGN_UP_PATH = '/sign-up/email';
 const SIGN_IN_PATHS = new Set(['/sign-in/email', '/sign-in/username']);
 
+// The only keys a sign-up body may have. Better Auth and its plugins would store others as given
+// (e.g. `displayUsername`, `image`), bypassing our validation, so any other key is rejected.
+// `name` is accepted for compatibility but ignored: the stored name comes from the validated names.
+const SIGN_UP_KEYS = new Set(['email', 'password', 'name', 'username', 'givenName', 'familyName', 'acceptTerms']);
+
 // The Better Auth endpoints exposed over HTTP. Everything else (e.g. update-user, which would bypass
 // our validation, or revoke-session, which would skip the tombstone) answers 404.
 const EXPOSED = new Set([`POST ${SIGN_UP_PATH}`, 'POST /sign-in/email', 'POST /sign-in/username', 'POST /sign-out']);
@@ -61,8 +66,9 @@ export function createAuth(config: Config, deps: AuthDeps) {
     const result = validateAccountInput(input);
     const mistyped = new Set(typeErrors.map((e) => e.field));
     const errors = [...typeErrors, ...(result.ok ? [] : result.errors.filter((e) => !mistyped.has(e.field)))];
-    // Better Auth's display name; the client sends it, and Better Auth requires a string.
-    if (typeof fields.name !== 'string') errors.push({ field: 'name', code: fields.name === undefined || fields.name === null ? 'required' : 'invalid' });
+    for (const key of Object.keys(fields)) {
+      if (!SIGN_UP_KEYS.has(key)) errors.push({ field: key, code: 'unknown-field' });
+    }
     if (fields.acceptTerms !== true) errors.push({ field: 'acceptTerms', code: 'required' });
 
     const invalidFields = new Set(errors.map((e) => e.field));
@@ -139,7 +145,11 @@ export function createAuth(config: Config, deps: AuthDeps) {
         if (ctx.path !== SIGN_UP_PATH) return;
         const result = await validateSignUp(ctx.body);
         if (!result.ok) throw new APIError('UNPROCESSABLE_ENTITY', { code: 'invalid', errors: result.errors });
-        return { context: { body: { ...(ctx.body as Record<string, unknown>), ...result.value } } };
+        // Built from validated values only. Better Auth merges this over the original body, which
+        // validateSignUp has checked holds no other keys.
+        const { username, email, password, givenName, familyName } = result.value;
+        const body = { username, displayUsername: username, email, password, givenName, familyName, name: `${givenName} ${familyName}` };
+        return { context: { body } };
       }),
     },
     databaseHooks: {
