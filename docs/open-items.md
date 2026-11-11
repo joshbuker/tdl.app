@@ -18,6 +18,13 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
 2. Sync and server: write this plan next, against plan 1's real interfaces in `packages/domain`.
 3. Apps (Quasar web, Android, Electron) and the homelab deployment: write this plan once plan 2 is done. When setting up Quasar, follow its [guide for AI agents](https://quasar.dev/start/ai-agents), which covers Claude Code.
 
+## Deferred past the thin slice
+
+- **Breached-password check** at sign-up (see [Account details](features/account/user-validation.md)). The slice checks length only. Options:
+  - **Allow the password if Have I Been Pwned can't be reached**, logging a warning. Self-hosted servers without internet still work.
+  - **Refuse sign-up if it can't be reached.** Strict, but self-hosters without outbound internet couldn't sign anyone up.
+  - **Make it a server setting**, on by default, so self-hosters without internet can turn it off.
+
 ## Follow-ups from plan 1
 
 Minor findings from plan 1's final review, deferred. Fix each when its area is next touched:

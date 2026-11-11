@@ -7,6 +7,7 @@
 ## Decision
 
 - Each logged-in device has its own session, stored on the server.
+- The web app, served from the server's own origin, sends its session in an httpOnly cookie, which page scripts can't read. Android, Electron and other native clients send it as a bearer token, kept in the platform's secure storage. #3 used bearer tokens everywhere, held in the web app's JavaScript state.
 - A session lasts until the device logs out or the session is revoked. It has no fixed expiry while in use, and expires after 90 days without syncing.
 - Settings list every logged-in device with when it last synced, and the user can revoke any of them, which logs it out and stops it syncing at once (see [Login](../features/account/login.md)).
 - Changing the password revokes every other session (see [Change password](../features/account/change-password.md)).

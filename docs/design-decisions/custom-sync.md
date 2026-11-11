@@ -25,6 +25,7 @@ Sync is our own small protocol, built on well-established parts:
 
 - Each change is an operation on one field of one record, stamped with a hybrid logical clock (a timestamp that orders changes correctly across devices). Operations wait in an outbox on the device until the server accepts them.
 - The server checks each operation against the grants, gives accepted ones a sequence number, stores them forever, and tells open apps over a websocket that there is something new. Devices pull everything after the last sequence number they have.
+- Each user has their own feed (fan-out on write). When the server accepts an operation, it adds it to the feed of every user who can see the record. When a user gains access to a list or task, the record's earlier operations are added to their feed then. When they lose access, a "forget" entry is added instead. A device reads its user's feed from where it left off, so a pull never re-checks access over the whole log.
 - Merging is newest-wins per field, as described in [Offline use](../features/app/offline.md). Text merging for notes in v2 uses a CRDT library (e.g. Yjs or Loro).
 - Each operation separates its content from its routing metadata, so content can be encrypted in v2 without changing what the server routes on. From v1, the plaintext metadata is exactly the list under "Visible to the server" in [End-to-end encryption](end-to-end-encryption.md): record IDs, the owning account, each task's list, the two tasks a link joins, grants and roles, trash time, attachment records and sizes, and notification recipients. Everything else, including a link's kind and reason, is content. The server reads only metadata to route, authorize and do housekeeping.
 - Devices store data in SQLite: the official SQLite WebAssembly build on the web, a Capacitor SQLite plugin on Android and iOS, and native SQLite in Electron. A reactive store (e.g. TanStack DB) sits on top for the UI.
@@ -34,6 +35,7 @@ Sync, login and sharing are proven first, as a thin slice from device to server 
 
 ## Alternatives considered
 
+- **One shared log, filtered on every pull**: less storage, but every pull re-checks access over many operations, and working out what became visible since the device's last pull is the hard part of partial sync.
 - **Syncular**: Apache-2.0, server-authoritative, works with SQLite or Postgres, with column encryption and Yjs support. The closest design, but pre-1.0, one maintainer and nine months old. Its spec is used as a blueprint, and it can be revisited if it matures.
 - **PowerSync**: mature and Apache-2.0 since November 2026, but needs Postgres with replication plus its own service, gates some write features to paid tiers, and has no path to encryption or federation.
 - **Jazz 2**: MIT, with server-enforced permissions and history, but alpha, with data imports between versions.
