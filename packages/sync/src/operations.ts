@@ -1,5 +1,6 @@
 import type { FieldError, Id } from '@tdl/domain';
 import { z } from 'zod';
+import { HLC_PATTERN } from './hlc.ts';
 
 export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
@@ -10,7 +11,7 @@ export const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
 // Any RFC 9562 UUID (lowercase hex, 8-4-4-4-12); ids are UUIDv7 in practice.
 const uuidSchema: z.ZodType<Id> = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
 
-const hlcSchema = z.string().min(1);
+const hlcSchema = z.string().regex(HLC_PATTERN);
 
 export const recordRefSchema = z.object({
   type: z.enum(['list', 'task', 'link', 'grant']),

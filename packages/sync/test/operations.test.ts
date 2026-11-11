@@ -43,6 +43,12 @@ describe('operationSchema', () => {
     expect(operationSchema.safeParse({ ...createTask, record: { type: 'task', id: 'nope' } }).success).toBe(false);
   });
 
+  test('a malformed hlc fails', () => {
+    for (const bad of ['z', '9', '', '9999999999999999:000000:node-a', '000001700000000:0:node-a', '000001700000000:000000:']) {
+      expect(operationSchema.safeParse({ ...createTask, hlc: bad }).success).toBe(false);
+    }
+  });
+
   test('a non-UUID operation id fails', () => {
     expect(operationSchema.safeParse({ ...createTask, id: 'nope' }).success).toBe(false);
   });

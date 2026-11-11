@@ -77,4 +77,20 @@ describe('createClock', () => {
       }),
     );
   });
+
+  test('receive throws on malformed or out-of-range remotes', () => {
+    const clock = createClock('node-a', () => 1_000);
+    for (const bad of ['z', '9', '', '9999999999999999:000000:b', '000000000000001:1000000:b', '-00000000000001:000000:b', '000000000000001::b']) {
+      expect(() => {
+        clock.receive(bad);
+      }).toThrow();
+    }
+  });
+
+  test('tick advances the millisecond when the counter would exceed 999999', () => {
+    const clock = createClock('node-a', () => 1_000);
+    clock.receive('000000000001000:999999:node-b');
+    const next = clock.tick();
+    expect(next).toBe('000000000001001:000000:node-a');
+  });
 });
