@@ -27,7 +27,8 @@ Once tasks are shared, people need to know when something needs them without che
 - People who can't see a task get no notifications about it.
 - The device that makes a change works out who to notify, and tells the server whom to send to. The server checks that each recipient can see the task. Each person's notification settings are applied on their own devices.
 - Push notifications show the task's title and what happened. From v2, they carry only an encrypted body, and the device decrypts what it needs to show. (v2)
-- Self-hosted servers can't send pushes to the Android and iOS apps directly, since that needs the app publisher's credentials. They can opt in to a push relay run by tdl.app, free of charge, which sees only payloads and device tokens, and keeps neither. From v2 the payloads are encrypted. Without it, the apps get changes when they're open and sync, and reminders still fire, since they're scheduled on the device.
+- Self-hosted servers can't send pushes to the Android and iOS apps directly, since that needs the app publisher's credentials. They can opt in to a push relay run by tdl.app, free of charge, which forwards each notification and its device token to Google or Apple and keeps neither. From v2 the payloads are encrypted. Without it, the apps get changes when they're open and sync, and reminders still fire, since they're scheduled on the device.
+- Android phones can also receive pushes through UnifiedPush (e.g. with ntfy), with no Google services and no relay. The app uses it when a UnifiedPush distributor is installed.
 
 ## Scenarios
 
@@ -84,7 +85,7 @@ Once tasks are shared, people need to know when something needs them without che
 - When "bob" completes it
 - Then "carol" is not notified
 
-### Pushes carry no readable content
+### Pushes carry no readable content (v2)
 
 - When "bob" is notified that he was assigned "Paint fence"
 - Then the push sent through the server contains no title
@@ -96,3 +97,9 @@ Once tasks are shared, people need to know when something needs them without che
 - When "alice" assigns "Paint fence" to "bob"
 - Then he gets no push
 - And he sees the notification once he opens the app and it syncs
+
+### Push without Google services
+
+- Given bob's Android phone has no Google services and has a UnifiedPush distributor installed
+- When "alice" assigns "Paint fence" to "bob"
+- Then he gets a push about "Paint fence"

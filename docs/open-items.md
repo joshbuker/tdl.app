@@ -10,7 +10,7 @@ Like the rest of `docs/`, this file is evergreen: remove an item once it's resol
 
 ## Next steps
 
-- Finish choosing the stack, recording each choice as a design decision. Decided so far: [TypeScript everywhere](design-decisions/typescript-everywhere.md), [Electron desktop app](design-decisions/electron-desktop.md) through Quasar's Electron mode, [Vue and Quasar](design-decisions/vue-and-quasar.md), [Custom sync](design-decisions/custom-sync.md), [Postgres on the server](design-decisions/postgres-on-the-server.md), [Better Auth](design-decisions/better-auth.md), a shared grant resolver (see [Container and item grants](design-decisions/container-and-item-grants.md)), [Node and Fastify](design-decisions/node-and-fastify.md), [Drizzle](design-decisions/drizzle.md), [UUIDv7 IDs](design-decisions/uuidv7-ids.md), vue-i18n (see [Translations from day one](design-decisions/translations-from-day-one.md)), acceptance tests named after scenarios (see [Test-driven development](design-decisions/test-driven-development.md)), and end-to-end encryption moved to v2. Next: the plaintext metadata boundary and the push relay, then plan the thin end-to-end slice. Start from:
+- Finish choosing the stack, recording each choice as a design decision. Decided so far: [TypeScript everywhere](design-decisions/typescript-everywhere.md), [Electron desktop app](design-decisions/electron-desktop.md) through Quasar's Electron mode, [Vue and Quasar](design-decisions/vue-and-quasar.md), [Custom sync](design-decisions/custom-sync.md), [Postgres on the server](design-decisions/postgres-on-the-server.md), [Better Auth](design-decisions/better-auth.md), a shared grant resolver (see [Container and item grants](design-decisions/container-and-item-grants.md)), [Node and Fastify](design-decisions/node-and-fastify.md), [Drizzle](design-decisions/drizzle.md), [UUIDv7 IDs](design-decisions/uuidv7-ids.md), vue-i18n (see [Translations from day one](design-decisions/translations-from-day-one.md)), acceptance tests named after scenarios (see [Test-driven development](design-decisions/test-driven-development.md)), the [Push relay](design-decisions/push-relay.md) with UnifiedPush, the plaintext metadata boundary (see [Custom sync](design-decisions/custom-sync.md)), and end-to-end encryption moved to v2. Next: plan the thin end-to-end slice: sign up and log in, create a task offline on one device, sync it through the server to another, and share a list with a second user who sees changes live, on web, Android, iOS and desktop. Start from:
   - "Decisions to make with the stack" and "Stack constraints" below;
   - [Launch scope](design-decisions/launch-scope.md) and [Offline first](design-decisions/offline-first.md), which shape the stack most, and [End-to-end encryption](design-decisions/end-to-end-encryption.md), deferred to v2 but which v1 must leave room for;
   - the process lessons in [Lessons from previous attempts](lessons-from-previous-attempts.md): prove sync, auth and sharing with a thin end-to-end slice before building features.
@@ -70,12 +70,10 @@ Sources: earlier notes (titles in brackets) and Todoist tasks (marked "Todoist")
 
 Technical choices the specs leave open, to settle while choosing the stack:
 
-- **Plaintext metadata**: exactly which metadata the server can read to route sync and do housekeeping (a starting list is in [End-to-end encryption](design-decisions/end-to-end-encryption.md)).
 - **Payment provider** for web payments, decided before launch, behind our own payment interface built now. The apps don't sell anything (see [Billing](features/account/billing.md)); check app-store rules on linking out at launch. Options:
   - **Polar** (Apache-2.0): pay-what-you-want subscriptions with a minimum built in, and merchant of record (handles sales tax and VAT). About 4–5% plus 40–50¢ per payment.
   - **Stripe**: established, lowest fees, but its pay-what-you-want checkout doesn't do subscriptions, so it needs workarounds. Sales tax is ours to handle unless we use Stripe's merchant-of-record product.
   - **Paddle or Lemon Squeezy**: merchants of record, but no confirmed support for pay-what-you-want subscriptions.
-- **Push relay** for self-hosted servers: opt-in and free (see [Notifications](features/app/notifications.md)).
 
 ## Decisions for v2
 
