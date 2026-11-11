@@ -10,7 +10,7 @@ Admins manage a server's accounts and settings, without ever being able to read 
 
 ## Design intent
 
-Every server, tdl.app or self-hosted, needs someone to invite people, give free access, and set limits. Because all user data is end-to-end encrypted, admins manage accounts, not content (see [End-to-end encryption](../app/end-to-end-encryption.md)).
+Every server, tdl.app or self-hosted, needs someone to invite people, give free access, and set limits. Admins manage accounts, not content. From v2 all user data is end-to-end encrypted, so they couldn't read it anyway (see [End-to-end encryption](../app/end-to-end-encryption.md)), and v1 keeps admin tools to account details so nothing has to be taken away then.
 
 ## Rules
 
@@ -21,7 +21,7 @@ Every server, tdl.app or self-hosted, needs someone to invite people, give free 
   - give or take away free access (see [Billing](billing.md));
   - disable an account, which logs it out everywhere and blocks logging in until re-enabled;
   - delete an account, after confirming, with the same handling of shared lists as when a user deletes their own (see [Delete account](delete-account.md));
-  - reset a user's second factors, so they can log in with their password and set them up again. This doesn't unlock their data;
+  - reset a user's second factors, so they can log in with their password and set them up again. From v2, this doesn't unlock their data;
   - manage server settings: sign-up mode, email verification, billing, trials, the minimum price, attachment limits, and using the push relay (see [Notifications](../app/notifications.md)).
 - Every admin action is recorded in an admin log, showing who did what and when. Admins can read the log but not change it.
 - The server tells admins which features are unavailable because of its setup (e.g. no email configured, so no email invites or reset by email).

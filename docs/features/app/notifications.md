@@ -25,9 +25,9 @@ Once tasks are shared, people need to know when something needs them without che
 - Each kind of notification can be turned on or off in settings, separately for push and the in-app list. All are on by default.
 - Opening a notification opens the task (or invitation) it is about, and marks it read.
 - People who can't see a task get no notifications about it.
-- The device that makes a change works out who to notify, and tells the server only whom to send to, with an encrypted body. Each person's notification settings are applied on their own devices.
-- Push notifications carry no readable content.
-- Self-hosted servers can't send pushes to the Android and iOS apps directly, since that needs the app publisher's credentials. They can opt in to a push relay run by tdl.app, free of charge, which only ever sees encrypted payloads and device tokens. Without it, the apps get changes when they're open and sync, and reminders still fire, since they're scheduled on the device. The device decrypts what it needs to show (see [End-to-end encryption](end-to-end-encryption.md)).
+- The device that makes a change works out who to notify, and tells the server whom to send to. The server checks that each recipient can see the task. Each person's notification settings are applied on their own devices.
+- Push notifications show the task's title and what happened. From v2, they carry only an encrypted body, and the device decrypts what it needs to show. (v2)
+- Self-hosted servers can't send pushes to the Android and iOS apps directly, since that needs the app publisher's credentials. They can opt in to a push relay run by tdl.app, free of charge, which sees only payloads and device tokens, and keeps neither. From v2 the payloads are encrypted. Without it, the apps get changes when they're open and sync, and reminders still fire, since they're scheduled on the device.
 
 ## Scenarios
 

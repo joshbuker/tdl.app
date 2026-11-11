@@ -14,7 +14,7 @@ MCP is the common way for AI assistants (such as Claude) to use outside tools. A
 
 ## Rules
 
-- The MCP server runs on the user's own computer, not on the TDL App server, because only the user's devices can decrypt their data (see [End-to-end encryption](end-to-end-encryption.md)). It is built into the desktop app, and also available as a small standalone program.
+- The MCP server runs on the user's own computer, not on the TDL App server, so it keeps working once only the user's devices can decrypt their data (see [End-to-end encryption](end-to-end-encryption.md), v2). It is built into the desktop app, and also available as a small standalone program.
 - It connects to the user's TDL App server with an API token (or the desktop app's own login), which sets read-only or read-write access and can be revoked like any token (see [API access](api-access.md)).
 - The MCP server acts as the user, with exactly their access, and follows every rule the app does. Graph rules, such as rejecting a cycle the user can see, return the same explanations as the app.
 - It offers tools to search and read tasks and lists, see next up, and create, edit, complete, schedule and link tasks.

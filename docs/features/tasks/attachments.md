@@ -10,12 +10,12 @@ Files and photos can be attached to tasks and comments.
 
 ## Design intent
 
-Attachments were one of the gaps in Todoist the author cared about (notes: Top Priorities, Todoist Features and TDL App). They're encrypted on the device like everything else, so the server stores them without being able to read them (see [End-to-end encryption](../app/end-to-end-encryption.md)).
+Attachments were one of the gaps in Todoist the author cared about (notes: Top Priorities, Todoist Features and TDL App). From v2 they're encrypted on the device like everything else, so the server stores them without being able to read them (see [End-to-end encryption](../app/end-to-end-encryption.md)).
 
 ## Rules
 
 - Any file can be attached to a task or a comment. Photos can be taken from the camera on devices that have one.
-- Attachments are encrypted on the device before upload, and readable by everyone who can see the task or comment.
+- Attachments are readable by everyone who can see the task or comment. From v2 they are encrypted on the device before upload. (v2)
 - Images show a preview. Other files show their name, type and size.
 - The server admin sets a maximum size per file and storage per account. The user is told before uploading if a file is too big or would go over their storage.
 - Attachments are downloaded when opened, and stay available offline afterwards. Attachments added offline upload when back online.

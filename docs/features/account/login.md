@@ -16,7 +16,7 @@ The user logs in with a username and password, and can log out.
 
 - Login uses a username or email address with a password, or a passkey without a password (see [Multi-factor authentication](multi-factor-authentication.md)). Usernames and email addresses are both unique, so either one identifies the account.
 - If the user has multi-factor authentication set up, a second step is required (see [Multi-factor authentication](multi-factor-authentication.md)).
-- A user who forgot their password recovers access as described in [End-to-end encryption](../app/end-to-end-encryption.md).
+- A user who forgot their password can reset it with a link sent to their email address. The link is single use and expires after an hour. Resetting the password logs out every session. From v2, recovery works as described in [End-to-end encryption](../app/end-to-end-encryption.md) instead.
 - Wrong credentials are rejected without saying which one was wrong.
 - Repeated failed attempts slow down further attempts, per account and per network address, with increasing delays. The account is never locked outright, so nobody can lock someone else out by guessing.
 - Each device has its own session, which lasts until it logs out or is revoked, and expires after 90 days without syncing. Settings list every logged-in device with when it last synced, and the user can revoke any of them (see [Server-side sessions](../../design-decisions/server-side-sessions.md)).
@@ -43,6 +43,13 @@ The user logs in with a username and password, and can log out.
 
 - When a user logs in with the wrong password
 - Then login fails with a generic message
+
+### Reset a forgotten password
+
+- Given "alice" forgot her password
+- When she asks for a reset link and sets a new password from the email
+- Then she can log in with the new password, and her tasks are there
+- And her other sessions are logged out
 
 ### Not logged in
 

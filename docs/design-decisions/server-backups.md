@@ -9,7 +9,7 @@ Users trust the server with their only copy of shared lists, and devices only ho
 - tdl.app has automated database and attachment backups, kept off the server, and restoring from them is tested regularly.
 - Self-hosting documentation explains how to back up and restore a server, and the server makes that easy (e.g. one command to export a consistent backup).
 - Backups are in place before anyone other than the author has data on tdl.app.
-- Backups contain only what the server holds, which is end-to-end encrypted, so they reveal no user content (see [End-to-end encryption](end-to-end-encryption.md)).
+- Backups contain user content until end-to-end encryption arrives in v2, so they are encrypted before leaving the server, and access to them is restricted. From v2 they contain only encrypted data (see [End-to-end encryption](end-to-end-encryption.md)).
 
 ## Alternatives considered
 

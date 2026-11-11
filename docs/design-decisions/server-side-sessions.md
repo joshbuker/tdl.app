@@ -2,7 +2,7 @@
 
 ## Context
 
-#3 used server-side sessions that could be revoked, rather than self-contained tokens that stay valid until they expire. In attempt #4, apps are offline first and end-to-end encrypted, so each device stays logged in for a long time and holds the user's keys. A lost device must be cut off quickly.
+#3 used server-side sessions that could be revoked, rather than self-contained tokens that stay valid until they expire. In attempt #4, apps are offline first, so each device stays logged in for a long time and holds a copy of the user's data (and from v2, their keys). A lost device must be cut off quickly.
 
 ## Decision
 
@@ -20,4 +20,4 @@
 ## Consequences
 
 - Every sync request checks the session on the server.
-- A revoked device keeps what it already synced, which is why revoking someone's access also changes keys for shared data (see [End-to-end encryption](end-to-end-encryption.md)).
+- A revoked device keeps what it already synced. From v2, revoking someone's access also changes keys for shared data (see [End-to-end encryption](end-to-end-encryption.md)).

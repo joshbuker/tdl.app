@@ -19,6 +19,6 @@ TDL App is meant to be self-hostable (see [Self-hosting](self-hosting.md)), and 
 
 ## Consequences
 
-- Every dependency must be compatible with AGPLv3.
+- Every dependency must be compatible with AGPLv3, and free with every feature we use. Open-core or freemium libraries (paid tiers, paid scaling) and source-available licences (FSL, BSL, SSPL) are ruled out, since self-hosting must be free and complete.
 - The minimum price, and the payment provider, are decided before launch.
 - Billing is part of v1 (see [Launch scope](launch-scope.md)).

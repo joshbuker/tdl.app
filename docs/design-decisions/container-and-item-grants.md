@@ -15,10 +15,12 @@ Access is granted on **containers** (lists) and on **items** (single tasks), the
 - Tags are shared the same way, on their own: a tag shows on a task only to people with access to both, and sharing a task asks which of its tags to share (see [Tags](../features/organization/tags.md)).
 - Trash is a shared state on the record, not a place it moves to (see [Delete a task](../features/tasks/delete-task.md)).
 
-Permissions are worked out by following these relationships (person to list, person to task, task to list), as in Google's Zanzibar and its open-source descendants (SpiceDB, OpenFGA). Whether to use such a library is a stack choice.
+Permissions are worked out by following these relationships (person to list, person to task, task to list), as in Google's Zanzibar and its open-source descendants (SpiceDB, OpenFGA). This is done by a small resolver of our own in the shared domain package, so the device and the server run exactly the same checks. The server's check is the one that counts; the device's is for offline use and instant feedback. Its model follows OpenFGA's, so moving to OpenFGA later stays possible.
 
 ## Alternatives considered
 
+- **An authorization service** (OpenFGA or SpiceDB): proven, but a separate service on every server, and devices would still need their own copy of the logic to work offline.
+- **CASL**: runs on device and server, but is built for role rules rather than relationships, so grant inheritance would be hand-written anyway.
 - **List-only sharing** (earlier drafts, Todoist, TickTick, Things, Linear): simpler, but needed the special rules above, and couldn't share one task without sharing its whole list.
 - **Item grants that can also restrict** (Notion's restricted sub-pages): a task could be hidden from some of its list's collaborators. More flexible, but "who can see this?" would have to be checked per task, with more hidden-link cases.
 - **A task in several lists** (Asana's multi-homing): visible to anyone who can see any of its lists. More powerful, but gives each task several homes, which complicates counts, moving and deleting.

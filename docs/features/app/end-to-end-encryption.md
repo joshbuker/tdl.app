@@ -1,7 +1,7 @@
 # End-to-end encryption
 
 Status: Proposed
-Release: v1
+Release: v2
 Related: [End-to-end encryption](../../design-decisions/end-to-end-encryption.md), [Sharing](sharing.md), [Sign up](../account/sign-up.md), [Login](../account/login.md), [Multi-factor authentication](../account/multi-factor-authentication.md)
 
 ## Summary

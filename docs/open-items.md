@@ -10,10 +10,10 @@ Like the rest of `docs/`, this file is evergreen: remove an item once it's resol
 
 ## Next steps
 
-- Choose a stack, recording the choice as a design decision. The specs are ready for it: no v1 spec has open questions. Start from:
+- Finish choosing the stack, recording each choice as a design decision. Decided so far: [TypeScript everywhere](design-decisions/typescript-everywhere.md), [Electron desktop app](design-decisions/electron-desktop.md), [Vue and Quasar](design-decisions/vue-and-quasar.md), [Custom sync](design-decisions/custom-sync.md), [Postgres on the server](design-decisions/postgres-on-the-server.md), [Better Auth](design-decisions/better-auth.md), a shared grant resolver (see [Container and item grants](design-decisions/container-and-item-grants.md)), [Node and Fastify](design-decisions/node-and-fastify.md), [Drizzle](design-decisions/drizzle.md), and end-to-end encryption moved to v2. Next: ID scheme, plaintext metadata boundary, push relay, i18n and test tooling. Also decide whether Quasar's CLI builds the Capacitor and Electron apps, or only provides components. Start from:
   - "Decisions to make with the stack" and "Stack constraints" below;
-  - [Launch scope](design-decisions/launch-scope.md), [Offline first](design-decisions/offline-first.md) and [End-to-end encryption](design-decisions/end-to-end-encryption.md), which shape the stack most;
-  - the process lessons in [Lessons from previous attempts](lessons-from-previous-attempts.md): prove sync, auth and encryption with a thin end-to-end slice before building features.
+  - [Launch scope](design-decisions/launch-scope.md) and [Offline first](design-decisions/offline-first.md), which shape the stack most, and [End-to-end encryption](design-decisions/end-to-end-encryption.md), deferred to v2 but which v1 must leave room for;
+  - the process lessons in [Lessons from previous attempts](lessons-from-previous-attempts.md): prove sync, auth and sharing with a thin end-to-end slice before building features.
 
 ## Ideas for later
 
@@ -70,13 +70,17 @@ Sources: earlier notes (titles in brackets) and Todoist tasks (marked "Todoist")
 
 Technical choices the specs leave open, to settle while choosing the stack:
 
-- **Cryptographic design**: the password protocol (e.g. OPAQUE or SRP), the key hierarchy and re-keying when someone is removed, the device-approval protocol, and deriving keys from passkeys (WebAuthn PRF, not yet on every platform). How a list invite link hands over keys (e.g. in the link's fragment) and how users can verify each other's keys.
-- **Sync engine and plaintext metadata**: a CRDT library or a custom operation log, how finely records are encrypted, and exactly which metadata the server can read to route sync and do housekeeping.
-- **Language for shared domain logic**: it must run on the four app platforms, the server, and the standalone MCP program and API client library.
+- **Plaintext metadata**: exactly which metadata the server can read to route sync and do housekeeping (a starting list is in [End-to-end encryption](design-decisions/end-to-end-encryption.md)).
 - **ID scheme** that can later carry federation.
-- **Authorization**: whether to use a Zanzibar-style library (see [Container and item grants](design-decisions/container-and-item-grants.md)).
-- **Payment provider** for web payments. The apps don't sell anything (see [Billing](features/account/billing.md)); check app-store rules on linking out at launch.
+- **Payment provider** for web payments, decided before launch, behind our own payment interface built now. The apps don't sell anything (see [Billing](features/account/billing.md)); check app-store rules on linking out at launch. Options:
+  - **Polar** (Apache-2.0): pay-what-you-want subscriptions with a minimum built in, and merchant of record (handles sales tax and VAT). About 4–5% plus 40–50¢ per payment.
+  - **Stripe**: established, lowest fees, but its pay-what-you-want checkout doesn't do subscriptions, so it needs workarounds. Sales tax is ours to handle unless we use Stripe's merchant-of-record product.
+  - **Paddle or Lemon Squeezy**: merchants of record, but no confirmed support for pay-what-you-want subscriptions.
 - **Push relay** for self-hosted servers: opt-in and free (see [Notifications](features/app/notifications.md)).
+
+## Decisions for v2
+
+- **Cryptographic design**: the password protocol (e.g. OPAQUE or SRP), the key hierarchy and re-keying when someone is removed, the device-approval protocol, and deriving keys from passkeys (WebAuthn PRF, not yet on every platform). How a list invite link hands over keys (e.g. in the link's fragment) and how users can verify each other's keys.
 
 ## Stack constraints
 
@@ -94,12 +98,12 @@ Requirements gathered so far that the stack must support:
 - Scheduled local notifications on Android, iOS and desktop for reminders (the web app fires them only while open), and push notifications for everything else (see [Reminders](features/scheduling/reminders.md)).
 - A payment provider for pay-what-you-want subscriptions on tdl.app, optional on self-hosted servers (see [Billing](features/account/billing.md)).
 - Encrypted file storage for attachments, with per-file and per-account limits.
-- End-to-end encryption on every platform with well-reviewed libraries: per-user key pairs, per-list, task and tag keys shared with grants, a password protocol that never gives the server the key, and a client library for API users (see [End-to-end encryption](design-decisions/end-to-end-encryption.md)).
+- Room for end-to-end encryption in v2 on every platform with well-reviewed libraries: per-user key pairs, per-list, task and tag keys shared with grants, a password protocol that never gives the server the key, and a client library for API users (see [End-to-end encryption](design-decisions/end-to-end-encryption.md)). Sync must separate content from routing metadata from v1.
 - Passkeys (WebAuthn) for passwordless login and as a second factor, plus TOTP (see [Multi-factor authentication](features/account/multi-factor-authentication.md)).
 - Deep links that open the installed app from a web address (universal links and app links), falling back to the web app (see [Deep links](features/app/deep-links.md)).
 - Translation tooling that fails CI on missing or unused keys (see [Translations from day one](design-decisions/translations-from-day-one.md)).
-- Simple self-hosting: one server to deploy, with documented backup and restore (see [Self-hosting](design-decisions/self-hosting.md) and [Server backups](design-decisions/server-backups.md)).
-- Every dependency compatible with AGPLv3 (see [Licence and pricing](design-decisions/licence-and-pricing.md)).
+- Simple self-hosting: the server plus Postgres, as two containers, with documented backup and restore (see [Self-hosting](design-decisions/self-hosting.md) and [Server backups](design-decisions/server-backups.md)).
+- Every dependency compatible with AGPLv3, and free with every feature we use: no open-core or freemium libraries with paid tiers we'd need, no paid scaling, and no source-available licences (FSL, BSL, SSPL), so self-hosting stays free and complete (see [Licence and pricing](design-decisions/licence-and-pricing.md)).
 - An open-licence icon set that works on every platform (e.g. Material Symbols or Lucide), for list icons.
 
 See also [Lessons from previous attempts](lessons-from-previous-attempts.md).

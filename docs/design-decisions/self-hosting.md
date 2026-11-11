@@ -16,7 +16,7 @@ A self-hosted server is complete on its own. Two things depend on outside servic
 
 ## Consequences
 
-- The backend must be easy to deploy (e.g. a container image with documented configuration).
+- The backend must be easy to deploy (a container image plus Postgres, with a Compose file and documented configuration; see [Postgres on the server](postgres-on-the-server.md)).
 - Server-level settings such as invite-only mode (see `docs/features/account/sign-up.md`) are needed.
 - Clients must handle servers running different versions. Federation between servers requires the same major protocol version.
 - Users on different servers can share lists (see `docs/features/app/federation.md`), so servers must talk to each other: user addresses that include the server, and a server-to-server protocol. That protocol reuses device sync, with servers signing requests (see the federation spec).

@@ -19,7 +19,7 @@ Planned in Slipstream with its own file format (lists, tasks, links, dates, tags
 - Importing merges into the account: imported records are added with new IDs, never overwriting existing data, and links among imported tasks are preserved. Imported lists and tags are added as new ones, never matched to existing ones by name (see [IDs, not titles](../../design-decisions/ids-not-titles.md)). To start fresh, the user deletes their data first.
 - Imported links that form a loop are kept and flagged, as with loops from sync (see [Offline use](offline.md)).
 - Sharing is not imported: imported lists and tasks belong to the importing user and aren't shared.
-- Imported data is encrypted on the device like any other change.
+- Imported data is encrypted on the device like any other change. (v2)
 
 ## Scenarios
 

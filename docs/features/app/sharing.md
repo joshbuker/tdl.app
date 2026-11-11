@@ -25,7 +25,7 @@ Access is granted on lists and on single tasks, like folders and files in Google
   - **Commenter**: read, and comment (see [Comments](../tasks/comments.md)).
   - **Viewer**: read only. Can see comments but not add them.
   - **Outline**: can see that the task exists, how it is linked and whether it is complete, but not its title or any other details. Like free/busy in a shared calendar. Tasks a person can only see as an outline don't appear in their lists, presets or filters: they appear only as placeholders linked to tasks the person can see. They can't be linked to or assigned to that person. (v2)
-- Access to a list gives that access to all of its tasks. Granting access also shares the keys needed to read it (see [End-to-end encryption](end-to-end-encryption.md)).
+- Access to a list gives that access to all of its tasks. From v2, granting access also shares the keys needed to read it (see [End-to-end encryption](end-to-end-encryption.md)).
 - A person's access to a task is the highest of what its list gives them and what the task gives them. Grants only add access: a task can't be hidden from someone who can see its list.
 - The list owner manages who has access to the list and its tasks. Per list, the owner can also let the list's editors share single tasks. By default they can't. People with access to only a single task can't share it further.
 - People are invited by username, and accept or decline the invitation. The owner can also create an invite link to a list, which anyone with an account can use to join until it is revoked. Both ways set the role.
