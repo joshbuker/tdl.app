@@ -16,7 +16,7 @@ The schedule says when the user intends to do a task. Views such as Today or Upc
 
 ## Rules
 
-- A task's date, time and duration are each optional, and can be set in any combination, except that a time needs a date. A time without a date is only allowed on a [recurring task](recurring-tasks.md) (e.g. "every day at 9") or as part of a time window for the [Auto-scheduler](auto-scheduler.md).
+- A task's date, time and duration are each optional, and can be set in any combination, except that a time needs a date. A time without a date is only allowed on a [recurring task](recurring-tasks.md) (e.g. "every day at 9") or, in v2, as part of a time window for the [Auto-scheduler](auto-scheduler.md).
 - A date without a time is a calendar date (e.g. 2026-11-17), the same for everyone with access, and shown with its day of the week. It counts as today when it is today in the viewer's time zone. A date with a time records the time zone it was set in, and is shown in each viewer's own time zone (see [Floating dates, zoned times](../../design-decisions/floating-dates-zoned-times.md)).
 - A scheduled date in the past is a missed plan, not overdue. "Overdue" applies only to [Deadlines](deadlines.md). Missed tasks stay in Today while they are next up, showing the date they were scheduled for.
 - Changing one part of the schedule keeps the others.

@@ -23,11 +23,12 @@ Everything works without a connection. Changes made offline sync when the device
 - Conflicting edits are resolved automatically when there is a clear answer, and the user is asked when there isn't:
   - Edits to different fields of the same task are both kept.
   - When only one side changed a field, or both changed it to the same value, that value is kept.
-  - Edits to non-overlapping parts of a task's notes are merged.
-  - When both sides changed the same field to different values, or overlapping parts of the notes, the task is marked as conflicting and the user chooses which version to keep. Until then, the most recent edit is shown.
-- Conflicts are resolved per user: the user whose device detects the conflict while syncing (because the other change reached the server first) is the one asked. This applies on shared lists too.
+  - Edits to non-overlapping parts of a task's notes are merged (v2). Until then, notes are treated like any other field.
+  - When both sides changed the same field to different values, the most recent edit is kept. Both versions stay in the task's history, so the other can be restored by hand.
+  - Instead of keeping the most recent edit, the task is marked as conflicting and the user chooses which version to keep. Until then, the most recent edit is shown (v2).
+- Conflicts are resolved per user: the user whose device detects the conflict while syncing (because the other change reached the server first) is the one asked. This applies on shared lists too (v2).
 - Every synced change is kept in the task's history (see [Task history](../tasks/task-history.md)), including changes that were overridden or that duplicated another. Changes made concurrently on different devices are flagged as such, e.g. a task completed twice by two people while offline shows both completions, flagged as a double completion.
-- When changes that are each valid on their own together break a graph rule, both are kept rather than one being undone. A loop formed this way is flagged to each user who can see all of it (see [Sharing](sharing.md)), and a link made redundant this way is shown as redundant (see [Prune redundant links](../dependencies/prune-redundant-links.md)).
+- When changes that are each valid on their own together break a graph rule, both are kept rather than one being undone. A loop formed this way is flagged to each user who can see all of it (see [Sharing](sharing.md)), and a link made redundant this way is shown as redundant (see [Link tasks](../dependencies/link-tasks.md)).
 - When a task is deleted on one device and edited on another, the delete wins and the edit is applied to the task in the Trash, so nothing is lost and it can be restored.
 
 ## Scenarios
@@ -51,11 +52,12 @@ Everything works without a connection. Changes made offline sync when the device
 - When both devices sync
 - Then "Paint fence" is titled "Paint the fence" and is due Friday
 
-### Conflicting edits ask the user
+### Conflicting edits keep the most recent
 
-- Given one offline device renames "Paint fence" to "Paint the fence" and another renames it to "Stain fence"
+- Given one offline device renames "Paint fence" to "Paint the fence", and later another renames it to "Stain fence"
 - When both devices sync
-- Then the task is marked as conflicting, and the user can choose "Paint the fence" or "Stain fence"
+- Then the task is called "Stain fence"
+- And its history shows both renames
 
 ### Links that together form a cycle
 

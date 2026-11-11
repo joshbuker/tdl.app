@@ -1,7 +1,7 @@
 # Move postrequisites and prerequisites
 
 Status: Proposed
-Release: v1
+Release: v2
 Related: [Link tasks](link-tasks.md)
 
 ## Summary

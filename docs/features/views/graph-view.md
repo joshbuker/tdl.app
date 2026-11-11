@@ -18,7 +18,7 @@ Partly built in #3 as a force-directed graph. Nodes were sized by how many tasks
 - Node size reflects how many incomplete tasks it blocks.
 - Completed, next-up and blocked tasks look different.
 - Clicking a node opens the task.
-- The graph is for viewing, not editing. Links are made in task details and [Quick sort](../dependencies/quick-sort.md).
+- The graph is for viewing, not editing. Links are made in task details, and in v2 also with [Quick sort](../dependencies/quick-sort.md).
 
 ## Scenarios
 

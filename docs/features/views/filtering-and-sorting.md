@@ -18,7 +18,7 @@ When tasks from several lists are shown together, each one shows its list, so th
 
 ## Rules
 
-- Pages are List, Focus, Tree, Graph and Calendar, plus Board in v2 (see [Board view](board-view.md)). Any preset can be used with any page.
+- Pages are List, Tree, Graph and Calendar, plus Focus and Board in v2 (see [Focus](focus.md) and [Board view](board-view.md)). Any preset can be used with any page.
 - When the tasks shown span several lists, each task shows its list (icon and name) as a chip, on every page.
 - Presets:
   - **All Tasks**: every task.

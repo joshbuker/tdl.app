@@ -1,7 +1,7 @@
 # Quick sort
 
 Status: Proposed
-Release: v1
+Release: v2
 Related: [Link tasks](link-tasks.md), [Next up](next-up.md)
 
 ## Summary

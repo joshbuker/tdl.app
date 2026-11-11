@@ -1,7 +1,7 @@
 # Insert a task between
 
 Status: Proposed
-Release: v1
+Release: v2
 Related: [Link tasks](link-tasks.md), [Soft dependencies](soft-dependencies.md)
 
 ## Summary

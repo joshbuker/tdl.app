@@ -1,7 +1,7 @@
 # Triage review
 
 Status: Proposed
-Release: v1
+Release: v2
 Related: [Schedule](schedule.md), [Assignment](../organization/assignment.md), [Link tasks](../dependencies/link-tasks.md)
 
 ## Summary

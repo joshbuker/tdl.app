@@ -1,7 +1,7 @@
 # Focus
 
 Status: Proposed
-Release: v1
+Release: v2
 Related: [Filtering and sorting](filtering-and-sorting.md), [Next up](../dependencies/next-up.md)
 
 ## Summary

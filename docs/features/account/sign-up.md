@@ -6,7 +6,7 @@ Related: [Login](login.md), [Request access](request-access.md), [Account detail
 
 ## Summary
 
-Anyone can create an account, unless the server is in invite-only mode, in which case visitors [request access](request-access.md) instead.
+Anyone can create an account, unless the server is in invite-only mode, in which case visitors need a sign-up invite link from an admin. In v2 they can also [request access](request-access.md).
 
 ## Design intent
 
@@ -15,7 +15,8 @@ Anyone can create an account, unless the server is in invite-only mode, in which
 ## Rules
 
 - Sign-up asks for the account details in [Account details](user-validation.md) and acceptance of the terms.
-- In invite-only mode, sign-up is not available and visitors are directed to request access.
+- In invite-only mode, sign-up is not available, and visitors are told so. In v2 they are directed to request access instead.
+- A server admin can create sign-up invite links, either single use or usable until revoked. Opening one allows signing up even in invite-only mode.
 - A new account must verify its email address before it can be used. A server admin can turn this off, e.g. on a self-hosted server without email set up.
 
 ## Scenarios
@@ -30,10 +31,24 @@ Anyone can create an account, unless the server is in invite-only mode, in which
 
 - Given the server is in invite-only mode
 - When a visitor tries to sign up
-- Then they are offered the request access form instead
+- Then they are told sign-up is closed
 
 ### Email must be verified
 
 - Given "carol" has just signed up
 - When she tries to use the app before opening the verification email
 - Then she is asked to verify her email first
+
+### Sign up with an invite link
+
+- Given the server is in invite-only mode
+- And an admin created a single-use sign-up invite link
+- When "carol" opens the link and signs up with valid details
+- Then she has an account
+- And the link no longer works
+
+### Revoked invite link
+
+- Given an admin revoked a sign-up invite link
+- When a visitor opens it
+- Then they are told the link is no longer valid

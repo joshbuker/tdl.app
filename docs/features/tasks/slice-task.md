@@ -1,7 +1,7 @@
 # Slice a task
 
 Status: Proposed
-Release: v1
+Release: v2
 Related: [Link tasks](../dependencies/link-tasks.md)
 
 ## Summary

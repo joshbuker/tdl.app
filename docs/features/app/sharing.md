@@ -28,7 +28,7 @@ Access is granted on lists and on single tasks, like folders and files in Google
 - A person's access to a task is the highest of what its list gives them and what the task gives them. Grants only add access: a task can't be hidden from someone who can see its list.
 - The list owner manages who has access to the list and its tasks. Per list, the owner can also let the list's editors share single tasks. By default they can't. People with access to only a single task can't share it further.
 - People are invited by username, and accept or decline the invitation. The owner can also create an invite link to a list, which anyone with an account can use to join until it is revoked. Both ways set the role.
-- Users on different servers can share with each other (see [Federation](federation.md)).
+- Users on different servers can share with each other (v2, see [Federation](federation.md)).
 - The owner can transfer ownership of a list to an editor, who becomes the owner of the list and its tasks. The previous owner becomes an editor.
 
 ### Shared tasks

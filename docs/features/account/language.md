@@ -13,7 +13,7 @@ The user chooses the app's language.
 
 ## Rules
 
-- Available languages: English and Japanese. English is the default and fallback.
+- Available languages: English, and Japanese (v2). English is the default and fallback. With only English at launch, all text still goes through translations from day one.
 - The choice is saved on the account.
 - All user-facing text, including error messages and date formats, is translated.
 

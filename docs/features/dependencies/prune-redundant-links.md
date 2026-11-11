@@ -1,7 +1,7 @@
 # Prune redundant links
 
 Status: Proposed
-Release: v1
+Release: v2
 Related: [Link tasks](link-tasks.md)
 
 ## Summary

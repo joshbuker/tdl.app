@@ -1,7 +1,7 @@
 # Federation
 
 Status: Proposed
-Release: v1
+Release: v2
 Related: [Sharing](sharing.md), [Choose a server](../account/choose-server.md), [Self-hosting](../../design-decisions/self-hosting.md), [Offline use](offline.md)
 
 ## Summary
@@ -9,6 +9,8 @@ Related: [Sharing](sharing.md), [Choose a server](../account/choose-server.md), 
 Users on different TDL App servers can share lists and tasks and work on them together, as if they were on the same server.
 
 ## Design intent
+
+Deferred from v1, which supports self-hosting without cross-server sharing. IDs and the sync protocol must still be able to carry federation, so v2 can add it without a redesign.
 
 Self-hosting shouldn't mean isolation. Someone running their own server should still be able to share a list with a friend on the official server. Without federation, self-hosting forces a choice between owning your data and collaborating.
 

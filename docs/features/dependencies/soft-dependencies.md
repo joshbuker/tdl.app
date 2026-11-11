@@ -12,7 +12,7 @@ A link can be soft ("I'd like to do this first") rather than hard ("this must be
 
 Planned since Slipstream: "Have a distinction between hard pre/post requisites and soft (this MUST be done, vs I would LIKE this to be done before/after). Automatically drop stale soft requirements over time?" #3's relationship table was built with types to allow this (`TaskHardRequisite` was the only type), but soft links were never implemented.
 
-Here, hard and soft are an attribute of the one link between two tasks, not separate kinds of relationship. Soft links share one graph with hard links, and the graph rules treat every link the same, so ordering stays well defined and the rules stay simple. Switching a link between hard and soft is meant to be quick. They never expire on their own, because nothing in the graph changes without the user asking (see [Prune redundant links](prune-redundant-links.md)).
+Here, hard and soft are an attribute of the one link between two tasks, not separate kinds of relationship. Soft links share one graph with hard links, and the graph rules treat every link the same, so ordering stays well defined and the rules stay simple. Switching a link between hard and soft is meant to be quick. They never expire on their own, because nothing in the graph changes without the user asking (see [Link tasks](link-tasks.md)).
 
 ## Rules
 

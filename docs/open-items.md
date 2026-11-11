@@ -12,10 +12,6 @@ Like the rest of `docs/`, this file is evergreen: remove an item once it's resol
 
 - Choose a stack, recording the choice as a design decision (see "Stack constraints" below).
 
-## Cross-cutting questions
-
-- **Launch scope.** Web, Android, iOS and desktop, offline-first editing, list sharing across servers, MFA and natural-language entry are all planned for launch. Consider an MVP cut before choosing a stack, marking deferred specs `Release: v2` (see [Features](features/README.md)). Federation and offline-first are the heaviest.
-
 ## Design decisions to write
 
 These choices from earlier attempts have written reasoning in `historical-versions/` and look worth keeping, but have no decision record yet:
@@ -33,7 +29,7 @@ Requirements gathered so far that the stack must support:
 
 - One shared implementation of domain logic (graph rules, filtering and sorting, sync) running on both device and server.
 - Offline sync with IDs generated on the device.
-- A sync protocol that serves both devices and other servers, with field-level change tracking, automatic merges plus user-resolved conflicts, a text merge for notes, and full change history (see [Offline use](features/app/offline.md) and [Federation](features/app/federation.md)).
+- A sync protocol that serves both devices and other servers, with field-level change tracking, automatic merges, full change history, and later user-resolved conflicts and a text merge for notes (v2) (see [Offline use](features/app/offline.md) and [Federation](features/app/federation.md)).
 - Server-to-server request signing (HTTP Message Signatures) and WebFinger lookup.
 - Web, Android, iOS and desktop.
 - Good tooling for both unit and acceptance tests.

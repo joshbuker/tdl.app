@@ -8,7 +8,7 @@
 
 Separate **how** tasks are shown from **which** tasks are shown:
 
-- **Pages** are presentation layers: List, Focus, Tree, Graph, Calendar, and Board in v2.
+- **Pages** are presentation layers: List, Tree, Graph, Calendar, and Focus and Board in v2.
 - **Presets** are named filter and sort combinations: All Tasks, Inbox, Today, Upcoming, Shared with me, one per list, and any the user saves.
 - Any preset works with any page.
 
