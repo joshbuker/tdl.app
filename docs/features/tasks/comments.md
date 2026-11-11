@@ -19,6 +19,7 @@ A commenter role sits between editor and viewer, so someone can take part in the
 - People with commenter access or above can add comments to a task. Viewers can read comments but not add them. Outline access (v2) shows no comments.
 - A comment records who wrote it and when.
 - The author can edit or delete their own comment. An edited comment shows that it was edited. The task's owner can also delete any comment.
+- Deleting a comment deletes it permanently, including its text in history. The task's history keeps only that a comment was deleted, by whom and when (see [Current state and history](../../design-decisions/current-state-and-history.md)).
 - New comments notify the task's assignee, its participants, and everyone who has commented on it, except the author (see [Assignment](../organization/assignment.md)). Mentioning someone with access notifies them too.
 - Comments are synced and work offline like any other change (see [Offline use](../app/offline.md)).
 - Comments can have attachments (see [Attachments](attachments.md)).

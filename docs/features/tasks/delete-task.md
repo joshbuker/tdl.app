@@ -21,8 +21,8 @@ The user deletes a task, which moves it to the Trash. Tasks in the Trash can be 
 - Restoring a task puts it back as it was, including its links.
 - Being in the Trash is a shared state of the task, not a place it moves to. A trashed task is in the Trash for everyone who can see it, and anyone who could delete it can restore it or permanently delete it (see [Sharing](../app/sharing.md)).
 - Items in the Trash are permanently deleted 30 days after being trashed. The user can also empty the Trash at any time, which permanently deletes only the items they trashed themselves.
-- If a device that was offline syncs changes to a task that has since been permanently deleted, the user is asked whether to recreate the task with their changes or let it stay deleted. They can also put off the choice, leaving the changes in the "couldn't sync" view (see [Offline use](../app/offline.md)).
-- Permanently deleting a task removes its links and its history (see [Task history](task-history.md)). Doing it by hand (from the Trash, or by emptying the Trash) asks for confirmation first. Linked tasks remain and are not reconnected to each other, so deleting a middle task unblocks what came after it.
+- If a device that was offline syncs changes to a task that has since been permanently deleted, the changes go to the "couldn't sync" view, like any change the server refuses (see [Offline use](../app/offline.md)). From there the user can copy them into a new task or discard them. The server answers "not found" whether the task was deleted or the user lost access, so it reveals nothing (see [Error contract](../../design-decisions/error-contract.md)).
+- Permanently deleting a task removes its links and its history (see [Task history](task-history.md)). The linked tasks keep the history of those links, showing "a deleted task" in place of the task's title. Doing it by hand (from the Trash, or by emptying the Trash) asks for confirmation first. Linked tasks remain and are not reconnected to each other, so deleting a middle task unblocks what came after it.
 
 ## Scenarios
 
@@ -68,8 +68,8 @@ The user deletes a task, which moves it to the Trash. Tasks in the Trash can be 
 - Given "Buy milk" was permanently deleted while the user's laptop was offline
 - And the laptop edited "Buy milk"
 - When the laptop syncs
-- Then the user is asked whether to recreate "Buy milk" with their changes or let it stay deleted
-- And if they put off the choice, the changes stay under "couldn't sync"
+- Then the changes are shown under "couldn't sync"
+- And the user can copy them into a new task, or discard them
 
 ### Trashed tasks don't appear in search
 

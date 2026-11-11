@@ -13,7 +13,7 @@ Planned in Slipstream with its own file format (lists, tasks, links, dates, tags
 
 ## Rules
 
-- Export produces a JSON file containing everything the user can see, decrypted on the device: tasks with all their fields (notes, subtasks, schedules, deadlines, priority, completion, assignment, reminders, recurrence), links, lists, tags, comments, history, settings, and which lists and tasks are shared with whom. Attachments are included as files alongside it.
+- Export produces a JSON file containing everything the user can see, decrypted on the device: tasks with all their fields (notes, subtasks, schedules, deadlines, priority, completion, assignment, reminders, recurrence), links, lists, tags, comments, settings, and which lists and tasks are shared with whom. Attachments are included as files alongside it. History isn't exported: imported records get new IDs, so past changes can't be carried over (see [Current state and history](../../design-decisions/current-state-and-history.md)).
 - An export can be imported without loss.
 - An import is validated before anything is changed. If any part is invalid, nothing is imported.
 - Importing merges into the account: imported records are added with new IDs, never overwriting existing data, and links among imported tasks are preserved. Imported lists and tags are added as new ones, never matched to existing ones by name (see [IDs, not titles](../../design-decisions/ids-not-titles.md)). To start fresh, the user deletes their data first.
