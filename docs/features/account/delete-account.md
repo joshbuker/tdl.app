@@ -18,7 +18,7 @@ Users must be able to leave and take nothing behind. Lists they share are also o
 - Before deleting, the user is offered an export (see [Import and export](../app/import-export.md)).
 - For each list the user owns that is shared with others, they can transfer ownership to one of its editors. Anything not transferred is deleted for everyone, after a warning that names those lists and who will lose them.
 - Lists and tasks they own that aren't shared are deleted, along with their settings, tokens and login factors.
-- Comments they wrote on other people's tasks stay, attributed to a deleted user. Their assignments elsewhere become free text with their name (see [Assignment](../organization/assignment.md)).
+- Comments they wrote on other people's tasks stay, attributed to a deleted user, and so do their changes in those tasks' history. Their assignments elsewhere become free text with their name (see [Assignment](../organization/assignment.md)).
 - Their access to lists and tasks others shared with them is removed.
 - Deletion can't be undone. The username can't be used again for 30 days.
 

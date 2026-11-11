@@ -34,15 +34,8 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
 
 From an audit of every spec against [Current state and history](design-decisions/current-state-and-history.md) on 2026-11-11. Clear-cut fixes were applied; these need a decision.
 
-- **Concurrent changes to a task's tags.** A task's tags are one field (see [Tags](features/organization/tags.md)), so if two people change a task's tags while offline, the newest change replaces the other: one person's added or removed tag is lost. Options:
-  - **Accept it**: tag edits rarely collide, and history shows both changes.
-  - **Merge the field as a set**: sync records each tag added or removed instead of the whole list, so concurrent changes combine. More complex than newest-wins.
-  - **A record per tagging**, like links: concurrent changes never clash.
 - **Which records are removed or permanently deleted**, for the remaining types: saved presets, reminders, in-app notifications, and invitations and invite links (server-only, deleted outright?). Also decide whether comment changes appear in task history at all.
-- **Recurring tasks.** Completing and skipping are both field changes, so history can't tell them apart. Options: an explicit completion or skip field, or an occurrence record per completion. Also: two offline completions of an "after completion" task may compute different next dates.
-- **Trash in the graph rules.** [Delete a task](features/tasks/delete-task.md) and [Next up](features/dependencies/next-up.md) cover blocking and cycles; say how redundancy and loop flags treat trashed tasks.
 - **Lists in the Trash** are permanently deleted after 30 days, which purges their tasks and all their history. Say so in [Lists](features/organization/lists.md).
-- **Deleting an account**, or deleting a non-paying account's data ([Billing](features/account/billing.md)), is permanent deletion. Decide whether the user's changes in the history of other people's tasks stay, attributed to "a deleted user" as their comments are.
 - **"The owner can see that they left"** ([Sharing](features/app/sharing.md)): the grant is gone from current state, so say where this shows, e.g. a sharing panel built from grant history, or a notification.
 - **Assignment becoming free text** when the assignee loses access ([Assignment](features/organization/assignment.md)): decide who writes that change, since from v2 the server can't write content, or show it at display time instead.
 - **Backup restores** "reapply later deletions where possible" ([Server backups](design-decisions/server-backups.md)), but permanent deletion leaves no history to reapply. Options: keep a minimal deletion log (record ID and time) outside history; or accept that restores can bring deleted records back. Also say that backups keep purged history until they expire.
@@ -78,7 +71,7 @@ Sources: earlier notes (titles in brackets) and Todoist tasks (marked "Todoist")
 - **Time tracking and billing**: logged time, minimum billable blocks, per-client invoicing, hour budgets with follow-up tasks. [2021-05-13 call notes]
 - **Contacts and approvers** attached to tasks. [2021-05-13 call notes]
 - **Barcode scan** to add to a grocery list. [Backlog]
-- **Habits tab**: dailies with streaks, haptic and light feedback, and long-term completion tracking, plus a quest system. [Repeated Tasks, Backlog, Todoist: "Add daily dopamine functionality to TDL"]
+- **Habits tab**: dailies with streaks (if streak stats need more than the recurring outcome field in history, consider an occurrence record per completion or skip), haptic and light feedback, and long-term completion tracking, plus a quest system. [Repeated Tasks, Backlog, Todoist: "Add daily dopamine functionality to TDL"]
 - **Schedule tab**: an intelligent view of what to prioritize now. Partly covered by presets and sorts, and by [Focus](features/views/focus.md) in v2. [Todoist: "Schedule tab (intelligent view that shows you what to prioritize)"]
 - **Random task roulette**: pick a next-up task for the user. [Backlog]
 - **Overload heatmap** on the calendar. [Backlog]

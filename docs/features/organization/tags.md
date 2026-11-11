@@ -18,7 +18,7 @@ Tags are shared the same way as lists and tasks (see [Container and item grants]
 
 - Tag titles don't have to be unique. Typing a title that matches several tags offers a choice (see [IDs, not titles](../../design-decisions/ids-not-titles.md)).
 - Each tag has one owner: the user who created it.
-- A task's tags are one field on the task, holding the IDs of its tags. Changes to it are recorded in the task's history.
+- A task's tags are one field on the task, holding the IDs of its tags. Changes to it are recorded in the task's history. If two people change a task's tags at the same time while offline, the newest change wins, so one person's added or removed tag is lost. History shows both changes, so it can be redone by hand.
 - When the owner deletes a tag, after confirming if any tasks use it, the tag is removed from every task at once. There is no Trash for tags. The tasks' history still shows the tag being added and removed, under its last title (see [Current state and history](../../design-decisions/current-state-and-history.md)).
 - A tag is shown on a task only to people who have access to both the task and the tag. Tags the user can't see are not shown, and don't count for their filters.
 - The owner can share a tag with other users. They can then see it on tasks they have access to, add it to or remove it from tasks they can edit, and use it on their own tasks. Only the owner can rename, recolor or delete it.

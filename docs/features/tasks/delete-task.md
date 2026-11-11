@@ -17,6 +17,7 @@ The user deletes a task, which moves it to the Trash. Tasks in the Trash can be 
 - Deleting a task moves it to the Trash without asking for confirmation. A notice offers Undo, which restores it, and stays on screen for the user's notification duration (see [Personalization](../app/personalization.md)).
 - Trashed tasks are hidden from every view, count and search, except the Trash itself.
 - A trashed task does not block its postrequisites.
+- For redundant links and loops, a trashed task counts like a completed one: paths through it don't make a link redundant, and a loop that runs through it isn't flagged and doesn't block until it's restored.
 - A trashed task's links are kept, so restoring it restores its place in the graph. They count in the cycle check like any other link, so restoring a task can never create a cycle.
 - Restoring a task puts it back as it was, including its links.
 - Being in the Trash is a shared state of the task, not a place it moves to. A trashed task is in the Trash for everyone who can see it, and anyone who could delete it can restore it or permanently delete it (see [Sharing](../app/sharing.md)).
