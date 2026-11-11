@@ -6,7 +6,7 @@ Related: [Licence and pricing](../../design-decisions/licence-and-pricing.md), [
 
 ## Summary
 
-Accounts on tdl.app pay what they want, above a minimum. Admins can give accounts free access, and invites can create accounts with free access.
+Accounts on tdl.app pay what they want, above a minimum, after an optional free trial. Admins can give accounts free access, and invites can create accounts with free access. Accounts that aren't paying become read-only.
 
 ## Design intent
 
@@ -15,10 +15,14 @@ Pricing starts from day one, so the hosted service covers its costs and paying i
 ## Rules
 
 - Billing is a server setting. It is on for tdl.app, and off by default on self-hosted servers. With billing off, every account has full access.
-- With billing on, an account either pays or has free access.
+- With billing on, an account is paying, has free access, is in its free trial, or is non-paying.
 - A paying account chooses how much to pay, at or above the server's minimum, monthly or yearly. It can change the amount at any time, taking effect from the next payment.
+- An account becomes non-paying when it cancels, when a payment is declined, when its trial ends without a payment, or when free access is taken away. The user is told why.
+- If the minimum goes up, accounts paying less than the new minimum are no longer charged and become non-paying. They are told the new minimum, and can start paying again at or above it.
+- A non-paying account is read-only until it starts paying again: the user can see everything and export their data, but can't make changes or import. Reminders still fire.
 - Admin accounts always have free access.
-- An admin can give any account free access, and take it away. Taking it away gives the account time to start paying before anything changes.
+- An admin can give any account free access, and take it away.
+- Free trials are a server setting: on or off, and how long they last (e.g. 7 or 30 days). They can only be turned on while billing is on. With trials on, new accounts start with a trial and full access, unless they have free access.
 - Sign-up invite links and email invites can be set to give free access, so the account starts with it (see [Sign up](sign-up.md)).
 - Payments go through a payment provider. The server never stores card details.
 
@@ -42,6 +46,36 @@ Pricing starts from day one, so the hosted service covers its costs and paying i
 - When he signs up from it
 - Then his account has free access and is never asked to pay
 
+### Trial ends without paying
+
+- Given trials last 7 days, and "carol" signed up 7 days ago without paying
+- Then her account is read-only
+- And she can still export her data
+
+### Read-only until paying again
+
+- Given "carol" cancelled her payments
+- When she tries to complete a task or import data
+- Then she is told her account is read-only until she pays
+- And once she pays again, she can make changes
+
+### Minimum goes up
+
+- Given "carol" pays $3 a month
+- When the minimum goes up to $4 a month
+- Then she is no longer charged, her account is read-only, and she is told the new minimum
+
+### Declined payment
+
+- Given "carol"'s card is declined for her monthly payment
+- Then her account is read-only, and she is told to update her payment method
+
+### Trials need billing
+
+- Given billing is off on a self-hosted server
+- When the admin tries to turn on free trials
+- Then it isn't allowed until billing is on
+
 ### Self-hosted server without billing
 
 - Given a self-hosted server with billing off
@@ -50,5 +84,4 @@ Pricing starts from day one, so the hosted service covers its costs and paying i
 
 ## Open questions
 
-- What happens when a paying account stops paying: read-only access after a grace period, or something else? Export should always stay possible.
-- Is there a free trial before the first payment?
+- Can collaborators who are paying still edit a shared list whose owner is non-paying, or does the whole list become read-only?
