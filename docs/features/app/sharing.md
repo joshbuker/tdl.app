@@ -29,7 +29,7 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
   - **No access**: no sign at all. The linked task and its links are not shown, and are ignored for that user's cycle checks, rejection messages and blocked indicators.
 - Each user's next up, blocked indicators and graph-rule checks consider only tasks and links they can see (as a viewer, or as an outline viewer). See [Visibility-scoped graph](../../design-decisions/visibility-scoped-graph.md).
 - A task in a shared list can be assigned to one of the list's collaborators or its owner (see [Assignment](../organization/assignment.md)).
-- Losing access to a list hides its tasks. Links to them from the user's own tasks remain and show as hidden blockers.
+- Losing access to a list hides its tasks. Links to them from the user's own tasks remain, but are treated like any other task the user has no access to: not shown, and not blocking.
 - People are invited by username, and accept or decline the invitation. The owner can also create an invite link, which anyone with an account can use to join until it is revoked. Both ways set the role (editor, viewer or outline viewer).
 - Users on different servers can share lists with each other (see [Federation](federation.md)).
 - A shared list has its own tags, used by everyone with access (see [Tags](../organization/tags.md)). Statuses already belong to each list (see [Statuses](../organization/statuses.md)).

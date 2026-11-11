@@ -2,7 +2,7 @@
 
 Status: Proposed
 Release: v1
-Related: [Next up](next-up.md), [Dependency graph with dates](../../design-decisions/dependency-graph-with-dates.md), [Soft dependencies](soft-dependencies.md)
+Related: [Next up](next-up.md), [Delete a task](../tasks/delete-task.md), [Dependency graph with dates](../../design-decisions/dependency-graph-with-dates.md), [Soft dependencies](soft-dependencies.md)
 
 ## Summary
 
@@ -10,7 +10,7 @@ The user can mark one task as a prerequisite of another ("A must be done before 
 
 ## Design intent
 
-Dependencies are the backbone of the app. They replace nested subtask hierarchies: a big piece of work is a set of tasks linked in order, not a parent with children. Every attempt (and Slipstream before them) used this model.
+Dependencies are the backbone of the app. They replace nested subtask hierarchies: a big piece of work is a set of tasks linked in order, not a parent with children. [Subtasks](../tasks/subtasks.md) are only a lightweight checklist inside one task. Every attempt (and Slipstream before them) used this model.
 
 The rules keep the graph meaningful. A cycle would mean nothing can ever be started. A redundant shortcut link (A before C, when A before B before C already exists) adds clutter without adding information.
 
@@ -26,7 +26,8 @@ The rules keep the graph meaningful. A cycle would mean nothing can ever be star
 - Rejections explain why, naming both tasks. The rules only consider tasks and links the user can see, so a rejection never reveals anything hidden (see [Sharing](../app/sharing.md)).
 - When a new link makes an existing link redundant, the existing link is kept and shown as redundant. It is never removed without the user asking (see [Prune redundant links](prune-redundant-links.md)).
 - When searching for a task to link, tasks that can't be linked (itself, recurring, already linked, would create a cycle, would be redundant) are shown disabled, with the reason.
-- Deleting a task removes its links. The tasks on the other side remain.
+- When adding a prerequisite or postrequisite, typing a title that matches no task creates a new task in the same list and links it in one step.
+- Deleting a task keeps its links while it is in the Trash. Permanently deleting it removes them, and the tasks on the other side remain (see [Delete a task](../tasks/delete-task.md)).
 
 ## Scenarios
 

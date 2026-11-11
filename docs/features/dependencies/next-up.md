@@ -16,6 +16,7 @@ Blocked work is noise when deciding what to do next. Every attempt used this set
 
 - A task is next up when it is incomplete and every one of its hard prerequisites is completed (or it has none). Soft prerequisites don't block (see [Soft dependencies](soft-dependencies.md)).
 - Next up is worked out per user, from the tasks and links they can see. A prerequisite in a list the user has no access to doesn't block for them (see [Sharing](../app/sharing.md)).
+- A prerequisite in the Trash doesn't block (see [Delete a task](../tasks/delete-task.md)).
 - Completing a task can make its postrequisites next up. Marking it incomplete again blocks them again.
 - Counts shown next to lists and filters count next-up tasks.
 
