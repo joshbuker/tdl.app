@@ -16,6 +16,7 @@ The user logs in with a username and password, and can log out.
 
 - Login uses a username or email address with a password, or a passkey without a password (see [Multi-factor authentication](multi-factor-authentication.md)). Usernames and email addresses are both unique, so either one identifies the account.
 - If the user has multi-factor authentication set up, a second step is required (see [Multi-factor authentication](multi-factor-authentication.md)).
+- A user who forgot their password recovers access as described in [End-to-end encryption](../app/end-to-end-encryption.md).
 - Wrong credentials are rejected without saying which one was wrong.
 - After 10 failed attempts, the account is locked for a while.
 - Logging out ends the session on the server. A logged-out session can't be reused.

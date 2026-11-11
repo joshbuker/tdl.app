@@ -18,6 +18,7 @@ Anyone can create an account, unless the server is in invite-only mode, in which
 - In invite-only mode, sign-up is not available, and visitors are told so. In v2 they are directed to request access instead.
 - A server admin can create sign-up invite links, either single use or usable until revoked. Opening one allows signing up even in invite-only mode.
 - A server admin can also invite someone by email. They get an email with a link to sign up, which works even in invite-only mode. The sign-up form has that email address filled in and read-only. Otherwise sign-up is the same, and the email counts as verified. The link is single use by nature, and the admin can revoke it until it is used.
+- After signing up, the user is shown a recovery key to save (see [End-to-end encryption](../app/end-to-end-encryption.md)).
 - A new account must verify its email address before it can be used. A server admin can turn this off, e.g. on a self-hosted server without email set up.
 
 ## Scenarios

@@ -62,7 +62,7 @@ These choices from earlier attempts have written reasoning in `historical-versio
 - Translations from day one.
 - Version pins must say when they can be lifted.
 - Releases on version tags, with CI also run weekly to catch vulnerable dependencies.
-- Server backups: automated, tested database backups for tdl.app, and documented backup and restore for self-hosters, before anyone else's data is on the server. From a Todoist task.
+- Server backups (of encrypted data): automated, tested database backups for tdl.app, and documented backup and restore for self-hosters, before anyone else's data is on the server. From a Todoist task.
 
 ## Stack constraints
 
@@ -78,6 +78,7 @@ Requirements gathered so far that the stack must support:
 - Calendar dates and RFC 9557 zoned date-times, with the IANA time zone database (see [Floating dates, zoned times](design-decisions/floating-dates-zoned-times.md)).
 - A public, versioned API documented with OpenAPI generated from tests, OAuth for third-party apps, and an MCP server built on it (see [API access](features/app/api-access.md) and [MCP server](features/app/mcp-server.md)).
 - Scheduled local notifications on every platform for reminders, and push notifications for everything else (see [Reminders](features/scheduling/reminders.md)).
+- End-to-end encryption on every platform with well-reviewed libraries: per-user key pairs, per-list, task and tag keys shared with grants, a password protocol that never gives the server the key, and a client library for API users (see [End-to-end encryption](design-decisions/end-to-end-encryption.md)).
 - Passkeys (WebAuthn) for passwordless login and as a second factor, plus TOTP (see [Multi-factor authentication](features/account/multi-factor-authentication.md)).
 - An open-licence icon set that works on every platform (e.g. Material Symbols or Lucide), for list icons.
 

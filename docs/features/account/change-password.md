@@ -19,6 +19,7 @@ From #3. The checks are specific so the user knows exactly what went wrong.
 - The current password must be correct.
 - The new password must meet the password rules.
 - The new password is entered twice and both entries must match.
+- Changing the password keeps all of the user's data readable (see [End-to-end encryption](../app/end-to-end-encryption.md)).
 - Changing the password logs out all of the user's other sessions. The current session stays logged in.
 
 ## Scenarios
