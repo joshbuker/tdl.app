@@ -16,7 +16,7 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
 
 1. [Foundation and domain](superpowers/plans/2026-11-10-thin-slice-1-foundation-and-domain.md): written and approved, not started. Execute it natively (in-session), then have one fresh reviewer check the whole branch. Start with Task 1, Step 0: `shell.nix` (see [Nix development shell](design-decisions/nix-dev-shell.md)).
 2. Sync and server: write this plan once plan 1 is done, against plan 1's real interfaces.
-3. Apps (Quasar web, Android, Electron) and the homelab deployment: write this plan once plan 2 is done.
+3. Apps (Quasar web, Android, Electron) and the homelab deployment: write this plan once plan 2 is done. When setting up Quasar, follow its [guide for AI agents](https://quasar.dev/start/ai-agents), which covers Claude Code.
 
 ## Ideas for later
 
