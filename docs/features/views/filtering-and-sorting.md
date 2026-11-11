@@ -27,7 +27,7 @@ When tasks from several lists are shown together, each one shows its list, so th
   - **Upcoming**: tasks scheduled after today, in date order.
   - **Shared with me**: tasks shared with the user directly, whose lists they can't see (see [Sharing](../app/sharing.md)).
   - One preset per list.
-- The user can save any combination of filters and sorts as a named preset of their own, shown alongside the built-in ones. Saved presets can be renamed, reordered and deleted.
+- The user can save any combination of filters and sorts as a named preset of their own, shown alongside the built-in ones. Saved presets can be renamed, reordered and deleted. Deleting one removes it for good, with no history.
 - Filters combine (e.g. a list and a tag at the same time).
 - Tasks can be filtered by status (v2, see [Statuses](../organization/statuses.md)).
 - Tasks can be filtered by how long they take, e.g. "fits in 15 minutes" shows tasks with a duration of 15 minutes or less. Tasks without a duration don't match (see [Schedule](../scheduling/schedule.md)).

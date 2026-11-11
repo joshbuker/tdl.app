@@ -24,7 +24,7 @@ Once tasks are shared, people need to know when something needs them without che
 - Reminders are scheduled on each device ahead of time, so they fire on time even offline (see [Reminders](../scheduling/reminders.md)). Other notifications are pushed to all of the user's devices that have them enabled as they happen. All notifications also go to an in-app list where they can be read later.
 - Each kind of notification can be turned on or off in settings, separately for push and the in-app list. All are on by default.
 - Opening a notification opens the task (or invitation) it is about, and marks it read.
-- People who can't see a task get no notifications about it.
+- People who can't see a task get no notifications about it. Notifications in the in-app list are removed when their task is permanently deleted, or when the user loses access to it.
 - The device that makes a change works out who to notify, and tells the server whom to send to. The server checks that each recipient can see the task. Each person's notification settings are applied on their own devices.
 - Push notifications show the task's title and what happened. From v2, they carry only an encrypted body, and the device decrypts what it needs to show. (v2)
 - Self-hosted servers can't send pushes to the Android and iOS apps directly, since that needs the app publisher's credentials. They can opt in to a push relay run by tdl.app, free of charge, which forwards each notification and its device token to Google or Apple and keeps neither. From v2 the payloads are encrypted. Without it, the apps get changes when they're open and sync, and reminders still fire, since they're scheduled on the device.

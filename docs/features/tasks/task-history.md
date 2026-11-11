@@ -15,7 +15,7 @@ Offline sync and sharing mean several people and devices can change a task concu
 ## Rules
 
 - Every change to a task is recorded: the field, the old and new values, who made it, on which device, and when.
-- Changes to the task's links, subtasks and completion are included.
+- Changes to the task's links, subtasks and completion are included, and so are comments added or edited. A deleted comment shows only that it was deleted, who wrote it, who deleted it, and when (see [Comments](comments.md)).
 - Changes that were overridden by a conflicting edit, or that duplicated another change, are kept and shown as such.
 - Changes made concurrently on different devices or by different people are flagged (e.g. a double completion).
 - Each completion of a recurring task is recorded (see [Recurring tasks](../scheduling/recurring-tasks.md)).

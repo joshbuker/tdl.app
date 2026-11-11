@@ -34,15 +34,8 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
 
 From an audit of every spec against [Current state and history](design-decisions/current-state-and-history.md) on 2026-11-11. Clear-cut fixes were applied; these need a decision.
 
-- **Which records are removed or permanently deleted**, for the remaining types: saved presets, reminders, in-app notifications, and invitations and invite links (server-only, deleted outright?). Also decide whether comment changes appear in task history at all.
-- **Lists in the Trash** are permanently deleted after 30 days, which purges their tasks and all their history. Say so in [Lists](features/organization/lists.md).
-- **"The owner can see that they left"** ([Sharing](features/app/sharing.md)): the grant is gone from current state, so say where this shows, e.g. a sharing panel built from grant history, or a notification.
-- **Assignment becoming free text** when the assignee loses access ([Assignment](features/organization/assignment.md)): decide who writes that change, since from v2 the server can't write content, or show it at display time instead.
-- **Backup restores** "reapply later deletions where possible" ([Server backups](design-decisions/server-backups.md)), but permanent deletion leaves no history to reapply. Options: keep a minimal deletion log (record ID and time) outside history; or accept that restores can bring deleted records back. Also say that backups keep purged history until they expire.
-- **Purging devices.** Permanent deletion needs a feed entry that makes devices delete the record's history too, not just hide it (a "forget" does both today). Not needed in the slice.
+- **Backup restores bring deleted data back** (see [Server backups](design-decisions/server-backups.md)), including an account whose owner deleted it, or tasks they permanently deleted. Options: the admin re-deletes by hand after a restore; keep a minimal deletion log (record ID and time, no content) and reapply it after restoring; or warn the admin which deletions a restore will undo.
 - **Compaction** ("may be needed later", [Offline first](design-decisions/offline-first.md)) must not drop operations that task history, undo or metrics need.
-- **v2 encryption:** after re-keying, older history is under older keys, so new collaborators and recovery through a collaborator need those keys too. Belongs with the cryptographic design below.
-- **v2 federation:** permanent deletion, purges and forgetting must reach other servers' copies. And when an editor takes over a list, its history moves with it, possibly incomplete, since their server only has what its own users could see.
 
 ## Follow-ups from plan 1
 
@@ -120,6 +113,8 @@ Technical choices the specs leave open, to settle while choosing the stack:
 ## Decisions for v2
 
 - **Statuses and the Trash**: should a task in the Trash count as using its status, which blocks deleting the status (see [Statuses](features/organization/statuses.md))? Options: no, and a restored task gets its list's default status for its category; or yes, so the status can't be deleted until those tasks leave the Trash.
+- **Encryption and history:** after re-keying, older history is under older keys, so new collaborators and recovery through a collaborator need those keys too. Belongs with the cryptographic design below.
+- **Federation and history:** permanent deletion, purges and forgetting must reach other servers' copies. And when an editor takes over a list, its history moves with it, possibly incomplete, since their server only has what its own users could see.
 - **Cryptographic design**: the password protocol (e.g. OPAQUE or SRP), the key hierarchy and re-keying when someone is removed, the device-approval protocol, and deriving keys from passkeys (WebAuthn PRF, not yet on every platform). How a list invite link hands over keys (e.g. in the link's fragment) and how users can verify each other's keys.
 
 ## Stack constraints

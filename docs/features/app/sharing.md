@@ -28,7 +28,7 @@ Access is granted on lists and on single tasks, like folders and files in Google
 - Access to a list gives that access to all of its tasks. From v2, granting access also shares the keys needed to read it (see [End-to-end encryption](end-to-end-encryption.md)).
 - A person's access to a task is the highest of what its list gives them and what the task gives them. Grants only add access: a task can't be hidden from someone who can see its list.
 - The list owner manages who has access to the list and its tasks. Per list, the owner can also let the list's editors share single tasks. By default they can't. People with access to only a single task can't share it further.
-- People are invited by username, and accept or decline the invitation. The owner can also create an invite link to a list, which anyone with an account can use to join until it is revoked. Both ways set the role.
+- People are invited by username, and accept or decline the invitation. The owner can also create an invite link to a list, which anyone with an account can use to join until it is revoked. Both ways set the role. Invitations and invite links exist only on the server, and are deleted once accepted, declined or revoked; the history of grants records what happened.
 - Users on different servers can share with each other (v2, see [Federation](federation.md)).
 - The owner can transfer ownership of a list to an editor, except the list that is currently the owner's default list (see [Lists](../organization/lists.md)). The editor becomes the owner of the list and its tasks. The previous owner becomes an editor.
 
@@ -52,7 +52,7 @@ Everyone can edit or delete their own comments and leave a list or task shared w
 - A task shared directly with someone who can't see its list appears in their "Shared with me", and in any filter or preset it matches (see [Filtering and sorting](../views/filtering-and-sorting.md)). Its list is not shown to them.
 - A task's title, notes, subtasks, completion, schedule and deadline are the same for everyone with access. Reminders are personal (see [Reminders](../scheduling/reminders.md)). History shows each person only what they can see (see [Task history](../tasks/task-history.md)).
 - Only a task's owner can move it to a list with a different owner, so a task can't be taken from its owner. Moving a task to another list keeps its direct grants. Access through the old list is lost and access through the new list is gained. Before the move, the mover is told who will gain or lose access.
-- Collaborators can leave a list shared with them. Someone a task was shared with directly can leave it by removing it from "Shared with me". Either way their access is removed, and the owner can see that they left.
+- Collaborators can leave a list shared with them. Someone a task was shared with directly can leave it by removing it from "Shared with me". Either way their access is removed, and the owner can see that they left in the sharing panel's activity, which lists who was invited, joined, left or was removed, and when. It is built from the history of grants.
 - When sharing a task that has incomplete prerequisites the recipient can't see, the sharer is offered to share each of them too, fully, or as an outline in v2. Only prerequisites the sharer is allowed to share are offered.
 
 ### Linked tasks and the graph

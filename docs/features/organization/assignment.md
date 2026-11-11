@@ -23,7 +23,7 @@ In GTD, "waiting for" always means waiting on a person, so an assignee covers it
 - Each user can filter for tasks assigned to them, and by assignee or participant in general (see [Filtering and sorting](../views/filtering-and-sorting.md)).
 - Scheduling a delegated task sets when to follow up. Its deadline and prioritize date work as on any other task.
 - Assigned and waiting tasks get no special treatment: they count as next up like any other task. A user who wants them out of the way filters them out.
-- When someone loses access to a task (through its list or a direct grant, including by leaving it), their assignment or participation on it becomes free text with their name, so the record of who was responsible is kept and the task can be reassigned.
+- When someone loses access to a task (through its list or a direct grant, including by leaving it), their assignment or participation on it is shown as free text with their name, so the record of who was responsible is kept and the task can be reassigned. Nothing is rewritten: the assignment keeps their user ID, and apps show anyone who can't see the task as plain text.
 - Free-text names the user has entered before are suggested as they type, matched ignoring case, so the same outside person is picked and filtered on consistently. There is no separate contacts list to manage.
 
 ## Scenarios
