@@ -20,6 +20,7 @@ Pricing starts from day one, so the hosted service covers its costs and paying i
 - An account becomes non-paying when it cancels, when a payment is declined, when its trial ends without a payment, or when free access is taken away. The user is told why.
 - If the minimum goes up, accounts paying less than the new minimum are no longer charged and become non-paying. They are told the new minimum, and can start paying again at or above it.
 - A non-paying account is read-only until it starts paying again: the user can see everything and export their data, but can't make changes or import. Reminders still fire.
+- Read-only applies to the non-paying user, not to what they own. Collaborators who are paying (or have free access or a trial) can still edit lists and tasks shared with them by a non-paying owner, as their role allows.
 - Admin accounts always have free access.
 - An admin can give any account free access, and take it away.
 - Free trials are a server setting: on or off, and how long they last (e.g. 7 or 30 days). They can only be turned on while billing is on. With trials on, new accounts start with a trial and full access, unless they have free access.
@@ -82,6 +83,9 @@ Pricing starts from day one, so the hosted service covers its costs and paying i
 - When "alice" signs up
 - Then she has full access without paying
 
-## Open questions
+### Collaborators keep editing
 
-- Can collaborators who are paying still edit a shared list whose owner is non-paying, or does the whole list become read-only?
+- Given "alice" owns "House", shares it with "bob" as an editor, and becomes non-paying
+- When "bob", who is paying, edits "Paint fence"
+- Then his change is saved
+- And "alice" can see it but can't make changes herself
