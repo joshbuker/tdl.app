@@ -1,2 +1,4 @@
-// Public API of @tdl/domain. Modules are re-exported here as they're added.
-export {};
+// Public API of @tdl/domain.
+export * from './model.ts';
+export * from './ids.ts';
+export * from './validation.ts';
