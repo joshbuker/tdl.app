@@ -10,7 +10,7 @@ Like the rest of `docs/`, this file is evergreen: remove an item once it's resol
 
 ## Next steps
 
-- Promote the core specs to Specified: link tasks, next up, create, complete and delete tasks, lists, and schedule.
+- Promote the core specs to Specified: link tasks, next up, create, complete and delete tasks, lists, and schedule. Their review is done, apart from this rework of sharing.
 - Choose a stack, recording the choice as a design decision (see "Stack constraints" below).
 
 ## Cross-cutting questions

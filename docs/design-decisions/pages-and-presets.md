@@ -8,8 +8,8 @@
 
 Separate **how** tasks are shown from **which** tasks are shown:
 
-- **Pages** are presentation layers: List, Board, Focus, Tree, Graph, Calendar.
-- **Presets** are named filter and sort combinations: All Tasks, Inbox, Today, Upcoming, one per list, and any the user saves.
+- **Pages** are presentation layers: List, Focus, Tree, Graph, Calendar, and Board in v2.
+- **Presets** are named filter and sort combinations: All Tasks, Inbox, Today, Upcoming, Shared with me, one per list, and any the user saves.
 - Any preset works with any page.
 
 #3's Agenda is neither a page nor a preset: its ordering is built from ordinary sorts, including a dependency-order sort (see [Filtering and sorting](../features/views/filtering-and-sorting.md)). This goes further than where #3 was heading.

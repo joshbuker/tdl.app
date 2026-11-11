@@ -18,8 +18,9 @@ The schedule says when the user intends to do a task. Views such as Today or Upc
 
 - A task's date, time and duration are each optional, and can be set in any combination, except that a time needs a date. A time without a date is only allowed on a [recurring task](recurring-tasks.md) (e.g. "every day at 9") or as part of a time window for the [Auto-scheduler](auto-scheduler.md).
 - Dates are interpreted in the user's time zone.
-- A scheduled date in the past is a missed plan, not overdue. "Overdue" applies only to [Deadlines](deadlines.md). Missed tasks stay in Today, showing the date they were scheduled for.
+- A scheduled date in the past is a missed plan, not overdue. "Overdue" applies only to [Deadlines](deadlines.md). Missed tasks stay in Today while they are next up, showing the date they were scheduled for.
 - Changing one part of the schedule keeps the others.
+- A task can be scheduled earlier than one of its prerequisites. Both dates are kept, and the task shows a warning that a prerequisite is scheduled after it.
 - Dates, times and durations can be typed in natural language, in a new task's title or in the schedule field, as well as set with pickers (see [Natural-language entry](../tasks/natural-language-entry.md)).
 
 ## Scenarios
@@ -44,3 +45,29 @@ The schedule says when the user intends to do a task. Views such as Today or Upc
 
 - When the user schedules "Dentist" for Thursday at 15:00 for 1 hour
 - Then "Dentist" shows Thursday 15:00 to 16:00
+
+### Changing one part keeps the others
+
+- Given "Dentist" is scheduled for Thursday at 15:00 for 1 hour
+- When the user changes the date to Friday
+- Then "Dentist" shows Friday 15:00 to 16:00
+
+### Missed plan stays in Today
+
+- Given "Call plumber" was scheduled for yesterday and is incomplete
+- Then it is shown in Today with yesterday's date
+- And it is not marked overdue
+
+### Dates follow the user's time zone
+
+- Given "alice"'s time zone is Asia/Tokyo
+- And she schedules "Call plumber" for Thursday
+- Then it is in Today from midnight Thursday Tokyo time
+
+### Scheduled before a prerequisite
+
+- Given "Buy paint" is a prerequisite of "Paint fence"
+- And "Buy paint" is scheduled for Wednesday
+- When the user schedules "Paint fence" for Monday
+- Then "Paint fence" is scheduled for Monday
+- And it shows a warning that "Buy paint" is scheduled after it

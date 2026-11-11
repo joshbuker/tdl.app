@@ -6,7 +6,7 @@ Related: [Filtering and sorting](filtering-and-sorting.md), [Next up](../depende
 
 ## Summary
 
-A plain list of tasks for the current filter and sort, with a checkbox to complete each, or a status picker in a workflow list.
+A plain list of tasks for the current filter and sort, with a checkbox to complete each.
 
 ## Design intent
 
@@ -14,7 +14,7 @@ The default view in every attempt. #3 showed each task's count of incomplete pos
 
 ## Rules
 
-- Each row shows the title, whether it has notes, its list and tags, its schedule and deadline (including an implied deadline), its status (in a workflow list), and how many tasks it blocks. Each row has a checkbox to complete it (see [Statuses](../organization/statuses.md)).
+- Each row shows the title, whether it has notes, its list and tags, its schedule and deadline (including an implied deadline), and how many tasks it blocks. Each row has a checkbox to complete it (see [Complete a task](../tasks/complete-task.md)).
 - Completing from the list works without opening the task.
 
 ## Scenarios

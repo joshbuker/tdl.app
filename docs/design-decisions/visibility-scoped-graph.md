@@ -2,14 +2,14 @@
 
 ## Context
 
-Links can cross list boundaries, so a task in a shared list can depend on a task in a list some collaborators can't see (see [Sharing](../features/app/sharing.md)). Earlier drafts showed such links as "blocked by a task you can't see". That still reveals that hidden tasks exist, and private data should leak nothing.
+Links can cross list and user boundaries, so a shared task can depend on a task some of the people it's shared with can't see (see [Sharing](../features/app/sharing.md)). Earlier drafts showed such links as "blocked by a task you can't see". That still reveals that hidden tasks exist, and private data should leak nothing.
 
 ## Decision
 
-What a user sees of the graph, and what the graph rules consider for them, depends on their access to each list:
+What a user sees of the graph, and what the graph rules consider for them, depends on their access to each task, through its list or a direct grant (see [Container and item grants](container-and-item-grants.md)):
 
 - **Viewer or above**: tasks and links as normal.
-- **Outline viewer**: placeholders showing that tasks exist, how they link and whether each is complete, without titles or details. Like free/busy in a shared calendar.
+- **Outline**: placeholders showing that tasks exist, how they link and whether each is complete, without titles or details. Like free/busy in a shared calendar.
 - **No access**: no sign at all.
 
 Next up, blocked indicators, the cycle and redundancy checks, rejection messages and task history are all worked out per user from what that user can see. The same applies between servers (see [Federation](../features/app/federation.md)), where servers exchange opaque placeholders behind the scenes.
@@ -23,3 +23,4 @@ Next up, blocked indicators, the cycle and redundancy checks, rejection messages
 
 - Graph logic takes a viewer as input. It isn't a single global computation.
 - A link that is valid from one user's view can close a loop only another user sees. The link is allowed, and the loop is flagged to each user who can see all of it, who fixes it by removing a link (see [Sharing](../features/app/sharing.md)). Rejecting the link would reveal hidden tasks, and automatically suspending a link would change someone's plan behind their back.
+- Loops are detected on each user's own device from what that user can see, so no server needs to know the structure of anyone else's private tasks.

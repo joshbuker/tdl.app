@@ -18,20 +18,21 @@ When tasks from several lists are shown together, each one shows its list, so th
 
 ## Rules
 
-- Pages are List, Board, Focus, Tree, Graph and Calendar. Any preset can be used with any page.
+- Pages are List, Focus, Tree, Graph and Calendar, plus Board in v2 (see [Board view](board-view.md)). Any preset can be used with any page.
 - When the tasks shown span several lists, each task shows its list (icon and name) as a chip, on every page.
 - Presets:
   - **All Tasks**: every task.
   - **Inbox**: the user's default list, where new tasks land (see [Lists](../organization/lists.md)).
-  - **Today**: incomplete tasks scheduled for today or earlier, plus incomplete tasks flagged as high priority (see [Prioritize date](../scheduling/prioritize-date.md)). Other unscheduled tasks are not included. A task scheduled for an earlier day shows that date.
+  - **Today**: incomplete tasks scheduled for today or earlier, plus incomplete tasks flagged as high priority (see [Prioritize date](../scheduling/prioritize-date.md)). Other unscheduled tasks are not included. A task scheduled for an earlier day shows that date. Blocked tasks are hidden, so a task appears once it is next up (see [Next up](../dependencies/next-up.md)).
   - **Upcoming**: tasks scheduled after today, in date order.
+  - **Shared with me**: tasks shared with the user directly, whose lists they can't see (see [Sharing](../app/sharing.md)).
   - One preset per list.
 - The user can save any combination of filters and sorts as a named preset of their own, shown alongside the built-in ones. Saved presets can be renamed, reordered and deleted.
 - Filters combine (e.g. a list and a tag at the same time).
-- Tasks can be filtered by status category (To do, In progress, Done) across lists, or by a specific status within one list (see [Statuses](../organization/statuses.md)).
+- Tasks can be filtered by status (v2, see [Statuses](../organization/statuses.md)).
 - Tasks can be filtered by assignee (including "assigned to me") and by participant (see [Assignment](../organization/assignment.md)).
 - Sorts combine, with each later sort breaking ties in the ones before it.
-- Tasks can be sorted by their own fields (e.g. title, schedule, deadline, prioritize date, status, creation time) and by computed fields:
+- Tasks can be sorted by their own fields (e.g. title, schedule, deadline, prioritize date, completion time, creation time) and by computed fields:
   - **Blocks**: how many incomplete tasks it blocks through hard links, directly or through other tasks.
   - **Effective deadline**: the earlier of its deadline and its implied deadline (see [Deadlines](../scheduling/deadlines.md)).
   - **High priority**: whether its [prioritize date](../scheduling/prioritize-date.md) has passed.
@@ -54,6 +55,14 @@ When tasks from several lists are shown together, each one shows its list, so th
 - When the user selects Today
 - Then "Call plumber" is shown, noting yesterday's date
 - And "Buy milk" is not shown
+
+### Today hides blocked tasks
+
+- Given "Paint fence" is scheduled for today
+- And its prerequisite "Buy paint" is incomplete
+- When the user selects Today
+- Then "Paint fence" is not shown
+- And once "Buy paint" is completed, "Paint fence" is shown in Today
 
 ### Save a preset
 

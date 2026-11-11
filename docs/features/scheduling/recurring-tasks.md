@@ -2,7 +2,7 @@
 
 Status: Proposed
 Release: v1
-Related: [Schedule](schedule.md), [Subtasks](../tasks/subtasks.md), [Statuses](../organization/statuses.md)
+Related: [Schedule](schedule.md), [Subtasks](../tasks/subtasks.md)
 
 ## Summary
 
@@ -17,7 +17,7 @@ Never built, but planned repeatedly. #3 had pending tests: "should allow setting
 ## Rules
 
 - A task can recur on a fixed schedule ("every Monday at 9", "the 1st of every month") or at an interval after completion ("2 weeks after I finish it").
-- Completing a recurring task brings the same task back at its next occurrence: it gets the default incomplete status, its schedule moves to the next occurrence, and all its subtasks are unchecked.
+- Completing a recurring task brings the same task back at its next occurrence: it is marked incomplete, its schedule moves to the next occurrence, and all its subtasks are unchecked.
 - Recurring tasks stay outside the dependency graph: a recurring task can't have prerequisites or postrequisites (see [Link tasks](../dependencies/link-tasks.md)). Adding a recurrence to a linked task is rejected, with an explanation, until its links are removed.
 - Relative reminders move to each new occurrence (see [Reminders](reminders.md)).
 - Each completion is recorded in the task's history (see [Task history](../tasks/task-history.md)).

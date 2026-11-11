@@ -20,6 +20,7 @@ Built twice: #1 sent web push notifications to every subscribed device, and #2 s
 - Completing a task cancels its pending reminders. Marking it incomplete again reinstates those still in the future. Ones whose time passed while it was complete don't fire late.
 - Changing or clearing the reminder time changes or cancels the notification.
 - A reminder time in the past does not fire.
+- Reminders are personal. On a task shared with others, each person sets their own, and only they are notified (see [Sharing](../app/sharing.md)).
 - Notifications go to all of the user's devices that have notifications enabled.
 
 ## Scenarios

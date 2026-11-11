@@ -1,7 +1,7 @@
 # Statuses
 
 Status: Proposed
-Release: v1
+Release: v2
 Related: [Complete a task](../tasks/complete-task.md), [Assignment](assignment.md), [Lists](lists.md), [Board view](../views/board-view.md)
 
 ## Summary
@@ -9,6 +9,8 @@ Related: [Complete a task](../tasks/complete-task.md), [Assignment](assignment.m
 Every task has a status (e.g. To do, In progress, Waiting, Done), and completion is a status. Each list has its own statuses, and chooses how tasks are shown: as a simple checkbox, or as a workflow with a full status picker.
 
 ## Design intent
+
+Deferred from v1, where a task is only complete or incomplete, and may not be built at all (see [Completion before statuses](../../design-decisions/completion-before-statuses.md)).
 
 The app serves two quite different uses. One is a simple todo list, like Todoist, where a checkbox marks a task done. The other is a Jira-style workflow, with several statuses and more detail about who is doing what and when. Each list picks the style that fits, the way Todoist lets each project choose between a checklist and a board.
 

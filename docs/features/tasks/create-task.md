@@ -18,7 +18,7 @@ Titles don't have to be unique. #1 and #2 enforced unique titles, but legitimate
 
 - A title is required. Leading and trailing whitespace is stripped.
 - If no list is given, the task goes into the user's default list.
-- While the title is typed, matching existing tasks are shown, and choosing one opens it instead of creating a new task.
+- While the title is typed, matching existing tasks are shown, and choosing one opens it instead of creating a new task. Completed tasks are included after incomplete ones, marked as completed. Trashed tasks are not included.
 - Titles do not have to be unique.
 - New tasks are incomplete.
 - After creating a task, the create dialog either stays open and cleared for the next task, or closes, depending on the user's setting. The default is to stay open.
@@ -59,3 +59,20 @@ Titles don't have to be unique. #1 and #2 enforced unique titles, but legitimate
 
 - When the user tries to create a task with a blank title
 - Then no task is created and the user is told a title is required
+
+### Surrounding whitespace is stripped
+
+- When the user creates a task titled "  Buy milk  "
+- Then the task is titled "Buy milk"
+
+### Close after creating
+
+- Given the setting to keep the create dialog open is off
+- When the user creates "Buy milk"
+- Then the dialog closes
+
+### Completed tasks are suggested too
+
+- Given a completed task "Clean gutters"
+- When the user starts creating a task and types "gutters"
+- Then "Clean gutters" is suggested, marked as completed

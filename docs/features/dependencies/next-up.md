@@ -37,3 +37,19 @@ Blocked work is noise when deciding what to do next. Every attempt used this set
 - Given "A" is a prerequisite of "B", both incomplete
 - When the user completes "A"
 - Then "B" is next up
+
+### Soft prerequisites don't block
+
+- Given "A" is a soft prerequisite of "B", both incomplete
+- Then "A" and "B" are both next up
+
+### Marking a prerequisite incomplete blocks again
+
+- Given "A" is a completed prerequisite of "B", and "B" is next up
+- When the user marks "A" incomplete
+- Then "B" is not next up
+
+### Counts show next-up tasks
+
+- Given the list "Home" has "A" before "B", both incomplete, and a completed task "C"
+- Then "Home" shows a count of 1

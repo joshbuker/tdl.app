@@ -6,7 +6,7 @@ Related: [Sharing](sharing.md), [Choose a server](../account/choose-server.md), 
 
 ## Summary
 
-Users on different TDL App servers can share lists and work on them together, as if they were on the same server.
+Users on different TDL App servers can share lists and tasks and work on them together, as if they were on the same server.
 
 ## Design intent
 
@@ -19,11 +19,11 @@ Federation reuses the device sync protocol from [Offline use](offline.md): a col
 - A user is identified across servers by their username plus their server's address (e.g. `alice@tdl.example.com`), and found with WebFinger.
 - Servers talk over a custom protocol that reuses device sync. Each server publishes a public key at a well-known URL and signs its requests with HTTP Message Signatures (RFC 9421). Unsigned or wrongly signed requests are rejected.
 - Federation only works between servers on the same major protocol version. A user inviting someone on an incompatible server is told why it failed.
-- Everything in [Sharing](sharing.md) works the same between servers: invitations, roles, assignment, hidden blockers and ownership transfer.
-- A shared list lives on its owner's server. Collaborators' servers keep a synced copy.
+- Everything in [Sharing](sharing.md) works the same between servers: invitations, roles, direct task grants, assignment, hidden links and ownership transfer.
+- A shared list, and each shared task, lives on its owner's server. Collaborators' servers keep a synced copy of what their users can see.
 - When a remote server is unreachable, collaborators keep working on their copy, and changes sync once it's reachable again, as with [Offline use](offline.md).
 - Server admins can turn federation off, or block specific servers.
-- When a user on one server links their private task to a task in a list owned on another server, their server shares an opaque placeholder for each hidden task and link that touches the shared list: an ID, with no title or details. The owner's server uses the placeholders to show outline viewers the shape, and to detect loops only some users can see (see [Sharing](sharing.md)). What each user sees of those tasks depends on their access, as on a single server (see [Sharing](sharing.md)): the task as normal, a placeholder for outline viewers, or nothing.
+- A server sends another server only what that server's users can see: tasks and links they have access to, and an opaque placeholder (an ID, with no title or details) for each task they have outline access to. What each user sees depends on their access, as on a single server (see [Sharing](sharing.md)). Loops are detected on each user's own device from what they can see, so no server learns the structure of anyone else's private tasks.
 - If the owner's server has been unreachable for 30 days, an editor can take over the list. It moves to their server with them as owner, and other collaborators follow it. If the old server comes back, its copy of the list becomes read-only, and the previous owner appears as a request for access, which the new owner approves or declines. Nothing changes without the new owner's approval.
 
 ## Scenarios

@@ -17,7 +17,7 @@ Everything works without a connection. Changes made offline sync when the device
 - Every feature that doesn't inherently need the server (e.g. sign-up, sharing invitations) works offline, including creating, editing, linking and completing tasks.
 - Changes made offline are kept on the device and synced when back online, in the order they were made.
 - New items get their IDs on the device, so they can be linked and edited before syncing.
-- Graph rules (no cycles, no redundant links) are checked on the device when offline, and again by the server when syncing.
+- Graph rules (no cycles, no redundant links) are checked on the device when a link is added, online or offline.
 - The user can see whether there are changes waiting to sync.
 - A device can stay offline for any length of time. Its unsynced changes are always kept and synced, and the server keeps the full change history so any device can catch up.
 - Conflicting edits are resolved automatically when there is a clear answer, and the user is asked when there isn't:
@@ -27,7 +27,7 @@ Everything works without a connection. Changes made offline sync when the device
   - When both sides changed the same field to different values, or overlapping parts of the notes, the task is marked as conflicting and the user chooses which version to keep. Until then, the most recent edit is shown.
 - Conflicts are resolved per user: the user whose device detects the conflict while syncing (because the other change reached the server first) is the one asked. This applies on shared lists too.
 - Every synced change is kept in the task's history (see [Task history](../tasks/task-history.md)), including changes that were overridden or that duplicated another. Changes made concurrently on different devices are flagged as such, e.g. a task completed twice by two people while offline shows both completions, flagged as a double completion.
-- When changes that are each valid on their own would together break a graph rule (e.g. two offline devices each add a link, and together they form a cycle), the change that reaches the server first wins. The other is undone on the device that made it, and its user is told why.
+- When changes that are each valid on their own together break a graph rule, both are kept rather than one being undone. A loop formed this way is flagged to each user who can see all of it (see [Sharing](sharing.md)), and a link made redundant this way is shown as redundant (see [Prune redundant links](../dependencies/prune-redundant-links.md)).
 - When a task is deleted on one device and edited on another, the delete wins and the edit is applied to the task in the Trash, so nothing is lost and it can be restored.
 
 ## Scenarios
@@ -60,9 +60,10 @@ Everything works without a connection. Changes made offline sync when the device
 ### Links that together form a cycle
 
 - Given "A" and "B" are unlinked, and two devices are offline
-- When the phone makes "A" a prerequisite of "B", the laptop makes "B" a prerequisite of "A", and the phone syncs first
-- Then "A" before "B" is kept
-- And when the laptop syncs, its link is undone and the user is told it would have created a cycle
+- When the phone makes "A" a prerequisite of "B", the laptop makes "B" a prerequisite of "A"
+- And both devices sync
+- Then both links are kept
+- And the user sees the loop between "A" and "B" flagged
 
 ### Delete beats edit
 

@@ -21,7 +21,7 @@ The GTD decision tree is the chosen model, because it turns an unclear backlog i
   1. **Is it actionable?** If not, it isn't a task but something to keep as a note (e.g. in Obsidian), and it is deleted. Before deleting, the review offers to copy its title and notes so they can be pasted elsewhere. The app has no "someday" state, because that would misrepresent a note as a task.
   2. **Is it more than one step?** If so: break it into tasks, linked as its prerequisites (see [Link tasks](../dependencies/link-tasks.md)).
   3. **Can it be done in under two minutes?** If so: do it now, then complete it.
-  4. **Should someone else do it?** If so: assign it (see [Assignment](../organization/assignment.md)) and optionally set a waiting status and follow-up date.
+  4. **Should someone else do it?** If so: assign it (see [Assignment](../organization/assignment.md)) and optionally tag it (e.g. @Waiting) and set a follow-up date.
   5. **Should it wait until later?** If so: schedule it (see [Schedule](schedule.md)).
   6. Otherwise it stays as a next-up task.
 - The user can skip a task without answering.
