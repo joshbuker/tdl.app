@@ -6,6 +6,9 @@
     },
     {
       "path": "tools/scenario-check"
+    },
+    {
+      "path": "tools/licence-check"
     }
   ]
 }

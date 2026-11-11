@@ -1,0 +1,24 @@
+{
+  "allowed": [
+    "MIT",
+    "ISC",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "0BSD",
+    "MPL-2.0",
+    "AGPL-3.0-only",
+    "AGPL-3.0-or-later",
+    "GPL-3.0-only",
+    "GPL-3.0-or-later",
+    "LGPL-2.1-or-later",
+    "LGPL-3.0-only",
+    "LGPL-3.0-or-later",
+    "CC0-1.0",
+    "Unlicense",
+    "BlueOak-1.0.0",
+    "Python-2.0",
+    "CC-BY-4.0"
+  ],
+  "exceptions": {}
+}

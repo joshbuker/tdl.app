@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "typecheck": "tsc -b",
     "test": "vitest run --reporter=default --reporter=json --outputFile.json=reports/vitest.json",
-    "check:scenarios": "node tools/scenario-check/src/cli.ts"
+    "check:scenarios": "node tools/scenario-check/src/cli.ts",
+    "check:licences": "node tools/licence-check/src/cli.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
