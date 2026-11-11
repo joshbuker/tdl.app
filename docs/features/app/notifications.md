@@ -21,7 +21,7 @@ Once tasks are shared, people need to know when something needs them without che
   - someone else completes a task they're assigned to or participate in;
   - someone invites them to a list or task (see [Sharing](sharing.md)).
 - Nobody is notified about their own changes.
-- Notifications go to all of the user's devices that have them enabled, as push notifications, and to an in-app list where they can be read later.
+- Reminders are scheduled on each device ahead of time, so they fire on time even offline (see [Reminders](../scheduling/reminders.md)). Other notifications are pushed to all of the user's devices that have them enabled as they happen. All notifications also go to an in-app list where they can be read later.
 - Each kind of notification can be turned on or off in settings, separately for push and the in-app list. All are on by default.
 - Opening a notification opens the task (or invitation) it is about, and marks it read.
 - People who can't see a task get no notifications about it.

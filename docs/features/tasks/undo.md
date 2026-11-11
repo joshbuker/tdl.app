@@ -6,15 +6,16 @@ Related: [Complete a task](complete-task.md), [Delete a task](delete-task.md), [
 
 ## Summary
 
-After any change, a notice offers Undo, which reverts that change.
+After a change to a task, a notice offers Undo, which reverts that change.
 
 ## Design intent
 
-Mistaps on a phone are easy, and changes save without a Save step, so every change should be easy to take back (from a Todoist task: "undo last action" for mobile misclicks). #3 had an Undo toast for completing, written but later orphaned. Sync already records every change with its previous value (see [Task history](task-history.md)), so undo reapplies the previous values rather than keeping a separate undo stack.
+Mistaps on a phone are easy, and changes save without a Save step, so changes to tasks should be easy to take back (from a Todoist task: "undo last action" for mobile misclicks). #3 had an Undo toast for completing, written but later orphaned. Sync already records every change with its previous value (see [Task history](task-history.md)), so undo reapplies the previous values rather than keeping a separate undo stack.
 
 ## Rules
 
-- Every change the user makes (creating, editing, moving, linking, unlinking, scheduling, completing, deleting, and so on) shows a notice with Undo. The notice stays on screen for the user's notification duration (see [Personalization](../app/personalization.md)).
+- Every change the user makes to a task shows a notice with Undo: creating, editing, moving, linking, unlinking, scheduling, tagging, assigning, completing and deleting it, and changing its subtasks.
+- Other actions, such as changing settings, managing lists and tags, sharing, or account changes, don't offer Undo. The notice stays on screen for the user's notification duration (see [Personalization](../app/personalization.md)).
 - Undo reverts everything that one action did, and nothing else. For example, completing a task together with its prerequisites is one action (see [Complete a task](complete-task.md)).
 - Undo only reverts the user's own change. If someone else, or another of the user's devices, has since changed the same field, that newer change is kept, and the user is told which parts couldn't be undone.
 - Undoing is itself a change: it is recorded in history and synced, and works offline.

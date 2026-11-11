@@ -17,7 +17,7 @@ The task detail view is where most editing happens, so it needs to show the task
 - Changes are saved without a separate Save step.
 - Moving a task to another list needs edit access to both lists, and only the task's owner can move it to a list with a different owner (see [Sharing](../app/sharing.md)).
 - Notes are markdown (CommonMark), shown formatted, with clickable links. They are stored as text.
-- Every change can be undone (see [Undo](undo.md)).
+- Every change to a task can be undone (see [Undo](undo.md)).
 - Linked tasks are shown, and choosing one opens it in place.
 - Every date field is editable, grouped in one Dates section: the schedule (date, time and duration, see [Schedule](../scheduling/schedule.md)), deadline (see [Deadlines](../scheduling/deadlines.md)), prioritize date (see [Prioritize date](../scheduling/prioritize-date.md)), recurrence (see [Recurring tasks](../scheduling/recurring-tasks.md)) and reminders (see [Reminders](../scheduling/reminders.md)).
 - The implied deadline is shown read-only, naming the task it comes from.

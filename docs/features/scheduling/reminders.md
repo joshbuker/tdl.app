@@ -22,7 +22,8 @@ Built twice: #1 sent web push notifications to every subscribed device, and #2 s
 - Changing or clearing the reminder time changes or cancels the notification.
 - A reminder time in the past does not fire.
 - Reminders are personal. On a task shared with others, each person sets their own, and only they are notified (see [Sharing](../app/sharing.md)).
-- Notifications go to all of the user's devices that have notifications enabled (see [Notifications](../app/notifications.md)).
+- Reminders are scheduled ahead of time as local notifications on each of the user's devices that have notifications enabled, rather than pushed by the server when they're due. That way they fire on time even when the device is offline or a push is delayed. When a reminder is added, changed or cancelled, each device reschedules it once it syncs (see [Notifications](../app/notifications.md)).
+- The web app fires reminders only while it is open, like Google Calendar, since browsers can't schedule notifications for later. The phone and desktop apps are how reminders reach the user otherwise (see [Platforms](../app/platforms.md)).
 
 ## Scenarios
 
@@ -37,6 +38,13 @@ Built twice: #1 sent web push notifications to every subscribed device, and #2 s
 - Given "Call plumber" is scheduled for 10:00 with a reminder 15 minutes before
 - When the user reschedules it to 14:00
 - Then the reminder fires at 13:45
+
+### Web reminders need the app open
+
+- Given "Call plumber" has a reminder at 9:00, and "alice" only uses the web app
+- When it is 9:00 and the web app is open
+- Then she gets the notification
+- And if the web app is closed at 9:00, no notification fires from the web app
 
 ### Reopening reinstates future reminders
 
