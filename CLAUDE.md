@@ -28,6 +28,20 @@ Specs and decision records are evergreen: edit them in place, delete them when t
 
 When resolving open questions with the user, ask in small batches of multiple-choice questions, each with a recommendation and what earlier attempts did. Apply answers to the docs after each batch. If an answer defers a choice, record it as an open question listing every option.
 
+- **Asking:**
+  - Explain any jargon in plain terms before asking about it.
+  - Word "keep" vs "defer" questions so the direction is unmistakable.
+  - Don't re-ask a question the user has already answered. If a clear directive has a tricky consequence, apply the directive and record the consequence as an open question listing the options.
+- **Answers:**
+  - Read free-text answers carefully: they often defer a choice, refine an option, or add a requirement.
+  - When gathering ideas from a source, capture all of them in the docs before triaging any.
+  - Commit at natural checkpoints, so nothing is lost between sessions.
+
+When evaluating libraries, tools or services:
+
+- Research the current state fresh: look for the latest and best-regarded options, rather than anchoring on names already mentioned. Consider categories beyond the obvious one (e.g. graph and document databases, not just SQL).
+- Check each candidate's current licence and maintenance status. Rule out anything that fails the licence rules in `docs/design-decisions/licence-and-pricing.md`.
+
 ## Historical versions
 
 Timeline and reasons for each rewrite are in `historical-versions/README.md`:
