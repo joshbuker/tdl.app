@@ -12,7 +12,16 @@ export interface PathOptions {
 
 /** Whether links lead from `from` to `to`, following prerequisite → postrequisite. Iterative BFS. */
 export function hasPath(g: Graph, from: Id, to: Id, opts: PathOptions): boolean {
-  const passable = (id: Id) => opts.intermediates === 'any' || g.tasks.get(id)?.completedAt === null;
+  return searchPath(g, from, to, opts, () => true);
+}
+
+/**
+ * `hasPath`, skipping intermediates for which `mayReach` is false. `mayReach` must only rule out
+ * tasks that can't lead to `to` at all, so the answer is the same, only faster.
+ */
+export function searchPath(g: Graph, from: Id, to: Id, opts: PathOptions, mayReach: (id: Id) => boolean): boolean {
+  const passable = (id: Id) =>
+    (opts.intermediates === 'any' || g.tasks.get(id)?.completedAt === null) && mayReach(id);
   const visited = new Set<Id>([from]);
   const queue: Id[] = [];
 
