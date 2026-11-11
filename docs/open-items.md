@@ -30,11 +30,10 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
   - **Refuse sign-up if it can't be reached.** Strict, but self-hosters without outbound internet couldn't sign anyone up.
   - **Make it a server setting**, on by default, so self-hosters without internet can turn it off.
 
-## Current state and history: open questions
+## Current state and history: constraints for later
 
-From an audit of every spec against [Current state and history](design-decisions/current-state-and-history.md) on 2026-11-11. Clear-cut fixes were applied; these need a decision.
+Left from an audit of every spec against [Current state and history](design-decisions/current-state-and-history.md) on 2026-11-11.
 
-- **Backup restores bring deleted data back** (see [Server backups](design-decisions/server-backups.md)), including an account whose owner deleted it, or tasks they permanently deleted. Options: the admin re-deletes by hand after a restore; keep a minimal deletion log (record ID and time, no content) and reapply it after restoring; or warn the admin which deletions a restore will undo.
 - **Compaction** ("may be needed later", [Offline first](design-decisions/offline-first.md)) must not drop operations that task history, undo or metrics need.
 
 ## Follow-ups from plan 1

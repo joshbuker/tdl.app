@@ -17,5 +17,5 @@ Users trust the server with their only copy of shared lists, and devices only ho
 
 ## Consequences
 
-- Restoring a backup can bring back data deleted after it was taken. This is accepted: permanent deletion leaves no history to reapply.
+- Restoring a backup can bring back data deleted after it was taken. This is accepted: permanent deletion leaves no history to reapply. The backup guide tells the admin to re-handle any deletions made since the backup, such as deleted accounts, after a restore.
 - Backup retention must respect account deletion and the non-paying retention period (see [Billing](../features/account/billing.md)).
