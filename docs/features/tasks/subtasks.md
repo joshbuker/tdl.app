@@ -14,9 +14,9 @@ From #3's schema: "Simple bullet list for a next action. Anything more complicat
 
 ## Rules
 
-- Subtasks have a title, an order and a completed flag.
+- Subtasks are records of their own, each with a title, an order and a completed flag, so edits to different subtasks made at the same time on different devices are all kept. #3 also stored them as records.
 - Subtasks cannot have links, dates or subtasks of their own.
-- A subtask can be converted into a real task. The new task's form is prefilled with the subtask's title and the original task's details (list, tags, dates and so on), which the user can edit before saving. On save, the new task becomes a prerequisite of the original, and the subtask is removed.
+- A subtask can be converted into a real task. The new task's form is prefilled with the subtask's title and the original task's details (list, tags, dates and so on), which the user can edit before saving. On save, the new task becomes a prerequisite of the original, and the subtask is removed. The original's history still shows the subtask and its conversion.
 
 ## Scenarios
 

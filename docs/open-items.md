@@ -34,7 +34,11 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
 
 From an audit of every spec against [Current state and history](design-decisions/current-state-and-history.md) on 2026-11-11. Clear-cut fixes were applied; these need a decision.
 
-- **Which records are removed, trashed or permanently deleted.** Decide per type, in each spec: attachments (history shows the name and size but the file is gone), tags (deleting a tag has no rules yet; is tagging a record or a set field on the task?), statuses (do trashed tasks count as "in use"?), subtasks (records or a field?), saved presets, reminders, in-app notifications, and invitations and invite links (server-only, deleted outright?). Also decide whether comment changes appear in task history at all.
+- **Concurrent changes to a task's tags.** A task's tags are one field (see [Tags](features/organization/tags.md)), so if two people change a task's tags while offline, the newest change replaces the other: one person's added or removed tag is lost. Options:
+  - **Accept it**: tag edits rarely collide, and history shows both changes.
+  - **Merge the field as a set**: sync records each tag added or removed instead of the whole list, so concurrent changes combine. More complex than newest-wins.
+  - **A record per tagging**, like links: concurrent changes never clash.
+- **Which records are removed or permanently deleted**, for the remaining types: saved presets, reminders, in-app notifications, and invitations and invite links (server-only, deleted outright?). Also decide whether comment changes appear in task history at all.
 - **Recurring tasks.** Completing and skipping are both field changes, so history can't tell them apart. Options: an explicit completion or skip field, or an occurrence record per completion. Also: two offline completions of an "after completion" task may compute different next dates.
 - **Trash in the graph rules.** [Delete a task](features/tasks/delete-task.md) and [Next up](features/dependencies/next-up.md) cover blocking and cycles; say how redundancy and loop flags treat trashed tasks.
 - **Lists in the Trash** are permanently deleted after 30 days, which purges their tasks and all their history. Say so in [Lists](features/organization/lists.md).
@@ -122,6 +126,7 @@ Technical choices the specs leave open, to settle while choosing the stack:
 
 ## Decisions for v2
 
+- **Statuses and the Trash**: should a task in the Trash count as using its status, which blocks deleting the status (see [Statuses](features/organization/statuses.md))? Options: no, and a restored task gets its list's default status for its category; or yes, so the status can't be deleted until those tasks leave the Trash.
 - **Cryptographic design**: the password protocol (e.g. OPAQUE or SRP), the key hierarchy and re-keying when someone is removed, the device-approval protocol, and deriving keys from passkeys (WebAuthn PRF, not yet on every platform). How a list invite link hands over keys (e.g. in the link's fragment) and how users can verify each other's keys.
 
 ## Stack constraints

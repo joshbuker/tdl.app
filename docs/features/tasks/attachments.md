@@ -19,7 +19,7 @@ Attachments were one of the gaps in Todoist the author cared about (notes: Top P
 - Images show a preview. Other files show their name, type and size.
 - The server admin sets a maximum size per file and storage per account. The user is told before uploading if a file is too big or would go over their storage.
 - Attachments are downloaded when opened, and stay available offline afterwards. Attachments added offline upload when back online.
-- Removing an attachment, or permanently deleting its task or comment, deletes the file. A trashed task keeps its attachments.
+- Removing an attachment, or permanently deleting its task or comment, deletes the file. A trashed task keeps its attachments. The task's history still shows a removed attachment's name and size, but it can't be opened.
 
 ## Scenarios
 
