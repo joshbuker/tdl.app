@@ -5,7 +5,7 @@ Release: v1
 
 ## Summary
 
-Display preferences: which pages appear in navigation, the default page, background, notification duration, and sounds.
+Display preferences: which pages appear in navigation, the default page, theme, text size, time format, background, notification duration, and sounds.
 
 ## Design intent
 
@@ -18,6 +18,9 @@ From #3, where each of these was a setting. #3 also played a sound when checking
 - Navigation can be reset to the default set of pages.
 - Keyboard shortcuts can be changed (see [Keyboard shortcuts](keyboard-shortcuts.md)).
 - The user can choose a background.
+- The theme is light, dark, or follows the device's setting. Following the device is the default.
+- Text size follows the device's setting, and can be scaled further in the app.
+- Times are shown in 12-hour or 24-hour format. The default comes from the user's language and region.
 - The user can choose how long in-app notices stay on screen: Slow, Medium or Fast. The default is Slow.
 - Error notices ignore the notification duration and stay on screen until the user dismisses them.
 - A sound plays when a task is checked or unchecked. Sounds can be turned off.
@@ -60,6 +63,16 @@ From #3, where each of these was a setting. #3 also played a sound when checking
 - Given "alice" set the notification duration to Fast
 - When an error notice is shown
 - Then it stays on screen until she dismisses it
+
+### Theme follows the device
+
+- Given "alice" hasn't chosen a theme, and her phone is set to dark mode
+- Then the app is dark on her phone
+
+### 24-hour time
+
+- Given "alice" chose 24-hour time
+- Then a task scheduled for 3pm shows 15:00
 
 ### Turn off sounds
 

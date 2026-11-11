@@ -16,6 +16,7 @@ From #3: `q` to create a task and `/` to search.
 - Shortcuts don't fire while typing in a text field.
 - Shortcuts don't open a second dialog on top of one they opened.
 - The user can change any shortcut. Shortcuts are stored on the account with other settings, and can be reset to the defaults (see [Personalization](personalization.md)).
+- There is a shortcut to undo the most recent change to a task (see [Undo](../tasks/undo.md)).
 - The full list of default shortcuts is decided during UI design.
 
 ## Scenarios

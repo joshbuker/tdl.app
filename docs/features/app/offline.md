@@ -18,6 +18,7 @@ Everything works without a connection. Changes made offline sync when the device
 - Changes made offline are kept on the device and synced when back online, in the order they were made.
 - New items get their IDs on the device, so they can be linked and edited before syncing.
 - Graph rules (no cycles, no redundant links) are checked on the device when a link is added, online or offline.
+- While online, changes are synced as they happen, and the server pushes changes from other devices and collaborators to open apps within a few seconds, without a refresh.
 - The user can see whether there are changes waiting to sync.
 - A device can stay offline for any length of time. Its unsynced changes are always kept and synced, and the server keeps the full change history so any device can catch up.
 - Conflicting edits are resolved automatically when there is a clear answer, and the user is asked when there isn't:
@@ -66,6 +67,12 @@ Everything works without a connection. Changes made offline sync when the device
 - And both devices sync
 - Then both links are kept
 - And the user sees the loop between "A" and "B" flagged
+
+### Live updates
+
+- Given "alice" and "bob" both have "House" open and are online
+- When "bob" completes "Paint fence"
+- Then "alice" sees it completed within a few seconds, without refreshing
 
 ### Delete beats edit
 

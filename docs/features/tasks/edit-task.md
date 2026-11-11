@@ -21,6 +21,7 @@ The task detail view is where most editing happens, so it needs to show the task
 - Linked tasks are shown, and choosing one opens it in place.
 - Every date field is editable, grouped in one Dates section: the schedule (date, time and duration, see [Schedule](../scheduling/schedule.md)), deadline (see [Deadlines](../scheduling/deadlines.md)), prioritize date (see [Prioritize date](../scheduling/prioritize-date.md)), recurrence (see [Recurring tasks](../scheduling/recurring-tasks.md)) and reminders (see [Reminders](../scheduling/reminders.md)).
 - The implied deadline is shown read-only, naming the task it comes from.
+- Tapping anywhere on a date or time field opens its picker. In 12-hour format, pickers show AM and PM clearly (see [Personalization](../app/personalization.md)).
 
 ## Scenarios
 

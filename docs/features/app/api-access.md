@@ -49,7 +49,3 @@ Users and other programs can read and change their data through a documented pub
 - Given "alice" revoked her "Home automation" token
 - When a program uses it
 - Then it is refused as unauthorized
-
-## Open questions
-
-- A free-form data field on tasks where other apps can store their own data (from the Backlog). See [Open items](../../open-items.md).

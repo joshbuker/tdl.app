@@ -16,7 +16,7 @@ The rules keep the graph meaningful. A cycle would mean nothing can ever be star
 
 ## Rules
 
-- A link is one record between two tasks, with attributes: whether it is hard or soft (see [Soft dependencies](soft-dependencies.md)), and an optional reason describing why it exists. Links are records of their own (see [Links are records](../../design-decisions/links-are-records.md)).
+- A link is one record between two tasks, with attributes: whether it is hard or soft (see [Soft dependencies](soft-dependencies.md)), and an optional reason describing why it exists. The reason is markdown of any length, like task notes (see [Edit a task](../tasks/edit-task.md)). Links are records of their own (see [Links are records](../../design-decisions/links-are-records.md)).
 - A task cannot be linked to itself.
 - A recurring task cannot be linked (see [Recurring tasks](../scheduling/recurring-tasks.md)).
 - Adding or removing a link needs edit access to both tasks. The two tasks can be in different lists, owned by different users. Links to tasks other people can't see are invisible to them and don't block for them (see [Sharing](../app/sharing.md)).

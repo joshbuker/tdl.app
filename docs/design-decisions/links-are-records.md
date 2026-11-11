@@ -11,7 +11,7 @@ Every attempt stored links in their own table: #1 and #2 had `rules` (`pre_id`, 
 A link is a **record of its own** (a join model with its own table), not a field or list on a task.
 
 - There is **one** link model. "Prerequisite" and "postrequisite" are the two ends of the same record, seen from each task, not two models or two stored copies.
-- Each link record holds: the prerequisite task, the postrequisite task, whether it is **hard or soft**, an optional **reason** describing why it exists, and its own timestamps.
+- Each link record holds: the prerequisite task, the postrequisite task, whether it is **hard or soft**, an optional **reason** describing why it exists (markdown, like task notes), and its own timestamps.
 - A pair of tasks has at most one link, in one direction. Hard vs soft is an attribute of that link, not a separate link.
 - Domain rules (no self links, no cycles, no redundant links, recurring tasks can't be linked) validate link records, and live in the framework-independent domain logic.
 

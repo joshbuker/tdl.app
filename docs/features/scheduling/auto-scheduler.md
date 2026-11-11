@@ -73,6 +73,7 @@ This builds on the independent date, time and duration in [Schedule](schedule.md
 
 - Can a list or tag have a default time window (e.g. every task in "Work" uses "Work hours")?
 - Can a task have more than one time window (e.g. either of two stores)?
+- Should a time window also hide or flag a next-up task while it is outside its window (e.g. "Call the bank" on weekdays 9 to 5)? From a Todoist task, along with soft "around 3pm" times.
 - Should windows support exceptions such as holidays or one-off closures?
 - Can a time window be shared with a list's collaborators (see [Sharing](../app/sharing.md))?
 

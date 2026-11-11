@@ -18,6 +18,7 @@ Built twice: #1 sent web push notifications to every subscribed device, and #2 s
 - A task can have any number of reminders, each with its own date and time, separate from the task's schedule.
 - A reminder can be set relative to the scheduled time (e.g. "at the scheduled time" or "15 minutes before"). A relative reminder moves when the schedule changes, including to each new occurrence of a [recurring task](recurring-tasks.md). A reminder set at a fixed date and time stays put.
 - A reminder fires once at its time.
+- A setting adds a default reminder to tasks when a time is scheduled: off (the default), at the scheduled time, or a chosen number of minutes before. It is an ordinary relative reminder, which the user can change or remove.
 - Completing a task cancels its pending reminders. Marking it incomplete again reinstates those still in the future. Ones whose time passed while it was complete don't fire late.
 - Changing or clearing the reminder time changes or cancels the notification.
 - A reminder time in the past does not fire.
@@ -38,6 +39,12 @@ Built twice: #1 sent web push notifications to every subscribed device, and #2 s
 - Given "Call plumber" is scheduled for 10:00 with a reminder 15 minutes before
 - When the user reschedules it to 14:00
 - Then the reminder fires at 13:45
+
+### Default reminder
+
+- Given "alice" set her default reminder to 15 minutes before
+- When she schedules "Call plumber" for Thursday at 10:00
+- Then "Call plumber" has a reminder at 09:45, which she can remove
 
 ### Web reminders need the app open
 

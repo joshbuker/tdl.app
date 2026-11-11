@@ -18,26 +18,6 @@ Ideas from earlier notes that aren't planned for v1, kept so they aren't lost. E
 
 Sources: earlier notes (titles in brackets) and Todoist tasks (marked "Todoist").
 
-### Still to triage for v1
-
-- **Skip or defer one occurrence** of a recurring task, and priority that rises as the period ends. [Repeated Tasks]
-- **Re-login dialog on session expiry** that keeps the user's place. [Backlog]
-- **Accessibility**: icons on tags for colour-blind users, text size. [Backlog]
-- **Dark theme**, by default. [Features that Kurt wants]
-- **Soft links that expire when stale**, or a mode that ignores soft links for a while. Contradicts [Soft dependencies](features/dependencies/soft-dependencies.md). [Features that Kurt wants]
-- **Create links by dragging in the graph.** Contradicts [Graph view](features/views/graph-view.md), which is view-only. [Features that Kurt wants]
-- **Show redundant links in the graph**, off by default. [Features that Kurt wants]
-- **Links between recurring tasks**, recurring with them. Contradicts [Recurring tasks](features/scheduling/recurring-tasks.md). [Features that Kurt wants]
-- **Notes on links**, with markdown, beyond the one-line reason. [Features that Kurt wants]
-- **Default reminder offsets**, e.g. every scheduled time gets a reminder 15 minutes before. [Backlog, Todoist features we like]
-- **Free-form JSON field on tasks** for other apps' data, via the API. [Backlog]
-- **Live updates**: changes from other devices and collaborators appear without a manual refresh (e.g. websockets). [Todoist: "Add automatic background sync to TDL"]
-- **Date and time input**: clear AM/PM, a 12/24-hour preference, and tapping the field opens the picker. [Todoist: datetime input tasks]
-- **Time-of-day constraints on next up**: e.g. "bank, weekdays 9 to 5" hidden or flagged while closed, and soft "around 3pm" times. Only the v2 auto-scheduler has time windows. [Todoist: "Add time of day constraint for next actions"]
-- **Server backups** of the database for tdl.app and self-hosters. An operational requirement, not a feature. [Todoist: "Create database export/backup for tdl.app"]
-
-### Later
-
 - **Per-person completion on shared tasks**: a task that each person completes for themselves (e.g. "Read the house rules"), instead of once for everyone. Complicates next up, which would differ per person. [TDL App Shared Tasks]
 - **Voice capture** through Google Assistant, for hands-free use. [Backlog]
 - **Recurrence from data streams**: e.g. car mileage, "time or mileage, whichever first", IFTTT-style triggers. [Backlog]
@@ -65,6 +45,11 @@ Sources: earlier notes (titles in brackets) and Todoist tasks (marked "Todoist")
 - **Email capture**: turn an email into a task with a link back, like Todoist's Gmail integration. [Todoist: "Gmail integration (ala todoist)"]
 - **File over app**: tasks stored in an open file format other tools can read, beyond import and export. [Todoist: "Use a file format for tasks TDL App"]
 - **Oldest overdue task** as a tracked metric. [Todoist: "Add metric tracking for Oldest Overdue Task"]
+- **Recurring priority**: a recurring task's priority rises as its period ends. [Repeated Tasks]
+- **Links between recurring tasks** that recur with them. Kept out of the graph for now; see [Recurring tasks](features/scheduling/recurring-tasks.md). [Features that Kurt wants]
+- **Stale soft links**: offer to prune soft links between old tasks, or a mode that ignores soft links for a while. [Features that Kurt wants]
+- **Free-form data field on tasks** for other apps, via the API. Integrations can key their own data by task ID until then. [Backlog]
+- **Time-of-day constraints on next up**, e.g. "bank, weekdays 9 to 5". Recorded as an open question in [Auto-scheduler](features/scheduling/auto-scheduler.md). [Todoist: "Add time of day constraint for next actions"]
 - **Monetization**: freemium vs paid from day one, per-user pricing for prosumers and small businesses, open-source free tier with a closed premium tier. No decision yet. [2021-10 business calls]
 
 ## Design decisions to write
@@ -77,6 +62,7 @@ These choices from earlier attempts have written reasoning in `historical-versio
 - Translations from day one.
 - Version pins must say when they can be lifted.
 - Releases on version tags, with CI also run weekly to catch vulnerable dependencies.
+- Server backups: automated, tested database backups for tdl.app, and documented backup and restore for self-hosters, before anyone else's data is on the server. From a Todoist task.
 
 ## Stack constraints
 
@@ -88,6 +74,7 @@ Requirements gathered so far that the stack must support:
 - Server-to-server request signing (HTTP Message Signatures) and WebFinger lookup, for federation (v2).
 - Web, Android, iOS and desktop.
 - Good tooling for both unit and acceptance tests.
+- Server-pushed live updates to open apps (e.g. websockets or server-sent events).
 - Calendar dates and RFC 9557 zoned date-times, with the IANA time zone database (see [Floating dates, zoned times](design-decisions/floating-dates-zoned-times.md)).
 - A public, versioned API documented with OpenAPI generated from tests, OAuth for third-party apps, and an MCP server built on it (see [API access](features/app/api-access.md) and [MCP server](features/app/mcp-server.md)).
 - Scheduled local notifications on every platform for reminders, and push notifications for everything else (see [Reminders](features/scheduling/reminders.md)).

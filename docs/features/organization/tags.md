@@ -24,7 +24,7 @@ Tags are shared the same way as lists and tasks (see [Container and item grants]
 - When the user adds a tag to a task that other people can see, they are asked whether to share the tag with them.
 - The user's answer is remembered for each tag and person, so they aren't asked about the same tag and person again.
 - A tag can be shared or unshared at any time from its menu (e.g. right-click or long-press), including after declining earlier.
-- Tags have a color (random by default) and an order.
+- Tags have a color (random by default), an optional icon from the same set as lists, and an order. The icon means a tag doesn't rely on color alone (see [Lists](lists.md)).
 - Filtering by tags can require all selected tags, any of them, or none of them.
 - Tag filters match by title, ignoring case, so filtering by @Errands matches the user's own "Errands" tag and any "errands" tag shared with them alike.
 - A "no tags" filter shows untagged tasks.
