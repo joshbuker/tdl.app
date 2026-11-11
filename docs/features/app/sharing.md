@@ -24,7 +24,7 @@ Access is granted on lists and on single tasks, like folders and files in Google
   - **Editor**: edit, complete, add, link and delete tasks, and move them between lists with the same owner. On a single task, everything except deleting it or moving it to another list.
   - **Commenter**: read, and comment (see [Comments](../tasks/comments.md)).
   - **Viewer**: read only. Can see comments but not add them.
-  - **Outline**: can see that the task exists, how it is linked and whether it is complete, but not its title or any other details. Like free/busy in a shared calendar. Tasks a person can only see as an outline don't appear in their lists, presets or filters: they appear only as placeholders linked to tasks the person can see. They can't be linked to or assigned to that person.
+  - **Outline**: can see that the task exists, how it is linked and whether it is complete, but not its title or any other details. Like free/busy in a shared calendar. Tasks a person can only see as an outline don't appear in their lists, presets or filters: they appear only as placeholders linked to tasks the person can see. They can't be linked to or assigned to that person. (v2)
 - Access to a list gives that access to all of its tasks. Granting access also shares the keys needed to read it (see [End-to-end encryption](end-to-end-encryption.md)).
 - A person's access to a task is the highest of what its list gives them and what the task gives them. Grants only add access: a task can't be hidden from someone who can see its list.
 - The list owner manages who has access to the list and its tasks. Per list, the owner can also let the list's editors share single tasks. By default they can't. People with access to only a single task can't share it further.
@@ -34,7 +34,7 @@ Access is granted on lists and on single tasks, like folders and files in Google
 
 ### What each role can do
 
-| Action | Owner | Editor | Commenter | Viewer | Outline |
+| Action | Owner | Editor | Commenter | Viewer | Outline (v2) |
 | --- | --- | --- | --- | --- | --- |
 | See that a task exists, its links and completion | yes | yes | yes | yes | yes |
 | See titles, notes, comments and attachments | yes | yes | yes | yes | no |
@@ -53,15 +53,15 @@ Everyone can edit or delete their own comments and leave a list or task shared w
 - A task's title, notes, subtasks, completion, schedule and deadline are the same for everyone with access. Reminders are personal (see [Reminders](../scheduling/reminders.md)). History shows each person only what they can see (see [Task history](../tasks/task-history.md)).
 - Only a task's owner can move it to a list with a different owner, so a task can't be taken from its owner. Moving a task to another list keeps its direct grants. Access through the old list is lost and access through the new list is gained. Before the move, the mover is told who will gain or lose access.
 - Collaborators can leave a list shared with them. Someone a task was shared with directly can leave it by removing it from "Shared with me". Either way their access is removed, and the owner can see that they left.
-- When sharing a task that has incomplete prerequisites the recipient can't see, the sharer is offered to share each of them too, either fully or as an outline. Only prerequisites the sharer is allowed to share are offered.
+- When sharing a task that has incomplete prerequisites the recipient can't see, the sharer is offered to share each of them too, fully, or as an outline in v2. Only prerequisites the sharer is allowed to share are offered.
 
 ### Linked tasks and the graph
 
 - Someone with edit access to two tasks can link them, even if they are in different lists or owned by different users (see [Link tasks](../dependencies/link-tasks.md)). What a person sees of a linked task depends on their access to it:
   - **Viewer or above**: the task as normal.
-  - **Outline**: a placeholder showing that a task exists and how it links, with no title or details.
+  - **Outline (v2)**: a placeholder showing that a task exists and how it links, with no title or details.
   - **No access**: no sign at all. The linked task and its links are not shown, and are ignored for that person's cycle checks, rejection messages and blocked indicators.
-- Each person's next up, blocked indicators and graph-rule checks consider only tasks and links they can see (as a viewer or above, or as an outline). See [Visibility-scoped graph](../../design-decisions/visibility-scoped-graph.md).
+- Each person's next up, blocked indicators and graph-rule checks consider only tasks and links they can see (as a viewer or above, or in v2 as an outline). See [Visibility-scoped graph](../../design-decisions/visibility-scoped-graph.md).
 - A link that would close a loop the person adding it can see is rejected (see [Link tasks](../dependencies/link-tasks.md)). A link that closes a loop only another person can see is allowed, as is a loop formed by changes made at the same time on different devices. Each person who can see the whole loop gets it flagged, naming the links involved, and its tasks stay blocked for them until someone removes one of those links. People who can't see the whole loop see no flag.
 - Losing access to a list or task hides it. Links to it from the person's own tasks remain, but are treated like any other task they have no access to: not shown, and not blocking.
 
@@ -148,7 +148,7 @@ Everyone can edit or delete their own comments and leave a list or task shared w
 
 - Given "Buy paint" is an incomplete prerequisite of "Paint fence"
 - When "alice" shares "Paint fence" with "bob", who can't see "Buy paint"
-- Then she is offered to share "Buy paint" with him fully or as an outline
+- Then she is offered to share "Buy paint" with him too
 
 ### Hidden blocker
 
@@ -156,12 +156,6 @@ Everyone can edit or delete their own comments and leave a list or task shared w
 - And "alice" makes her private task "Get paid" a prerequisite of "Paint fence"
 - And "bob" has no access to "Get paid"
 - Then "bob" doesn't see "Get paid", and "Paint fence" is next up for him
-
-### Outline sees the shape
-
-- Given "Get paid" is in alice's list "Money", and "bob" has outline access to "Money"
-- And "Get paid" is a prerequisite of "Paint fence" in the shared list "House"
-- Then "bob" sees "Paint fence" blocked by a task with no title, and its link
 
 ### Loop only another user can see
 

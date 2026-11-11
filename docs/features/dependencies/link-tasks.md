@@ -123,9 +123,3 @@ The rules keep the graph meaningful. A cycle would mean nothing can ever be star
 - When he makes his own task "Buy paint" a prerequisite of "Paint fence"
 - Then the link is added, and "Paint fence" is blocked for "bob"
 - And "alice" doesn't see "Buy paint", and "Paint fence" is still next up for her
-
-### Outline access can't be linked
-
-- Given "bob" has outline access to "Get paid"
-- When he searches for a prerequisite to add to his task "Buy paint"
-- Then "Get paid" is not offered

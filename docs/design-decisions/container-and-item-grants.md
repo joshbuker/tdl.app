@@ -10,7 +10,7 @@ Access is granted on **containers** (lists) and on **items** (single tasks), the
 
 - Sharing a list gives access to all of its tasks.
 - A single task can also be shared directly with someone, whether or not they can see its list.
-- Roles are owner, editor, commenter, viewer and outline. Any of them except owner can be granted on a list or on a task. Outline shows that a task exists, how it links and whether it is complete, but nothing else, like free/busy in a shared calendar.
+- Roles are owner, editor, commenter and viewer, plus outline in v2. Any of them except owner can be granted on a list or on a task. Outline shows that a task exists, how it links and whether it is complete, but nothing else, like free/busy in a shared calendar.
 - A person's access to a task is the highest of what its list gives them and what the task gives them. Grants only add access: a task can't be hidden from someone who can see its list.
 - Tags are shared the same way, on their own: a tag shows on a task only to people with access to both, and sharing a task asks which of its tags to share (see [Tags](../features/organization/tags.md)).
 - Trash is a shared state on the record, not a place it moves to (see [Delete a task](../features/tasks/delete-task.md)).

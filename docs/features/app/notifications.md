@@ -25,6 +25,7 @@ Once tasks are shared, people need to know when something needs them without che
 - Each kind of notification can be turned on or off in settings, separately for push and the in-app list. All are on by default.
 - Opening a notification opens the task (or invitation) it is about, and marks it read.
 - People who can't see a task get no notifications about it.
+- The device that makes a change works out who to notify, and tells the server only whom to send to, with an encrypted body. Each person's notification settings are applied on their own devices.
 - Push notifications carry no readable content. The device decrypts what it needs to show (see [End-to-end encryption](end-to-end-encryption.md)).
 
 ## Scenarios

@@ -27,6 +27,7 @@ Pricing starts from day one, so the hosted service covers its costs and paying i
 - Free trials are a server setting: on or off, and how long they last (e.g. 7 or 30 days). They can only be turned on while billing is on. With trials on, new accounts start with a trial and full access, unless they have free access.
 - Sign-up invite links and email invites can be set to give free access, so the account starts with it (see [Sign up](sign-up.md)).
 - Payments go through a payment provider. The server never stores card details.
+- Payment happens on the web only. The phone and desktop apps never sell anything; they show the account's status, and where store rules allow, link to the web to pay.
 
 ## Scenarios
 

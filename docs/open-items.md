@@ -84,7 +84,7 @@ Technical choices the specs leave open, to settle while choosing the stack:
 - **Language for shared domain logic**: it must run on the four app platforms, the server, and the standalone MCP program and API client library.
 - **ID scheme** that can later carry federation.
 - **Authorization**: whether to use a Zanzibar-style library (see [Container and item grants](design-decisions/container-and-item-grants.md)).
-- **Payment provider**, and how mobile app-store rules affect payments.
+- **Payment provider** for web payments. The apps don't sell anything (see [Billing](features/account/billing.md)); check app-store rules on linking out at launch.
 - **Push notifications for self-hosted servers**, which can't use the app publisher's credentials for Apple and Google push.
 
 ## Stack constraints

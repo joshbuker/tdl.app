@@ -9,7 +9,7 @@ Links can cross list and user boundaries, so a shared task can depend on a task 
 What a user sees of the graph, and what the graph rules consider for them, depends on their access to each task, through its list or a direct grant (see [Container and item grants](container-and-item-grants.md)):
 
 - **Viewer or above**: tasks and links as normal.
-- **Outline**: placeholders showing that tasks exist, how they link and whether each is complete, without titles or details. Like free/busy in a shared calendar.
+- **Outline** (v2): placeholders showing that tasks exist, how they link and whether each is complete, without titles or details. Like free/busy in a shared calendar.
 - **No access**: no sign at all.
 
 Next up, blocked indicators, the cycle and redundancy checks, rejection messages, task history, and every value derived from the graph (implied deadlines and prioritize dates, the Blocks sorts, progress counts, graph node sizes and dependency order) are all worked out per user from what that user can see. The same applies between servers (see [Federation](../features/app/federation.md)), where servers exchange opaque placeholders behind the scenes.

@@ -30,6 +30,7 @@ Everything works without a connection. Changes made offline sync when the device
 - Conflicts are resolved per user: the user whose device detects the conflict while syncing (because the other change reached the server first) is the one asked. This applies on shared lists too (v2).
 - Every synced change is kept in the task's history (see [Task history](../tasks/task-history.md)), including changes that were overridden or that duplicated another. Changes made concurrently on different devices are flagged as such, e.g. a task completed twice by two people while offline shows both completions, flagged as a double completion.
 - When changes that are each valid on their own together break a graph rule, both are kept rather than one being undone. A loop formed this way is flagged to each user who can see all of it (see [Sharing](sharing.md)), and a link made redundant this way is shown as redundant (see [Link tasks](../dependencies/link-tasks.md)).
+- When the server rejects changes a device made offline (e.g. the account became read-only, or the user lost access to a list), the device keeps them in a "couldn't sync" view that says why. The user can copy their content into their own lists, for example as a new task, or discard them. Nothing they typed is silently lost.
 - When a task is deleted on one device and edited on another, the delete wins and the edit is applied to the task in the Trash, so nothing is lost and it can be restored.
 
 ## Scenarios
@@ -73,6 +74,13 @@ Everything works without a connection. Changes made offline sync when the device
 - Given "alice" and "bob" both have "House" open and are online
 - When "bob" completes "Paint fence"
 - Then "alice" sees it completed within a few seconds, without refreshing
+
+### Rejected offline changes are kept
+
+- Given "bob" edited "Paint fence" offline, and meanwhile lost access to "House"
+- When his device syncs
+- Then his edit is shown under "couldn't sync", saying he no longer has access
+- And he can copy it into one of his own lists as a new task, or discard it
 
 ### Delete beats edit
 

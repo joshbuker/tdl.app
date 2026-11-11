@@ -16,7 +16,7 @@ A commenter role sits between editor and viewer, so someone can take part in the
 
 ## Rules
 
-- People with commenter access or above can add comments to a task. Viewers can read comments but not add them. Outline access shows no comments.
+- People with commenter access or above can add comments to a task. Viewers can read comments but not add them. Outline access (v2) shows no comments.
 - A comment records who wrote it and when.
 - The author can edit or delete their own comment. An edited comment shows that it was edited. The task's owner can also delete any comment.
 - New comments notify the task's assignee, its participants, and everyone who has commented on it, except the author (see [Assignment](../organization/assignment.md)). Mentioning someone with access notifies them too.
