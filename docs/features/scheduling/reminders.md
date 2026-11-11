@@ -22,7 +22,7 @@ Built twice: #1 sent web push notifications to every subscribed device, and #2 s
 - Changing or clearing the reminder time changes or cancels the notification.
 - A reminder time in the past does not fire.
 - Reminders are personal. On a task shared with others, each person sets their own, and only they are notified (see [Sharing](../app/sharing.md)).
-- Notifications go to all of the user's devices that have notifications enabled.
+- Notifications go to all of the user's devices that have notifications enabled (see [Notifications](../app/notifications.md)).
 
 ## Scenarios
 

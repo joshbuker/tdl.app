@@ -11,7 +11,7 @@ v1 is for the author plus a few people (family or friends): good enough to repla
 - **In v1:** web, Android, iOS and desktop; offline-first editing and sync; sharing on one server; and every spec marked `Release: v1`.
 - **Moved to v2:** federation, user-resolved sync conflicts and notes text merging, request access, languages other than English, Focus, Quick sort, Insert between, Move requisites, Prune redundant links, Triage review and Slice task. Statuses and the Board view were already deferred (see [Completion before statuses](completion-before-statuses.md)).
 
-On invite-only servers, admins bring people in with sign-up invite links until request access arrives in v2 (see [Sign up](../features/account/sign-up.md)).
+On invite-only servers, admins bring people in with sign-up invite links and email invites until request access arrives in v2 (see [Sign up](../features/account/sign-up.md)).
 
 Deferred features must still fit without a redesign: IDs and the sync protocol must be able to carry federation, and sync keeps full change history from day one.
 

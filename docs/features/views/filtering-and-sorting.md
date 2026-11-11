@@ -32,7 +32,7 @@ When tasks from several lists are shown together, each one shows its list, so th
 - Tasks can be filtered by status (v2, see [Statuses](../organization/statuses.md)).
 - Tasks can be filtered by assignee (including "assigned to me") and by participant (see [Assignment](../organization/assignment.md)).
 - Sorts combine, with each later sort breaking ties in the ones before it.
-- Tasks can be sorted by their own fields (e.g. title, schedule, deadline, prioritize date, completion time, creation time) and by computed fields:
+- Tasks can be sorted by their own fields (e.g. title, priority, schedule, deadline, prioritize date, completion time, creation time) and by computed fields:
   - **Blocks**: how many incomplete tasks it blocks through hard links, directly or through other tasks.
   - **Effective deadline**: the earlier of its deadline and its implied deadline (see [Deadlines](../scheduling/deadlines.md)).
   - **High priority**: whether its [prioritize date](../scheduling/prioritize-date.md) has passed.

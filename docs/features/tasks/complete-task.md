@@ -15,7 +15,7 @@ Completing a task is the most frequent action, so it should be one tap with imme
 ## Rules
 
 - A task is either complete or incomplete (see [Completion before statuses](../../design-decisions/completion-before-statuses.md)). A completed task can be marked incomplete again.
-- After completing a task, a notice offers Undo, which reverts the whole action: the task is marked incomplete again, and any prerequisites completed or unlinked with it are reverted too. The notice stays on screen for the user's notification duration (see [Personalization](../app/personalization.md)).
+- After completing a task, a notice offers Undo (see [Undo](undo.md)), which reverts the whole action: the task is marked incomplete again, and any prerequisites completed or unlinked with it are reverted too. The notice stays on screen for the user's notification duration (see [Personalization](../app/personalization.md)).
 - Completing a task cancels its pending reminders.
 - Completing a task may unblock its postrequisites. Marking it incomplete blocks them again.
 - The completion time is recorded.

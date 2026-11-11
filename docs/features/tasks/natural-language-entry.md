@@ -20,7 +20,8 @@ Modeled on Todoist's quick add, so capture stays a single line of typing. #3 had
   - a list, written `#List`;
   - tags, written `@tag`;
   - a deadline, written `{date}`;
-  - reminders, written `!time`.
+  - reminders, written `!time`;
+  - a priority, written `p1` to `p4` (see [Priority](../organization/priority.md)).
 - The symbols above (`#`, `@`, `{}`, `!`) are placeholders, to be finalized during implementation.
 - Recognized parts are highlighted while typing, before the task is saved.
 - Every date field (schedule, deadline, prioritize date, reminders) accepts the same natural-language dates and recurrence when edited.

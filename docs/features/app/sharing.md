@@ -2,7 +2,7 @@
 
 Status: Proposed
 Release: v1
-Related: [Container and item grants](../../design-decisions/container-and-item-grants.md), [Visibility-scoped graph](../../design-decisions/visibility-scoped-graph.md), [Federation](federation.md), [Lists](../organization/lists.md), [Link tasks](../dependencies/link-tasks.md), [Assignment](../organization/assignment.md)
+Related: [Comments](../tasks/comments.md), [Container and item grants](../../design-decisions/container-and-item-grants.md), [Visibility-scoped graph](../../design-decisions/visibility-scoped-graph.md), [Federation](federation.md), [Lists](../organization/lists.md), [Link tasks](../dependencies/link-tasks.md), [Assignment](../organization/assignment.md)
 
 ## Summary
 
@@ -22,7 +22,8 @@ Access is granted on lists and on single tasks, like folders and files in Google
 - Access can be granted on a list or on a single task, with one of these roles:
   - **Owner**: everything, including managing who has access and deleting the list.
   - **Editor**: edit, complete, add, link and delete tasks, and move them between lists with the same owner. On a single task, everything except deleting it or moving it to another list.
-  - **Viewer**: read only.
+  - **Commenter**: read, and comment (see [Comments](../tasks/comments.md)).
+  - **Viewer**: read only. Can see comments but not add them.
   - **Outline**: can see that the task exists, how it is linked and whether it is complete, but not its title or any other details. Like free/busy in a shared calendar. Tasks a person can only see as an outline don't appear in their lists, presets or filters: they appear only as placeholders linked to tasks the person can see. They can't be linked to or assigned to that person.
 - Access to a list gives that access to all of its tasks.
 - A person's access to a task is the highest of what its list gives them and what the task gives them. Grants only add access: a task can't be hidden from someone who can see its list.
@@ -63,6 +64,12 @@ Access is granted on lists and on single tasks, like folders and files in Google
 - Given "alice" owns the list "House"
 - When she shares it with "bob" as an editor
 - Then "bob" sees "House" and its tasks, and can edit them
+
+### Commenter can comment but not edit
+
+- Given "bob" is a commenter on "House"
+- When he comments on "Paint fence" and tries to complete it
+- Then his comment is added, and he can't complete it
 
 ### Viewer can't edit
 
