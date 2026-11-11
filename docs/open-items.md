@@ -10,7 +10,10 @@ Like the rest of `docs/`, this file is evergreen: remove an item once it's resol
 
 ## Next steps
 
-- Choose a stack, recording the choice as a design decision (see "Stack constraints" below).
+- Choose a stack, recording the choice as a design decision. The specs are ready for it: no v1 spec has open questions. Start from:
+  - "Decisions to make with the stack" and "Stack constraints" below;
+  - [Launch scope](design-decisions/launch-scope.md), [Offline first](design-decisions/offline-first.md) and [End-to-end encryption](design-decisions/end-to-end-encryption.md), which shape the stack most;
+  - the process lessons in [Lessons from previous attempts](lessons-from-previous-attempts.md): prove sync, auth and encryption with a thin end-to-end slice before building features.
 
 ## Ideas for later
 
@@ -87,12 +90,16 @@ Requirements gathered so far that the stack must support:
 - Good tooling for both unit and acceptance tests.
 - Server-pushed live updates to open apps (e.g. websockets or server-sent events).
 - Calendar dates and RFC 9557 zoned date-times, with the IANA time zone database (see [Floating dates, zoned times](design-decisions/floating-dates-zoned-times.md)).
-- A public, versioned API documented with OpenAPI generated from tests, OAuth for third-party apps, and an MCP server built on it (see [API access](features/app/api-access.md) and [MCP server](features/app/mcp-server.md)).
+- A public, versioned API documented with OpenAPI generated from tests, OAuth for third-party apps, an API client library that decrypts on the caller's side, and an MCP server that runs locally (in the desktop app and as a standalone program) on top of that library (see [API access](features/app/api-access.md) and [MCP server](features/app/mcp-server.md)).
 - Scheduled local notifications on Android, iOS and desktop for reminders (the web app fires them only while open), and push notifications for everything else (see [Reminders](features/scheduling/reminders.md)).
 - A payment provider for pay-what-you-want subscriptions on tdl.app, optional on self-hosted servers (see [Billing](features/account/billing.md)).
 - Encrypted file storage for attachments, with per-file and per-account limits.
 - End-to-end encryption on every platform with well-reviewed libraries: per-user key pairs, per-list, task and tag keys shared with grants, a password protocol that never gives the server the key, and a client library for API users (see [End-to-end encryption](design-decisions/end-to-end-encryption.md)).
 - Passkeys (WebAuthn) for passwordless login and as a second factor, plus TOTP (see [Multi-factor authentication](features/account/multi-factor-authentication.md)).
+- Deep links that open the installed app from a web address (universal links and app links), falling back to the web app (see [Deep links](features/app/deep-links.md)).
+- Translation tooling that fails CI on missing or unused keys (see [Translations from day one](design-decisions/translations-from-day-one.md)).
+- Simple self-hosting: one server to deploy, with documented backup and restore (see [Self-hosting](design-decisions/self-hosting.md) and [Server backups](design-decisions/server-backups.md)).
+- Every dependency compatible with AGPLv3 (see [Licence and pricing](design-decisions/licence-and-pricing.md)).
 - An open-licence icon set that works on every platform (e.g. Material Symbols or Lucide), for list icons.
 
 See also [Lessons from previous attempts](lessons-from-previous-attempts.md).
