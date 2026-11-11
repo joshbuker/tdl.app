@@ -17,13 +17,21 @@ export async function testDb(): Promise<TestDb> {
   const name = `test_${randomUUID().replaceAll('-', '')}`;
   const admin = new pg.Client({ connectionString: adminUrl });
   await admin.connect();
-  await admin.query(`CREATE DATABASE ${name}`);
-  await admin.end();
+  try {
+    await admin.query(`CREATE DATABASE ${name}`);
+  } finally {
+    await admin.end();
+  }
 
   const url = new URL(adminUrl);
   url.pathname = `/${name}`;
   const handle = createDb(url.toString());
-  await runMigrations(handle.db);
+  try {
+    await runMigrations(handle.db);
+  } catch (error) {
+    await handle.close();
+    throw error;
+  }
   return { db: handle.db, url: url.toString(), close: handle.close };
 }
 

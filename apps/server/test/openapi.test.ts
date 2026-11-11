@@ -9,6 +9,7 @@ afterAll(async () => {
   await server.close();
 });
 
-test('the OpenAPI document matches the stored snapshot', () => {
+test('the OpenAPI document matches the stored snapshot', async () => {
+  await server.app.ready();
   expect(server.app.swagger()).toMatchSnapshot();
 });

@@ -9,6 +9,7 @@ import {
   type ZodTypeProvider,
 } from '@fastify/type-provider-zod';
 import Fastify, { type FastifyInstance } from 'fastify';
+import type { FieldError } from '@tdl/domain';
 import { z } from 'zod';
 import type { Config } from './config.ts';
 import type { Db } from './db/client.ts';
@@ -35,15 +36,27 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
   await app.register(rateLimit, {
     global: false,
     errorResponseBuilder: (_request, context) => ({
+      statusCode: 429,
       code: 'rate-limited',
       retryAfterSeconds: Math.ceil(context.ttl / 1000),
     }),
   });
 
   app.setNotFoundHandler((_request, reply) => sendError(reply, 404, 'not-found'));
-  app.setErrorHandler((error, request, reply) => {
-    const status = error !== null && typeof error === 'object' && 'statusCode' in error ? Number(error.statusCode) : 500;
-    if (status === 429) return reply.code(429).send(error);
+  app.setErrorHandler((error: unknown, request, reply) => {
+    const details = typeof error === 'object' && error !== null ? (error as Record<string, unknown>) : {};
+    const status = typeof details.statusCode === 'number' ? details.statusCode : 500;
+    if (Array.isArray(details.validation)) {
+      const errors: FieldError[] = (details.validation as { instancePath?: string }[]).map((issue) => ({
+        field: (issue.instancePath ?? '').replace(/^\//, '').replaceAll('/', '.'),
+        code: 'invalid',
+      }));
+      return sendError(reply, 422, 'invalid', errors);
+    }
+    if (status === 429) {
+      if (typeof details.retryAfterSeconds === 'number') void reply.header('retry-after', details.retryAfterSeconds);
+      return sendError(reply, 429, 'rate-limited');
+    }
     if (status >= 400 && status < 500) return sendError(reply, status, 'bad-request');
     request.log.error(error);
     return sendError(reply, 500, 'internal-error');
@@ -55,6 +68,5 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
     () => ({ ok: true as const }),
   );
 
-  await app.ready();
   return app;
 }
