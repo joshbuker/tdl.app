@@ -29,6 +29,7 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
   - **No access**: no sign at all. The linked task and its links are not shown, and are ignored for that user's cycle checks, rejection messages and blocked indicators.
 - Each user's next up, blocked indicators and graph-rule checks consider only tasks and links they can see (as a viewer, or as an outline viewer). See [Visibility-scoped graph](../../design-decisions/visibility-scoped-graph.md).
 - A task in a shared list can be assigned to one of the list's collaborators or its owner (see [Assignment](../organization/assignment.md)).
+- A link that is valid from one user's view can close a loop that only another user can see. The link is allowed. Each user who can see the whole loop gets it flagged, naming the links involved, and its tasks stay blocked for them until someone removes one of those links. Users who can't see the whole loop see no flag.
 - Losing access to a list hides its tasks. Links to them from the user's own tasks remain, but are treated like any other task the user has no access to: not shown, and not blocking.
 - People are invited by username, and accept or decline the invitation. The owner can also create an invite link, which anyone with an account can use to join until it is revoked. Both ways set the role (editor, viewer or outline viewer).
 - Users on different servers can share lists with each other (see [Federation](federation.md)).
@@ -62,6 +63,14 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
 - And "Get paid" is a prerequisite of "Paint fence" in the shared list "House"
 - Then "bob" sees "Paint fence" blocked by a task with no title, and its link
 
+### Loop only another user can see
+
+- Given in the shared list "Kitchen remodel", "bob" linked "Finalize budget" before his private task "Scope the job", and "Scope the job" before "Send estimate"
+- And "alice" can't see "Scope the job"
+- When "alice" makes "Send estimate" a prerequisite of "Finalize budget"
+- Then the link is added, and "alice" sees no loop
+- And "bob" sees the loop flagged, naming its three links
+
 ### Invite link
 
 - Given "alice" created an invite link to "House" with the viewer role
@@ -73,10 +82,3 @@ Sharing is by list, like Todoist's shared projects, which keeps permissions simp
 - Given "bob" is an editor of "House"
 - When "alice" transfers ownership to "bob"
 - Then "bob" owns "House" and "alice" is an editor
-
-## Open questions
-
-- A link that is valid from one user's view can close a loop that only another user sees. Example: in the shared list "Kitchen remodel", Bob links `Finalize budget → Scope the job → Send estimate` through his private task "Scope the job". Alice, who can't see it, then adds `Send estimate → Finalize budget`. Alice sees no loop, but Bob sees all three tasks stuck. Options:
-  - Suspend the hidden link that closes the loop (Bob's `Scope the job → Send estimate`), so it stops blocking, and tell its owner why.
-  - Allow the loop, flag it to the user who can see it, and let them fix it.
-  - Reject the visible link with a generic message and no reason.

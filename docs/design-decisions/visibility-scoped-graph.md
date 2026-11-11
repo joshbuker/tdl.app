@@ -22,4 +22,4 @@ Next up, blocked indicators, the cycle and redundancy checks, rejection messages
 ## Consequences
 
 - Graph logic takes a viewer as input. It isn't a single global computation.
-- A link that is valid from one user's view can close a loop only another user sees. How that is handled is an open question in [Sharing](../features/app/sharing.md).
+- A link that is valid from one user's view can close a loop only another user sees. The link is allowed, and the loop is flagged to each user who can see all of it, who fixes it by removing a link (see [Sharing](../features/app/sharing.md)). Rejecting the link would reveal hidden tasks, and automatically suspending a link would change someone's plan behind their back.
