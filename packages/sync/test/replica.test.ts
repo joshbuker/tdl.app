@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from 'vitest';
 import { compareHlc } from '../src/hlc.ts';
 import { Replica } from '../src/replica.ts';
-import { MemoryStore } from '../src/store.ts';
+import { MemoryStore, type ReplicaStore } from '../src/store.ts';
 import { SessionError, type Transport } from '../src/transport.ts';
 import {
   createFakeServer,
@@ -33,13 +33,59 @@ function world(): FakeServer {
   return server;
 }
 
-async function device(server: FakeServer, transport: Transport = server.transport(alice)) {
-  const store = new MemoryStore();
-  const net = switchable(transport);
+async function device(
+  server: FakeServer,
+  opts: { transport?: Transport; store?: ReplicaStore; onError?: (error: unknown) => void } = {},
+) {
+  const store = opts.store ?? new MemoryStore();
+  const net = switchable(opts.transport ?? server.transport(alice));
   let time = T0;
-  const replica = await Replica.open({ store, transport: net, userId: alice, deviceId: 'phone', now: () => (time += 1_000) });
+  const replica = await Replica.open({
+    store,
+    transport: net,
+    userId: alice,
+    deviceId: 'phone',
+    now: () => (time += 1_000),
+    ...(opts.onError === undefined ? {} : { onError: opts.onError }),
+  });
   await replica.sync();
   return { replica, store, net };
+}
+
+type Mutation = Exclude<keyof ReplicaStore, 'load'>;
+
+/**
+ * A MemoryStore that, once `crashAt` names a method, dies at the next call of it: that call and
+ * every later write throw `store-crashed` without changing anything, as if the app had crashed.
+ */
+function crashingStore(): { store: ReplicaStore; inner: MemoryStore; crashAt(method: Mutation): void } {
+  const inner = new MemoryStore();
+  let target: Mutation | null = null;
+  let dead = false;
+  const write =
+    <A extends unknown[]>(method: Mutation, fn: (...args: A) => Promise<void>) =>
+    (...args: A): Promise<void> => {
+      if (method === target) dead = true;
+      return dead ? Promise.reject(new Error('store-crashed')) : fn(...args);
+    };
+  const store: ReplicaStore = {
+    load: () => inner.load(),
+    init: write('init', (u: string, d: string) => inner.init(u, d)),
+    appendConfirmed: write('appendConfirmed', (ops: Parameters<ReplicaStore['appendConfirmed']>[0], c: number) => inner.appendConfirmed(ops, c)),
+    forget: write('forget', (r: Parameters<ReplicaStore['forget']>[0], c: number) => inner.forget(r, c)),
+    putPending: write('putPending', (op: Parameters<ReplicaStore['putPending']>[0]) => inner.putPending(op)),
+    removePending: write('removePending', (id: string) => inner.removePending(id)),
+    putRejected: write('putRejected', (r: Parameters<ReplicaStore['putRejected']>[0]) => inner.putRejected(r)),
+    removeRejected: write('removeRejected', (id: string) => inner.removeRejected(id)),
+    wipe: write('wipe', () => inner.wipe()),
+  };
+  return {
+    store,
+    inner,
+    crashAt(method) {
+      target = method;
+    },
+  };
 }
 
 const titles = (replica: Replica): string[] => [...replica.state().tasks.values()].map((t) => t.title);
@@ -64,7 +110,7 @@ describe('Replica', () => {
       expect(replica.state().tasks.get(milk)?.listId).toBe('inbox');
       if (!link.ok) throw new Error('expected ok');
       expect(replica.state().links.get(link.id)).toMatchObject({ prerequisiteId: 'paint', postrequisiteId: 'fence' });
-      expect(replica.pending()).toHaveLength(5);
+      expect(replica.pending()).toHaveLength(3);
       expect(replica.status()).toBe('offline');
     });
 
@@ -219,6 +265,56 @@ describe('Replica', () => {
     });
   });
 
+  describe('duplicate link without user-set fields', () => {
+    test('keeps the existing link\'s reason when the local link set none', async () => {
+      const server = world();
+      const { replica } = await device(server);
+      server.seed(
+        createLink('L0', 'paint', 'fence', at(10, 'b'), bob),
+        setField('link', 'L0', 'reason', 'Old reason', at(11, 'b'), bob),
+      );
+      const added = await replica.addLink('paint', 'fence');
+      if (!added.ok) throw new Error('expected ok');
+      expect(replica.pending()).toHaveLength(1);
+      server.reject = (op) => (op.record.id === added.id ? { code: 'duplicate-link', existingLinkId: 'L0' } : undefined);
+
+      await replica.sync();
+
+      expect(replica.state().links.get('L0')).toMatchObject({ kind: 'hard', reason: 'Old reason' });
+      expect(replica.pending()).toEqual([]);
+    });
+  });
+
+  describe('crash during a link fold', () => {
+    test.each<Mutation>(['putPending', 'removePending'])('a crash at %s loses no link edit', async (method) => {
+      const server = world();
+      const crashing = crashingStore();
+      const { replica } = await device(server, { store: crashing.store });
+      server.seed(
+        createLink('L0', 'paint', 'fence', at(10, 'b'), bob),
+        setField('link', 'L0', 'reason', 'Old reason', at(11, 'b'), bob),
+      );
+      const added = await replica.addLink('paint', 'fence', 'hard', 'Need color');
+      if (!added.ok) throw new Error('expected ok');
+      server.reject = (op) =>
+        op.record.id !== added.id
+          ? undefined
+          : op.meta?.kind === 'createLink'
+            ? { code: 'duplicate-link', existingLinkId: 'L0' }
+            : { code: 'not-found' };
+
+      crashing.crashAt(method);
+      await expect(replica.sync()).rejects.toThrow('store-crashed');
+
+      const stored = (await crashing.inner.load())?.pending ?? [];
+      expect(stored.some((op) => op.content?.value === 'Need color')).toBe(true);
+      const restarted = await Replica.open({ store: crashing.inner, transport: server.transport(alice), userId: alice, deviceId: 'phone' });
+      await restarted.sync();
+      expect(restarted.state().links.get('L0')?.reason).toBe('Need color');
+      expect(restarted.pending()).toEqual([]);
+    });
+  });
+
   describe('forget', () => {
     test('drops the task, links touching it, and its history', async () => {
       const server = world();
@@ -270,7 +366,7 @@ describe('Replica', () => {
 
   test('pulling the same page twice does not duplicate history', async () => {
     const server = world();
-    const { replica, store } = await device(server, repeatFirstPage(server.transport(alice)));
+    const { replica, store } = await device(server, { transport: repeatFirstPage(server.transport(alice)) });
     expect(replica.history('paint')).toHaveLength(2);
     expect((await store.load())?.confirmed).toHaveLength(server.entries.length);
   });
@@ -309,6 +405,22 @@ describe('Replica', () => {
     await Promise.all([replica.sync(), replica.sync(), replica.sync()]);
 
     expect(server.pushSizes).toEqual([2]);
+  });
+
+  test('a store failure during a live sync reaches onError', async () => {
+    const server = world();
+    const crashing = crashingStore();
+    const errors: unknown[] = [];
+    const { replica } = await device(server, { store: crashing.store, onError: (e) => errors.push(e) });
+    const stop = replica.startLive();
+    crashing.crashAt('appendConfirmed');
+
+    server.seed(createTask('milk', 'inbox', at(20, 'b'), bob));
+
+    await vi.waitFor(() => {
+      expect(errors).toEqual([new Error('store-crashed')]);
+    });
+    stop();
   });
 
   test('startLive syncs when the feed grows', async () => {

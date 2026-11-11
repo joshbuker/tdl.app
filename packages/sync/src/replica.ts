@@ -31,7 +31,17 @@ export interface ReplicaOptions {
   /** Milliseconds since the epoch. Defaults to Date.now. */
   now?: () => number;
   newId?: () => Id;
+  /**
+   * Receives errors from live syncs that are not network or session failures (a failing store,
+   * or a bug). Defaults to rethrowing them as an unhandled rejection, so they are not hidden.
+   */
+  onError?: (error: unknown) => void;
 }
+
+const rethrow = (error: unknown): void => {
+  // An unhandled rejection: ES has no queueMicrotask, and this package uses no platform globals.
+  void Promise.reject(error instanceof Error ? error : new Error(String(error)));
+};
 
 const PUSH_BATCH = 500;
 const PULL_LIMIT = 500;
@@ -50,6 +60,7 @@ export class Replica {
   private readonly userId: Id;
   private readonly now: () => number;
   private readonly newId: () => Id;
+  private readonly onError: (error: unknown) => void;
   private readonly clock: Clock;
 
   /** By operation ID, so a page pulled twice, or a pushed op echoed by the feed, appears once. */
@@ -70,6 +81,7 @@ export class Replica {
     this.userId = options.userId;
     this.now = options.now ?? Date.now;
     this.newId = options.newId ?? domainNewId;
+    this.onError = options.onError ?? rethrow;
     this.clock = createClock(options.deviceId, this.now);
   }
 
@@ -169,11 +181,12 @@ export class Replica {
     if (!check.ok) return check;
     const id = this.newId();
     const record: RecordRef = { type: 'link', id };
-    await this.emit([
-      this.meta(record, { kind: 'createLink', prerequisiteId, postrequisiteId }),
-      this.content(record, { field: 'kind', value: kind }),
-      this.content(record, { field: 'reason', value: reason }),
-    ]);
+    // Defaults ('hard', '') come from materialize, so only values the user chose are sent, and
+    // folding into a duplicate link never overwrites a collaborator's values with defaults.
+    const ops = [this.meta(record, { kind: 'createLink', prerequisiteId, postrequisiteId })];
+    if (kind !== 'hard') ops.push(this.content(record, { field: 'kind', value: kind }));
+    if (reason !== '') ops.push(this.content(record, { field: 'reason', value: reason }));
+    await this.emit(ops);
     return { ok: true, id };
   }
 
@@ -225,8 +238,8 @@ export class Replica {
   /** Syncs whenever the transport says the feed grew. Returns a function that stops it. */
   startLive(): () => void {
     return this.transport.subscribe(() => {
-      // Failures already set `status`; anything else is a bug with no caller to report it to.
-      this.sync().catch(() => undefined);
+      // Network and session failures already set `status`; anything else goes to onError.
+      this.sync().catch(this.onError);
     });
   }
 
@@ -295,11 +308,11 @@ export class Replica {
         reissued.push({ id: this.newId(), hlc: op.hlc, record: { type: 'link', id: existingId }, meta: null, content: op.content });
       }
     }
+    // Store the copies before dropping the originals: a crash in between leaves the originals
+    // pending, and the next push folds them again with the same HLCs and values.
+    this.outbox.push(...reissued);
+    for (const op of reissued) await this.store.putPending(op);
     await this.dropPending(local.map((op) => op.id));
-    for (const op of reissued) {
-      this.outbox.push(op);
-      await this.store.putPending(op);
-    }
   }
 
   private async pull(): Promise<void> {
