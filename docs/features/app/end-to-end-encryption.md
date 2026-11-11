@@ -19,7 +19,9 @@ Like Signal, Proton and 1Password, the server holds the user's data without bein
 - At sign-up, the user is shown a recovery key and asked to save it. They can view it again or replace it from a logged-in device, which invalidates the old one.
 - A new device can be unlocked with the password plus a second factor if set up, with a passkey, by approval from a device that's already logged in, or with the recovery key.
 - A user who has forgotten their password can regain access with the recovery key, or by approving from a logged-in device, and then set a new password.
-- If the user has none of those, they can reset their account by email. The account and username are kept, but all their encrypted data is deleted. They are warned clearly before confirming.
+- If the user has none of those, they can reset their account by email. The account and username are kept. They are warned clearly, listing what will be lost, before confirming.
+- After a reset, lists and tasks that collaborators can still read are recovered through them: a collaborator who can read one approves giving the user access again, and their device shares the keys. Approval is needed because a reset only proves control of the email address. Ownership and roles stay as they were.
+- Data that nobody else can read is deleted when the reset is confirmed.
 - Changing the password doesn't change or lose any data.
 - Admins can't read any user's data, and can't recover it.
 - Exporting data decrypts it on the device into the export file. Importing encrypts it on the device (see [Import and export](import-export.md)).
@@ -61,9 +63,9 @@ Like Signal, Proton and 1Password, the server holds the user's data without bein
 - When "alice" adds a task to "House"
 - Then "bob" can't read it, even with a copy of the server's data
 
-## Open questions
+### Shared lists recovered through a collaborator
 
-- When a user resets their account without recovery, what happens to lists and tasks they owned and shared? Collaborators still have the keys. Options:
-  - Delete them for everyone, as if the owner had deleted them.
-  - Offer ownership to an editor first, then delete what nobody takes over.
-  - Keep them, with ownership passing automatically to an editor.
+- Given "alice" owns "House", shared with "bob", and her private list "Money"
+- When she resets her account without recovery and confirms the warning
+- Then "Money" is deleted
+- And once "bob" approves, "alice" can read "House" again and still owns it
