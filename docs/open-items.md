@@ -89,6 +89,7 @@ Requirements gathered so far that the stack must support:
 - Calendar dates and RFC 9557 zoned date-times, with the IANA time zone database (see [Floating dates, zoned times](design-decisions/floating-dates-zoned-times.md)).
 - A public, versioned API documented with OpenAPI generated from tests, OAuth for third-party apps, and an MCP server built on it (see [API access](features/app/api-access.md) and [MCP server](features/app/mcp-server.md)).
 - Scheduled local notifications on every platform for reminders, and push notifications for everything else (see [Reminders](features/scheduling/reminders.md)).
+- A payment provider for pay-what-you-want subscriptions on tdl.app, optional on self-hosted servers (see [Billing](features/account/billing.md)).
 - Encrypted file storage for attachments, with per-file and per-account limits.
 - End-to-end encryption on every platform with well-reviewed libraries: per-user key pairs, per-list, task and tag keys shared with grants, a password protocol that never gives the server the key, and a client library for API users (see [End-to-end encryption](design-decisions/end-to-end-encryption.md)).
 - Passkeys (WebAuthn) for passwordless login and as a second factor, plus TOTP (see [Multi-factor authentication](features/account/multi-factor-authentication.md)).
