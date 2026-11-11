@@ -104,7 +104,7 @@ Each is an existing scenario, implemented with an acceptance test of the same na
 
 Plus tests that aren't spec scenarios:
 
-- **Unbounded depth:** unit tests run cycle, redundancy and next-up checks on a chain long enough to rule out any fixed depth (e.g. 10,000 tasks), and on wide graphs. They also set a performance budget (e.g. a cycle check on a few thousand tasks stays well under 50 ms).
+- **Unbounded depth:** unit tests run cycle, redundancy and next-up checks on a chain long enough to rule out any fixed depth (1,000 tasks), and on wide graphs. They also set a performance budget (e.g. a cycle check on a few thousand tasks stays well under 50 ms).
 - **Sync conformance suite:** a deterministic harness with simulated devices and a real server. It drops, delays, duplicates and reorders messages, and covers:
   - field-level merges, including edits to different fields;
   - newest-wins conflicts;
