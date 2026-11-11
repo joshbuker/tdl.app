@@ -12,7 +12,7 @@ The slice syncs four record types. Each field is either **metadata**, which the 
 
 | Record | Metadata | Content |
 | --- | --- | --- |
-| List | owner (the creator) | `title` |
+| List | owner (the creator), `editorsCanShare` | `title` |
 | Task | `listId` | `title`, `notes`, `completedAt` |
 | Link | `prerequisiteId`, `postrequisiteId` (fixed at creation) | `kind`, `reason` |
 | Grant | user, target (list or task), role | none |
