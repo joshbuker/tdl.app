@@ -4,11 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository state
 
-TDL App (https://tdl.app) is a todo/task-management app, now on **attempt #4**. No application code or tech stack exists yet.
+TDL App (https://tdl.app) is a todo/task-management app, now on **attempt #4**. The stack is chosen (TypeScript everywhere; see `docs/design-decisions/`), but no application code exists yet. The first code is the thin slice, built from the plans in `docs/superpowers/plans/`. Develop inside `nix-shell` (see `docs/design-decisions/nix-dev-shell.md`), and install nothing globally.
 
 - `docs/features/`: one spec per feature. This is the source of truth for behavior.
 - `docs/design-decisions/`: one evergreen record per decision.
 - `docs/open-items.md`: cross-cutting open questions, next steps and stack constraints. Check it at the start of a session.
+- `docs/superpowers/specs/` and `docs/superpowers/plans/`: designs and implementation plans for larger pieces of work, such as the thin slice.
 - `docs/lessons-from-previous-attempts.md`: bugs and pitfalls from attempts #1 to #3 to avoid.
 - `historical-versions/`: the three previous attempts, imported with `git subtree`. This is **read-only reference**; don't modify it unless asked.
 

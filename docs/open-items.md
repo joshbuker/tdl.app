@@ -10,10 +10,13 @@ Like the rest of `docs/`, this file is evergreen: remove an item once it's resol
 
 ## Next steps
 
-- Finish choosing the stack, recording each choice as a design decision. Decided so far: [TypeScript everywhere](design-decisions/typescript-everywhere.md), [Electron desktop app](design-decisions/electron-desktop.md) through Quasar's Electron mode, [Vue and Quasar](design-decisions/vue-and-quasar.md), [Custom sync](design-decisions/custom-sync.md), [Postgres on the server](design-decisions/postgres-on-the-server.md), [Better Auth](design-decisions/better-auth.md), a shared grant resolver (see [Container and item grants](design-decisions/container-and-item-grants.md)), [Node and Fastify](design-decisions/node-and-fastify.md), [Drizzle](design-decisions/drizzle.md), [UUIDv7 IDs](design-decisions/uuidv7-ids.md), vue-i18n (see [Translations from day one](design-decisions/translations-from-day-one.md)), acceptance tests named after scenarios (see [Test-driven development](design-decisions/test-driven-development.md)), the [Push relay](design-decisions/push-relay.md) with UnifiedPush, the plaintext metadata boundary (see [Custom sync](design-decisions/custom-sync.md)), and end-to-end encryption moved to v2. Next: write the implementation plan for the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md), then build it. Start from:
-  - "Decisions to make with the stack" and "Stack constraints" below;
-  - [Launch scope](design-decisions/launch-scope.md) and [Offline first](design-decisions/offline-first.md), which shape the stack most, and [End-to-end encryption](design-decisions/end-to-end-encryption.md), deferred to v2 but which v1 must leave room for;
-  - the process lessons in [Lessons from previous attempts](lessons-from-previous-attempts.md): prove sync, auth and sharing with a thin end-to-end slice before building features.
+The stack is chosen (each choice is a record in `design-decisions/`), except the payment provider, which is decided before launch (below). End-to-end encryption moved to v2.
+
+Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from its plans, in order. It proves sync, auth and sharing end to end before features, per [Lessons from previous attempts](lessons-from-previous-attempts.md).
+
+1. [Foundation and domain](superpowers/plans/2026-11-10-thin-slice-1-foundation-and-domain.md): written and approved, not started. Execute it natively (in-session), then have one fresh reviewer check the whole branch. Start with Task 1, Step 0: `shell.nix` (see [Nix development shell](design-decisions/nix-dev-shell.md)).
+2. Sync and server: write this plan once plan 1 is done, against plan 1's real interfaces.
+3. Apps (Quasar web, Android, Electron) and the homelab deployment: write this plan once plan 2 is done.
 
 ## Ideas for later
 

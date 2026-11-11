@@ -14,7 +14,7 @@ This plan has only unit tests. Acceptance tests named after spec scenarios start
 
 ## Global Constraints
 
-- Node `26` (`.node-version`, and `"engines": { "node": ">=26" }`). The local machine may have Node 24: install Node 26 before starting, and stop if you can't.
+- Node `26` (`.node-version`, and `"engines": { "node": ">=26" }`), provided by the repository's `shell.nix` (see `docs/design-decisions/nix-dev-shell.md`). Run every command inside `nix-shell`. Install nothing globally.
 - Every package is `"license": "AGPL-3.0-only"`, `"type": "module"`, and `"private": true`.
 - Dependencies must be AGPLv3-compatible and free with every feature used: no open-core, paid-tier or source-available (FSL, BSL, SSPL) packages. Task 3's check enforces this.
 - Any dependency pinned below its latest version gets an entry in the root `PINS.md` saying why, and what would lift it (see `docs/design-decisions/version-pins.md`).
@@ -38,13 +38,19 @@ This plan has only unit tests. Acceptance tests named after spec scenarios start
 ### Task 1: Workspace, tooling and CI
 
 **Files:**
-- Create: `package.json`, `pnpm-workspace.yaml`, `.node-version`, `.gitignore`, `tsconfig.base.json`, `eslint.config.js`, `vitest.config.ts`, `PINS.md`
+- Create: `shell.nix`, `.npmrc`, `package.json`, `pnpm-workspace.yaml`, `.node-version`, `.gitignore`, `tsconfig.base.json`, `eslint.config.js`, `vitest.config.ts`, `PINS.md`
 - Create: `packages/domain/package.json`, `packages/domain/tsconfig.json`, `packages/domain/src/index.ts`, `packages/domain/test/smoke.test.ts`
 - Create: `.github/workflows/ci.yml`
 
 **Interfaces:**
 - Produces: root scripts `pnpm lint`, `pnpm typecheck`, and `pnpm test`, which writes a Vitest JSON report to `reports/vitest.json`. Workspace globs are `packages/*`, `apps/*` and `tools/*`. Package name `@tdl/domain`, whose entry is `src/index.ts` (consumed as TypeScript source through workspace links; no build step yet).
 
+- [ ] **Step 0: Create the development shell.**
+  - `shell.nix` uses a pinned nixpkgs tarball with its sha256, and provides `nodejs_26` and pnpm. If nixpkgs has no `nodejs_26`, stop and report.
+  - Its `shellHook` sets `COREPACK_ENABLE_DOWNLOAD_PROMPT=0` and puts `./node_modules/.bin` on `PATH`.
+  - `.npmrc` sets `store-dir=.pnpm-store`.
+  - `.gitignore` adds `.pnpm-store`.
+  - Verify: `nix-shell --run 'node --version && pnpm --version'` prints v26.x and a pnpm version.
 - [ ] **Step 1: Write the smoke test** `packages/domain/test/smoke.test.ts`: `import * as domain from '../src/index.ts'` and `expect(domain).toBeTypeOf('object')`.
 - [ ] **Step 2: Create the workspace.**
   - Root `package.json`: `"packageManager": "pnpm@<latest>"`, enabled with `corepack enable`.
@@ -54,13 +60,13 @@ This plan has only unit tests. Acceptance tests named after spec scenarios start
     - `test`: `vitest run --reporter=default --reporter=json --outputFile.json=reports/vitest.json`
   - `tsconfig.base.json`: `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `module`/`moduleResolution` `NodeNext`, `target` `ES2023`.
   - `vitest.config.ts`: `test.projects: ['packages/*', 'tools/*']`.
-  - `.gitignore`: `node_modules`, `reports`, `dist`, `coverage`.
-- [ ] **Step 3: Run** `pnpm install && pnpm lint && pnpm typecheck && pnpm test`. Expected: all pass, and `reports/vitest.json` exists.
+  - `.gitignore`: `node_modules`, `reports`, `dist`, `coverage`, `.pnpm-store`.
+- [ ] **Step 3: Run** `nix-shell --run 'pnpm install && pnpm lint && pnpm typecheck && pnpm test'`. Expected: all pass, and `reports/vitest.json` exists.
 - [ ] **Step 4: Add CI** in `.github/workflows/ci.yml`.
   - Triggers: `push`, `pull_request`, and `schedule: - cron: '0 6 * * 1'` (weekly on main, per `releases-and-ci.md`).
   - One job on `ubuntu-latest`: checkout, `pnpm/action-setup`, `actions/setup-node` with `node-version-file: .node-version` and the pnpm cache, then `pnpm install --frozen-lockfile`, `pnpm lint`, `pnpm typecheck`, `pnpm test`.
   - Tasks 2 and 3 append their checks to this job.
-- [ ] **Step 5: Commit** with the message "Set up the pnpm workspace, TypeScript, Vitest, ESLint and CI".
+- [ ] **Step 5: Commit** with the message "Set up the Nix shell, pnpm workspace, TypeScript, Vitest, ESLint and CI".
 
 ### Task 2: Scenario coverage check
 
