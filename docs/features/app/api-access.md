@@ -18,7 +18,7 @@ Users and other programs can read and change their data through a documented pub
 - Data stays end-to-end encrypted through the API: responses carry encrypted data, and each token or OAuth grant carries its own key for decrypting it. An official client library handles the encryption, so the server never sees plaintext (see [End-to-end encryption](end-to-end-encryption.md)).
 - Requests act as the user who authorized them, with exactly that user's access. Every permission rule applies, including what each user can see of the graph (see [Sharing](sharing.md)).
 - Users create personal access tokens in their settings, each with a name, read-only or read-write access, and an optional expiry. Tokens can be revoked at any time, and the user can see when each was last used.
-- A token, including its key, is shown in full only once, when it is created. Revoking a token also stops its key from reading anything new.
+- A token, including its key, is shown in full only once, when it is created. Revoking a token takes effect at once: the server refuses it, so its key can't fetch anything more.
 - Other apps can also ask the user for access with OAuth, getting the same kind of scoped, revocable access without a token being copied by hand.
 - The API is versioned. Breaking changes only come with a new major version, and the previous one keeps working for a stated period.
 - The API is documented in OpenAPI, generated from the tests so it can't drift from what the server does. The client library's documentation shows how to read and write decrypted data.

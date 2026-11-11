@@ -18,9 +18,9 @@ The user logs in with a username and password, and can log out.
 - If the user has multi-factor authentication set up, a second step is required (see [Multi-factor authentication](multi-factor-authentication.md)).
 - A user who forgot their password recovers access as described in [End-to-end encryption](../app/end-to-end-encryption.md).
 - Wrong credentials are rejected without saying which one was wrong.
-- After 10 failed attempts, the account is locked for a while.
+- Repeated failed attempts slow down further attempts, per account and per network address, with increasing delays. The account is never locked outright, so nobody can lock someone else out by guessing.
 - Logging out ends the session on the server. A logged-out session can't be reused.
-- Logging out clears local data even if the server can't be reached.
+- Logging out clears local data even if the server can't be reached. If there are changes that haven't synced yet, the user is warned first, and can cancel to let them sync.
 - Pages other than login require being logged in.
 - When a session expires while the app is open, a login dialog appears over the current page instead of going to the login page. Changes made meanwhile keep being saved on the device, and sync once the user logs back in.
 

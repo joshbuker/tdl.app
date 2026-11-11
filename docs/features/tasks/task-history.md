@@ -27,7 +27,7 @@ Offline sync and sharing mean several people and devices can change a task concu
 
 ### See who changed a task
 
-- Given "bob" changes "Paint fence" from "To do" to "In progress"
+- Given "bob" changes the deadline of "Paint fence" from Friday to Monday
 - When "alice" opens the history of "Paint fence"
 - Then they see the change, that "bob" made it, and when
 
@@ -39,6 +39,6 @@ Offline sync and sharing mean several people and devices can change a task concu
 
 ### Overridden edit is kept
 
-- Given one offline device renames "Paint fence" to "Paint the fence" and another renames it to "Stain fence"
-- When the user resolves the conflict by keeping "Stain fence"
+- Given one offline device renames "Paint fence" to "Paint the fence", and later another renames it to "Stain fence"
+- When both devices sync
 - Then the history shows both renames, with "Paint the fence" marked as overridden

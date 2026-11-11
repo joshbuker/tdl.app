@@ -75,6 +75,18 @@ These choices from earlier attempts have written reasoning in `historical-versio
 - Releases on version tags, with CI also run weekly to catch vulnerable dependencies.
 - Server backups (of encrypted data, including attachments): automated, tested database backups for tdl.app, and documented backup and restore for self-hosters, before anyone else's data is on the server. From a Todoist task.
 
+## Decisions to make with the stack
+
+Technical choices the specs leave open, to settle while choosing the stack:
+
+- **Cryptographic design**: the password protocol (e.g. OPAQUE or SRP), the key hierarchy and re-keying when someone is removed, the device-approval protocol, and deriving keys from passkeys (WebAuthn PRF, not yet on every platform). How a list invite link hands over keys (e.g. in the link's fragment) and how users can verify each other's keys.
+- **Sync engine and plaintext metadata**: a CRDT library or a custom operation log, how finely records are encrypted, and exactly which metadata the server can read to route sync and do housekeeping.
+- **Language for shared domain logic**: it must run on the four app platforms, the server, and the standalone MCP program and API client library.
+- **ID scheme** that can later carry federation.
+- **Authorization**: whether to use a Zanzibar-style library (see [Container and item grants](design-decisions/container-and-item-grants.md)).
+- **Payment provider**, and how mobile app-store rules affect payments.
+- **Push notifications for self-hosted servers**, which can't use the app publisher's credentials for Apple and Google push.
+
 ## Stack constraints
 
 Requirements gathered so far that the stack must support:
@@ -88,7 +100,7 @@ Requirements gathered so far that the stack must support:
 - Server-pushed live updates to open apps (e.g. websockets or server-sent events).
 - Calendar dates and RFC 9557 zoned date-times, with the IANA time zone database (see [Floating dates, zoned times](design-decisions/floating-dates-zoned-times.md)).
 - A public, versioned API documented with OpenAPI generated from tests, OAuth for third-party apps, and an MCP server built on it (see [API access](features/app/api-access.md) and [MCP server](features/app/mcp-server.md)).
-- Scheduled local notifications on every platform for reminders, and push notifications for everything else (see [Reminders](features/scheduling/reminders.md)).
+- Scheduled local notifications on Android, iOS and desktop for reminders (the web app fires them only while open), and push notifications for everything else (see [Reminders](features/scheduling/reminders.md)).
 - A payment provider for pay-what-you-want subscriptions on tdl.app, optional on self-hosted servers (see [Billing](features/account/billing.md)).
 - Encrypted file storage for attachments, with per-file and per-account limits.
 - End-to-end encryption on every platform with well-reviewed libraries: per-user key pairs, per-list, task and tag keys shared with grants, a password protocol that never gives the server the key, and a client library for API users (see [End-to-end encryption](design-decisions/end-to-end-encryption.md)).

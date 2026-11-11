@@ -19,7 +19,8 @@ Pricing starts from day one, so the hosted service covers its costs and paying i
 - A paying account chooses how much to pay, at or above the server's minimum, monthly or yearly. It can change the amount at any time, taking effect from the next payment.
 - An account becomes non-paying when it cancels, when a payment is declined, when its trial ends without a payment, or when free access is taken away. The user is told why.
 - If the minimum goes up, accounts paying less than the new minimum are no longer charged and become non-paying. They are told the new minimum, and can start paying again at or above it.
-- A non-paying account is read-only until it starts paying again: the user can see everything and export their data, but can't make changes or import. Reminders still fire.
+- A non-paying account is read-only until it starts paying again: the user can see everything and export their data, but can't make changes or import. Reminders still fire, and can be snoozed or dismissed.
+- Read-only never blocks account and safety actions: logging in and out, changing the password or login factors, revoking tokens, leaving shared lists and tasks, removing collaborators from their own lists, exporting, paying, and deleting the account.
 - Read-only applies to the non-paying user, not to what they own. Collaborators who are paying (or have free access or a trial) can still edit lists and tasks shared with them by a non-paying owner, as their role allows.
 - Admin accounts always have free access.
 - An admin can give any account free access, and take it away.

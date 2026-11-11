@@ -21,5 +21,6 @@ The user chooses the app's language.
 
 ### Switch language
 
+- Given Japanese is available (v2)
 - When the user switches to 日本語
 - Then the settings title shows "設定"

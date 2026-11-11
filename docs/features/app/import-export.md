@@ -13,10 +13,13 @@ Planned in Slipstream with its own file format (lists, tasks, links, dates, tags
 
 ## Rules
 
-- Export produces a JSON file containing everything: tasks, links, lists, tags, sharing grants, schedules, deadlines, reminders, recurrence and settings.
+- Export produces a JSON file containing everything the user can see, decrypted on the device: tasks with all their fields (notes, subtasks, schedules, deadlines, priority, completion, assignment, reminders, recurrence), links, lists, tags, comments, history, settings, and which lists and tasks are shared with whom. Attachments are included as files alongside it.
 - An export can be imported without loss.
 - An import is validated before anything is changed. If any part is invalid, nothing is imported.
-- Importing merges into the account: imported records are added with new IDs, never overwriting existing data, and links among imported tasks are preserved. Lists and tags whose names match existing ones (ignoring case) are reused. To start fresh, the user deletes their data first.
+- Importing merges into the account: imported records are added with new IDs, never overwriting existing data, and links among imported tasks are preserved. Imported lists and tags are added as new ones, never matched to existing ones by name (see [IDs, not titles](../../design-decisions/ids-not-titles.md)). To start fresh, the user deletes their data first.
+- Imported links that form a loop are kept and flagged, as with loops from sync (see [Offline use](offline.md)).
+- Sharing is not imported: imported lists and tasks belong to the importing user and aren't shared.
+- Imported data is encrypted on the device like any other change.
 
 ## Scenarios
 
@@ -28,14 +31,14 @@ Planned in Slipstream with its own file format (lists, tasks, links, dates, tags
 
 ### Invalid import
 
-- When the user imports a file with a link that forms a cycle
+- When the user imports a file with a task that has no title
 - Then nothing is imported and the problem is reported
 
-### Import merges
+### Import adds alongside existing data
 
 - Given the user has a list "Home" with "Buy milk"
-- When they import a file with a list "home" containing "Paint fence"
-- Then "Home" contains both "Buy milk" and "Paint fence"
+- When they import a file with a list "Home" containing "Paint fence"
+- Then they have two lists called "Home", one with each task
 
 ## Open questions
 

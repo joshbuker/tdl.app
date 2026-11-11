@@ -20,7 +20,7 @@ Like Signal, Proton and 1Password, the server holds the user's data without bein
 - A new device can be unlocked with the password plus a second factor if set up, with a passkey, by approval from a device that's already logged in, or with the recovery key.
 - A user who has forgotten their password can regain access with the recovery key, or by approving from a logged-in device, and then set a new password.
 - If the user has none of those, they can reset their account by email. The account and username are kept. They are warned clearly, listing what will be lost, before confirming.
-- After a reset, lists and tasks that collaborators can still read are recovered through them: a collaborator who can read one approves giving the user access again, and their device shares the keys. Approval is needed because a reset only proves control of the email address. Ownership and roles stay as they were.
+- After a reset, lists and tasks that collaborators can still read are recovered through them: a collaborator who can read one approves giving the user access again, and their device shares the keys. Approval is needed because a reset only proves control of the email address, and the collaborator is told that the user's account was reset and its keys changed. Ownership and roles stay as they were.
 - Data that nobody else can read is deleted when the reset is confirmed.
 - Changing the password doesn't change or lose any data.
 - Admins can't read any user's data, and can't recover it.

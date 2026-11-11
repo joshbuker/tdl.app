@@ -14,7 +14,7 @@ In every attempt. What counts as "today", and when reminders fire, depend on it.
 
 ## Rules
 
-- The default is UTC.
+- A new account's time zone is the device's time zone at sign-up, or UTC if it can't be detected.
 - Only valid time zones are accepted.
 - Changing the time zone immediately updates what counts as today and the times shown.
 - When the device's time zone differs from the account's, the app offers to switch. The user can switch, keep the account's time zone, or dismiss the offer for that time zone. The time zone never changes without the user choosing it, so travelling doesn't shift dates by surprise.

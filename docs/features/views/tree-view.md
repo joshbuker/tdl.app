@@ -14,7 +14,7 @@ In #1 and #3. Because the graph is not a tree, a task with several prerequisites
 
 ## Rules
 
-- Roots are tasks with no incomplete prerequisites.
+- Roots are tasks with no incomplete prerequisites. Tasks in a flagged loop are shown as roots, marked as part of the loop (see [Sharing](../app/sharing.md)).
 - Expanding a task shows its postrequisites.
 - A task with several prerequisites appears under each.
 - Reversed: roots are tasks with no incomplete postrequisites, and expanding shows prerequisites.
