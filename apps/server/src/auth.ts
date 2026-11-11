@@ -95,7 +95,7 @@ export function createAuth(config: Config, deps: AuthDeps) {
         await writeServerOps(tx, userId, [
           { id: newId(), record: { type: 'list', id: listId }, meta: { kind: 'createList' }, content: null },
           { id: newId(), record: { type: 'list', id: listId }, meta: null, content: { field: 'title', value: 'Inbox' } },
-        ]);
+        ], deps.now);
         await tx.update(schema.user).set({ defaultListId: listId }).where(eq(schema.user.id, userId));
       });
     } catch (error) {
