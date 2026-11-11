@@ -1,0 +1,44 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`the OpenAPI document matches the stored snapshot 1`] = `
+{
+  "components": {
+    "schemas": {},
+  },
+  "info": {
+    "title": "TDL App API",
+    "version": "0.0.0",
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "ok": {
+                      "enum": [
+                        true,
+                      ],
+                      "type": "boolean",
+                    },
+                  },
+                  "required": [
+                    "ok",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Default Response",
+          },
+        },
+      },
+    },
+  },
+}
+`;

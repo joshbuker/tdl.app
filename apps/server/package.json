@@ -1,0 +1,30 @@
+{
+  "name": "@tdl/server",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "drizzle-kit": "drizzle-kit"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.4.1",
+    "@fastify/helmet": "^13.2.0",
+    "@fastify/rate-limit": "^11.2.2",
+    "@fastify/swagger": "^9.9.3",
+    "@fastify/type-provider-zod": "^1.0.3",
+    "@tdl/domain": "workspace:*",
+    "@tdl/sync": "workspace:*",
+    "close-with-grace": "^2.5.0",
+    "drizzle-orm": "1.0.0-rc.5",
+    "fastify": "^5.12.8",
+    "pg": "^8.23.1",
+    "zod": "^4.6.6"
+  },
+  "devDependencies": {
+    "@testcontainers/postgresql": "^12.2.1",
+    "@types/pg": "^8.15.0",
+    "drizzle-kit": "1.0.0-rc.5",
+    "testcontainers": "^12.2.1"
+  }
+}
