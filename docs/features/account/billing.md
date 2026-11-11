@@ -10,7 +10,7 @@ Accounts on tdl.app pay what they want, above a minimum, after an optional free 
 
 ## Design intent
 
-Pricing starts from day one, so the hosted service covers its costs and paying is normal from the start (see [Licence and pricing](../../design-decisions/licence-and-pricing.md)). The first users, friends and family, are covered by free access rather than by a period with no pricing. Self-hosters run their own servers, so billing is a server setting that is off unless the admin turns it on.
+Billing belongs to each server, and apps can connect to any server, many of which charge nothing, so payment always happens on the server's website, never in the apps. Pricing on tdl.app starts from day one, so the hosted service covers its costs and paying is normal from the start (see [Licence and pricing](../../design-decisions/licence-and-pricing.md)). The first users, friends and family, are covered by free access rather than by a period with no pricing. Self-hosters run their own servers, so billing is a server setting that is off unless the admin turns it on.
 
 ## Rules
 
@@ -19,6 +19,7 @@ Pricing starts from day one, so the hosted service covers its costs and paying i
 - A paying account chooses how much to pay, at or above the server's minimum, monthly or yearly. It can change the amount at any time, taking effect from the next payment.
 - An account becomes non-paying when it cancels, when a payment is declined, when its trial ends without a payment, or when free access is taken away. The user is told why.
 - If the minimum goes up, accounts paying less than the new minimum are no longer charged and become non-paying. They are told the new minimum, and can start paying again at or above it.
+- A non-paying account's data is deleted after 12 months of being non-paying. The user is emailed 30 days and 7 days before, with a reminder to pay or export.
 - A non-paying account is read-only until it starts paying again: the user can see everything and export their data, but can't make changes or import. Reminders still fire, and can be snoozed or dismissed.
 - Read-only never blocks account and safety actions: logging in and out, changing the password or login factors, revoking tokens, leaving shared lists and tasks, removing collaborators from their own lists, exporting, paying, and deleting the account.
 - Read-only applies to the non-paying user, not to what they own. Collaborators who are paying (or have free access or a trial) can still edit lists and tasks shared with them by a non-paying owner, as their role allows.
@@ -27,7 +28,7 @@ Pricing starts from day one, so the hosted service covers its costs and paying i
 - Free trials are a server setting: on or off, and how long they last (e.g. 7 or 30 days). They can only be turned on while billing is on. With trials on, new accounts start with a trial and full access, unless they have free access.
 - Sign-up invite links and email invites can be set to give free access, so the account starts with it (see [Sign up](sign-up.md)).
 - Payments go through a payment provider. The server never stores card details.
-- Payment happens on the web only. The phone and desktop apps never sell anything; they show the account's status, and where store rules allow, link to the web to pay.
+- Payment happens on the server's website only. The phone and desktop apps never sell anything, since the server they connect to may not charge at all. They show the account's status, and where store rules allow, link to the server's website to pay.
 
 ## Scenarios
 
@@ -72,6 +73,12 @@ Pricing starts from day one, so the hosted service covers its costs and paying i
 
 - Given "carol"'s card is declined for her monthly payment
 - Then her account is read-only, and she is told to update her payment method
+
+### Non-paying data is deleted after a year
+
+- Given "carol" has been non-paying for 11 months
+- Then she is emailed that her data will be deleted in 30 days unless she pays, with a link to export
+- And after 12 months, her data is deleted
 
 ### Trials need billing
 

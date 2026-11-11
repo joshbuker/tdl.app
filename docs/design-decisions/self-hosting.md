@@ -8,6 +8,8 @@
 
 Self-hosting is supported: anyone can run their own TDL App server, and the apps can connect to any server. The official server is the default.
 
+A self-hosted server is complete on its own. Two things depend on outside services: push notifications to the Android and iOS apps, through an opt-in relay run by tdl.app, and email (invites, verification and reset by email), through whatever mail service the admin configures. Without them, those features are unavailable and the admin is told so (see [Admin](../features/account/admin.md)).
+
 ## Alternatives considered
 
 - **Official server only**: simpler to operate, but users can't keep their own data, and the app depends on one host.

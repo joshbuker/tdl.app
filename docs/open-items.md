@@ -85,7 +85,7 @@ Technical choices the specs leave open, to settle while choosing the stack:
 - **ID scheme** that can later carry federation.
 - **Authorization**: whether to use a Zanzibar-style library (see [Container and item grants](design-decisions/container-and-item-grants.md)).
 - **Payment provider** for web payments. The apps don't sell anything (see [Billing](features/account/billing.md)); check app-store rules on linking out at launch.
-- **Push notifications for self-hosted servers**, which can't use the app publisher's credentials for Apple and Google push.
+- **Push relay** for self-hosted servers (opt-in), and how its cost is covered (see [Notifications](features/app/notifications.md)).
 
 ## Stack constraints
 
