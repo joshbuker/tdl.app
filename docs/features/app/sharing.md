@@ -144,6 +144,13 @@ Everyone can edit or delete their own comments and leave a list or task shared w
 - Then he no longer sees "House" or its tasks
 - And "alice" sees that he left
 
+### Remove a collaborator
+
+- Given "bob" is an editor of "House"
+- When "alice" removes him from "House"
+- Then he no longer sees "House" or its tasks
+- And edits he makes to its tasks afterwards are refused
+
 ### Offer to share prerequisites
 
 - Given "Buy paint" is an incomplete prerequisite of "Paint fence"
