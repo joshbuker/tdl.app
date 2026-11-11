@@ -10,7 +10,7 @@ Several earlier choices make it practical: the app is offline first, so graph ru
 
 Every account is end-to-end encrypted, always, from v1.
 
-- **Encrypted on the device:** everything the user writes or decides about their tasks: titles, notes, comments, subtasks, list and tag names, colors and icons, link reasons, the links themselves, schedules, deadlines, prioritize dates, priority, completion, assignment, reminders, settings and history.
+- **Encrypted on the device:** everything the user writes or decides about their tasks: titles, notes, comments, attachments, subtasks, list and tag names, colors and icons, link reasons, the links themselves, schedules, deadlines, prioritize dates, priority, completion, assignment, reminders, settings and history.
 - **Visible to the server:** what it needs to route and authorize sync: record IDs, which account owns each record, sharing grants and roles, account details (username, email, login factors), and when and how much data is synced.
 - **Keys:** each user has a key pair. Each list, task and tag shared separately has its own key, which is given to the people it's shared with, so access to data follows the sharing grants (see [Container and item grants](container-and-item-grants.md)). The server stores keys only in encrypted form, and can't derive them from anything it holds, including the login password.
 - **API and MCP:** API tokens carry their own key, and an official client library decrypts on the caller's side. The MCP server runs locally on top of that library (see [API access](../features/app/api-access.md) and [MCP server](../features/app/mcp-server.md)).

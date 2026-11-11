@@ -13,6 +13,8 @@ v1 is for the author plus a few people (family or friends): good enough to repla
 
 On invite-only servers, admins bring people in with sign-up invite links and email invites until request access arrives in v2 (see [Sign up](../features/account/sign-up.md)).
 
+The 2026 devlog lists auto-scheduling as one of five core features. It stays in v2, as the first thing after launch.
+
 Deferred features must still fit without a redesign: IDs and the sync protocol must be able to carry federation, and sync keeps full change history from day one.
 
 ## Alternatives considered

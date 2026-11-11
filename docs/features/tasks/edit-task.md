@@ -19,11 +19,18 @@ The task detail view is where most editing happens, so it needs to show the task
 - Notes are markdown (CommonMark), shown formatted, with clickable links. They are stored as text.
 - Every change to a task can be undone (see [Undo](undo.md)).
 - Linked tasks are shown, and choosing one opens it in place.
+- A task with prerequisites shows its progress: how many of the tasks it waits on, directly or through others, are done, and how many are next up. So a final task (e.g. "Kitchen remodel done") works as a project's progress view. Only tasks the user can see are counted (see [Sharing](../app/sharing.md)).
 - Every date field is editable, grouped in one Dates section: the schedule (date, time and duration, see [Schedule](../scheduling/schedule.md)), deadline (see [Deadlines](../scheduling/deadlines.md)), prioritize date (see [Prioritize date](../scheduling/prioritize-date.md)), recurrence (see [Recurring tasks](../scheduling/recurring-tasks.md)) and reminders (see [Reminders](../scheduling/reminders.md)).
 - The implied deadline is shown read-only, naming the task it comes from.
 - Tapping anywhere on a date or time field opens its picker. In 12-hour format, pickers show AM and PM clearly (see [Personalization](../app/personalization.md)).
 
 ## Scenarios
+
+### Progress of what a task waits on
+
+- Given "Kitchen remodel done" waits on 12 tasks, directly or through others, and 7 of them are done
+- When the user opens "Kitchen remodel done"
+- Then it shows 7 of 12 done, and how many of the rest are next up
 
 ### Implied deadline is shown
 

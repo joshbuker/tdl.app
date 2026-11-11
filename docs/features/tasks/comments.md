@@ -21,6 +21,7 @@ A commenter role sits between editor and viewer, so someone can take part in the
 - The author can edit or delete their own comment. An edited comment shows that it was edited. The task's owner can also delete any comment.
 - New comments notify the task's assignee, its participants, and everyone who has commented on it, except the author (see [Assignment](../organization/assignment.md)). Mentioning someone with access notifies them too.
 - Comments are synced and work offline like any other change (see [Offline use](../app/offline.md)).
+- Comments can have attachments (see [Attachments](attachments.md)).
 - Comments are markdown, like task notes (see [Edit a task](edit-task.md)).
 
 ## Scenarios

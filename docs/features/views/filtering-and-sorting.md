@@ -30,10 +30,12 @@ When tasks from several lists are shown together, each one shows its list, so th
 - The user can save any combination of filters and sorts as a named preset of their own, shown alongside the built-in ones. Saved presets can be renamed, reordered and deleted.
 - Filters combine (e.g. a list and a tag at the same time).
 - Tasks can be filtered by status (v2, see [Statuses](../organization/statuses.md)).
+- Tasks can be filtered by how long they take, e.g. "fits in 15 minutes" shows tasks with a duration of 15 minutes or less. Tasks without a duration don't match (see [Schedule](../scheduling/schedule.md)).
 - Tasks can be filtered by assignee (including "assigned to me") and by participant (see [Assignment](../organization/assignment.md)).
 - Sorts combine, with each later sort breaking ties in the ones before it.
 - Tasks can be sorted by their own fields (e.g. title, priority, schedule, deadline, prioritize date, completion time, creation time) and by computed fields:
-  - **Blocks**: how many incomplete tasks it blocks through hard links, directly or through other tasks.
+  - **Blocks directly**: how many incomplete tasks wait on it directly through hard links, as #3's Agenda sorted.
+  - **Blocks in total**: how many incomplete tasks it blocks through hard links, directly or through other tasks. On its own this favours tasks with long chains behind them, so it is best combined with other sorts.
   - **Effective deadline**: the earlier of its deadline and its implied deadline (see [Deadlines](../scheduling/deadlines.md)).
   - **High priority**: whether its [prioritize date](../scheduling/prioritize-date.md) has passed.
 - **Dependency order** is a sort in which a task never comes before its incomplete prerequisites, hard or soft (see [Soft dependencies](../dependencies/soft-dependencies.md)). Among tasks whose prerequisites are already placed, the sorts after it decide the order.
@@ -63,6 +65,12 @@ When tasks from several lists are shown together, each one shows its list, so th
 - When the user selects Today
 - Then "Paint fence" is not shown
 - And once "Buy paint" is completed, "Paint fence" is shown in Today
+
+### Fits in the time available
+
+- Given "Call plumber" takes 10 minutes, "Write report" takes 2 hours, and "Buy milk" has no duration
+- When the user filters for tasks that fit in 15 minutes
+- Then only "Call plumber" is shown
 
 ### Save a preset
 

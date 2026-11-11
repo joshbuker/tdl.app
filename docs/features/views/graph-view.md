@@ -15,7 +15,7 @@ Partly built in #3 as a force-directed graph. Nodes were sized by how many tasks
 ## Rules
 
 - Arrows point from prerequisite to postrequisite.
-- Node size reflects how many incomplete tasks it blocks.
+- Node size reflects how many incomplete tasks it blocks in total.
 - Completed, next-up and blocked tasks look different.
 - Clicking a node opens the task.
 - Dragging from one node to another makes the first a prerequisite of the second. The same rules apply as anywhere else, and rejections are explained (see [Link tasks](../dependencies/link-tasks.md)).

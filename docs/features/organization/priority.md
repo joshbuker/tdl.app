@@ -17,7 +17,7 @@ Priority is optional, and "not set" is different from p4, so a task the user has
 ## Rules
 
 - A task's priority is p1, p2, p3, p4, or not set. New tasks have no priority set.
-- Each level has its own color, shown on the task. Tasks with no priority set show none.
+- Each level has its own color and shows its label (p1 to p4), so it doesn't rely on color alone. Tasks with no priority set show neither.
 - Priority can be typed as `p1` to `p4` in a new task's title (see [Natural-language entry](../tasks/natural-language-entry.md)).
 - Tasks can be filtered and sorted by priority. When sorting, tasks with no priority set come after p4.
 - Priority is the same for everyone with access to the task (see [Sharing](../app/sharing.md)).

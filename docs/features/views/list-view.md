@@ -14,7 +14,7 @@ The default view in every attempt. #3 showed each task's count of incomplete pos
 
 ## Rules
 
-- Each row shows the title, whether it has notes, its list and tags, its schedule and deadline (including an implied deadline), and how many tasks it blocks. Each row has a checkbox to complete it (see [Complete a task](../tasks/complete-task.md)).
+- Each row shows the title, whether it has notes, its list and tags, its schedule and deadline (including an implied deadline), and how many tasks it blocks in total. Each row has a checkbox to complete it (see [Complete a task](../tasks/complete-task.md)).
 - Completing from the list works without opening the task.
 
 ## Scenarios

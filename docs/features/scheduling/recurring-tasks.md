@@ -21,6 +21,7 @@ Never built, but planned repeatedly. #3 had pending tests: "should allow setting
 - Recurring tasks stay outside the dependency graph: a recurring task can't have prerequisites or postrequisites (see [Link tasks](../dependencies/link-tasks.md)). Adding a recurrence to a linked task is rejected, with an explanation, until its links are removed.
 - A recurring task can be skipped: it moves to its next occurrence like completing it, with its subtasks unchecked, but isn't counted as completed. History records it as skipped. Deferring one occurrence is just rescheduling it.
 - Relative reminders move to each new occurrence (see [Reminders](reminders.md)).
+- Recurrence rules are stored so they can later include conditions on values sent in through the API, such as "every 6 months or 3,000 miles, whichever comes first" (v2).
 - Each completion is recorded in the task's history (see [Task history](../tasks/task-history.md)).
 - Recurrence can be typed in natural language, in a new task's title or in a date field, as well as set with a picker (see [Natural-language entry](../tasks/natural-language-entry.md)).
 
