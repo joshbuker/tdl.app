@@ -14,9 +14,22 @@ The stack is chosen (each choice is a record in `design-decisions/`), except the
 
 Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from its plans, in order. It proves sync, auth and sharing end to end before features, per [Lessons from previous attempts](lessons-from-previous-attempts.md).
 
-1. [Foundation and domain](superpowers/plans/2026-11-10-thin-slice-1-foundation-and-domain.md): written and approved, not started. Execute it natively (in-session), then have one fresh reviewer check the whole branch. Start with Task 1, Step 0: `shell.nix` (see [Nix development shell](design-decisions/nix-dev-shell.md)).
-2. Sync and server: write this plan once plan 1 is done, against plan 1's real interfaces.
+1. [Foundation and domain](superpowers/plans/2026-11-10-thin-slice-1-foundation-and-domain.md): done on branch `thin-slice-1-foundation` (reviewed, CI green). Deferred review findings are listed below under "Follow-ups from plan 1".
+2. Sync and server: write this plan next, against plan 1's real interfaces in `packages/domain`.
 3. Apps (Quasar web, Android, Electron) and the homelab deployment: write this plan once plan 2 is done. When setting up Quasar, follow its [guide for AI agents](https://quasar.dev/start/ai-agents), which covers Claude Code.
+
+## Follow-ups from plan 1
+
+Minor findings from plan 1's final review, deferred. Fix each when its area is next touched:
+
+- A title of only U+0085 (next line) is accepted, because `String.prototype.trim` doesn't strip it. Zero-width characters (U+200B, U+180E) are accepted too. Decide whether they count as blank.
+- `checkNewLink` accepts a task ID missing from the graph when `canEdit` allows it, e.g. if the access data and the task list disagree. It should reject such IDs as `not-editable`.
+- `redundantLinkIds` slows down on very high fan-out (about 300 ms for one task with 3,000 postrequisites). Check before graph views call it on every render.
+- `buildGraph` indexes a link twice if the same record is passed twice.
+- Licence exceptions are keyed by package name only, so a package that later changes licence would still pass. Key them by name and licence.
+- The CI workflow has no `permissions: contents: read` block.
+- The scenario check ignores `~~~` code fences, doesn't report two tests for one scenario, and lets two specs with the same title collide.
+- Add a randomized test comparing the pruned redundancy search with the unpruned `hasPath`.
 
 ## Ideas for later
 
