@@ -14,10 +14,15 @@ The slice syncs four record types. Each field is either **metadata**, which the 
 | --- | --- | --- |
 | List | owner (the creator) | `title` |
 | Task | `listId` | `title`, `notes`, `completedAt` |
-| Link | `prerequisiteId`, `postrequisiteId` (fixed at creation), removed | `kind`, `reason` |
-| Grant | user, target (list or task), role, revoked | none |
+| Link | `prerequisiteId`, `postrequisiteId` (fixed at creation) | `kind`, `reason` |
+| Grant | user, target (list or task), role | none |
 
-Links and grants are never edited back to life: removing a link or revoking a grant is final, and a new one is a new record.
+Every device and the server keep two separate things:
+
+- **Current state:** the records that exist now. Next up, the graph rules and access checks read only this.
+- **History:** every operation ever accepted, kept forever. Task history is built from it.
+
+Removing a link or revoking a grant deletes it from current state. Its operations stay in history, and each link's operations record which two tasks it joined, so both tasks' history shows the link being added and removed. Linking the same tasks again later makes a new link.
 
 ## Operations
 
@@ -61,9 +66,9 @@ The visible state merges confirmed and pending operations:
 
 - Metadata comes from the metadata operations.
 - Each content field takes the value of its operation with the highest HLC (newest wins).
-- A removed link or revoked grant stays removed.
+- A link or grant with a `removeLink` or `revokeGrant` operation isn't in the state at all.
 
-History for a record is its operations sorted by HLC. An operation is **overridden** if a later operation on the same field didn't include it in its `baseSeq`.
+History for a task is the operations on the task and on any link that joined it, sorted by HLC. An operation is **overridden** if a later operation on the same field didn't include it in its `baseSeq`.
 
 When the server rejects an operation, the device moves it from pending to rejected and recomputes the state, which undoes the change locally. Nothing the user typed is lost.
 
@@ -74,7 +79,7 @@ When the server rejects an operation, the device moves it from pending to reject
 **Storage** (Postgres, through Drizzle):
 
 - An `operations` table that keeps every accepted operation forever, numbered by a global sequence.
-- Metadata tables for authorization: lists, tasks, links and grants, each holding only the current metadata.
+- Current-state tables for authorization: lists, tasks, links and grants, holding only the metadata of records that exist now. Removing a link or revoking a grant deletes its row.
 - A `feed` table: one row per user per operation they can see, plus `forget` rows.
 - Better Auth's own tables, and a `revoked_sessions` tombstone table.
 
@@ -91,7 +96,7 @@ When the server rejects an operation, the device moves it from pending to reject
 
    A record the user can't see is rejected as `not-found`, and one they can see but can't change as `forbidden` (see [Error contract](../../design-decisions/error-contract.md)).
 3. **Validation** of content with the shared field validators (see [Strict validation](../../design-decisions/strict-validation.md)), rejected as `invalid` with field errors. This is one isolated step that v2 drops.
-4. **Uniqueness.** `createLink` is rejected as `duplicate-link` if an active link already runs between the same two tasks in the same direction. The reply includes `existingLinkId`.
+4. **Uniqueness.** `createLink` is rejected as `duplicate-link` if a link already runs between the same two tasks in the same direction (a unique index on the pair). The reply includes `existingLinkId`. An operation on a link or grant that no longer exists, such as an offline edit to a removed link's reason, is rejected as `not-found`, so the device shows it under "couldn't sync".
 5. **Store and fan out.** Assign the next sequence number, update the metadata tables, and add a feed row for each user who can now see the record.
    - **Audience:** a list's audience is its owner and its list grantees. A task's audience is its list's audience plus its task grantees. A link's audience is everyone who can see both of its tasks.
    - **Visibility changes:** `grant`, `revokeGrant` and `moveTask` can change who sees which records. For each affected user, the server compares what they could see before and after. Records that became visible get all their earlier operations added to that user's feed. Records that stopped being visible get a `forget` row.
