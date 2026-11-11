@@ -215,7 +215,7 @@ This plan has only unit tests. Acceptance tests named after spec scenarios start
   Checks run in this order, and the first failure wins:
   1. **self:** the two IDs are the same.
   2. **not-editable:** the first of the prerequisite and postrequisite (in that order) that `canEdit` refuses.
-  3. **exists:** a link already joins the pair, in either direction.
+  3. **exists:** a link already runs from the prerequisite to the postrequisite. The reverse of an existing link falls through to **cycle** (link-tasks.md, "Invalid candidates are shown disabled").
   4. **cycle:** `hasPath(post, pre, intermediates 'any', minLinks 1)`. Completed tasks count.
   5. **redundant:** `hasPath(pre, post, intermediates 'incomplete', minLinks 1)`.
 
@@ -228,7 +228,8 @@ This plan has only unit tests. Acceptance tests named after spec scenarios start
   - **Cycles through completed tasks are still rejected:** with B done, `C→A` gives `cycle`.
   - **Completed tasks don't make links redundant:** with B done, `A→C` is ok.
   - **Can't link a task to itself:** `A→A` gives `self`.
-  - **Link already exists:** with `A->B`, both `A→B` and `B→A` give `exists`.
+  - **Link already exists:** with `A->B`, `A→B` gives `exists`.
+  - **Invalid candidates are shown disabled:** with `A->B`, `B→A` gives `cycle`.
   - **Both tasks must be editable:** with `canEdit = id => id !== 'Paint fence'`, both directions give `{ code: 'not-editable', taskId: 'Paint fence' }`.
   - **Soft links count:** with A→B soft, `B→A` gives `cycle`.
   - **Unbounded depth:** on a 1,000-task chain, `t999→t0` gives `cycle`, and `t0→t999` gives `redundant`.
@@ -245,7 +246,7 @@ This plan has only unit tests. Acceptance tests named after spec scenarios start
 **Interfaces:**
 - Consumes: `Graph` and `hasPath` from Task 5.
 - Produces:
-  - `redundantLinkIds(g: Graph): Set<Id>`. A link P→Q is redundant when `hasPath(P, Q, intermediates 'incomplete', minLinks 2, excludeLinkId: link.id)`.
+  - `redundantLinkIds(g: Graph): Set<Id>`. A link P→Q is redundant when `hasPath(P, Q, intermediates 'incomplete', minLinks 2, excludeLinkId: link.id)` on the graph without its loops' links. Loop links are never redundant (`visibility-scoped-graph.md`).
   - `interface Loop { taskIds: Id[]; linkIds: Id[] }`
   - `findLoops(g: Graph): Loop[]`. Each loop is a strongly connected component with more than one task, and `linkIds` are the links with both ends in it. `taskIds` and `linkIds` are sorted, and loops are sorted by their first task ID, so results are deterministic. It uses Tarjan's algorithm, written iteratively.
 

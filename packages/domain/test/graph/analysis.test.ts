@@ -14,20 +14,28 @@ describe('redundantLinkIds', () => {
     expect(redundantLinkIds(g)).toEqual(new Set());
   });
 
-  test('links out of a loop are redundant through the other loop tasks', () => {
+  test("a loop's links don't make other links redundant", () => {
     const g = buildGraph(
       [task('A'), task('B'), task('C')],
       [link('A', 'B'), link('B', 'A'), link('A', 'C'), link('B', 'C')],
     );
-    expect(redundantLinkIds(g)).toEqual(new Set(['A->C', 'B->C']));
+    expect(redundantLinkIds(g)).toEqual(new Set());
   });
 
-  test('a longer path into the target through another task in its loop is found', () => {
+  test('a path that needs a link inside a loop does not count', () => {
     const g = buildGraph(
       [task('P'), task('X'), task('Q'), task('R')],
       [link('Q', 'R'), link('R', 'Q'), link('P', 'Q'), link('P', 'X'), link('X', 'R')],
     );
-    expect(redundantLinkIds(g)).toEqual(new Set(['P->Q']));
+    expect(redundantLinkIds(g)).toEqual(new Set());
+  });
+
+  test('a path that passes a loop without using its links still counts', () => {
+    const g = buildGraph(
+      [task('A'), task('B'), task('C'), task('L1'), task('L2')],
+      [link('A', 'B'), link('B', 'C'), link('A', 'C'), link('B', 'L1'), link('L1', 'L2'), link('L2', 'L1')],
+    );
+    expect(redundantLinkIds(g)).toEqual(new Set(['A->C']));
   });
 
   test('two links for the same pair do not make each other redundant', () => {

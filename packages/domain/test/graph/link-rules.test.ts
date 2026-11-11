@@ -48,7 +48,14 @@ describe('checkNewLink', () => {
   test('Link already exists', () => {
     const g = buildGraph([task('A'), task('B')], [link('A', 'B')]);
     expect(checkNewLink(g, 'A', 'B', anyone)).toEqual({ ok: false, rejection: { code: 'exists' } });
-    expect(checkNewLink(g, 'B', 'A', anyone)).toEqual({ ok: false, rejection: { code: 'exists' } });
+  });
+
+  test('Invalid candidates are shown disabled', () => {
+    const g = buildGraph([task('A'), task('B')], [link('A', 'B')]);
+    expect(checkNewLink(g, 'B', 'A', anyone)).toEqual({
+      ok: false,
+      rejection: { code: 'cycle', prerequisiteId: 'B', postrequisiteId: 'A' },
+    });
   });
 
   test('Both tasks must be editable', () => {
@@ -68,10 +75,10 @@ describe('checkNewLink', () => {
   });
 
   test('soft links count for cycles', () => {
-    const g = buildGraph([task('A'), task('B'), task('C')], [link('A', 'B', { kind: 'soft' }), link('B', 'C')]);
-    expect(checkNewLink(g, 'C', 'A', anyone)).toEqual({
+    const g = buildGraph([task('A'), task('B')], [link('A', 'B', { kind: 'soft' })]);
+    expect(checkNewLink(g, 'B', 'A', anyone)).toEqual({
       ok: false,
-      rejection: { code: 'cycle', prerequisiteId: 'C', postrequisiteId: 'A' },
+      rejection: { code: 'cycle', prerequisiteId: 'B', postrequisiteId: 'A' },
     });
   });
 

@@ -1,24 +1,29 @@
 import type { Id } from '../model.ts';
-import type { Graph } from './graph.ts';
+import { buildGraph, type Graph } from './graph.ts';
 import { componentDepths, stronglyConnectedComponents } from './components.ts';
 import { searchPath } from './paths.ts';
 
 /**
  * Links already implied by a longer path through incomplete tasks. They're kept and flagged,
  * never removed without the user asking. A second link for the same pair isn't a longer path.
+ * While a loop is flagged, its links count as absent (visibility-scoped-graph.md): they're
+ * never redundant, and paths through them don't make other links redundant.
  */
 export function redundantLinkIds(g: Graph): Set<Id> {
-  const { component, depth } = componentDepths(g);
+  const loopLinks = new Set(findLoops(g).flatMap((loop) => loop.linkIds));
+  const acyclic = buildGraph(
+    g.tasks.values(),
+    [...g.links.values()].filter((l) => !loopLinks.has(l.id)),
+  );
+  const { component, depth } = componentDepths(acyclic);
   const depthOf = (id: Id) => depth[component.get(id) as number] as number;
   const redundant = new Set<Id>();
-  for (const l of g.links.values()) {
+  for (const l of acyclic.links.values()) {
     const opts = { intermediates: 'incomplete', minLinks: 2, excludeLinkId: l.id } as const;
-    const target = l.postrequisiteId;
-    const targetComponent = component.get(target);
-    const targetDepth = depthOf(target);
-    // Tasks at the target's depth or deeper, outside its component, can't lead to it.
-    const mayReach = (id: Id) => component.get(id) === targetComponent || depthOf(id) < targetDepth;
-    if (searchPath(g, l.prerequisiteId, target, opts, mayReach)) redundant.add(l.id);
+    // Without loop links the graph is acyclic, so only tasks shallower than the target can reach it.
+    const targetDepth = depthOf(l.postrequisiteId);
+    const mayReach = (id: Id) => depthOf(id) < targetDepth;
+    if (searchPath(acyclic, l.prerequisiteId, l.postrequisiteId, opts, mayReach)) redundant.add(l.id);
   }
   return redundant;
 }

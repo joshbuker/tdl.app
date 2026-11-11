@@ -25,8 +25,8 @@ export function checkNewLink(
     if (!canEdit(taskId)) return { ok: false, rejection: { code: 'not-editable', taskId } };
   }
 
-  const joins = (a: Id, b: Id) => (g.outgoing.get(a) ?? []).some((l) => l.postrequisiteId === b);
-  if (joins(prerequisiteId, postrequisiteId) || joins(postrequisiteId, prerequisiteId)) {
+  // Only the same direction counts: the reverse of an existing link is a cycle.
+  if ((g.outgoing.get(prerequisiteId) ?? []).some((l) => l.postrequisiteId === postrequisiteId)) {
     return { ok: false, rejection: { code: 'exists' } };
   }
 
