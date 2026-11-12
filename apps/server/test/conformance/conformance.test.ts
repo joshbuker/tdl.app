@@ -76,6 +76,19 @@ describe('Sync conformance', () => {
     }
   });
 
+  test.each(SEEDS)('Shared records match across users (seed %i)', async (seed) => {
+    const states = (await run(seed)).map(({ devices }) => (devices[0] as Replica).state());
+    for (const kind of ['lists', 'tasks', 'links', 'grants'] as const) {
+      for (const [i, mine] of states.entries()) {
+        for (const theirs of states.slice(i + 1)) {
+          for (const [id, record] of mine[kind]) {
+            if (theirs[kind].has(id)) expect(theirs[kind].get(id), `${kind} ${id}`).toEqual(record);
+          }
+        }
+      }
+    }
+  });
+
   test('Field-level merge', async () => {
     const alice = await server.signUp('alice');
     const [laptopNet, phoneNet] = [new Network(), new Network()];
