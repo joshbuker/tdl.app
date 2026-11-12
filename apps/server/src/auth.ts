@@ -11,6 +11,7 @@ import type { Db } from './db/client.ts';
 import * as schema from './db/schema.ts';
 import { sendError } from './errors.ts';
 import { writeServerOps } from './sync/apply.ts';
+import type { FeedTransaction } from './sync/feed-transaction.ts';
 
 const DAY = 60 * 60 * 24;
 
@@ -39,6 +40,7 @@ const EXPOSED = new Set([`POST ${SIGN_UP_PATH}`, 'POST /sign-in/email', 'POST /s
 
 export interface AuthDeps {
   db: Db;
+  feedTransaction: FeedTransaction;
   now: () => number;
 }
 
@@ -91,7 +93,7 @@ export function createAuth(config: Config, deps: AuthDeps) {
   async function createInbox(userId: string): Promise<void> {
     const listId = newId();
     try {
-      await db.transaction(async (tx) => {
+      await deps.feedTransaction(async (tx) => {
         await writeServerOps(tx, userId, [
           { id: newId(), record: { type: 'list', id: listId }, meta: { kind: 'createList' }, content: null },
           { id: newId(), record: { type: 'list', id: listId }, meta: null, content: { field: 'title', value: 'Inbox' } },

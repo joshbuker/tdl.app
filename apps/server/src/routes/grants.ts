@@ -3,21 +3,21 @@ import { newId, type Id } from '@tdl/domain';
 import { eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import type { Db } from '../db/client.ts';
 import { grants } from '../db/schema.ts';
 import { sendError } from '../errors.ts';
 import { sessionOf, type RequireSession } from '../session-guard.ts';
 import { mayRemoveGrant } from '../sharing/rules.ts';
 import { collectTarget } from '../sync/access-loader.ts';
 import { writeServerOps, type Tx } from '../sync/apply.ts';
+import type { FeedTransaction } from '../sync/feed-transaction.ts';
 
-export function registerGrantRoutes(app: FastifyInstance, db: Db, requireSession: RequireSession, now: () => number): void {
+export function registerGrantRoutes(app: FastifyInstance, feedTransaction: FeedTransaction, requireSession: RequireSession, now: () => number): void {
   app.withTypeProvider<ZodTypeProvider>().delete(
     '/grants/:id',
     { preHandler: requireSession, schema: { params: z.object({ id: z.string() }) } },
     async (request, reply) => {
       const { userId } = sessionOf(request);
-      const removed = await db.transaction((tx) => removeGrant(tx, userId, request.params.id, now));
+      const removed = await feedTransaction((tx) => removeGrant(tx, userId, request.params.id, now));
       return removed ? reply.code(204).send() : sendError(reply, 404, 'not-found');
     },
   );

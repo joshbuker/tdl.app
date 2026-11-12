@@ -9,12 +9,19 @@ import { sessionOf, type RequireSession, type SessionInfo } from '../session-gua
 import { loadAccess } from '../sync/access-loader.ts';
 import { applyOperation } from '../sync/apply.ts';
 import { authorize, shapeErrors } from '../sync/authorize.ts';
+import type { FeedTransaction } from '../sync/feed-transaction.ts';
 
 const LINK_PAIR_CONSTRAINT = 'links_prerequisite_id_postrequisite_id_unique';
 // A unique violation means a concurrent push won a race; deciding again sees what it wrote.
 const MAX_ATTEMPTS = 3;
 
-export function registerSyncPushRoutes(app: FastifyInstance, db: Db, requireSession: RequireSession, now: () => number): void {
+export interface PushDeps {
+  db: Db;
+  feedTransaction: FeedTransaction;
+  now: () => number;
+}
+
+export function registerSyncPushRoutes(app: FastifyInstance, deps: PushDeps, requireSession: RequireSession): void {
   app.withTypeProvider<ZodTypeProvider>().post(
     '/sync/push',
     { preHandler: requireSession, schema: { body: pushRequestSchema, response: { 200: pushResponseSchema } } },
@@ -22,13 +29,13 @@ export function registerSyncPushRoutes(app: FastifyInstance, db: Db, requireSess
       const session = sessionOf(request);
       const results: PushResult[] = [];
       // In order, each in its own transaction: a rejected operation never aborts the others.
-      for (const op of request.body.ops) results.push(await pushOne(db, op, session, now));
+      for (const op of request.body.ops) results.push(await pushOne(deps, op, session));
       return { results };
     },
   );
 }
 
-async function pushOne(db: Db, op: Operation, session: SessionInfo, now: () => number): Promise<PushResult> {
+async function pushOne({ db, feedTransaction, now }: PushDeps, op: Operation, session: SessionInfo): Promise<PushResult> {
   for (let attempt = 1; ; attempt++) {
     const prior = await priorResult(db, op, session);
     if (prior !== null) return prior;
@@ -37,7 +44,7 @@ async function pushOne(db: Db, op: Operation, session: SessionInfo, now: () => n
     if (shape.length > 0) return rejected(op, 'invalid', { errors: shape });
 
     try {
-      return await db.transaction(async (tx): Promise<PushResult> => {
+      return await feedTransaction(async (tx): Promise<PushResult> => {
         const loaded = await loadAccess(tx, op);
         const decision = authorize(loaded, session.userId, op);
         if (decision !== 'ok') return rejected(op, decision);

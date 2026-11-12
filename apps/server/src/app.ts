@@ -2,6 +2,7 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import swagger from '@fastify/swagger';
+import websocket from '@fastify/websocket';
 import {
   jsonSchemaTransform,
   serializerCompiler,
@@ -21,12 +22,23 @@ import { registerMeRoutes } from './routes/me.ts';
 import { registerSessionRoutes } from './routes/sessions.ts';
 import { registerSyncPullRoutes } from './routes/sync-pull.ts';
 import { registerSyncPushRoutes } from './routes/sync-push.ts';
+import { registerSyncWsRoutes } from './routes/sync-ws.ts';
 import { createSessionGuard } from './session-guard.ts';
+import { createSessionSockets, type SessionSockets } from './session-sockets.ts';
+import { createFeedTransaction } from './sync/feed-transaction.ts';
+import { createNotifier, type Notifier } from './sync/notifier.ts';
 
 export interface AppDeps {
   db: Db;
   now?: () => number;
+  /** Hears whenever a user's feed grows. Defaults to a fresh in-process one. */
+  notifier?: Notifier;
+  /** The open websockets of each session. Defaults to a fresh registry. */
+  sessionSockets?: SessionSockets;
 }
+
+// Notifications are small; nothing a device sends is read.
+const MAX_WS_PAYLOAD = 1024;
 
 export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyInstance> {
   const app = Fastify({ logger: false, trustProxy: config.trustProxy });
@@ -38,6 +50,7 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
     transform: jsonSchemaTransform,
   });
   await app.register(helmet);
+  await app.register(websocket, { options: { maxPayload: MAX_WS_PAYLOAD } });
   await app.register(cors, { origin: config.origin, credentials: true });
   await app.register(rateLimit, {
     global: false,
@@ -74,16 +87,21 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
     () => ({ ok: true as const }),
   );
 
+  const { db } = deps;
   const now = deps.now ?? Date.now;
-  const auth = createAuth(config, { db: deps.db, now });
-  const requireSession = createSessionGuard(auth, deps.db);
+  const notifier = deps.notifier ?? createNotifier();
+  const sockets = deps.sessionSockets ?? createSessionSockets();
+  const feedTransaction = createFeedTransaction(db, notifier);
+  const auth = createAuth(config, { db, feedTransaction, now });
+  const requireSession = createSessionGuard(auth, db);
   registerAuthRoutes(app, auth, config);
-  registerMeRoutes(app, deps.db, requireSession);
-  registerSessionRoutes(app, deps.db, auth, requireSession);
-  registerSyncPushRoutes(app, deps.db, requireSession, now);
-  registerSyncPullRoutes(app, deps.db, requireSession, now);
-  registerInvitationRoutes(app, deps.db, requireSession, now);
-  registerGrantRoutes(app, deps.db, requireSession, now);
+  registerMeRoutes(app, db, requireSession);
+  registerSessionRoutes(app, { db, auth, sockets }, requireSession);
+  registerSyncPushRoutes(app, { db, feedTransaction, now }, requireSession);
+  registerSyncPullRoutes(app, db, requireSession, now);
+  registerSyncWsRoutes(app, { db, notifier, sockets, origin: config.origin }, requireSession);
+  registerInvitationRoutes(app, { db, feedTransaction, now }, requireSession);
+  registerGrantRoutes(app, feedTransaction, requireSession, now);
 
   return app;
 }

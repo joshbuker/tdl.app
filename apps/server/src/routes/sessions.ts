@@ -7,6 +7,10 @@ import type { Db } from '../db/client.ts';
 import { revokedSessions, session } from '../db/schema.ts';
 import { sendError } from '../errors.ts';
 import { hashToken, sessionOf, type RequireSession } from '../session-guard.ts';
+import type { SessionSockets } from '../session-sockets.ts';
+
+/** The close code telling a device its session was revoked. */
+export const SESSION_REVOKED_CLOSE = 4401;
 
 const sessionViewSchema = z.object({
   id: z.uuid(),
@@ -16,7 +20,13 @@ const sessionViewSchema = z.object({
   current: z.boolean(),
 });
 
-export function registerSessionRoutes(app: FastifyInstance, db: Db, auth: Auth, requireSession: RequireSession): void {
+export interface SessionDeps {
+  db: Db;
+  auth: Auth;
+  sockets: SessionSockets;
+}
+
+export function registerSessionRoutes(app: FastifyInstance, { db, auth, sockets }: SessionDeps, requireSession: RequireSession): void {
   const typed = app.withTypeProvider<ZodTypeProvider>();
 
   typed.get(
@@ -45,7 +55,7 @@ export function registerSessionRoutes(app: FastifyInstance, db: Db, auth: Auth, 
     const parsed = z.uuid().safeParse(request.params.id);
     const [target] = parsed.success
       ? await db
-          .select({ token: session.token })
+          .select({ id: session.id, token: session.token })
           .from(session)
           .where(and(eq(session.id, parsed.data), eq(session.userId, userId)))
       : [];
@@ -54,6 +64,7 @@ export function registerSessionRoutes(app: FastifyInstance, db: Db, auth: Auth, 
     // The tombstone first, so the device learns it was revoked even though Better Auth deletes the session.
     await db.insert(revokedSessions).values({ tokenHash: hashToken(target.token), userId }).onConflictDoNothing();
     await auth.api.revokeSession({ headers: authHeaders(request), body: { token: target.token } });
+    sockets.close(target.id, SESSION_REVOKED_CLOSE);
     return reply.code(204).send();
   });
 }

@@ -23,7 +23,7 @@ export interface Actor {
  */
 export const FEED_WRITE_LOCK = 0x7464_6c66; // "tdlf"
 
-async function lockFeedWrites(tx: Tx): Promise<void> {
+export async function lockFeedWrites(tx: Tx): Promise<void> {
   await tx.execute(sql`select pg_advisory_xact_lock(${FEED_WRITE_LOCK})`);
 }
 
@@ -34,10 +34,11 @@ const serverClock = createClock('server', () => Date.now());
  * Stores an authorized, validated operation, updates current state and fans it out to its
  * audience's feeds. Returns the operation's sequence number. The single entry point for every
  * accepted operation, server-made or pushed. `loaded` is the access data already loaded for
- * authorization, if any.
+ * authorization, if any. Call it only inside a `FeedTransaction`, which notifies the feeds'
+ * owners once it commits.
  */
 export async function applyOperation(tx: Tx, op: Operation, actor: Actor, now: () => number, loaded?: LoadedAccess): Promise<number> {
-  // Before anything is inserted. A transaction already holding it (writeServerOps) does not block.
+  // Before anything is inserted. A transaction already holding it (see feed-transaction.ts) does not block.
   await lockFeedWrites(tx);
   const before = loaded ?? (await loadAccess(tx, op));
   const scope = await loadVisibilityScope(tx, op);

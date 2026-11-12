@@ -10,6 +10,7 @@ import { sessionOf, type RequireSession } from '../session-guard.ts';
 import { alreadyShared, shareDecision, type Target } from '../sharing/rules.ts';
 import { collectTarget } from '../sync/access-loader.ts';
 import { writeServerOps, type Tx } from '../sync/apply.ts';
+import type { FeedTransaction } from '../sync/feed-transaction.ts';
 
 const targetSchema = z.object({ kind: z.enum(['list', 'task']), id: z.uuid() });
 const roleSchema = z.enum(['editor', 'commenter', 'viewer']);
@@ -29,7 +30,13 @@ const invalid = (field: string, code: FieldError['code']): Refusal => ({ status:
 const refuse = (reply: FastifyReply, refusal: Refusal) => sendError(reply, refusal.status, refusal.code, refusal.errors);
 const isRefusal = (value: unknown): value is Refusal => typeof value === 'object' && value !== null && 'status' in value;
 
-export function registerInvitationRoutes(app: FastifyInstance, db: Db, requireSession: RequireSession, now: () => number): void {
+export interface InvitationDeps {
+  db: Db;
+  feedTransaction: FeedTransaction;
+  now: () => number;
+}
+
+export function registerInvitationRoutes(app: FastifyInstance, { db, feedTransaction, now }: InvitationDeps, requireSession: RequireSession): void {
   const typed = app.withTypeProvider<ZodTypeProvider>();
 
   typed.post(
@@ -50,7 +57,7 @@ export function registerInvitationRoutes(app: FastifyInstance, db: Db, requireSe
 
   typed.post('/invitations/:id/accept', { preHandler: requireSession, schema: { params: idParamsSchema } }, async (request, reply) => {
     const { userId } = sessionOf(request);
-    const refusal = await db.transaction((tx) => acceptInvitation(tx, userId, request.params.id, now));
+    const refusal = await feedTransaction((tx) => acceptInvitation(tx, userId, request.params.id, now));
     return refusal === null ? reply.code(204).send() : refuse(reply, refusal);
   });
 
