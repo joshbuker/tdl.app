@@ -25,7 +25,7 @@ TRUST_PROXY=true
 | `POSTGRES_PASSWORD` | Yes | The database password. Compose sets it when it first creates the database. Use letters and digits only (`openssl rand -hex 32`), since it's also put in the database URL. |
 | `AUTH_SECRET` | Yes | At least 32 characters. Signs sessions; changing it signs everyone out. |
 | `ORIGIN` | Yes | The public URL people use to reach the server, exactly as the browser shows it, with no trailing slash. Sign-in, cookies and live updates are tied to it: with an `https://` origin, session cookies are only sent over HTTPS, and the live-update socket refuses connections from web pages on any other origin. |
-| `TRUST_PROXY` | No (default `false`) | `true` when the server is behind a reverse proxy, so it takes the client's address from the proxy's `X-Forwarded-For` header. Rate limits on signing up and signing in use that address. Set it only if nothing but the proxy can reach the server's port, or clients could fake their address. |
+| `TRUST_PROXY` | No (default `false`) | `true` when the server is behind a reverse proxy, so it takes the client's address from the proxy's `X-Forwarded-For` header. Rate limits on signing up and signing in use that address. Set it only if nothing but the proxy can reach the server's port, and the proxy replaces any `X-Forwarded-For` the client sent with the client's own address. The server uses the first address in the header, so a proxy that appends to it lets clients pick their own address and get around the rate limits. |
 | `DATABASE_URL` | No | Only to use a Postgres server of your own instead of the `db` container, e.g. `postgres://tdl:<password>@db.internal:5432/tdl`. |
 | `TDL_PORT` | No (default `3000`) | The port the server listens on, on `127.0.0.1` of the host. |
 
@@ -53,12 +53,12 @@ Put a reverse proxy in front of the server that serves HTTPS for your domain and
 
 - **Forward websockets.** Apps get live updates over a websocket at `/sync/ws`, so the proxy must pass on the `Upgrade` and `Connection` headers. Without them, live updates don't work.
 - **Keep `Host` and `Origin` as the browser sent them.** The server checks a browser's `Origin` against `ORIGIN` and refuses the websocket if they differ, so the proxy must not rewrite it.
-- **Set `X-Forwarded-For` and `X-Forwarded-Proto`**, and set `TRUST_PROXY=true` in `.env`.
+- **Set `X-Forwarded-For` and `X-Forwarded-Proto`**, and set `TRUST_PROXY=true` in `.env`. `X-Forwarded-For` must be overwritten with the client's address, not appended to: the server trusts its first address, which a client could otherwise choose.
 - **Not time out idle websockets quickly.** The live-update socket can be quiet for a long time, and a short timeout closes it needlessly.
 
 ### Caddy
 
-Caddy gets HTTPS certificates itself, and forwards websockets and the headers above by default:
+Caddy gets HTTPS certificates itself, and forwards websockets and the headers above by default. It replaces an `X-Forwarded-For` sent by the client, unless you configure it to trust other proxies in front of it:
 
 ```caddyfile
 tasks.example.com {
@@ -88,14 +88,14 @@ server {
         proxy_set_header Host $host;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-For $remote_addr;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_read_timeout 1h;
     }
 }
 ```
 
-nginx passes the `Origin` header on unchanged unless told otherwise.
+nginx passes the `Origin` header on unchanged unless told otherwise. Don't use `$proxy_add_x_forwarded_for` here: it appends to the client's own `X-Forwarded-For`.
 
 If the proxy runs in a container rather than on the host, it can't reach `127.0.0.1` of the host. Put it on the same Compose network instead, forward to `http://server:3000`, and remove the `ports` section from `compose.yaml`.
 
