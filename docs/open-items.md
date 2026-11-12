@@ -16,7 +16,11 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
 
 1. [Foundation and domain](superpowers/plans/2026-11-10-thin-slice-1-foundation-and-domain.md): done and merged into `main` (reviewed, CI green). Deferred review findings are listed below under "Follow-ups from plan 1".
 2. [Sync and server](superpowers/plans/2026-11-11-thin-slice-2-sync-and-server.md), from the [sync protocol design](superpowers/specs/2026-11-11-sync-protocol-design.md): in progress on branch `thin-slice-2-sync-and-server`, subagent-driven. Tasks 1 to 6 are done and reviewed. Task 7 (push) is committed and needs its task review. The run's ledger is in `.superpowers/sdd/2026-11-11-thin-slice-2-sync-and-server/progress.md` on the machine that ran it; elsewhere, resume from `git log`.
-3. Apps (Quasar web, Android, Electron) and the homelab deployment: write this plan once plan 2 is done. When setting up Quasar, follow its [guide for AI agents](https://quasar.dev/start/ai-agents), which covers Claude Code.
+3. Apps (Quasar web, Android, Electron) and the homelab deployment: write this plan once plan 2 is done. When setting up Quasar, follow its [guide for AI agents](https://quasar.dev/start/ai-agents), which covers Claude Code. Decide while writing it:
+   - **Live updates in browsers and the Android app.** The server's live-update socket (`/sync/ws`) accepts a session cookie or an `Authorization: Bearer` header, but browsers, and the webview the Android app runs in, can't add headers to a WebSocket. Today only Node and Electron can use a bearer token there. Options:
+     - **Cookies in webviews:** the web and Android apps sign in with the session cookie, and only Electron and other native clients use bearer tokens. Nothing changes on the server, if the Android webview keeps cookies reliably.
+     - **Short-lived ticket in the URL:** the app fetches a one-use ticket over HTTPS and opens `/sync/ws?ticket=…`. Works everywhere, but adds an endpoint, and URLs can end up in logs.
+     - **Token in the `Sec-WebSocket-Protocol` header:** the one header browsers let you set. Works everywhere without a new endpoint, but it misuses the header, and proxies may log it.
 
 ## Deferred past the thin slice
 
