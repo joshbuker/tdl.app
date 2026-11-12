@@ -148,6 +148,373 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
         },
       },
     },
+    "/sync/pull": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "after",
+            "required": true,
+            "schema": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer",
+            },
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 500,
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "cursor": {
+                      "maximum": 9007199254740991,
+                      "minimum": -9007199254740991,
+                      "type": "integer",
+                    },
+                    "entries": {
+                      "items": {
+                        "oneOf": [
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "id": {
+                                "maximum": 9007199254740991,
+                                "minimum": -9007199254740991,
+                                "type": "integer",
+                              },
+                              "kind": {
+                                "enum": [
+                                  "op",
+                                ],
+                                "type": "string",
+                              },
+                              "op": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "authorId": {
+                                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                    "type": "string",
+                                  },
+                                  "content": {
+                                    "additionalProperties": false,
+                                    "nullable": true,
+                                    "properties": {
+                                      "field": {
+                                        "type": "string",
+                                      },
+                                      "value": {
+                                        "$ref": "#/components/schemas/schema0",
+                                      },
+                                    },
+                                    "required": [
+                                      "field",
+                                      "value",
+                                    ],
+                                    "type": "object",
+                                  },
+                                  "hlc": {
+                                    "pattern": "^(\\d{15}):(\\d{6}):.+$",
+                                    "type": "string",
+                                  },
+                                  "id": {
+                                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                    "type": "string",
+                                  },
+                                  "meta": {
+                                    "nullable": true,
+                                    "oneOf": [
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "kind": {
+                                            "enum": [
+                                              "createList",
+                                            ],
+                                            "type": "string",
+                                          },
+                                        },
+                                        "required": [
+                                          "kind",
+                                        ],
+                                        "type": "object",
+                                      },
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "kind": {
+                                            "enum": [
+                                              "createTask",
+                                            ],
+                                            "type": "string",
+                                          },
+                                          "listId": {
+                                            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                            "type": "string",
+                                          },
+                                        },
+                                        "required": [
+                                          "kind",
+                                          "listId",
+                                        ],
+                                        "type": "object",
+                                      },
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "kind": {
+                                            "enum": [
+                                              "moveTask",
+                                            ],
+                                            "type": "string",
+                                          },
+                                          "listId": {
+                                            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                            "type": "string",
+                                          },
+                                        },
+                                        "required": [
+                                          "kind",
+                                          "listId",
+                                        ],
+                                        "type": "object",
+                                      },
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "kind": {
+                                            "enum": [
+                                              "createLink",
+                                            ],
+                                            "type": "string",
+                                          },
+                                          "postrequisiteId": {
+                                            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                            "type": "string",
+                                          },
+                                          "prerequisiteId": {
+                                            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                            "type": "string",
+                                          },
+                                        },
+                                        "required": [
+                                          "kind",
+                                          "prerequisiteId",
+                                          "postrequisiteId",
+                                        ],
+                                        "type": "object",
+                                      },
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "kind": {
+                                            "enum": [
+                                              "removeLink",
+                                            ],
+                                            "type": "string",
+                                          },
+                                        },
+                                        "required": [
+                                          "kind",
+                                        ],
+                                        "type": "object",
+                                      },
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "kind": {
+                                            "enum": [
+                                              "grant",
+                                            ],
+                                            "type": "string",
+                                          },
+                                          "role": {
+                                            "enum": [
+                                              "editor",
+                                              "commenter",
+                                              "viewer",
+                                            ],
+                                            "type": "string",
+                                          },
+                                          "target": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                              "id": {
+                                                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                                "type": "string",
+                                              },
+                                              "kind": {
+                                                "enum": [
+                                                  "list",
+                                                  "task",
+                                                ],
+                                                "type": "string",
+                                              },
+                                            },
+                                            "required": [
+                                              "kind",
+                                              "id",
+                                            ],
+                                            "type": "object",
+                                          },
+                                          "userId": {
+                                            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                            "type": "string",
+                                          },
+                                        },
+                                        "required": [
+                                          "kind",
+                                          "userId",
+                                          "target",
+                                          "role",
+                                        ],
+                                        "type": "object",
+                                      },
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "kind": {
+                                            "enum": [
+                                              "revokeGrant",
+                                            ],
+                                            "type": "string",
+                                          },
+                                        },
+                                        "required": [
+                                          "kind",
+                                        ],
+                                        "type": "object",
+                                      },
+                                    ],
+                                  },
+                                  "record": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "id": {
+                                        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                        "type": "string",
+                                      },
+                                      "type": {
+                                        "enum": [
+                                          "list",
+                                          "task",
+                                          "link",
+                                          "grant",
+                                        ],
+                                        "type": "string",
+                                      },
+                                    },
+                                    "required": [
+                                      "type",
+                                      "id",
+                                    ],
+                                    "type": "object",
+                                  },
+                                  "seq": {
+                                    "maximum": 9007199254740991,
+                                    "minimum": -9007199254740991,
+                                    "type": "integer",
+                                  },
+                                },
+                                "required": [
+                                  "id",
+                                  "hlc",
+                                  "record",
+                                  "meta",
+                                  "content",
+                                  "seq",
+                                  "authorId",
+                                ],
+                                "type": "object",
+                              },
+                            },
+                            "required": [
+                              "id",
+                              "kind",
+                              "op",
+                            ],
+                            "type": "object",
+                          },
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "id": {
+                                "maximum": 9007199254740991,
+                                "minimum": -9007199254740991,
+                                "type": "integer",
+                              },
+                              "kind": {
+                                "enum": [
+                                  "forget",
+                                ],
+                                "type": "string",
+                              },
+                              "record": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "id": {
+                                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                    "type": "string",
+                                  },
+                                  "type": {
+                                    "enum": [
+                                      "list",
+                                      "task",
+                                      "link",
+                                      "grant",
+                                    ],
+                                    "type": "string",
+                                  },
+                                },
+                                "required": [
+                                  "type",
+                                  "id",
+                                ],
+                                "type": "object",
+                              },
+                            },
+                            "required": [
+                              "id",
+                              "kind",
+                              "record",
+                            ],
+                            "type": "object",
+                          },
+                        ],
+                      },
+                      "type": "array",
+                    },
+                    "more": {
+                      "type": "boolean",
+                    },
+                  },
+                  "required": [
+                    "entries",
+                    "cursor",
+                    "more",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Default Response",
+          },
+        },
+      },
+    },
     "/sync/push": {
       "post": {
         "requestBody": {

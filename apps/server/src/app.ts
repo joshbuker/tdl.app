@@ -17,6 +17,7 @@ import type { Db } from './db/client.ts';
 import { sendError } from './errors.ts';
 import { registerMeRoutes } from './routes/me.ts';
 import { registerSessionRoutes } from './routes/sessions.ts';
+import { registerSyncPullRoutes } from './routes/sync-pull.ts';
 import { registerSyncPushRoutes } from './routes/sync-push.ts';
 import { createSessionGuard } from './session-guard.ts';
 
@@ -78,6 +79,7 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
   registerMeRoutes(app, deps.db, requireSession);
   registerSessionRoutes(app, deps.db, auth, requireSession);
   registerSyncPushRoutes(app, deps.db, requireSession, now);
+  registerSyncPullRoutes(app, deps.db, requireSession, now);
 
   return app;
 }

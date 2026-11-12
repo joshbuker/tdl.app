@@ -57,7 +57,7 @@ export async function loadAccess(tx: Tx, op: Operation): Promise<LoadedAccess> {
 const empty = (): AccessData => ({ lists: new Map(), tasks: new Map(), grants: [] });
 
 /** The given tasks and lists (plus each task's list), and every grant on them. */
-async function collect(tx: Tx, ids: { listIds?: Id[]; taskIds?: Id[] }): Promise<AccessData> {
+export async function collect(tx: Tx, ids: { listIds?: Id[]; taskIds?: Id[] }): Promise<AccessData> {
   const taskIds = [...new Set(ids.taskIds ?? [])];
   const taskRows = taskIds.length === 0 ? [] : await tx.select({ id: tasks.id, listId: tasks.listId }).from(tasks).where(inArray(tasks.id, taskIds));
   const listIds = [...new Set([...(ids.listIds ?? []), ...taskRows.map((t) => t.listId)])];

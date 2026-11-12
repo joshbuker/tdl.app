@@ -2,8 +2,9 @@ import { audienceOf, type AccessData, type Id } from '@tdl/domain';
 import { createClock, operationSchema, type Operation } from '@tdl/sync';
 import { eq } from 'drizzle-orm';
 import type { Db } from '../db/client.ts';
-import { feed, grants, links, lists, operations, tasks } from '../db/schema.ts';
-import { loadAccess, type LoadedAccess } from './access-loader.ts';
+import { grants, links, lists, operations, tasks } from '../db/schema.ts';
+import { collect, loadAccess, type LoadedAccess } from './access-loader.ts';
+import { affectedUsers, applyVisibilityChange, insertFeed, loadVisibilityScope } from './visibility.ts';
 
 export type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];
 
@@ -24,6 +25,8 @@ const serverClock = createClock('server', () => Date.now());
  */
 export async function applyOperation(tx: Tx, op: Operation, actor: Actor, now: () => number, loaded?: LoadedAccess): Promise<number> {
   const before = loaded ?? (await loadAccess(tx, op));
+  const scope = await loadVisibilityScope(tx, op);
+  const scopeBefore = scope === null ? null : await collect(tx, scope);
   await updateCurrentState(tx, op, actor);
 
   const [stored] = await tx
@@ -42,16 +45,18 @@ export async function applyOperation(tx: Tx, op: Operation, actor: Actor, now: (
     .returning({ seq: operations.seq });
   if (stored === undefined) throw new Error('operation not stored');
 
-  // TODO(Task 8): `moveTask`, `grant` and `revokeGrant` change who sees which records. The
-  // visibility change (history for users who gained records, `forget`s for those who lost them)
-  // hooks in here; until then they fan out like any other operation.
+  if (scope !== null && scopeBefore !== null) {
+    const scopeAfter = await collect(tx, scope);
+    const affected = affectedUsers(op, scopeBefore, scopeAfter, scope.links);
+    await applyVisibilityChange(tx, op, scopeBefore, scopeAfter, affected, { seq: stored.seq, links: scope.links });
+  }
+
   const after = afterState(before, op, actor.userId);
   const audience = audienceOf(after.access, after.links, op.record);
-  if (audience.size > 0) {
-    await tx.insert(feed).values(
-      [...audience].map((userId) => ({ userId, kind: 'op', opSeq: stored.seq, recordType: op.record.type, recordId: op.record.id })),
-    );
-  }
+  await insertFeed(
+    tx,
+    [...audience].map((userId) => ({ userId, kind: 'op', opSeq: stored.seq, recordType: op.record.type, recordId: op.record.id })),
+  );
   return stored.seq;
 }
 
