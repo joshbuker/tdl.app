@@ -11,6 +11,7 @@
 - **403** only when the user can see the record but their role doesn't allow the action (e.g. a viewer trying to edit), or their account is read-only (see [Billing](../features/account/billing.md)).
 - **422** when the input is invalid, with a message per field (see [Strict validation](strict-validation.md)).
 - **429** when rate limited, saying when to retry.
+- **400**, **413** and **415** when the request itself is malformed: a body that isn't valid JSON, a body over the size limit (1 MiB), or an unsupported content type. They keep their status, with the code `bad-request`, as does any other 4xx the server framework raises.
 - Error bodies have one shape across the API and the apps, with a stable code and a translated message.
 
 ## Alternatives considered

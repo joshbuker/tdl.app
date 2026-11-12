@@ -25,6 +25,11 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
      Whichever is chosen, two related gaps need closing:
      - The socket accepts only the server's own `Origin`, or none. The Android webview sends its own (e.g. `https://localhost`), so the server needs an allow-list of app origins.
      - `createHttpTransport` passes headers to the `WebSocket` constructor, which throws in a browser.
+   - **An oversized push blocks a device's sync for good.** Titles, notes and link reasons have no maximum length (`packages/domain/src/fields.ts`), and the Replica batches pushes by count only (500 operations). A body over the server's 1 MiB limit is answered 413, the HTTP transport throws a plain error, and `syncOnce` rethrows it, aborting both push and pull. The sync status stays `ok`, and every later sync fails the same way. Probably a combination of:
+     - **Maximum field lengths:** a spec change, so the user decides the limits.
+     - **Batching pushes by size** as well as count, so no batch passes the limit.
+     - **Treating a non-retryable 4xx on push as rejecting that batch**, so the device moves on.
+     - **Showing the failure as a sync status**, so the user knows sync is stuck.
 
 ## Deferred past the thin slice
 
@@ -61,6 +66,45 @@ Minor findings from plan 1's final review, deferred. Fix each when its area is n
 - The CI workflow has no `permissions: contents: read` block.
 - The scenario check ignores `~~~` code fences, doesn't report two tests for one scenario, and lets two specs with the same title collide.
 - Add a randomized test comparing the pruned redundancy search with the unpruned `hasPath`.
+
+## Follow-ups from plan 2
+
+Findings from plan 2's final review, deferred. The plan 3 blocker is under "Next steps".
+
+- **Push must stay push-before-pull.** A constraint on any refactor of `Replica.syncOnce`: if sync pulled first, an operation whose reply was lost could be forgotten by the pull and then re-added by the retry's `accepted`, leaving a confirmed operation for a record the device no longer has.
+- **Global feed-write lock.** Every write on the server takes one lock, so writes run one at a time. Fine for the slice. Options if write load grows:
+  - **Keep the global lock.**
+  - **Pull watermark with finer-grained locks:** pulls stop at the highest feed ID below which every ID has committed, so writers no longer need to commit in order.
+- **Unindexed scans on `operations`**, run under the global lock on every `moveTask`, grant and revoke: the history query filters `record_id` without `record_type`, so the `(record_type, record_id)` index isn't used, and `linksTouching` filters `meta->>'kind'` with no index. Options:
+  - **Add an index** on `operations(record_id)`, and expression indexes on the two ends of `createLink`.
+  - **Filter by type and ID pairs**, so the existing index applies.
+- **Missing Inbox after a crash during sign-up**, between Better Auth's commit and the Inbox's creation: `GET /me` then answers `defaultListId: null`. Options:
+  - **Repair on `/me`:** create the Inbox when it's missing.
+  - **Repair at server start:** create any missing Inboxes.
+  - **Plan 3's app creates it** when `/me` has none.
+- **An existing but invisible ID answers `forbidden`**: `createList`, `createTask` or `createLink` with an ID that already exists where the user can't see it. The [error contract](design-decisions/error-contract.md) says they learn nothing, but UUIDv7 IDs make probing impractical. Options:
+  - **Answer `not-found`**, or a generic conflict code.
+  - **Leave it as is.**
+- **Sign-up key allowlist:** sign-up refuses Better Auth client keys such as `callbackURL` and `rememberMe`. Options:
+  - **Extend the allowlist** if plan 3's web client sends them.
+  - **Keep it**, and have the client not send them.
+- **Spec wording in [Sharing](features/app/sharing.md), "Grants only add access":** its Given (bob is an editor of House, then alice shares Paint fence with him as a viewer) can't be set up through the API, because the server refuses a lesser grant as `already-shared`. Options:
+  - **Reword the Given** so the task grant comes first.
+  - **Allow lesser grants.**
+- **Device clocks far in the future** win newest-wins for good if a device's clock is wrong. Options:
+  - **Reject** operations whose HLC is beyond now plus a margin.
+  - **Clamp** such HLCs to now plus the margin.
+  - **Leave it.**
+- **Replica edits after a wipe** (when the session is revoked) throw `store-not-initialized` instead of returning a result. Options:
+  - **Plan 3's UI handles the error.**
+  - **The Replica returns a result** saying it's signed out.
+- **Rate limiting:** `@fastify/rate-limit` is registered with `global: false`, but no route opts in, so it does nothing. Sign-up and sign-in rely only on Better Auth's limiter, which is on only when `NODE_ENV=production` and untested. Sync, invitation and session routes are unlimited. Options (possibly combined):
+  - **Opt routes in** to `@fastify/rate-limit`.
+  - **Remove the plugin** and rely on Better Auth and the reverse proxy.
+  - **Test Better Auth's limiter.**
+- **Duplicate grants:** two pending invitations for the same person and target, both accepted, make two grants, because accepting doesn't re-check `already-shared` and `grants` has no unique constraint on user and target. Removing the collaborator then takes two deletes. Options:
+  - **A unique constraint, and a re-check on accept.**
+  - **No duplicate invitations:** refuse or reuse one at creation.
 
 ## Ideas for later
 
