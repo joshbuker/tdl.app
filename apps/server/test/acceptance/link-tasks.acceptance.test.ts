@@ -1,4 +1,4 @@
-import { buildGraph, postrequisitesOf, prerequisitesOf, redundantLinkIds, type Id } from '@tdl/domain';
+import { buildGraph, newId, postrequisitesOf, prerequisitesOf, redundantLinkIds, type Id } from '@tdl/domain';
 import type { Replica } from '@tdl/sync';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { ok, settle, startServer, type TestServer, type User } from './harness.ts';
@@ -189,5 +189,9 @@ describe('Link tasks', () => {
     expect(before).toEqual({ ok: false, rejection });
     expect(after).toEqual({ ok: false, rejection });
     expect(bobPhone.pending()).toEqual([]);
+    for (const [prerequisiteId, postrequisiteId] of [[buyPaint, paintFence], [paintFence, buyPaint]] as const) {
+      const pushed = await server.push(bob, { type: 'link', id: newId() }, { meta: { kind: 'createLink', prerequisiteId, postrequisiteId }, content: null });
+      expect(pushed).toMatchObject({ status: 'rejected', code: 'forbidden' });
+    }
   });
 });

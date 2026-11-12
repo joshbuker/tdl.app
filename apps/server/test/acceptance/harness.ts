@@ -1,6 +1,6 @@
 // Drives the slice headlessly, the way a device does: through the HTTP API, a Replica, and the domain.
 import { buildGraph, newId, nextUpTaskIds, type Id, type Role, type Task } from '@tdl/domain';
-import { createClock, createHttpTransport, MemoryStore, Replica, type FetchLike, type Operation, type PushResult } from '@tdl/sync';
+import { createClock, createHttpTransport, MemoryStore, Replica, type FetchLike, type Operation, type PushResult, type RecordRef } from '@tdl/sync';
 import { expect } from 'vitest';
 import { buildApp } from '../../src/app.ts';
 import { testConfig, testDb } from '../db.ts';
@@ -127,9 +127,14 @@ export class TestServer {
     expect((await this.request('POST', `/invitations/${id}/accept`, { token: invitee.token })).status).toBe(204);
   }
 
-  /** Pushes one content change straight to the server, bypassing the Replica's own checks. */
-  async pushEdit(user: User, taskId: Id, field: string, value: string | null): Promise<PushResult> {
-    const op: Operation = { id: newId(), hlc: this.clock.tick(), record: { type: 'task', id: taskId }, meta: null, content: { field, value } };
+  /** Pushes one content change to a task straight to the server, bypassing the Replica's own checks. */
+  pushEdit(user: User, taskId: Id, field: string, value: string | null): Promise<PushResult> {
+    return this.push(user, { type: 'task', id: taskId }, { meta: null, content: { field, value } });
+  }
+
+  /** Pushes one operation straight to the server, bypassing the Replica's own checks. */
+  async push(user: User, record: RecordRef, change: Pick<Operation, 'meta' | 'content'>): Promise<PushResult> {
+    const op: Operation = { id: newId(), hlc: this.clock.tick(), record, ...change };
     const reply = await this.request('POST', '/sync/push', { token: user.token, body: { ops: [op] } });
     expect(reply.status).toBe(200);
     const [result] = (reply.body as { results: PushResult[] }).results;
