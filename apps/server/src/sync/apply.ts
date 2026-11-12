@@ -1,6 +1,6 @@
 import { audienceOf, type AccessData, type Id } from '@tdl/domain';
 import { createClock, operationSchema, type Operation } from '@tdl/sync';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type { Db } from '../db/client.ts';
 import { grants, links, lists, operations, tasks } from '../db/schema.ts';
 import { collect, loadAccess, type LoadedAccess } from './access-loader.ts';
@@ -14,6 +14,19 @@ export interface Actor {
   sessionId: Id | null;
 }
 
+/**
+ * Feed (and operation) IDs come from sequences: taken at insert, visible only at commit. If a later
+ * transaction committed a higher ID first, a pull in between would return it, and the device's
+ * cursor would pass the lower ID for good. So every transaction that writes operations or the feed
+ * takes this transaction-scoped lock before its first insert: writers run one at a time, and IDs
+ * commit in the order they were taken.
+ */
+export const FEED_WRITE_LOCK = 0x7464_6c66; // "tdlf"
+
+async function lockFeedWrites(tx: Tx): Promise<void> {
+  await tx.execute(sql`select pg_advisory_xact_lock(${FEED_WRITE_LOCK})`);
+}
+
 // One clock per server process; server-made operations take their HLC from it (node ID `server`).
 const serverClock = createClock('server', () => Date.now());
 
@@ -24,6 +37,8 @@ const serverClock = createClock('server', () => Date.now());
  * authorization, if any.
  */
 export async function applyOperation(tx: Tx, op: Operation, actor: Actor, now: () => number, loaded?: LoadedAccess): Promise<number> {
+  // Before anything is inserted. A transaction already holding it (writeServerOps) does not block.
+  await lockFeedWrites(tx);
   const before = loaded ?? (await loadAccess(tx, op));
   const scope = await loadVisibilityScope(tx, op);
   const scopeBefore = scope === null ? null : await collect(tx, scope);
@@ -48,7 +63,7 @@ export async function applyOperation(tx: Tx, op: Operation, actor: Actor, now: (
   if (scope !== null && scopeBefore !== null) {
     const scopeAfter = await collect(tx, scope);
     const affected = affectedUsers(op, scopeBefore, scopeAfter, scope.links);
-    await applyVisibilityChange(tx, op, scopeBefore, scopeAfter, affected, { seq: stored.seq, links: scope.links });
+    await applyVisibilityChange(tx, op, scopeBefore, scopeAfter, { seq: stored.seq, links: scope.links, affected });
   }
 
   const after = afterState(before, op, actor.userId);

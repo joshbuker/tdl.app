@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { audienceOf, visibleRecords } from '../../src/access/visibility.ts';
+import { audienceOf, visibilityChange, visibleRecords } from '../../src/access/visibility.ts';
 import type { AccessData } from '../../src/access/resolver.ts';
 import type { Grant, List } from '../../src/model.ts';
 
@@ -55,5 +55,52 @@ describe('audienceOf', () => {
   });
   test('a list', () => {
     expect(audienceOf(data, links, { type: 'list', id: 'House' })).toEqual(new Set(['alice', 'bob']));
+  });
+});
+
+describe('visibilityChange', () => {
+  const garden: List = { id: 'Garden', ownerId: 'alice', title: 'Garden', editorsCanShare: false };
+  const twoLinks = [...links, { id: 'l0', prerequisiteId: 'Fix roof', postrequisiteId: 'Paint fence' }];
+  const withoutBob: AccessData = { ...data, grants: grants.filter((g) => g.id !== 'g1') };
+
+  test('losing a list grant forgets grants and links, then tasks by id, then the list', () => {
+    expect(visibilityChange(data, withoutBob, twoLinks, 'bob')).toEqual({
+      gained: [],
+      lost: [
+        { type: 'grant', id: 'g1' },
+        { type: 'link', id: 'l0' },
+        { type: 'link', id: 'l1' },
+        { type: 'task', id: 'Fix roof' },
+        { type: 'task', id: 'Paint fence' },
+        { type: 'list', id: 'House' },
+      ],
+    });
+  });
+
+  test('gaining a list grant gains everything the grant reveals', () => {
+    const { gained, lost } = visibilityChange(withoutBob, data, twoLinks, 'bob');
+    expect(lost).toEqual([]);
+    expect(new Set(gained.map((r) => `${r.type} ${r.id}`))).toEqual(
+      new Set(['grant g1', 'link l0', 'link l1', 'task Fix roof', 'task Paint fence', 'list House']),
+    );
+  });
+
+  test('a task moved to a private list is lost with its links, and the list stays', () => {
+    const moved: AccessData = {
+      ...data,
+      lists: new Map([...data.lists, ['Garden', garden]]),
+      tasks: new Map([...data.tasks, ['Paint fence', { id: 'Paint fence', listId: 'Garden' }]]),
+    };
+    expect(visibilityChange(data, moved, links, 'bob')).toEqual({
+      gained: [],
+      lost: [
+        { type: 'link', id: 'l1' },
+        { type: 'task', id: 'Paint fence' },
+      ],
+    });
+  });
+
+  test('nothing changes for someone whose view is the same', () => {
+    expect(visibilityChange(data, withoutBob, links, 'carol')).toEqual({ gained: [], lost: [] });
   });
 });

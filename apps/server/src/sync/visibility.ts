@@ -1,5 +1,5 @@
-import { audienceOf, visibleRecords, type AccessData, type Id, type VisibleRecords } from '@tdl/domain';
-import type { Operation, RecordRef } from '@tdl/sync';
+import { audienceOf, visibilityChange, type AccessData, type Id, type RecordKey } from '@tdl/domain';
+import type { Operation } from '@tdl/sync';
 import { and, asc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import { feed, grants, operations, tasks } from '../db/schema.ts';
 import type { LinkEnds } from './access-loader.ts';
@@ -58,49 +58,38 @@ export function affectedUsers(op: Operation, before: AccessData, after: AccessDa
   }
 }
 
-const KINDS = ['grant', 'link', 'task', 'list'] as const;
-const KEY = { list: 'lists', task: 'tasks', link: 'links', grant: 'grants' } as const satisfies Record<RecordRef['type'], keyof VisibleRecords>;
+export interface VisibilityChange {
+  /** The operation's sequence number; only earlier operations are history. */
+  seq: number;
+  links: readonly LinkEnds[];
+  affected: readonly Id[];
+}
 
 /**
- * For each affected user, compares what they could see in scope before and after `op` (stored as
- * `seq`). Records they gained get all their earlier operations appended to their feed, in `seq`
- * order; records they lost get `forget` rows, grants and links before tasks, and tasks before
- * lists. A grant's own record is left out: the `grant` or `revokeGrant` itself, fanned out next,
- * tells the grantee.
+ * Appends to each affected user's feed the earlier operations of records they gained, in `seq`
+ * order, then `forget` rows for records they lost, in forget order. A grant's own record is left
+ * out: the `grant` or `revokeGrant` itself, fanned out next, tells the grantee.
  */
-export async function applyVisibilityChange(
-  tx: Tx,
-  op: Operation,
-  before: AccessData,
-  after: AccessData,
-  affected: readonly Id[],
-  context: { seq: number; links: readonly LinkEnds[] },
-): Promise<void> {
-  const skip = op.record.type === 'grant' ? op.record.id : null;
-  for (const userId of affected) {
-    const was = visibleRecords(before, context.links, userId);
-    const is = visibleRecords(after, context.links, userId);
-    const gained: Id[] = [];
-    const lost: RecordRef[] = [];
-    for (const type of KINDS) {
-      const [then, now] = [was[KEY[type]], is[KEY[type]]];
-      for (const id of now) if (!then.has(id) && id !== skip) gained.push(id);
-      for (const id of [...then].sort()) if (!now.has(id) && id !== skip) lost.push({ type, id });
-    }
-
-    const history =
-      gained.length === 0
-        ? []
-        : await tx
-            .select({ seq: operations.seq, recordType: operations.recordType, recordId: operations.recordId })
-            .from(operations)
-            .where(and(inArray(operations.recordId, gained), lt(operations.seq, context.seq)))
-            .orderBy(asc(operations.seq));
+export async function applyVisibilityChange(tx: Tx, op: Operation, before: AccessData, after: AccessData, change: VisibilityChange): Promise<void> {
+  const isOther = (record: RecordKey) => !(op.record.type === 'grant' && record.id === op.record.id);
+  for (const userId of change.affected) {
+    const { gained, lost } = visibilityChange(before, after, change.links, userId);
+    const history = await historyOf(tx, gained.filter(isOther).map((r) => r.id), change.seq);
     await insertFeed(tx, [
       ...history.map((h) => ({ userId, kind: 'op', opSeq: h.seq, recordType: h.recordType, recordId: h.recordId })),
-      ...lost.map((record) => ({ userId, kind: 'forget', opSeq: null, recordType: record.type, recordId: record.id })),
+      ...lost.filter(isOther).map((r) => ({ userId, kind: 'forget', opSeq: null, recordType: r.type, recordId: r.id })),
     ]);
   }
+}
+
+/** The records' operations before `seq`, in `seq` order. */
+async function historyOf(tx: Tx, recordIds: Id[], seq: number) {
+  if (recordIds.length === 0) return [];
+  return tx
+    .select({ seq: operations.seq, recordType: operations.recordType, recordId: operations.recordId })
+    .from(operations)
+    .where(and(inArray(operations.recordId, recordIds), lt(operations.seq, seq)))
+    .orderBy(asc(operations.seq));
 }
 
 /** Every link ever made with one end in `taskIds`, removed ones included. Reads only `createLink` metadata. */

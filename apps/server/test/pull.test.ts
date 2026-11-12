@@ -1,5 +1,6 @@
 import { newId, type Id } from '@tdl/domain';
 import { createClock, type FeedEntry, type JsonValue, type Operation, type PullPage, type PushResult, type RecordRef } from '@tdl/sync';
+import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { writeServerOps } from '../src/sync/apply.ts';
 import { auth, signUp } from './auth-helpers.ts';
@@ -133,6 +134,49 @@ describe('pull', () => {
     const opIds = pages.flatMap((p) => p.entries.flatMap((e) => (e.kind === 'op' ? [e.op.id] : [])));
     expect(opIds.slice(-1200)).toEqual(ops.map((o) => o.id));
     expect(pages.at(-1)?.cursor).toBe(ids.at(-1));
+  });
+
+  /** Resolves once some transaction in this test's database is waiting for an advisory lock, or `stop` is set. */
+  const lockWaiter = async (stop: { done: boolean }) => {
+    while (!stop.done) {
+      const { rows } = await server.db.execute<{ n: string }>(sql`
+        select count(*) as n from pg_locks l join pg_database d on d.oid = l.database
+        where l.locktype = 'advisory' and not l.granted and d.datname = current_database()`);
+      if (Number(rows[0]?.n) > 0) return;
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+  };
+
+  test('a pull never passes a feed write that has not committed yet', async () => {
+    const erin = await signUp(server.app, 'erin');
+    const { userId: erinId, defaultListId: inbox } = await me(erin);
+    const { cursor } = await pullAll(erin, 0);
+
+    // A server write takes its feed IDs, then stays open.
+    const first: Omit<Operation, 'hlc'> = { id: newId(), record: { type: 'list', id: inbox }, meta: null, content: { field: 'title', value: 'Inbox 1' } };
+    let release = () => {};
+    let written = () => {};
+    const isWritten = new Promise<void>((resolve) => (written = resolve));
+    const slow = server.db.transaction(async (tx) => {
+      await writeServerOps(tx, erinId, [first], Date.now);
+      written();
+      await new Promise<void>((resolve) => (release = resolve));
+    });
+    await isWritten;
+
+    // A push starts after it. Unguarded, it would commit a higher feed ID first.
+    const second = set('list', inbox, 'title', 'Inbox 2');
+    const pushing = accepted(erin, [second]);
+    const stop = { done: false };
+    await Promise.race([pushing, lockWaiter(stop)]);
+    stop.done = true;
+    const midway = await pull(erin, cursor);
+    release();
+    await slow;
+    await pushing;
+
+    expect(midway.entries).toEqual([]);
+    expect((await pullAll(erin, cursor)).entries.map(describeEntry)).toEqual([`op ${first.id}`, `op ${second.id}`]);
   });
 
   describe('bob on House', () => {
