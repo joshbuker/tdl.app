@@ -22,6 +22,10 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
      - **Short-lived ticket in the URL:** the app fetches a one-use ticket over HTTPS and opens `/sync/ws?ticket=…`. Works everywhere, but adds an endpoint, and URLs can end up in logs.
      - **Token in the `Sec-WebSocket-Protocol` header:** the one header browsers let you set. Works everywhere without a new endpoint, but it misuses the header, and proxies may log it.
 
+     Whichever is chosen, two related gaps need closing:
+     - The socket accepts only the server's own `Origin`, or none. The Android webview sends its own (e.g. `https://localhost`), so the server needs an allow-list of app origins.
+     - `createHttpTransport` passes headers to the `WebSocket` constructor, which throws in a browser.
+
 ## Deferred past the thin slice
 
 - **Detecting concurrent edits**, for history's "overridden" and "double completion" flags (see [Task history](features/tasks/task-history.md)). The slice's history lists operations in clock order, without the flags. Options:
