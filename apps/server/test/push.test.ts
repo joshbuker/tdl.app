@@ -109,6 +109,15 @@ describe('push', () => {
     expect((await rows(sql`select seq from operations where id = ${ops[0]?.id ?? ''}`))).toHaveLength(1);
   });
 
+  test('a new task pushed from two devices at once is accepted on both and stored once', async () => {
+    const task = newId();
+    const ops = [createTask(task, inbox), set('task', task, 'title', 'Fix gate')];
+    const [phone, laptop] = await Promise.all([push(alice, ops), push(aliceLaptop, ops)]);
+    expect(phone.map((r) => r.status)).toEqual(['accepted', 'accepted']);
+    expect(laptop).toEqual(phone);
+    for (const { id } of ops) expect(await rows(sql`select seq from operations where id = ${id}`)).toHaveLength(1);
+  });
+
   test("bob's task in alice's Inbox is not found, and so is his title for it", async () => {
     const task = newId();
     const ops = [createTask(task, inbox), set('task', task, 'title', 'Sneaky')];

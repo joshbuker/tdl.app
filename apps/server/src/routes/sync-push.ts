@@ -7,12 +7,12 @@ import type { Db } from '../db/client.ts';
 import { links, operations } from '../db/schema.ts';
 import { sessionOf, type RequireSession, type SessionInfo } from '../session-guard.ts';
 import { loadAccess } from '../sync/access-loader.ts';
-import { applyOperation } from '../sync/apply.ts';
+import { applyOperation, type Tx } from '../sync/apply.ts';
 import { authorize, shapeErrors } from '../sync/authorize.ts';
 import type { FeedTransaction } from '../sync/feed-transaction.ts';
 
 const LINK_PAIR_CONSTRAINT = 'links_prerequisite_id_postrequisite_id_unique';
-// A unique violation means a concurrent push won a race; deciding again sees what it wrote.
+// A link-pair violation whose existing link was removed before we could name it: deciding again sees the removal.
 const MAX_ATTEMPTS = 3;
 
 export interface PushDeps {
@@ -37,14 +37,13 @@ export function registerSyncPushRoutes(app: FastifyInstance, deps: PushDeps, req
 
 async function pushOne({ db, feedTransaction, now }: PushDeps, op: Operation, session: SessionInfo): Promise<PushResult> {
   for (let attempt = 1; ; attempt++) {
-    const prior = await priorResult(db, op, session);
-    if (prior !== null) return prior;
-
-    const shape = shapeErrors(op);
-    if (shape.length > 0) return rejected(op, 'invalid', { errors: shape });
-
     try {
       return await feedTransaction(async (tx): Promise<PushResult> => {
+        // Under the feed-write lock, so a concurrent push of the same operation has either committed or not started.
+        const prior = await priorResult(tx, op, session);
+        if (prior !== null) return prior;
+        const shape = shapeErrors(op);
+        if (shape.length > 0) return rejected(op, 'invalid', { errors: shape });
         const loaded = await loadAccess(tx, op);
         const decision = authorize(loaded, session.userId, op);
         if (decision !== 'ok') return rejected(op, decision);
@@ -64,14 +63,15 @@ async function pushOne({ db, feedTransaction, now }: PushDeps, op: Operation, se
           .where(and(eq(links.prerequisiteId, op.meta.prerequisiteId), eq(links.postrequisiteId, op.meta.postrequisiteId)));
         if (existing !== undefined) return rejected(op, 'duplicate-link', { existingLinkId: existing.id });
       }
-      // Otherwise the same operation, or a record with the same ID, was stored concurrently: decide again.
+      // Otherwise decide again: the existing link was removed meanwhile, or (unexpected while every
+      // write holds the feed-write lock) a write outside it stored the same ID.
     }
   }
 }
 
 /** An operation ID already stored: the original result for its author, and `forbidden` for anyone else. */
-async function priorResult(db: Db, op: Operation, session: SessionInfo): Promise<PushResult | null> {
-  const [stored] = await db.select({ seq: operations.seq, authorId: operations.authorId }).from(operations).where(eq(operations.id, op.id));
+async function priorResult(tx: Tx, op: Operation, session: SessionInfo): Promise<PushResult | null> {
+  const [stored] = await tx.select({ seq: operations.seq, authorId: operations.authorId }).from(operations).where(eq(operations.id, op.id));
   if (stored === undefined) return null;
   return stored.authorId === session.userId ? { id: op.id, status: 'accepted', seq: stored.seq } : rejected(op, 'forbidden');
 }
