@@ -15,8 +15,8 @@ The stack is chosen (each choice is a record in `design-decisions/`), except the
 Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from its plans, in order. It proves sync, auth and sharing end to end before features, per [Lessons from previous attempts](lessons-from-previous-attempts.md).
 
 1. [Foundation and domain](superpowers/plans/2026-11-10-thin-slice-1-foundation-and-domain.md): done and merged into `main` (reviewed, CI green). Deferred review findings are listed below under "Follow-ups from plan 1".
-2. [Sync and server](superpowers/plans/2026-11-11-thin-slice-2-sync-and-server.md), from the [sync protocol design](superpowers/specs/2026-11-11-sync-protocol-design.md): in progress on branch `thin-slice-2-sync-and-server`, subagent-driven. Tasks 1 to 6 are done and reviewed. Task 7 (push) is committed and needs its task review. The run's ledger is in `.superpowers/sdd/2026-11-11-thin-slice-2-sync-and-server/progress.md` on the machine that ran it; elsewhere, resume from `git log`.
-3. Apps (Quasar web, Android, Electron) and the homelab deployment: write this plan once plan 2 is done. When setting up Quasar, follow its [guide for AI agents](https://quasar.dev/start/ai-agents), which covers Claude Code. Decide while writing it:
+2. [Sync and server](superpowers/plans/2026-11-11-thin-slice-2-sync-and-server.md), from the [sync protocol design](superpowers/specs/2026-11-11-sync-protocol-design.md): done on branch `thin-slice-2-sync-and-server` (all 13 tasks, including the container image, Compose file and [self-hosting guide](self-hosting.md)), pending its final review and merge into `main`. The run's ledger is in `.superpowers/sdd/2026-11-11-thin-slice-2-sync-and-server/progress.md` on the machine that ran it; elsewhere, resume from `git log`.
+3. Apps (Quasar web, Android, Electron) and the homelab deployment: next. Write this plan now that plan 2 is done. When setting up Quasar, follow its [guide for AI agents](https://quasar.dev/start/ai-agents), which covers Claude Code. Decide while writing it:
    - **Live updates in browsers and the Android app.** The server's live-update socket (`/sync/ws`) accepts a session cookie or an `Authorization: Bearer` header, but browsers, and the webview the Android app runs in, can't add headers to a WebSocket. Today only Node and Electron can use a bearer token there. Options:
      - **Cookies in webviews:** the web and Android apps sign in with the session cookie, and only Electron and other native clients use bearer tokens. Nothing changes on the server, if the Android webview keeps cookies reliably.
      - **Short-lived ticket in the URL:** the app fetches a one-use ticket over HTTPS and opens `/sync/ws?ticket=…`. Works everywhere, but adds an endpoint, and URLs can end up in logs.
@@ -37,6 +37,11 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
   - **Allow the password if Have I Been Pwned can't be reached**, logging a warning. Self-hosted servers without internet still work.
   - **Refuse sign-up if it can't be reached.** Strict, but self-hosters without outbound internet couldn't sign anyone up.
   - **Make it a server setting**, on by default, so self-hosters without internet can turn it off.
+
+- **Devices after a server restore.** Restoring a backup (see [Self-hosting](self-hosting.md)) rewinds the server's feed, so feed IDs that devices already pulled are handed out again for new entries, and devices that pulled past the backup would skip them. Devices may also hold changes the server acknowledged after the backup and has now lost. Options:
+  - **Server instance ID:** the server keeps a random ID that a restore changes (e.g. the admin runs a command after restoring); pulls return it, and a device that sees a new one pulls its whole feed again and re-sends its own operations.
+  - **Feed IDs that never repeat across restores**, e.g. starting each server start above the highest ID ever issued, kept outside the database. Devices still need to detect the gap to re-send lost changes.
+  - **Document it only:** after a restore, every device signs out, clears its local data and signs in again. Changes made after the backup are lost.
 
 ## Current state and history: constraints for later
 
