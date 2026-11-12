@@ -47,6 +47,7 @@ export function authorize(loaded: LoadedAccess, userId: Id, op: Operation): Deci
 
     case 'moveTask':
       if (taskAccess(access, userId, id) === null) return 'not-found';
+      if (listRole(access, userId, meta.listId) === null || !access.lists.has(meta.listId)) return 'not-found';
       return canMoveTask(access, userId, id, meta.listId) ? 'ok' : 'forbidden';
 
     case 'createLink': {

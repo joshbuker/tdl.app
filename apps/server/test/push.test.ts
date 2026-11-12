@@ -187,6 +187,12 @@ describe('push', () => {
       expect(await push(bob, ops)).toEqual([{ id: ops[0]?.id, status: 'rejected', code: 'forbidden' }]);
       expect((await rows(sql`select list_id from tasks where id = ${buyPaint}`))).toEqual([{ list_id: house }]);
     });
+
+    test("an editor moving a task into alice's Inbox, which he cannot see, is not found", async () => {
+      const ops = [moveTask(buyPaint, inbox)];
+      expect(await push(bob, ops)).toEqual([{ id: ops[0]?.id, status: 'rejected', code: 'not-found' }]);
+      expect((await rows(sql`select list_id from tasks where id = ${buyPaint}`))).toEqual([{ list_id: house }]);
+    });
   });
 
   test('moving a task updates its list and fans out to the new audience', async () => {
