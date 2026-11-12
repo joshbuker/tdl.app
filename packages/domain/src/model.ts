@@ -30,6 +30,8 @@ export interface Link {
 export type Role = 'owner' | 'editor' | 'commenter' | 'viewer';
 
 export interface Grant {
+  /** The grant record's ID. */
+  id: Id;
   userId: Id;
   target: { kind: 'list' | 'task'; id: Id };
   role: Exclude<Role, 'owner'>;

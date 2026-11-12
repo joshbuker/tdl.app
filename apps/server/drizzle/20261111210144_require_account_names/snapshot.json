@@ -1,0 +1,63 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "75fdcd42-7708-449a-9614-6779109324a8",
+  "prevIds": [
+    "c7ced233-e318-4822-a488-442d4a3cfc5e"
+  ],
+  "footprints": [
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "user",
+        "given_name"
+      ],
+      "writes": [
+        "s|colprop|public.user.given_name.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.user",
+        "n|sch|public",
+        "n|col|public.user.given_name"
+      ],
+      "sqlHash": "a6eed3cc187457ca"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "user",
+        "family_name"
+      ],
+      "writes": [
+        "s|colprop|public.user.family_name.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.user",
+        "n|sch|public",
+        "n|col|public.user.family_name"
+      ],
+      "sqlHash": "c59804ef3f8d08c4"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"user\",\"given_name\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"user\",\"family_name\"]",
+      "set": {
+        "notNull": true
+      }
+    }
+  ]
+}

@@ -1,6 +1,16 @@
 export interface FieldError {
   field: string;
-  code: 'required';
+  code:
+    | 'required'
+    | 'invalid'
+    | 'unknown-field'
+    | 'too-short'
+    | 'too-long'
+    | 'whitespace'
+    | 'uppercase'
+    | 'taken'
+    | 'already-shared'
+    | 'forbidden';
 }
 
 export type Validated<T> = { ok: true; value: T } | { ok: false; errors: FieldError[] };

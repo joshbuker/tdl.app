@@ -20,11 +20,13 @@ function data(grants: Grant[], extraLists: List[] = []): AccessData {
 }
 
 const onList = (userId: string, id: string, role: Grant['role']): Grant => ({
+  id: `g-${userId}-${id}`,
   userId,
   target: { kind: 'list', id },
   role,
 });
 const onTask = (userId: string, id: string, role: Grant['role']): Grant => ({
+  id: `g-${userId}-${id}`,
   userId,
   target: { kind: 'task', id },
   role,

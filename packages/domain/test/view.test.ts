@@ -21,7 +21,7 @@ function world(tasks: Task[], lists: List[], grants: Grant[]): AccessData {
 const house = list('House', 'alice');
 const alices = list("Alice's", 'alice');
 const bobs = list("Bob's", 'bob');
-const bobOnHouse = (role: Grant['role']): Grant => ({ userId: 'bob', target: { kind: 'list', id: 'House' }, role });
+const bobOnHouse = (role: Grant['role']): Grant => ({ id: 'g-bob-house', userId: 'bob', target: { kind: 'list', id: 'House' }, role });
 
 describe('userGraph and checkNewLinkFor', () => {
   test('a prerequisite hidden from a user does not block for them', () => {
@@ -56,7 +56,7 @@ describe('userGraph and checkNewLinkFor', () => {
       task('Scope the job', { listId: "Bob's" }),
     ];
     const data = world(tasks, [kitchen, bobs], [
-      { userId: 'bob', target: { kind: 'list', id: 'Kitchen remodel' }, role: 'editor' },
+      { id: 'g-bob-kitchen', userId: 'bob', target: { kind: 'list', id: 'Kitchen remodel' }, role: 'editor' },
     ]);
     const links: Link[] = [link('Finalize budget', 'Scope the job'), link('Scope the job', 'Send estimate')];
 

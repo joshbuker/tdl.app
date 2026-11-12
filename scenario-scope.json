@@ -1,1 +1,43 @@
-{}
+{
+  "account/sign-up.md": ["Sign up"],
+  "account/login.md": ["Log in", "Log in with email", "Wrong password", "Revoke a lost device", "Log out"],
+  "tasks/create-task.md": ["Create a task with a title", "Title is required", "Surrounding whitespace is stripped", "Duplicate titles are allowed"],
+  "tasks/edit-task.md": ["Rename a task", "Edit notes"],
+  "tasks/complete-task.md": ["Complete a task", "Mark a task incomplete again"],
+  "organization/lists.md": ["Create a list"],
+  "dependencies/link-tasks.md": [
+    "Add a prerequisite",
+    "Reject a cycle",
+    "Reject a redundant link",
+    "Cycles through completed tasks are still rejected",
+    "Completed tasks don't make links redundant",
+    "Remove a link",
+    "Existing link that becomes redundant is kept",
+    "Can't link a task to itself",
+    "Link already exists",
+    "Both tasks must be editable"
+  ],
+  "dependencies/next-up.md": [
+    "Unblocked task is next up",
+    "Blocked task is not next up",
+    "Completing a prerequisite unblocks",
+    "Marking a prerequisite incomplete blocks again"
+  ],
+  "app/offline.md": [
+    "Create offline",
+    "Link offline",
+    "Conflicting edits keep the most recent",
+    "Links that together form a cycle",
+    "Live updates",
+    "Rejected offline changes are kept"
+  ],
+  "app/sharing.md": [
+    "Share a list",
+    "Share a single task",
+    "Viewer can't edit",
+    "Leave a shared list",
+    "Hidden blocker",
+    "Loop only another user can see",
+    "Remove a collaborator"
+  ]
+}

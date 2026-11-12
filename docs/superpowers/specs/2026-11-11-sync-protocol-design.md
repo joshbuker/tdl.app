@@ -73,7 +73,7 @@ When the server rejects an operation, the device moves it from pending to reject
 
 **Forgetting.** A `forget` entry deletes the record from current state and drops its operations from history, along with those of any link that joined it. Losing access to a task means losing its history too. Permanent deletion, which the slice doesn't build, sends the same `forget` entry.
 
-**Duplicate links.** If the server refuses a link because the same link already exists, the reply carries the existing link's ID. The device folds its link into that one: it re-sends its `kind` and `reason` as content operations on the existing link, keeping their original HLCs so newest-wins stays fair, and drops its own link. A link in the **opposite** direction isn't a duplicate. It forms a loop, which is kept and flagged ([Offline use](../../features/app/offline.md), "Links that together form a cycle").
+**Duplicate links.** If the server refuses a link because the same link already exists, the reply carries the existing link's ID. The device folds its link into that one: it re-sends the `kind` and `reason` values the user set (not defaults, which the device never sends, so folding can't overwrite a collaborator's values with them) as content operations on the existing link, keeping their original HLCs so newest-wins stays fair, and drops its own link. A link in the **opposite** direction isn't a duplicate. It forms a loop, which is kept and flagged ([Offline use](../../features/app/offline.md), "Links that together form a cycle").
 
 ## The server
 

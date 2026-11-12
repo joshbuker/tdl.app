@@ -26,3 +26,4 @@ The server runs on **Node.js** (26 LTS at the time of writing, with Temporal bui
 - A mature, well-documented framework with a large plugin ecosystem.
 - Routes need schemas to generate OpenAPI and validate input, so the schema library must have a Fastify adapter (see [Zod schemas](zod-schemas.md)).
 - Node LTS upgrades are part of regular dependency updates.
+- Node runs the TypeScript source directly, by stripping types, but refuses to do that for files under `node_modules`. The container image installs the workspace packages there (with `pnpm deploy`), so it compiles them to JavaScript first. Each package's `exports` has a `tdl-compiled` condition pointing at that build, which the image turns on; everywhere else the source is used (see `apps/server/Dockerfile`).

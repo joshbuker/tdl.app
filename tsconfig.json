@@ -2,7 +2,13 @@
   "files": [],
   "references": [
     {
+      "path": "apps/server"
+    },
+    {
       "path": "packages/domain"
+    },
+    {
+      "path": "packages/sync"
     },
     {
       "path": "tools/scenario-check"
