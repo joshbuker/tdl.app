@@ -1,8 +1,9 @@
 // Drives the slice headlessly, the way a device does: through the HTTP API, a Replica, and the domain.
 import { buildGraph, newId, nextUpTaskIds, type Id, type Role, type Task } from '@tdl/domain';
-import { createClock, createHttpTransport, MemoryStore, Replica, type FetchLike, type Operation, type PushResult, type RecordRef } from '@tdl/sync';
+import { createClock, createHttpTransport, MemoryStore, Replica, type FetchLike, type Operation, type PushResult, type RecordRef, type Transport } from '@tdl/sync';
 import { expect } from 'vitest';
 import { buildApp } from '../../src/app.ts';
+import type { Db } from '../../src/db/client.ts';
 import { testConfig, testDb } from '../db.ts';
 
 export const PASSWORD = 'correct horse battery';
@@ -43,6 +44,8 @@ export interface DeviceOptions {
   token?: string;
   network?: Network;
   now?: () => number;
+  /** Wraps the device's HTTP transport, e.g. to inject faults. */
+  wrap?: (transport: Transport) => Transport;
 }
 
 /** JSON requests to one server. */
@@ -72,13 +75,16 @@ class Api {
 export class TestServer {
   readonly url: string;
   readonly close: () => Promise<void>;
+  /** The server's database, for checks the API doesn't offer. */
+  readonly db: Db;
   private readonly api: Api;
   private readonly names = new Map<string, number>();
   private readonly clock = createClock('acceptance', () => Date.now());
 
-  constructor(url: string, close: () => Promise<void>) {
+  constructor(url: string, close: () => Promise<void>, db: Db) {
     this.url = url;
     this.close = close;
+    this.db = db;
     this.api = new Api(url);
   }
 
@@ -107,10 +113,10 @@ export class TestServer {
   }
 
   /** A new device for the user, with an empty store, synced once if it is online. */
-  async device(user: User, { token = user.token, network = new Network(), now }: DeviceOptions = {}): Promise<Replica> {
+  async device(user: User, { token = user.token, network = new Network(), now, wrap = (t) => t }: DeviceOptions = {}): Promise<Replica> {
     const replica = await Replica.open({
       store: new MemoryStore(),
-      transport: createHttpTransport({ baseUrl: this.url, token, fetch: network.fetch }),
+      transport: wrap(createHttpTransport({ baseUrl: this.url, token, fetch: network.fetch })),
       userId: user.userId,
       deviceId: newId(),
       ...(now === undefined ? {} : { now }),
@@ -164,7 +170,7 @@ export async function startServer(): Promise<TestServer> {
   return new TestServer(url, async () => {
     await app.close();
     await database.close();
-  });
+  }, database.db);
 }
 
 const MAX_ROUNDS = 10;
