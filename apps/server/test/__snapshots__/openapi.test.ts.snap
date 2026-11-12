@@ -11,6 +11,25 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
   },
   "openapi": "3.0.3",
   "paths": {
+    "/grants/{id}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+          },
+        },
+      },
+    },
     "/health": {
       "get": {
         "responses": {
@@ -34,6 +53,193 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
                 },
               },
             },
+            "description": "Default Response",
+          },
+        },
+      },
+    },
+    "/invitations": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                        "type": "string",
+                      },
+                      "inviter": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "username": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "username",
+                        ],
+                        "type": "object",
+                      },
+                      "role": {
+                        "enum": [
+                          "editor",
+                          "commenter",
+                          "viewer",
+                        ],
+                        "type": "string",
+                      },
+                      "target": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                            "type": "string",
+                          },
+                          "kind": {
+                            "enum": [
+                              "list",
+                              "task",
+                            ],
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "kind",
+                          "id",
+                        ],
+                        "type": "object",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "inviter",
+                      "target",
+                      "role",
+                    ],
+                    "type": "object",
+                  },
+                  "type": "array",
+                },
+              },
+            },
+            "description": "Default Response",
+          },
+        },
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "role": {
+                    "enum": [
+                      "editor",
+                      "commenter",
+                      "viewer",
+                    ],
+                    "type": "string",
+                  },
+                  "target": {
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                        "type": "string",
+                      },
+                      "kind": {
+                        "enum": [
+                          "list",
+                          "task",
+                        ],
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "kind",
+                      "id",
+                    ],
+                    "type": "object",
+                  },
+                  "username": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "target",
+                  "username",
+                  "role",
+                ],
+                "type": "object",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "id",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Default Response",
+          },
+        },
+      },
+    },
+    "/invitations/{id}/accept": {
+      "post": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+          },
+        },
+      },
+    },
+    "/invitations/{id}/decline": {
+      "post": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
             "description": "Default Response",
           },
         },

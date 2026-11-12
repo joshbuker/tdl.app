@@ -50,8 +50,13 @@ export async function loadAccess(tx: Tx, op: Operation): Promise<LoadedAccess> {
   const [stored] = await tx.select({ targetKind: grants.targetKind, targetId: grants.targetId }).from(grants).where(eq(grants.id, id));
   const target = op.meta?.kind === 'grant' ? op.meta.target : stored === undefined ? null : { kind: stored.targetKind, id: stored.targetId };
   if (target === null) return { access: empty(), links: [], exists: false };
-  const access = await collect(tx, target.kind === 'list' ? { listIds: [target.id] } : { taskIds: [target.id] });
+  const access = await collectTarget(tx, target);
   return { access, links: [], exists: stored !== undefined };
+}
+
+/** The access data for a grant target: the list or task, the task's list, and every grant on them. */
+export function collectTarget(tx: Tx, target: { kind: string; id: Id }): Promise<AccessData> {
+  return collect(tx, target.kind === 'list' ? { listIds: [target.id] } : { taskIds: [target.id] });
 }
 
 const empty = (): AccessData => ({ lists: new Map(), tasks: new Map(), grants: [] });
