@@ -39,4 +39,5 @@ Scenarios are written in terms of what the user does and sees. That keeps them r
 
 - Behavior changes start with a spec change, so specs and acceptance tests stay in sync.
 - Every stack decision must allow domain logic to be separate from UI and transport layers.
+- Units are kept small and isolated, and are tested through their public messages; see [Small, isolated objects](small-isolated-objects.md).
 - Acceptance tests are plain Vitest tests (domain and API) and Playwright tests (UI), named exactly after the spec's feature and scenario, with the Given/When/Then lines as step labels. Gherkin isn't executed: the specs are read and written by developers and agents, and step definitions tend to grow into duplicated glue (Cucumber's own anti-patterns guide warns of this). A CI script fails on any scenario without a test, any test without a scenario, and any skipped test in an `Implemented` spec. If specs ever need to execute themselves, Gherkin can be generated from the Markdown.
