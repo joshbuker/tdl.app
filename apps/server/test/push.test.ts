@@ -36,9 +36,9 @@ describe('push', () => {
   const paintFence = newId();
   const buyPaint = newId();
 
-  const me = async (token: string) => (await server.app.inject({ url: '/me', headers: auth(token) })).json<{ userId: Id; defaultListId: Id }>();
+  const me = async (token: string) => (await server.app.inject({ url: '/api/me', headers: auth(token) })).json<{ userId: Id; defaultListId: Id }>();
   const push = async (token: string, ops: Operation[]) => {
-    const response = await server.app.inject({ method: 'POST', url: '/sync/push', headers: auth(token), payload: { ops } });
+    const response = await server.app.inject({ method: 'POST', url: '/api/sync/push', headers: auth(token), payload: { ops } });
     expect(response.statusCode).toBe(200);
     return response.json<{ results: PushResult[] }>().results;
   };
@@ -280,7 +280,7 @@ describe('push', () => {
   });
 
   test('pushing without a session is 401', async () => {
-    const response = await server.app.inject({ method: 'POST', url: '/sync/push', payload: { ops: [] } });
+    const response = await server.app.inject({ method: 'POST', url: '/api/sync/push', payload: { ops: [] } });
     expect(response.statusCode).toBe(401);
   });
 });

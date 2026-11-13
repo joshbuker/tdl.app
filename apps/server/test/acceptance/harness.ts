@@ -100,7 +100,7 @@ export class TestServer {
     const reply = await this.request('POST', '/api/auth/sign-up/email', { body });
     expect(reply.status, JSON.stringify(reply.body)).toBe(200);
     const token = tokenOf(reply.headers);
-    const me = (await this.request('GET', '/me', { token })).body as { userId: Id; defaultListId: Id };
+    const me = (await this.request('GET', '/api/me', { token })).body as { userId: Id; defaultListId: Id };
     return { userId: me.userId, username, email, token, defaultListId: me.defaultListId };
   }
 
@@ -127,10 +127,10 @@ export class TestServer {
 
   /** The owner invites the invitee to the target, and the invitee accepts. */
   async share(owner: User, target: Target, invitee: User, role: Exclude<Role, 'owner'>): Promise<void> {
-    const invitation = await this.request('POST', '/invitations', { token: owner.token, body: { target, username: invitee.username, role } });
+    const invitation = await this.request('POST', '/api/invitations', { token: owner.token, body: { target, username: invitee.username, role } });
     expect(invitation.status, JSON.stringify(invitation.body)).toBe(201);
     const { id } = invitation.body as { id: Id };
-    expect((await this.request('POST', `/invitations/${id}/accept`, { token: invitee.token })).status).toBe(204);
+    expect((await this.request('POST', `/api/invitations/${id}/accept`, { token: invitee.token })).status).toBe(204);
   }
 
   /** Pushes one content change to a task straight to the server, bypassing the Replica's own checks. */
@@ -141,7 +141,7 @@ export class TestServer {
   /** Pushes one operation straight to the server, bypassing the Replica's own checks. */
   async push(user: User, record: RecordRef, change: Pick<Operation, 'meta' | 'content'>): Promise<PushResult> {
     const op: Operation = { id: newId(), hlc: this.clock.tick(), record, ...change };
-    const reply = await this.request('POST', '/sync/push', { token: user.token, body: { ops: [op] } });
+    const reply = await this.request('POST', '/api/sync/push', { token: user.token, body: { ops: [op] } });
     expect(reply.status).toBe(200);
     const [result] = (reply.body as { results: PushResult[] }).results;
     if (result === undefined) throw new Error('no push result');

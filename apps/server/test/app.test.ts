@@ -25,6 +25,13 @@ describe('server skeleton', () => {
     expect(response.json()).toEqual({ ok: true });
   });
 
+  test('the API lives under /api: GET /me is 404, and GET /api/me without a session is 401', async () => {
+    expect((await server.app.inject({ url: '/me' })).statusCode).toBe(404);
+    const response = await server.app.inject({ url: '/api/me' });
+    expect(response.statusCode).toBe(401);
+    expect(response.json()).toMatchObject({ code: 'session-expired' });
+  });
+
   test('an unknown route answers 404 not-found', async () => {
     const response = await server.app.inject({ url: '/nope' });
     expect(response.statusCode).toBe(404);

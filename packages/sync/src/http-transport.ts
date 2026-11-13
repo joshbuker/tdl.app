@@ -59,18 +59,18 @@ const platformSchedule: Schedule = (fn, ms) => {
   };
 };
 
-/** The sync transport over the server's HTTP API (`/sync/push`, `/sync/pull`) and its websocket (`/sync/ws`). */
+/** The sync transport over the server's HTTP API (`/api/sync/push`, `/api/sync/pull`) and its websocket (`/api/sync/ws`). */
 export function createHttpTransport(options: HttpTransportOptions): Transport {
   const requests = createRequester(options);
   let revoked = false;
 
   return {
     async push(ops: Operation[]) {
-      return (await requests.send('POST', '/sync/push', pushResponseSchema, { ops })).results;
+      return (await requests.send('POST', '/api/sync/push', pushResponseSchema, { ops })).results;
     },
     async pull(after, limit) {
       if (revoked) throw new SessionError('session-revoked');
-      return requests.send('GET', `/sync/pull?after=${String(after)}&limit=${String(limit)}`, pullPageSchema);
+      return requests.send('GET', `/api/sync/pull?after=${String(after)}&limit=${String(limit)}`, pullPageSchema);
     },
     subscribe(onFeed) {
       return subscribeToFeed(options, onFeed, () => {
@@ -112,13 +112,13 @@ function sessionError(body: unknown): SessionError {
 }
 
 /**
- * Keeps a websocket to `/sync/ws` open, passing each feed ID to `onFeed`. Reconnects after a drop,
+ * Keeps a websocket to `/api/sync/ws` open, passing each feed ID to `onFeed`. Reconnects after a drop,
  * backing off from 1 s, doubling up to 30 s. A 4401 close means the session was revoked: it stops,
  * calls `onRevoked`, and wakes `onFeed` so the device syncs and learns it.
  */
 function subscribeToFeed(options: HttpTransportOptions, onFeed: (id: number) => void, onRevoked: () => void): () => void {
   const { baseUrl, token, WebSocket = platform.WebSocket, schedule = platformSchedule } = options;
-  const url = `${baseUrl.replace(/^http/, 'ws')}/sync/ws`;
+  const url = `${baseUrl.replace(/^http/, 'ws')}/api/sync/ws`;
   let socket: SocketLike | null = null;
   let cancelRetry: (() => void) | null = null;
   let backoff = MIN_BACKOFF;

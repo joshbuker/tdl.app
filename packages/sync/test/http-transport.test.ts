@@ -52,7 +52,7 @@ describe('createHttpTransport', () => {
     expect(await transport.push([pushed])).toEqual([{ id: pushed.id, status: 'accepted', seq: 7 }]);
     expect(fetch.calls).toEqual([
       {
-        url: `${baseUrl}/sync/push`,
+        url: `${baseUrl}/api/sync/push`,
         init: { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer secret' }, body: JSON.stringify({ ops: [pushed] }) },
       },
     ]);
@@ -63,7 +63,7 @@ describe('createHttpTransport', () => {
     const fetch = stubFetch(200, page);
     const transport = createHttpTransport({ baseUrl, fetch });
     expect(await transport.pull(2, 500)).toEqual(page);
-    expect(fetch.calls).toEqual([{ url: `${baseUrl}/sync/pull?after=2&limit=500`, init: { method: 'GET', headers: {}, credentials: 'include' } }]);
+    expect(fetch.calls).toEqual([{ url: `${baseUrl}/api/sync/pull?after=2&limit=500`, init: { method: 'GET', headers: {}, credentials: 'include' } }]);
   });
 
   test('a malformed body throws', async () => {
@@ -131,9 +131,9 @@ describe('createHttpTransport subscribe', () => {
     return { transport, timers, fetch, heard, unsubscribe, socket };
   };
 
-  test('opens /sync/ws with the bearer token and passes each feed ID on', () => {
+  test('opens /api/sync/ws with the bearer token and passes each feed ID on', () => {
     const { heard, socket } = live({ token: 'secret' });
-    expect(socket().url).toBe('wss://tdl.example/sync/ws');
+    expect(socket().url).toBe('wss://tdl.example/api/sync/ws');
     expect(socket().init).toEqual({ headers: { authorization: 'Bearer secret' } });
     socket().emit('message', { data: JSON.stringify({ type: 'feed', id: 4 }) });
     socket().emit('message', { data: 'not json' });

@@ -95,13 +95,19 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
   const auth = createAuth(config, { db, feedTransaction, now });
   const requireSession = createSessionGuard(auth, db);
   registerAuthRoutes(app, auth, config);
-  registerMeRoutes(app, db, requireSession);
-  registerSessionRoutes(app, { db, auth, sockets }, requireSession);
-  registerSyncPushRoutes(app, { db, feedTransaction, now }, requireSession);
-  registerSyncPullRoutes(app, db, requireSession, now);
-  registerSyncWsRoutes(app, { db, notifier, sockets, origin: config.origin }, requireSession);
-  registerInvitationRoutes(app, { db, feedTransaction, now }, requireSession);
-  registerGrantRoutes(app, feedTransaction, requireSession, now);
+  await app.register(
+    (api, _options, done) => {
+      registerMeRoutes(api, db, requireSession);
+      registerSessionRoutes(api, { db, auth, sockets }, requireSession);
+      registerSyncPushRoutes(api, { db, feedTransaction, now }, requireSession);
+      registerSyncPullRoutes(api, db, requireSession, now);
+      registerSyncWsRoutes(api, { db, notifier, sockets, origin: config.origin }, requireSession);
+      registerInvitationRoutes(api, { db, feedTransaction, now }, requireSession);
+      registerGrantRoutes(api, feedTransaction, requireSession, now);
+      done();
+    },
+    { prefix: '/api' },
+  );
 
   return app;
 }

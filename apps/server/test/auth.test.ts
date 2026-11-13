@@ -24,8 +24,8 @@ describe('accounts', () => {
       aliceToken = await signUp(server.app, 'alice');
     });
 
-    test('signing up gives a token, and /me has the username and an Inbox as the default list', async () => {
-      const me = await server.app.inject({ url: '/me', headers: auth(aliceToken) });
+    test('signing up gives a token, and /api/me has the username and an Inbox as the default list', async () => {
+      const me = await server.app.inject({ url: '/api/me', headers: auth(aliceToken) });
       expect(me.statusCode).toBe(200);
       const body = me.json<{ userId: string; username: string; defaultListId: string }>();
       expect(body.username).toBe('alice');
@@ -111,7 +111,7 @@ describe('accounts', () => {
 
     test('the stored name comes from the validated given and family names, never from the client', async () => {
       const token = await signUp(server.app, 'frank', { name: 'x'.repeat(10_000), givenName: '  Frank ', familyName: ' Example  ' });
-      const me = await server.app.inject({ url: '/me', headers: auth(token) });
+      const me = await server.app.inject({ url: '/api/me', headers: auth(token) });
       expect(me.json()).toMatchObject({ username: 'frank' });
       const result = await server.db.execute<{ name: string; display_username: string; given_name: string; family_name: string; image: string | null }>(
         sql`select name, display_username, given_name, family_name, image from "user" where username = 'frank'`,
@@ -168,7 +168,7 @@ describe('accounts', () => {
       expect(response.statusCode).toBe(200);
       const token = bearerOf(response.headers);
       expect(String(response.headers['set-cookie'])).toMatch(/HttpOnly/i);
-      const me = await server.app.inject({ url: '/me', headers: auth(token) });
+      const me = await server.app.inject({ url: '/api/me', headers: auth(token) });
       expect(me.json()).toMatchObject({ username: 'dave' });
     });
 
@@ -179,7 +179,7 @@ describe('accounts', () => {
         payload: { email: 'dave@example.com', password: PASSWORD },
       });
       expect(response.statusCode).toBe(200);
-      const me = await server.app.inject({ url: '/me', headers: auth(bearerOf(response.headers)) });
+      const me = await server.app.inject({ url: '/api/me', headers: auth(bearerOf(response.headers)) });
       expect(me.json()).toMatchObject({ username: 'dave' });
     });
 
@@ -187,7 +187,7 @@ describe('accounts', () => {
       const response = await logIn(server.app, 'dave');
       const cookie = response.cookies.find((c) => c.name.endsWith('session_token'));
       expect(cookie).toBeDefined();
-      const me = await server.app.inject({ url: '/me', cookies: { [cookie?.name ?? '']: cookie?.value ?? '' } });
+      const me = await server.app.inject({ url: '/api/me', cookies: { [cookie?.name ?? '']: cookie?.value ?? '' } });
       expect(me.statusCode).toBe(200);
     });
 

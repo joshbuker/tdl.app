@@ -26,13 +26,13 @@ describe('live updates', () => {
   const sockets: LiveSocket[] = [];
 
   const push = async (token: string, ops: Operation[]) => {
-    const response = await server.app.inject({ method: 'POST', url: '/sync/push', headers: auth(token), payload: { ops } });
+    const response = await server.app.inject({ method: 'POST', url: '/api/sync/push', headers: auth(token), payload: { ops } });
     expect(response.statusCode).toBe(200);
   };
 
-  /** Opens `/sync/ws` with the platform WebSocket, sending the token as a bearer header. */
+  /** Opens `/api/sync/ws` with the platform WebSocket, sending the token as a bearer header. */
   function open(token: string): LiveSocket {
-    const socket = new WebSocket(`${base.replace(/^http/, 'ws')}/sync/ws`, { headers: auth(token) });
+    const socket = new WebSocket(`${base.replace(/^http/, 'ws')}/api/sync/ws`, { headers: auth(token) });
     const queue: unknown[] = [];
     const waiting: ((message: unknown) => void)[] = [];
     socket.addEventListener('message', (event) => {
@@ -71,7 +71,7 @@ describe('live updates', () => {
   /** The status and body of an upgrade request the server refuses. */
   function refusedUpgrade(headers: Record<string, string>): Promise<{ status: number; body: unknown }> {
     return new Promise((resolve, reject) => {
-      const req = httpRequest(`${base}/sync/ws`, {
+      const req = httpRequest(`${base}/api/sync/ws`, {
         headers: { connection: 'Upgrade', upgrade: 'websocket', 'sec-websocket-version': '13', 'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==', ...headers },
       });
       req.on('upgrade', () => {
@@ -100,12 +100,12 @@ describe('live updates', () => {
     ]);
     const invitation = await server.app.inject({
       method: 'POST',
-      url: '/invitations',
+      url: '/api/invitations',
       headers: auth(alice),
       payload: { target: { kind: 'list', id: house }, username: 'bob', role: 'editor' },
     });
     const { id } = invitation.json<{ id: Id }>();
-    expect((await server.app.inject({ method: 'POST', url: `/invitations/${id}/accept`, headers: auth(bob) })).statusCode).toBe(204);
+    expect((await server.app.inject({ method: 'POST', url: `/api/invitations/${id}/accept`, headers: auth(bob) })).statusCode).toBe(204);
   });
   afterAll(async () => {
     for (const socket of sockets) socket.close();
@@ -135,9 +135,9 @@ describe('live updates', () => {
     const phone = bearerOf((await logIn(server.app, 'alice', undefined, 'phone')).headers);
     const socket = open(phone);
     await socket.next();
-    const sessions = (await server.app.inject({ url: '/sessions', headers: auth(alice) })).json<{ id: Id; userAgent: string }[]>();
+    const sessions = (await server.app.inject({ url: '/api/sessions', headers: auth(alice) })).json<{ id: Id; userAgent: string }[]>();
     const phoneSession = sessions.find((s) => s.userAgent === 'phone');
-    const revoke = await server.app.inject({ method: 'DELETE', url: `/sessions/${phoneSession?.id ?? ''}`, headers: auth(alice) });
+    const revoke = await server.app.inject({ method: 'DELETE', url: `/api/sessions/${phoneSession?.id ?? ''}`, headers: auth(alice) });
     expect(revoke.statusCode).toBe(204);
     expect(await socket.closed).toBe(4401);
   });

@@ -66,9 +66,9 @@ describe('Login', () => {
     expect(phone.pending()).not.toEqual([]);
 
     // When she revokes her phone from her laptop's settings
-    const sessions = (await server.request('GET', '/sessions', { token: laptopToken })).body as { id: string; userAgent: string }[];
+    const sessions = (await server.request('GET', '/api/sessions', { token: laptopToken })).body as { id: string; userAgent: string }[];
     const phoneSession = sessions.find((s) => s.userAgent === 'phone');
-    expect((await server.request('DELETE', `/sessions/${phoneSession?.id ?? ''}`, { token: laptopToken })).status).toBe(204);
+    expect((await server.request('DELETE', `/api/sessions/${phoneSession?.id ?? ''}`, { token: laptopToken })).status).toBe(204);
 
     // Then her phone is logged out and stops syncing
     // And the next time the phone reaches the server, it deletes its local data, including changes that hadn't synced
@@ -95,7 +95,7 @@ describe('Login', () => {
     expect((await server.request('POST', '/api/auth/sign-out', { token: alice.token })).status).toBe(200);
 
     // Then they are on the login page and the old session no longer works
-    expect(await server.request('GET', '/me', { token: alice.token })).toMatchObject({ status: 401, body: { code: 'session-expired' } });
+    expect(await server.request('GET', '/api/me', { token: alice.token })).toMatchObject({ status: 401, body: { code: 'session-expired' } });
     await laptop.sync();
     expect(laptop.status()).toBe('logged-out');
   });

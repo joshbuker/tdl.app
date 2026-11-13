@@ -48,15 +48,15 @@ describe('pull', () => {
   /** Paint fence's moves, once made. */
   const paintFenceMoves: Operation[] = [];
 
-  const me = async (token: string) => (await server.app.inject({ url: '/me', headers: auth(token) })).json<{ userId: Id; defaultListId: Id }>();
+  const me = async (token: string) => (await server.app.inject({ url: '/api/me', headers: auth(token) })).json<{ userId: Id; defaultListId: Id }>();
   const accepted = async (token: string, ops: Operation[]) => {
-    const response = await server.app.inject({ method: 'POST', url: '/sync/push', headers: auth(token), payload: { ops } });
+    const response = await server.app.inject({ method: 'POST', url: '/api/sync/push', headers: auth(token), payload: { ops } });
     const results = response.json<{ results: PushResult[] }>().results;
     expect(results.map((r) => r.status)).toEqual(ops.map(() => 'accepted'));
   };
   const pull = async (token: string, after: number, limit?: number) => {
     const query = limit === undefined ? `after=${String(after)}` : `after=${String(after)}&limit=${String(limit)}`;
-    const response = await server.app.inject({ url: `/sync/pull?${query}`, headers: auth(token) });
+    const response = await server.app.inject({ url: `/api/sync/pull?${query}`, headers: auth(token) });
     expect(response.statusCode).toBe(200);
     return response.json<PullPage>();
   };
@@ -240,22 +240,22 @@ describe('pull', () => {
   });
 
   test("after a pull, the session list shows this session's last sync", async () => {
-    const before = (await server.app.inject({ url: '/sessions', headers: auth(carol) })).json<{ current: boolean; lastSyncedAt: string | null }[]>();
+    const before = (await server.app.inject({ url: '/api/sessions', headers: auth(carol) })).json<{ current: boolean; lastSyncedAt: string | null }[]>();
     await pull(carol, 0);
-    const sessions = (await server.app.inject({ url: '/sessions', headers: auth(carol) })).json<{ current: boolean; lastSyncedAt: string | null }[]>();
+    const sessions = (await server.app.inject({ url: '/api/sessions', headers: auth(carol) })).json<{ current: boolean; lastSyncedAt: string | null }[]>();
     const current = sessions.find((s) => s.current);
     expect(current?.lastSyncedAt).toEqual(expect.any(String));
     expect(before.length).toBe(sessions.length);
   });
 
   test('a negative cursor is invalid', async () => {
-    const response = await server.app.inject({ url: '/sync/pull?after=-1', headers: auth(alice) });
+    const response = await server.app.inject({ url: '/api/sync/pull?after=-1', headers: auth(alice) });
     expect(response.statusCode).toBe(422);
     expect(response.json()).toEqual({ code: 'invalid', errors: [{ field: 'after', code: 'invalid' }] });
   });
 
   test('pulling without a session is 401', async () => {
-    const response = await server.app.inject({ url: '/sync/pull?after=0' });
+    const response = await server.app.inject({ url: '/api/sync/pull?after=0' });
     expect(response.statusCode).toBe(401);
   });
 });

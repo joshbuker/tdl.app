@@ -84,7 +84,7 @@ When the server rejects an operation, the device moves it from pending to reject
 - A `feed` table: one row per user per operation they can see, plus `forget` rows.
 - Better Auth's own tables, and a `revoked_sessions` tombstone table.
 
-**Push:** `POST /sync/push` with a batch of operations. The reply has one result per operation, in order. Each operation is handled in its own transaction:
+**Push:** `POST /api/sync/push` with a batch of operations. The reply has one result per operation, in order. Each operation is handled in its own transaction:
 
 1. **Idempotency.** An operation ID the server already accepted returns its original result.
 2. **Authorization**, using `@tdl/domain`'s resolver on the access data loaded for the records involved. The server uses its own stored metadata, never what the device claims.
@@ -104,9 +104,9 @@ When the server rejects an operation, the device moves it from pending to reject
 
 The server never undoes a link for breaking a graph rule. Graph rules run on devices ([Offline first](../../design-decisions/offline-first.md)).
 
-**Pull:** `GET /sync/pull?after=<feed id>&limit=<n>` returns the user's feed entries after the cursor, each an operation or a `forget` with the record's type and ID. It also returns the new cursor, and whether there's more. A pull also records when the session last synced.
+**Pull:** `GET /api/sync/pull?after=<feed id>&limit=<n>` returns the user's feed entries after the cursor, each an operation or a `forget` with the record's type and ID. It also returns the new cursor, and whether there's more. A pull also records when the session last synced.
 
-**Live updates:** `GET /sync/ws` is a websocket. The server sends `{ "type": "feed", "id": <latest feed id> }` whenever the user's feed grows, and the device pulls. Notifications go out from within the server process. Running several server instances would need Postgres `LISTEN`/`NOTIFY`, which the slice doesn't need.
+**Live updates:** `GET /api/sync/ws` is a websocket. The server sends `{ "type": "feed", "id": <latest feed id> }` whenever the user's feed grows, and the device pulls. Notifications go out from within the server process. Running several server instances would need Postgres `LISTEN`/`NOTIFY`, which the slice doesn't need.
 
 **Sessions:** a request whose session isn't valid gets 401 with one of two codes:
 
@@ -129,9 +129,9 @@ These are handled by the server, not through sync, since they need it anyway ([O
 
 - **Sign-up** (Better Auth, with its username plugin). It validates [Account details](../../features/account/user-validation.md), except the breached-password check, which is deferred. It records when the terms were accepted, and creates the user's Inbox list, through operations the server makes, as their default list.
 - **Login** with a username or email address and password, **logout**, **listing sessions** with when each last synced, and **revoking** one.
-- `GET /me` returns the user's ID, username and default list.
-- **Invitations:** `POST /invitations { target, username, role }`, which the owner can always send, and editors only for a single task on a list that allows it. Then `GET /invitations`, `POST /invitations/:id/accept` and `POST /invitations/:id/decline`. Accepting creates a `grant` operation, made by the server.
-- **Removing access:** `DELETE /grants/:id`, by the target's owner (removing a collaborator) or by the grantee (leaving). It creates a `revokeGrant` operation.
+- `GET /api/me` returns the user's ID, username and default list.
+- **Invitations:** `POST /api/invitations { target, username, role }`, which the owner can always send, and editors only for a single task on a list that allows it. Then `GET /api/invitations`, `POST /api/invitations/:id/accept` and `POST /api/invitations/:id/decline`. Accepting creates a `grant` operation, made by the server.
+- **Removing access:** `DELETE /api/grants/:id`, by the target's owner (removing a collaborator) or by the grantee (leaving). It creates a `revokeGrant` operation.
 
 Server-made operations take their HLC from the server's clock, and record the acting user as their author.
 

@@ -11,7 +11,7 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
   },
   "openapi": "3.0.3",
   "paths": {
-    "/grants/{id}": {
+    "/api/grants/{id}": {
       "delete": {
         "parameters": [
           {
@@ -30,35 +30,7 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
         },
       },
     },
-    "/health": {
-      "get": {
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "ok": {
-                      "enum": [
-                        true,
-                      ],
-                      "type": "boolean",
-                    },
-                  },
-                  "required": [
-                    "ok",
-                  ],
-                  "type": "object",
-                },
-              },
-            },
-            "description": "Default Response",
-          },
-        },
-      },
-    },
-    "/invitations": {
+    "/api/invitations": {
       "get": {
         "responses": {
           "200": {
@@ -207,7 +179,7 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
         },
       },
     },
-    "/invitations/{id}/accept": {
+    "/api/invitations/{id}/accept": {
       "post": {
         "parameters": [
           {
@@ -226,7 +198,7 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
         },
       },
     },
-    "/invitations/{id}/decline": {
+    "/api/invitations/{id}/decline": {
       "post": {
         "parameters": [
           {
@@ -245,7 +217,7 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
         },
       },
     },
-    "/me": {
+    "/api/me": {
       "get": {
         "responses": {
           "200": {
@@ -283,7 +255,7 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
         },
       },
     },
-    "/sessions": {
+    "/api/sessions": {
       "get": {
         "responses": {
           "200": {
@@ -335,7 +307,7 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
         },
       },
     },
-    "/sessions/{id}": {
+    "/api/sessions/{id}": {
       "delete": {
         "parameters": [
           {
@@ -354,7 +326,7 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
         },
       },
     },
-    "/sync/pull": {
+    "/api/sync/pull": {
       "get": {
         "parameters": [
           {
@@ -721,7 +693,7 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
         },
       },
     },
-    "/sync/push": {
+    "/api/sync/push": {
       "post": {
         "requestBody": {
           "content": {
@@ -1066,6 +1038,34 @@ exports[`the OpenAPI document matches the stored snapshot 1`] = `
                   },
                   "required": [
                     "results",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Default Response",
+          },
+        },
+      },
+    },
+    "/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "ok": {
+                      "enum": [
+                        true,
+                      ],
+                      "type": "boolean",
+                    },
+                  },
+                  "required": [
+                    "ok",
                   ],
                   "type": "object",
                 },

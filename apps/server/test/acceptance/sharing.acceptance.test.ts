@@ -104,7 +104,7 @@ describe('Sharing', () => {
     expect(alicePhone.state().grants.has(grant)).toBe(true);
 
     // When he leaves "House"
-    expect((await server.request('DELETE', `/grants/${grant}`, { token: bob.token })).status).toBe(204);
+    expect((await server.request('DELETE', `/api/grants/${grant}`, { token: bob.token })).status).toBe(204);
     await settle(alicePhone, bobPhone);
 
     // Then he no longer sees "House" or its tasks
@@ -167,7 +167,7 @@ describe('Sharing', () => {
     const [paintFence] = tasks as [Id];
 
     // When "alice" removes him from "House"
-    expect((await server.request('DELETE', `/grants/${grantOf(alicePhone, bob)}`, { token: alice.token })).status).toBe(204);
+    expect((await server.request('DELETE', `/api/grants/${grantOf(alicePhone, bob)}`, { token: alice.token })).status).toBe(204);
     await settle(alicePhone, bobPhone);
 
     // Then he no longer sees "House" or its tasks

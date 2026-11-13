@@ -2,7 +2,7 @@
 
 ## Context
 
-Open apps hear about new sync data over a websocket, `GET /sync/ws` (see [Custom sync](custom-sync.md)). It only carries feed positions, never task content. The web app in a browser is served from the server's own origin and sends its session as an httpOnly cookie; Android, iOS, Electron and other native clients send it as a bearer token (see [Server-side sessions](server-side-sessions.md)).
+Open apps hear about new sync data over a websocket, `GET /api/sync/ws` (see [Custom sync](custom-sync.md)). It only carries feed positions, never task content. The web app in a browser is served from the server's own origin and sends its session as an httpOnly cookie; Android, iOS, Electron and other native clients send it as a bearer token (see [Server-side sessions](server-side-sessions.md)).
 
 No browser engine lets page scripts set headers on a WebSocket, and the Capacitor webviews (Android, iOS) and Electron's window are browser engines. The WHATWG proposal to allow it has been open since 2017, with Chrome's WebSocket maintainers opposed. Cookies don't fill the gap: the Capacitor apps run at `https://localhost` and `capacitor://localhost`, so the server's cookie is third-party there, and iOS only allows third-party cookies for at most 10 domains fixed at build time, which can't cover self-hosted servers (see [Choose a server](../features/account/choose-server.md)).
 

@@ -172,7 +172,7 @@ describe('Offline use', () => {
     bobNetwork.online = false;
     ok(await bobPhone.setTaskField(paintFence, 'title', 'Paint the fence'));
     const [grant] = [...alicePhone.state().grants.values()].filter((g) => g.userId === bob.userId);
-    expect((await server.request('DELETE', `/grants/${grant?.id ?? ''}`, { token: alice.token })).status).toBe(204);
+    expect((await server.request('DELETE', `/api/grants/${grant?.id ?? ''}`, { token: alice.token })).status).toBe(204);
 
     // When his device syncs
     bobNetwork.online = true;

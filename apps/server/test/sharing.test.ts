@@ -41,9 +41,9 @@ describe('sharing', () => {
   let fixRoofOps: Operation[];
   const cursors = new Map<string, number>();
 
-  const me = async (token: string) => (await server.app.inject({ url: '/me', headers: auth(token) })).json<{ userId: Id }>();
+  const me = async (token: string) => (await server.app.inject({ url: '/api/me', headers: auth(token) })).json<{ userId: Id }>();
   const push = async (token: string, ops: Operation[]) => {
-    const response = await server.app.inject({ method: 'POST', url: '/sync/push', headers: auth(token), payload: { ops } });
+    const response = await server.app.inject({ method: 'POST', url: '/api/sync/push', headers: auth(token), payload: { ops } });
     expect(response.statusCode).toBe(200);
     return response.json<{ results: PushResult[] }>().results.map((r) => (r.status === 'rejected' ? r.code : r.status));
   };
@@ -52,7 +52,7 @@ describe('sharing', () => {
     const entries: FeedEntry[] = [];
     let cursor = cursors.get(token) ?? 0;
     for (;;) {
-      const response = await server.app.inject({ url: `/sync/pull?after=${String(cursor)}`, headers: auth(token) });
+      const response = await server.app.inject({ url: `/api/sync/pull?after=${String(cursor)}`, headers: auth(token) });
       expect(response.statusCode).toBe(200);
       const page = response.json<PullPage>();
       entries.push(...page.entries);
@@ -63,19 +63,19 @@ describe('sharing', () => {
     return entries;
   };
   const invite = (token: string, target: Target, username: string, role: string) =>
-    server.app.inject({ method: 'POST', url: '/invitations', headers: auth(token), payload: { target, username, role } });
+    server.app.inject({ method: 'POST', url: '/api/invitations', headers: auth(token), payload: { target, username, role } });
   const invited = async (token: string, target: Target, username: string, role: string) => {
     const response = await invite(token, target, username, role);
     expect(response.statusCode).toBe(201);
     return response.json<{ id: Id }>().id;
   };
   const respond = (token: string, invitationId: Id, answer: 'accept' | 'decline') =>
-    server.app.inject({ method: 'POST', url: `/invitations/${invitationId}/${answer}`, headers: auth(token) });
+    server.app.inject({ method: 'POST', url: `/api/invitations/${invitationId}/${answer}`, headers: auth(token) });
   const accept = async (token: string, invitationId: Id) => {
     expect((await respond(token, invitationId, 'accept')).statusCode).toBe(204);
   };
-  const received = async (token: string) => (await server.app.inject({ url: '/invitations', headers: auth(token) })).json<unknown[]>();
-  const deleteGrant = (token: string, grantId: Id) => server.app.inject({ method: 'DELETE', url: `/grants/${grantId}`, headers: auth(token) });
+  const received = async (token: string) => (await server.app.inject({ url: '/api/invitations', headers: auth(token) })).json<unknown[]>();
+  const deleteGrant = (token: string, grantId: Id) => server.app.inject({ method: 'DELETE', url: `/api/grants/${grantId}`, headers: auth(token) });
   const grantOf = async (userId: Id, target: Target) =>
     (
       await server.db.execute<{ id: Id }>(sql`

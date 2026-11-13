@@ -37,7 +37,7 @@ describe('Sync conformance', () => {
     let confirmed = new Map<Id, FeedOp>();
     let after = 0;
     for (;;) {
-      const reply = await server.request('GET', `/sync/pull?after=${String(after)}&limit=1000`, { token: user.token });
+      const reply = await server.request('GET', `/api/sync/pull?after=${String(after)}&limit=1000`, { token: user.token });
       const page = pullPageSchema.parse(reply.body);
       for (const entry of page.entries) {
         if (entry.kind === 'op') confirmed.set(entry.op.id, entry.op);
@@ -166,7 +166,7 @@ describe('Sync conformance', () => {
         await settle(alicePhone);
         const grant = [...alicePhone.state().grants.values()].find((g) => g.target.id === secret);
         if (grant === undefined) await server.share(alice, { kind: 'task', id: secret }, bob, 'viewer');
-        else expect((await server.request('DELETE', `/grants/${grant.id}`, { token: alice.token })).status).toBe(204);
+        else expect((await server.request('DELETE', `/api/grants/${grant.id}`, { token: alice.token })).status).toBe(204);
       }
     }
     await settle(alicePhone);
@@ -207,7 +207,7 @@ describe('Sync conformance', () => {
     if (!bc.ok) expect.fail(JSON.stringify(bc.rejection));
     ok(await alicePhone.removeLink(ab.id));
     await settle(alicePhone);
-    expect((await server.request('DELETE', `/grants/${grantOf(alicePhone, bob)}`, { token: alice.token })).status).toBe(204);
+    expect((await server.request('DELETE', `/api/grants/${grantOf(alicePhone, bob)}`, { token: alice.token })).status).toBe(204);
     ok(await alicePhone.setTaskField(c, 'notes', 'while bob was removed'));
     ok(await alicePhone.removeLink(bc.id));
     const ca = await alicePhone.addLink(c, a, 'soft');

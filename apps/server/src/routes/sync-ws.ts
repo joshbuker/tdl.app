@@ -19,7 +19,7 @@ export interface SyncWsDeps {
 }
 
 /**
- * `GET /sync/ws`: tells the device its latest feed ID on connect, then again whenever its feed
+ * `GET /api/sync/ws`: tells the device its latest feed ID on connect, then again whenever its feed
  * grows. Incoming messages are ignored. Bad origins and sessions are refused before upgrading.
  */
 export function registerSyncWsRoutes(app: FastifyInstance, deps: SyncWsDeps, requireSession: RequireSession): void {

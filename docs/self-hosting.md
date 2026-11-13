@@ -51,7 +51,7 @@ The server's port is published on `127.0.0.1` only, so nothing outside the machi
 
 Put a reverse proxy in front of the server that serves HTTPS for your domain and forwards everything to `http://127.0.0.1:3000`. HTTPS is needed: session cookies are marked `Secure`, so browsers won't send them over plain HTTP. The proxy must:
 
-- **Forward websockets.** Apps get live updates over a websocket at `/sync/ws`, so the proxy must pass on the `Upgrade` and `Connection` headers. Without them, live updates don't work.
+- **Forward websockets.** Apps get live updates over a websocket at `/api/sync/ws`, so the proxy must pass on the `Upgrade` and `Connection` headers. Without them, live updates don't work.
 - **Keep `Host` and `Origin` as the browser sent them.** The server checks a browser's `Origin` against `ORIGIN` and refuses the websocket if they differ, so the proxy must not rewrite it.
 - **Set `X-Forwarded-For` and `X-Forwarded-Proto`**, and set `TRUST_PROXY=true` in `.env`. `X-Forwarded-For` must be overwritten with the client's address, not appended to: the server trusts its first address, which a client could otherwise choose.
 - **Not time out idle websockets quickly.** The live-update socket can be quiet for a long time, and a short timeout closes it needlessly.

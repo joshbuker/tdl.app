@@ -157,15 +157,15 @@ class Script {
     const invitee = this.choose.pick(this.devices.map((d) => d.party.user).filter((u) => u.userId !== party.user.userId));
     if (target === undefined || invitee === undefined) return;
     const body = { target, username: invitee.username, role: this.choose.pick(SHAREABLE_ROLES) };
-    const invitation = await this.server.request('POST', '/invitations', { token: party.user.token, body });
+    const invitation = await this.server.request('POST', '/api/invitations', { token: party.user.token, body });
     if (invitation.status !== 201) return;
-    await this.server.request('POST', `/invitations/${(invitation.body as { id: Id }).id}/accept`, { token: invitee.token });
+    await this.server.request('POST', `/api/invitations/${(invitation.body as { id: Id }).id}/accept`, { token: invitee.token });
   }
 
   /** The device's user removes a grant they own or leaves one they hold. Refusals (e.g. a stale grant) are ignored. */
   async unshare({ party, replica }: Device): Promise<void> {
     const grant = this.choose.pick([...replica.state().grants.keys()]);
-    if (grant !== undefined) await this.server.request('DELETE', `/grants/${grant}`, { token: party.user.token });
+    if (grant !== undefined) await this.server.request('DELETE', `/api/grants/${grant}`, { token: party.user.token });
   }
 
   toggleNetwork(device: Device): Promise<void> {

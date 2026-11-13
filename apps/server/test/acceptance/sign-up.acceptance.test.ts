@@ -16,7 +16,7 @@ describe('Sign up', () => {
     const carol = await server.signUp('carol');
 
     // Then they have an account and are logged in
-    const me = await server.request('GET', '/me', { token: carol.token });
+    const me = await server.request('GET', '/api/me', { token: carol.token });
     expect(me).toMatchObject({ status: 200, body: { userId: carol.userId, username: carol.username } });
     const phone = await server.device(carol);
     expect(phone.status()).toBe('ok');

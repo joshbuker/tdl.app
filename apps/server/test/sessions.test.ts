@@ -23,9 +23,9 @@ describe('sessions', () => {
   });
 
   const loginAs = async (username: string, userAgent: string) => bearerOf((await logIn(server.app, username, undefined, userAgent)).headers);
-  const me = (token: string) => server.app.inject({ url: '/me', headers: auth(token) });
+  const me = (token: string) => server.app.inject({ url: '/api/me', headers: auth(token) });
   const sessions = async (token: string) => {
-    const response = await server.app.inject({ url: '/sessions', headers: auth(token) });
+    const response = await server.app.inject({ url: '/api/sessions', headers: auth(token) });
     expect(response.statusCode).toBe(200);
     return response.json<SessionView[]>();
   };
@@ -48,7 +48,7 @@ describe('sessions', () => {
     const phoneSession = (await sessions(laptop)).find((s) => s.userAgent === 'phone 2');
     expect(phoneSession).toBeDefined();
 
-    const revoke = await server.app.inject({ method: 'DELETE', url: `/sessions/${phoneSession?.id ?? ''}`, headers: auth(laptop) });
+    const revoke = await server.app.inject({ method: 'DELETE', url: `/api/sessions/${phoneSession?.id ?? ''}`, headers: auth(laptop) });
     expect(revoke.statusCode).toBe(204);
 
     const phoneMe = await me(phone);
@@ -63,9 +63,9 @@ describe('sessions', () => {
     const cookie = phoneLogin.cookies.find((c) => c.name.endsWith('session_token'));
     const laptop = await loginAs('alice', 'laptop 3');
     const phoneSession = (await sessions(laptop)).find((s) => s.userAgent === 'phone 3');
-    await server.app.inject({ method: 'DELETE', url: `/sessions/${phoneSession?.id ?? ''}`, headers: auth(laptop) });
+    await server.app.inject({ method: 'DELETE', url: `/api/sessions/${phoneSession?.id ?? ''}`, headers: auth(laptop) });
 
-    const response = await server.app.inject({ url: '/me', cookies: { [cookie?.name ?? '']: cookie?.value ?? '' } });
+    const response = await server.app.inject({ url: '/api/me', cookies: { [cookie?.name ?? '']: cookie?.value ?? '' } });
     expect(response.statusCode).toBe(401);
     expect(response.json()).toEqual({ code: 'session-revoked' });
   });
@@ -91,17 +91,17 @@ describe('sessions', () => {
     const alice = await loginAs('alice', 'desktop');
     const bob = await loginAs('bob', 'bob phone');
     const bobSession = (await sessions(bob)).find((s) => s.current);
-    const response = await server.app.inject({ method: 'DELETE', url: `/sessions/${bobSession?.id ?? ''}`, headers: auth(alice) });
+    const response = await server.app.inject({ method: 'DELETE', url: `/api/sessions/${bobSession?.id ?? ''}`, headers: auth(alice) });
     expect(response.statusCode).toBe(404);
     expect(response.json()).toEqual({ code: 'not-found' });
     expect((await me(bob)).statusCode).toBe(200);
 
-    const malformed = await server.app.inject({ method: 'DELETE', url: '/sessions/not-a-uuid', headers: auth(alice) });
+    const malformed = await server.app.inject({ method: 'DELETE', url: '/api/sessions/not-a-uuid', headers: auth(alice) });
     expect(malformed.statusCode).toBe(404);
   });
 
   test('a request with no token gets session-expired', async () => {
-    const response = await server.app.inject({ url: '/me' });
+    const response = await server.app.inject({ url: '/api/me' });
     expect(response.statusCode).toBe(401);
     expect(response.json()).toEqual({ code: 'session-expired' });
   });

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Smoke test for the container image and compose.yaml: start the stack, sign up,
-# log in, read /me, then tear everything down. Exits non-zero on any failure.
+# log in, read /api/me, then tear everything down. Exits non-zero on any failure.
 #
 # Uses its own Compose project name and a throwaway env file, so it never touches
 # a real deployment's containers, volumes or .env.
@@ -68,12 +68,12 @@ post_json /api/auth/sign-in/username '{"username":"smoke","password":"correct ho
 token="$(token_from_headers)"
 [ -n "${token}" ] || fail "log-in returned no session token"
 
-echo "smoke: reading /me"
-me="$(curl --silent --show-error --fail-with-body --header "authorization: Bearer ${token}" "${base}/me")" \
-  || fail "GET /me failed: ${me}"
+echo "smoke: reading /api/me"
+me="$(curl --silent --show-error --fail-with-body --header "authorization: Bearer ${token}" "${base}/api/me")" \
+  || fail "GET /api/me failed: ${me}"
 case "${me}" in
   *'"username":"smoke"'*) ;;
-  *) fail "GET /me returned an unexpected body: ${me}" ;;
+  *) fail "GET /api/me returned an unexpected body: ${me}" ;;
 esac
 
 echo "smoke: PASS"
