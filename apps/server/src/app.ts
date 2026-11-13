@@ -11,6 +11,7 @@ import {
 } from '@fastify/type-provider-zod';
 import Fastify, { type FastifyInstance } from 'fastify';
 import type { FieldError } from '@tdl/domain';
+import { PROTOCOL_HEADER, PROTOCOL_VERSION } from '@tdl/sync';
 import { z } from 'zod';
 import { createAuth, registerAuthRoutes } from './auth.ts';
 import type { Config } from './config.ts';
@@ -23,6 +24,7 @@ import { registerSessionRoutes } from './routes/sessions.ts';
 import { registerSyncPullRoutes } from './routes/sync-pull.ts';
 import { registerSyncPushRoutes } from './routes/sync-push.ts';
 import { registerSyncWsRoutes } from './routes/sync-ws.ts';
+import { createProtocolCheck } from './protocol.ts';
 import { createSessionGuard } from './session-guard.ts';
 import { createSessionSockets, type SessionSockets } from './session-sockets.ts';
 import { createFeedTransaction } from './sync/feed-transaction.ts';
@@ -35,6 +37,8 @@ export interface AppDeps {
   notifier?: Notifier;
   /** The open websockets of each session. Defaults to a fresh registry. */
   sessionSockets?: SessionSockets;
+  /** The sync protocol version this server speaks. Defaults to PROTOCOL_VERSION; tests set others. */
+  protocolVersion?: string;
 }
 
 // Notifications are small; nothing a device sends is read.
@@ -42,6 +46,12 @@ const MAX_WS_PAYLOAD = 1024;
 
 export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyInstance> {
   const app = Fastify({ logger: false, trustProxy: config.trustProxy });
+  const protocolVersion = deps.protocolVersion ?? PROTOCOL_VERSION;
+  const requireProtocol = createProtocolCheck(protocolVersion);
+  // Every reply says the server's version, so apps can tell what it supports.
+  app.addHook('onSend', async (_request, reply) => {
+    void reply.header(PROTOCOL_HEADER, protocolVersion);
+  });
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
@@ -51,7 +61,7 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
   });
   await app.register(helmet);
   await app.register(websocket, { options: { maxPayload: MAX_WS_PAYLOAD } });
-  await app.register(cors, { origin: config.origin, credentials: true });
+  await app.register(cors, { origin: config.origin, credentials: true, exposedHeaders: [PROTOCOL_HEADER] });
   await app.register(rateLimit, {
     global: false,
     errorResponseBuilder: (_request, context) => ({
@@ -99,9 +109,9 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
     (api, _options, done) => {
       registerMeRoutes(api, db, requireSession);
       registerSessionRoutes(api, { db, auth, sockets }, requireSession);
-      registerSyncPushRoutes(api, { db, feedTransaction, now }, requireSession);
-      registerSyncPullRoutes(api, db, requireSession, now);
-      registerSyncWsRoutes(api, { db, notifier, sockets, origin: config.origin }, requireSession);
+      registerSyncPushRoutes(api, { db, feedTransaction, now }, requireProtocol, requireSession);
+      registerSyncPullRoutes(api, db, requireProtocol, requireSession, now);
+      registerSyncWsRoutes(api, { db, notifier, sockets, origin: config.origin }, requireProtocol, requireSession);
       registerInvitationRoutes(api, { db, feedTransaction, now }, requireSession);
       registerGrantRoutes(api, feedTransaction, requireSession, now);
       done();

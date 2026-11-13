@@ -38,5 +38,6 @@ export function faulty(inner: Transport, rand: () => number, faults: Faults): Tr
     push: (ops) => call(() => inner.push(ops)),
     pull: (after, limit) => call(() => inner.pull(after, limit)),
     subscribe: (onFeed) => inner.subscribe(onFeed),
+    serverVersion: () => inner.serverVersion(),
   };
 }

@@ -195,4 +195,26 @@ describe('Offline use', () => {
     expect(bobPhone.rejected()).toEqual([]);
     expect(taskTitled(bobPhone, 'Paint the fence').id).toBe(copy);
   });
+
+  test('Refused sync shows why', async () => {
+    const outdated = await startServer({ protocolVersion: '2.0' });
+    try {
+      // Given the server refuses "alice"'s sync, e.g. because her app needs updating
+      const alice = await outdated.signUp('alice');
+      const phone = await outdated.device(alice, { protocolVersion: '1.0' });
+      // It has never synced, so it makes its own list.
+      const groceries = ok(await phone.createList('Groceries'));
+      ok(await phone.createTask(groceries, 'Buy milk'));
+      await phone.sync();
+
+      // Then she sees that sync is stuck and why
+      expect(phone.status()).toBe('app-outdated');
+
+      // And her unsynced changes are still on the device
+      expect(titles(phone)).toEqual(['Buy milk']);
+      expect(phone.pending()).not.toEqual([]);
+    } finally {
+      await outdated.close();
+    }
+  });
 });

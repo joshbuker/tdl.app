@@ -1,3 +1,4 @@
+import { PROTOCOL_HEADER, PROTOCOL_VERSION } from '@tdl/sync';
 import type { FastifyInstance } from 'fastify';
 
 export interface SignUpInput {
@@ -49,4 +50,8 @@ export function bearerOf(headers: Record<string, unknown>): string {
   return token;
 }
 
-export const auth = (token: string) => ({ authorization: `Bearer ${token}` });
+/** The protocol version header every sync request needs. */
+export const protocol = { [PROTOCOL_HEADER]: PROTOCOL_VERSION };
+
+/** A bearer token, with the protocol version so the headers also suit sync routes. */
+export const auth = (token: string) => ({ authorization: `Bearer ${token}`, ...protocol });

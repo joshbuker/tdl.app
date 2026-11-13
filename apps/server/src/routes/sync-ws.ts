@@ -6,6 +6,7 @@ import type { WebSocket } from 'ws';
 import type { Db } from '../db/client.ts';
 import { feed } from '../db/schema.ts';
 import { sendError } from '../errors.ts';
+import type { RequireProtocol } from '../protocol.ts';
 import { sessionOf, type RequireSession } from '../session-guard.ts';
 import type { SessionSockets } from '../session-sockets.ts';
 import type { Notifier } from '../sync/notifier.ts';
@@ -20,10 +21,10 @@ export interface SyncWsDeps {
 
 /**
  * `GET /api/sync/ws`: tells the device its latest feed ID on connect, then again whenever its feed
- * grows. Incoming messages are ignored. Bad origins and sessions are refused before upgrading.
+ * grows. Incoming messages are ignored. Bad protocol versions, origins and sessions are refused before upgrading.
  */
-export function registerSyncWsRoutes(app: FastifyInstance, deps: SyncWsDeps, requireSession: RequireSession): void {
-  app.get('/sync/ws', { websocket: true, preValidation: [sameOrigin(deps.origin), requireSession] }, async (socket, request) => {
+export function registerSyncWsRoutes(app: FastifyInstance, deps: SyncWsDeps, requireProtocol: RequireProtocol, requireSession: RequireSession): void {
+  app.get('/sync/ws', { websocket: true, onRequest: requireProtocol.query, preValidation: [sameOrigin(deps.origin), requireSession] }, async (socket, request) => {
     const { userId, sessionId } = sessionOf(request);
     const send = (id: number) => {
       const message: FeedNotification = { type: 'feed', id };

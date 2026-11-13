@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import { errorBodySchema, feedNotificationSchema, pullPageSchema, pushResponseSchema, type Operation } from './operations.ts';
-import { NetworkError, SessionError, type Transport } from './transport.ts';
+import { NetworkError, RefusedError, SessionError, VersionError, type Transport } from './transport.ts';
+import { PROTOCOL_HEADER, PROTOCOL_VERSION } from './version.ts';
 
 // This package uses no platform globals in its types (it runs in browsers, Capacitor and
 // Electron), so fetch, WebSocket and timers are described by the little of them it uses.
@@ -13,7 +14,10 @@ interface RequestInit {
   credentials?: 'include';
 }
 
-export type FetchLike = (url: string, init: RequestInit) => Promise<{ status: number; json(): Promise<unknown> }>;
+export type FetchLike = (
+  url: string,
+  init: RequestInit,
+) => Promise<{ status: number; headers: { get(name: string): string | null }; json(): Promise<unknown> }>;
 
 export interface SocketLike {
   addEventListener(type: 'open', listener: () => void): void;
@@ -37,6 +41,8 @@ export interface HttpTransportOptions {
   WebSocket?: WebSocketLike;
   /** Defaults to the platform's setTimeout. */
   schedule?: Schedule;
+  /** The protocol version this app speaks. Defaults to PROTOCOL_VERSION; tests set others. */
+  protocolVersion?: string;
 }
 
 const MIN_BACKOFF = 1000;
@@ -77,33 +83,51 @@ export function createHttpTransport(options: HttpTransportOptions): Transport {
         revoked = true;
       });
     },
+    serverVersion: () => requests.serverVersion(),
   };
 }
 
 /** Sends JSON requests with the session's credentials, and parses replies with a schema. */
-function createRequester({ baseUrl, token, fetch = platform.fetch }: HttpTransportOptions) {
+function createRequester({ baseUrl, token, fetch = platform.fetch, protocolVersion = PROTOCOL_VERSION }: HttpTransportOptions) {
   const authorization: Partial<RequestInit> = token === undefined ? { credentials: 'include' } : {};
-  const authHeaders: Record<string, string> = token === undefined ? {} : { authorization: `Bearer ${token}` };
+  const baseHeaders: Record<string, string> = {
+    [PROTOCOL_HEADER]: protocolVersion,
+    ...(token === undefined ? {} : { authorization: `Bearer ${token}` }),
+  };
+  let serverVersion: string | null = null;
 
   return {
+    serverVersion: () => serverVersion,
     async send<S extends z.ZodType>(method: RequestInit['method'], path: string, schema: S, body?: unknown): Promise<z.infer<S>> {
       const init: RequestInit =
         body === undefined
-          ? { method, headers: authHeaders, ...authorization }
-          : { method, headers: { 'content-type': 'application/json', ...authHeaders }, body: JSON.stringify(body), ...authorization };
+          ? { method, headers: baseHeaders, ...authorization }
+          : { method, headers: { 'content-type': 'application/json', ...baseHeaders }, body: JSON.stringify(body), ...authorization };
       let response: Awaited<ReturnType<FetchLike>>;
       try {
         response = await fetch(`${baseUrl}${path}`, init);
       } catch (error) {
         throw new NetworkError(error);
       }
+      serverVersion = response.headers.get(PROTOCOL_HEADER) ?? serverVersion;
       if (response.status === 401) throw sessionError(await response.json());
+      if (response.status === 426) throw new VersionError(response.headers.get(PROTOCOL_HEADER), protocolVersion);
       // Rate limits and server or proxy failures are passing: try again later, like being offline.
       if (response.status === 429 || response.status >= 500) throw new NetworkError(response.status);
-      if (response.status < 200 || response.status >= 300) throw new Error(`unexpected status ${String(response.status)}`);
+      if (response.status < 200 || response.status >= 300) throw new RefusedError(response.status, await errorCode(response));
       return schema.parse(await response.json());
     },
   };
+}
+
+/** The error contract's `code` from a reply, or `unknown` if its body has none. */
+async function errorCode(response: { json(): Promise<unknown> }): Promise<string> {
+  try {
+    const parsed = errorBodySchema.safeParse(await response.json());
+    return parsed.success ? parsed.data.code : 'unknown';
+  } catch {
+    return 'unknown';
+  }
 }
 
 function sessionError(body: unknown): SessionError {
@@ -117,8 +141,8 @@ function sessionError(body: unknown): SessionError {
  * calls `onRevoked`, and wakes `onFeed` so the device syncs and learns it.
  */
 function subscribeToFeed(options: HttpTransportOptions, onFeed: (id: number) => void, onRevoked: () => void): () => void {
-  const { baseUrl, token, WebSocket = platform.WebSocket, schedule = platformSchedule } = options;
-  const url = `${baseUrl.replace(/^http/, 'ws')}/api/sync/ws`;
+  const { baseUrl, token, WebSocket = platform.WebSocket, schedule = platformSchedule, protocolVersion = PROTOCOL_VERSION } = options;
+  const url = `${baseUrl.replace(/^http/, 'ws')}/api/sync/ws?protocol=${encodeURIComponent(protocolVersion)}`;
   let socket: SocketLike | null = null;
   let cancelRetry: (() => void) | null = null;
   let backoff = MIN_BACKOFF;

@@ -32,7 +32,7 @@ describe('live updates', () => {
 
   /** Opens `/api/sync/ws` with the platform WebSocket, sending the token as a bearer header. */
   function open(token: string): LiveSocket {
-    const socket = new WebSocket(`${base.replace(/^http/, 'ws')}/api/sync/ws`, { headers: auth(token) });
+    const socket = new WebSocket(`${base.replace(/^http/, 'ws')}/api/sync/ws?protocol=1.0`, { headers: auth(token) });
     const queue: unknown[] = [];
     const waiting: ((message: unknown) => void)[] = [];
     socket.addEventListener('message', (event) => {
@@ -69,9 +69,9 @@ describe('live updates', () => {
   }
 
   /** The status and body of an upgrade request the server refuses. */
-  function refusedUpgrade(headers: Record<string, string>): Promise<{ status: number; body: unknown }> {
+  function refusedUpgrade(headers: Record<string, string>, query = '?protocol=1.0'): Promise<{ status: number; body: unknown }> {
     return new Promise((resolve, reject) => {
-      const req = httpRequest(`${base}/api/sync/ws`, {
+      const req = httpRequest(`${base}/api/sync/ws${query}`, {
         headers: { connection: 'Upgrade', upgrade: 'websocket', 'sec-websocket-version': '13', 'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==', ...headers },
       });
       req.on('upgrade', () => {
@@ -125,6 +125,13 @@ describe('live updates', () => {
 
   test('a socket with no token is refused with 401 before upgrading', async () => {
     expect(await refusedUpgrade({})).toEqual({ status: 401, body: { code: 'session-expired' } });
+  });
+
+  test('a missing, malformed or other-major protocol version is refused with 426 before the session check', async () => {
+    const mismatch = { status: 426, body: { code: 'protocol-mismatch' } };
+    expect(await refusedUpgrade({}, '')).toEqual(mismatch);
+    expect(await refusedUpgrade(auth(alice), '?protocol=1')).toEqual(mismatch);
+    expect(await refusedUpgrade(auth(alice), '?protocol=2.0')).toEqual(mismatch);
   });
 
   test('a foreign Origin is refused with 403 before upgrading', async () => {

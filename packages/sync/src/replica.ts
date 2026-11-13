@@ -19,9 +19,14 @@ import { createClock, type Clock } from './hlc.ts';
 import type { ContentChange, MetaChange, Operation, PullPage, PushResult, RecordRef } from './operations.ts';
 import { accessData, historyOf, materialize, type DeviceState, type HistoryEntry } from './state.ts';
 import { forgetOps, type FeedOp, type RejectedOp, type ReplicaStore } from './store.ts';
-import { NetworkError, SessionError, type Transport } from './transport.ts';
+import { NetworkError, RefusedError, SessionError, VersionError, type Transport } from './transport.ts';
+import { compareProtocol } from './version.ts';
 
-export type ReplicaStatus = 'ok' | 'offline' | 'logged-out' | 'revoked';
+/**
+ * `stuck`: the server refused the sync for another reason, given by `statusReason`. `app-outdated`
+ * and `server-outdated`: the protocol versions are incompatible. Neither drops pending changes.
+ */
+export type ReplicaStatus = 'ok' | 'offline' | 'logged-out' | 'revoked' | 'stuck' | 'app-outdated' | 'server-outdated';
 
 export interface ReplicaOptions {
   store: ReplicaStore;
@@ -72,6 +77,7 @@ export class Replica {
   private cursor = 0;
   private current: DeviceState = materialize([]);
   private currentStatus: ReplicaStatus = 'ok';
+  private currentReason: string | null = null;
 
   private running: Promise<void> | null = null;
   /** Counts sync requests, so a run can tell whether another came in while it ran. */
@@ -126,6 +132,11 @@ export class Replica {
 
   status(): ReplicaStatus {
     return this.currentStatus;
+  }
+
+  /** While `stuck`, the code the server refused the sync with; otherwise null. */
+  statusReason(): string | null {
+    return this.currentReason;
   }
 
   // Local edits
@@ -250,14 +261,19 @@ export class Replica {
     try {
       await this.push();
       await this.pull();
-      this.currentStatus = 'ok';
+      this.setStatus('ok');
     } catch (error) {
       if (error instanceof NetworkError) {
-        this.currentStatus = 'offline';
+        this.setStatus('offline');
+      } else if (error instanceof VersionError) {
+        const appOutdated = error.serverVersion !== null && compareProtocol(error.appVersion, error.serverVersion) === 'app-outdated';
+        this.setStatus(appOutdated ? 'app-outdated' : 'server-outdated');
+      } else if (error instanceof RefusedError) {
+        this.setStatus('stuck', error.code);
       } else if (error instanceof SessionError && error.code === 'session-revoked') {
         await this.wipe();
       } else if (error instanceof SessionError) {
-        this.currentStatus = 'logged-out';
+        this.setStatus('logged-out');
       } else {
         throw error;
       }
@@ -370,7 +386,7 @@ export class Replica {
     this.outbox = [];
     this.refused = [];
     this.cursor = 0;
-    this.currentStatus = 'revoked';
+    this.setStatus('revoked');
     this.recompute();
   }
 
@@ -386,6 +402,11 @@ export class Replica {
     } catch {
       // Skipped: see above.
     }
+  }
+
+  private setStatus(status: ReplicaStatus, reason: string | null = null): void {
+    this.currentStatus = status;
+    this.currentReason = reason;
   }
 
   private canEditLink(linkId: Id): boolean {

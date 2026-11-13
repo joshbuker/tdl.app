@@ -7,3 +7,4 @@ export * from './state.ts';
 export * from './replica.ts';
 export * from './store.ts';
 export * from './transport.ts';
+export * from './version.ts';

@@ -10,7 +10,7 @@ Immich and Bitwarden (whose apps also serve Vaultwarden) face the same problem: 
 
 Follow Immich and Bitwarden:
 
-- The sync protocol has a `major.minor` version. Every sync request carries the app's, and every reply the server's. Federation and the public API use the same version (see [Federation reuses sync](federation-reuses-sync.md) and [API access](../features/app/api-access.md)).
+- The sync protocol has a `major.minor` version. Every sync request carries the app's, and every reply the server's, in the `TDL-Protocol` header. The websocket, which browsers can't give headers, sends it in its `protocol` query parameter. The server refuses a version it doesn't accept with 426 `protocol-mismatch`. Federation and the public API use the same version (see [Federation reuses sync](federation-reuses-sync.md) and [API access](../features/app/api-access.md)).
 - **Minor versions only add** fields, record types and kinds of change. Changing or removing anything is a major version.
 - **Apps check the server's version** before using a feature, and hide what the server lacks, so the server can stay strict and refuse anything its version doesn't know.
 - **Apps keep what they don't understand** (from a newer minor version) untouched, and apply it once updated. Pulled data is checked leniently for unknown record types, fields and kinds of change, and strictly for everything the app knows.

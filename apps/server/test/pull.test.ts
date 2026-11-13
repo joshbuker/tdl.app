@@ -3,7 +3,7 @@ import { createClock, type FeedEntry, type JsonValue, type Operation, type PullP
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { writeServerOps } from '../src/sync/apply.ts';
-import { auth, signUp } from './auth-helpers.ts';
+import { auth, protocol, signUp } from './auth-helpers.ts';
 import { testApp } from './db.ts';
 
 const clock = createClock('device', () => Date.now());
@@ -255,7 +255,13 @@ describe('pull', () => {
   });
 
   test('pulling without a session is 401', async () => {
-    const response = await server.app.inject({ url: '/api/sync/pull?after=0' });
+    const response = await server.app.inject({ url: '/api/sync/pull?after=0', headers: protocol });
     expect(response.statusCode).toBe(401);
+  });
+
+  test('pulling with another major protocol version is 426', async () => {
+    const response = await server.app.inject({ url: '/api/sync/pull?after=0', headers: { ...auth(alice), 'tdl-protocol': '2.0' } });
+    expect(response.statusCode).toBe(426);
+    expect(response.json()).toEqual({ code: 'protocol-mismatch' });
   });
 });

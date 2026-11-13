@@ -3,7 +3,7 @@ import { createClock, createHttpTransport, MemoryStore, Replica, type FetchLike,
 import { sql, type SQL } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { writeServerOps } from '../src/sync/apply.ts';
-import { auth, bearerOf, logIn, signUp } from './auth-helpers.ts';
+import { auth, bearerOf, logIn, protocol, signUp } from './auth-helpers.ts';
 import { testApp } from './db.ts';
 
 const clock = createClock('device', () => Date.now());
@@ -154,7 +154,12 @@ describe('push', () => {
         headers: init.headers,
         ...(init.body === undefined ? {} : { payload: init.body }),
       });
-      return { status: response.statusCode, json: () => Promise.resolve(response.json()) };
+      const headers = response.headers;
+      return {
+        status: response.statusCode,
+        headers: { get: (name: string) => (typeof headers[name] === 'string' ? headers[name] : null) },
+        json: () => Promise.resolve(response.json()),
+      };
     };
     const replica = await Replica.open({
       store: new MemoryStore(),
@@ -321,7 +326,22 @@ describe('push', () => {
   });
 
   test('pushing without a session is 401', async () => {
-    const response = await server.app.inject({ method: 'POST', url: '/api/sync/push', payload: { ops: [] } });
+    const response = await server.app.inject({ method: 'POST', url: '/api/sync/push', headers: protocol, payload: { ops: [] } });
     expect(response.statusCode).toBe(401);
+  });
+
+  test('a missing, malformed or other-major protocol version is 426, before the session check', async () => {
+    for (const headers of [{}, { 'tdl-protocol': '1' }, { 'tdl-protocol': '2.0' }]) {
+      const response = await server.app.inject({ method: 'POST', url: '/api/sync/push', headers, payload: { ops: [] } });
+      expect(response.statusCode).toBe(426);
+      expect(response.json()).toEqual({ code: 'protocol-mismatch' });
+      expect(response.headers['tdl-protocol']).toBe('1.0');
+    }
+  });
+
+  test('another minor version is accepted, and the reply carries the server\'s version', async () => {
+    const response = await server.app.inject({ method: 'POST', url: '/api/sync/push', headers: { ...auth(alice), 'tdl-protocol': '1.7' }, payload: { ops: [] } });
+    expect(response.statusCode).toBe(200);
+    expect(response.headers['tdl-protocol']).toBe('1.0');
   });
 });

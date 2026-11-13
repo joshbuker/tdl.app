@@ -1,6 +1,19 @@
 // Drives the slice headlessly, the way a device does: through the HTTP API, a Replica, and the domain.
 import { buildGraph, newId, nextUpTaskIds, type Id, type Role, type Task } from '@tdl/domain';
-import { createClock, createHttpTransport, MemoryStore, Replica, type FetchLike, type Operation, type PushResult, type RecordRef, type Transport } from '@tdl/sync';
+import {
+  createClock,
+  createHttpTransport,
+  MemoryStore,
+  PROTOCOL_HEADER,
+  PROTOCOL_VERSION,
+  Replica,
+  type FetchLike,
+  type Operation,
+  type PushResult,
+  type RecordRef,
+  type ReplicaStore,
+  type Transport,
+} from '@tdl/sync';
 import { expect } from 'vitest';
 import { buildApp } from '../../src/app.ts';
 import type { Db } from '../../src/db/client.ts';
@@ -46,20 +59,28 @@ export interface DeviceOptions {
   now?: () => number;
   /** Wraps the device's HTTP transport, e.g. to inject faults. */
   wrap?: (transport: Transport) => Transport;
+  /** The protocol version the device's app speaks. Defaults to PROTOCOL_VERSION. */
+  protocolVersion?: string;
+  /** An existing device's store and ID, to reopen it (e.g. after updating the app). Default to a new device. */
+  store?: ReplicaStore;
+  deviceId?: string;
 }
 
-/** JSON requests to one server. */
+/** JSON requests to one server, sending its protocol version. */
 class Api {
   private readonly url: string;
+  private readonly protocolVersion: string;
 
-  constructor(url: string) {
+  constructor(url: string, protocolVersion: string) {
     this.url = url;
+    this.protocolVersion = protocolVersion;
   }
 
   async request(method: string, path: string, { token, body, headers = {} }: RequestOptions = {}): Promise<Reply & { headers: Headers }> {
     const response = await fetch(`${this.url}${path}`, {
       method,
       headers: {
+        [PROTOCOL_HEADER]: this.protocolVersion,
         ...(body === undefined ? {} : { 'content-type': 'application/json' }),
         ...(token === undefined ? {} : { authorization: `Bearer ${token}` }),
         ...headers,
@@ -81,11 +102,11 @@ export class TestServer {
   private readonly names = new Map<string, number>();
   private readonly clock = createClock('acceptance', () => Date.now());
 
-  constructor(url: string, close: () => Promise<void>, db: Db) {
+  constructor(url: string, close: () => Promise<void>, db: Db, protocolVersion: string) {
     this.url = url;
     this.close = close;
     this.db = db;
-    this.api = new Api(url);
+    this.api = new Api(url, protocolVersion);
   }
 
   request(method: string, path: string, options?: RequestOptions): Promise<Reply & { headers: Headers }> {
@@ -112,13 +133,18 @@ export class TestServer {
     return tokenOf(reply.headers);
   }
 
-  /** A new device for the user, with an empty store, synced once if it is online. */
-  async device(user: User, { token = user.token, network = new Network(), now, wrap = (t) => t }: DeviceOptions = {}): Promise<Replica> {
+  /** A new device for the user, with an empty store (unless given one), synced once if it is online. */
+  async device(
+    user: User,
+    { token = user.token, network = new Network(), now, wrap = (t) => t, protocolVersion, store = new MemoryStore(), deviceId = newId() }: DeviceOptions = {},
+  ): Promise<Replica> {
     const replica = await Replica.open({
-      store: new MemoryStore(),
-      transport: wrap(createHttpTransport({ baseUrl: this.url, token, fetch: network.fetch })),
+      store,
+      transport: wrap(
+        createHttpTransport({ baseUrl: this.url, token, fetch: network.fetch, ...(protocolVersion === undefined ? {} : { protocolVersion }) }),
+      ),
       userId: user.userId,
-      deviceId: newId(),
+      deviceId,
       ...(now === undefined ? {} : { now }),
     });
     await replica.sync();
@@ -161,16 +187,16 @@ function tokenOf(headers: Headers): string {
   return token;
 }
 
-/** Starts the server on a fresh database, listening on a free port. */
-export async function startServer(): Promise<TestServer> {
+/** Starts the server on a fresh database, listening on a free port. `protocolVersion` defaults to PROTOCOL_VERSION. */
+export async function startServer({ protocolVersion = PROTOCOL_VERSION }: { protocolVersion?: string } = {}): Promise<TestServer> {
   const database = await testDb();
   const config = testConfig(database.url);
-  const app = await buildApp(config, { db: database.db });
+  const app = await buildApp(config, { db: database.db, protocolVersion });
   const url = await app.listen({ port: 0, host: '127.0.0.1' });
   return new TestServer(url, async () => {
     await app.close();
     await database.close();
-  }, database.db);
+  }, database.db, protocolVersion);
 }
 
 const MAX_ROUNDS = 10;

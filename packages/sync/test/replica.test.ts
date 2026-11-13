@@ -2,7 +2,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { compareHlc } from '../src/hlc.ts';
 import { Replica } from '../src/replica.ts';
 import { MemoryStore, type ReplicaStore } from '../src/store.ts';
-import { SessionError, type Transport } from '../src/transport.ts';
+import { RefusedError, SessionError, VersionError, type Transport } from '../src/transport.ts';
 import {
   createFakeServer,
   failing,
@@ -361,6 +361,60 @@ describe('Replica', () => {
       expect(replica.pending()).toHaveLength(2);
       expect((await store.load())?.pending).toHaveLength(2);
       expect(titles(replica)).toContain('Buy milk');
+    });
+  });
+
+  describe('refused syncs', () => {
+    test('a refused sync is stuck, says why, and keeps the outbox', async () => {
+      const { replica, store, net } = await device(world());
+      await replica.createTask('inbox', 'Buy milk');
+      net.use(failing(new RefusedError(400, 'bad-request')));
+
+      await replica.sync();
+
+      expect(replica.status()).toBe('stuck');
+      expect(replica.statusReason()).toBe('bad-request');
+      expect(replica.pending()).toHaveLength(2);
+      expect((await store.load())?.pending).toHaveLength(2);
+      expect(titles(replica)).toContain('Buy milk');
+    });
+
+    test('a later successful sync returns to ok', async () => {
+      const server = world();
+      const { replica, net } = await device(server);
+      await replica.createTask('inbox', 'Buy milk');
+      net.use(failing(new RefusedError(400, 'bad-request')));
+      await replica.sync();
+
+      net.use(server.transport(alice));
+      await replica.sync();
+
+      expect(replica.status()).toBe('ok');
+      expect(replica.statusReason()).toBeNull();
+      expect(replica.pending()).toEqual([]);
+    });
+
+    test('a server on a newer major version means the app is outdated, keeping the outbox', async () => {
+      const { replica, net } = await device(world());
+      await replica.createTask('inbox', 'Buy milk');
+      net.use(failing(new VersionError('2.0', '1.0')));
+
+      await replica.sync();
+
+      expect(replica.status()).toBe('app-outdated');
+      expect(replica.statusReason()).toBeNull();
+      expect(replica.pending()).toHaveLength(2);
+    });
+
+    test('any other version refusal means the server is outdated', async () => {
+      const { replica, net } = await device(world());
+      await replica.createTask('inbox', 'Buy milk');
+      net.use(failing(new VersionError('1.0', '3.0')));
+
+      await replica.sync();
+
+      expect(replica.status()).toBe('server-outdated');
+      expect(replica.pending()).toHaveLength(2);
     });
   });
 

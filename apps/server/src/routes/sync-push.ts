@@ -4,6 +4,7 @@ import { operationSchema, pushRequestSchema, pushResponseSchema, type Operation,
 import { and, eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import type { Db } from '../db/client.ts';
+import type { RequireProtocol } from '../protocol.ts';
 import { links, operations } from '../db/schema.ts';
 import { sessionOf, type RequireSession, type SessionInfo } from '../session-guard.ts';
 import { loadAccess } from '../sync/access-loader.ts';
@@ -21,10 +22,10 @@ export interface PushDeps {
   now: () => number;
 }
 
-export function registerSyncPushRoutes(app: FastifyInstance, deps: PushDeps, requireSession: RequireSession): void {
+export function registerSyncPushRoutes(app: FastifyInstance, deps: PushDeps, requireProtocol: RequireProtocol, requireSession: RequireSession): void {
   app.withTypeProvider<ZodTypeProvider>().post(
     '/sync/push',
-    { preHandler: requireSession, schema: { body: pushRequestSchema, response: { 200: pushResponseSchema } } },
+    { onRequest: requireProtocol.header, preHandler: requireSession, schema: { body: pushRequestSchema, response: { 200: pushResponseSchema } } },
     async (request) => {
       const session = sessionOf(request);
       // Shape failures are reported in place, before anything is applied, so the request stays all-or-nothing on malformed ones.

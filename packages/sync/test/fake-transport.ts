@@ -2,6 +2,7 @@ import type { Id } from '@tdl/domain';
 import type { FeedEntry, Operation, PullPage, PushResult, RecordRef } from '../src/operations.ts';
 import type { AuthoredOperation } from '../src/state.ts';
 import { NetworkError, type Transport } from '../src/transport.ts';
+import { PROTOCOL_VERSION } from '../src/version.ts';
 
 type Rejection = Omit<Extract<PushResult, { status: 'rejected' }>, 'id' | 'status'>;
 
@@ -76,6 +77,7 @@ export function createFakeServer(): FakeServer {
           listeners.add(onFeed);
           return () => listeners.delete(onFeed);
         },
+        serverVersion: () => PROTOCOL_VERSION,
       };
     },
   };
@@ -88,6 +90,7 @@ export function failing(error: Error): Transport {
     push: () => Promise.reject(error),
     pull: () => Promise.reject(error),
     subscribe: () => () => undefined,
+    serverVersion: () => null,
   };
 }
 
@@ -103,6 +106,7 @@ export function switchable(initial: Transport): Transport & { use(next: Transpor
     push: (ops) => inner.push(ops),
     pull: (after, limit) => inner.pull(after, limit),
     subscribe: (onFeed) => inner.subscribe(onFeed),
+    serverVersion: () => inner.serverVersion(),
   };
 }
 
@@ -117,5 +121,6 @@ export function repeatFirstPage(inner: Transport): Transport {
       return { ...first, more: true };
     },
     subscribe: (onFeed) => inner.subscribe(onFeed),
+    serverVersion: () => inner.serverVersion(),
   };
 }

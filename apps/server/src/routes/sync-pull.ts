@@ -4,6 +4,7 @@ import { and, asc, eq, gt } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import type { Db } from '../db/client.ts';
+import type { RequireProtocol } from '../protocol.ts';
 import { feed, operations, session } from '../db/schema.ts';
 import { sessionOf, type RequireSession } from '../session-guard.ts';
 
@@ -12,10 +13,16 @@ const pullQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(1000).default(500),
 });
 
-export function registerSyncPullRoutes(app: FastifyInstance, db: Db, requireSession: RequireSession, now: () => number): void {
+export function registerSyncPullRoutes(
+  app: FastifyInstance,
+  db: Db,
+  requireProtocol: RequireProtocol,
+  requireSession: RequireSession,
+  now: () => number,
+): void {
   app.withTypeProvider<ZodTypeProvider>().get(
     '/sync/pull',
-    { preHandler: requireSession, schema: { querystring: pullQuerySchema, response: { 200: pullPageSchema } } },
+    { onRequest: requireProtocol.header, preHandler: requireSession, schema: { querystring: pullQuerySchema, response: { 200: pullPageSchema } } },
     async (request) => {
       const { userId, sessionId } = sessionOf(request);
       const { after, limit } = request.query;
