@@ -121,7 +121,7 @@ Sessions follow [Server-side sessions](../../design-decisions/server-side-sessio
 - A session expires after 90 days without use, with no fixed limit while it's in use (`expiresIn` 90 days, `updateAge` 1 day).
 - Better Auth's cookie cache stays off, so a revoked session stops working on every request at once.
 
-The websocket checks the session before upgrading, and checks the `Origin` header against the server's own origin, since cookies are sent cross-site. It also caps message size.
+The websocket checks the session before upgrading, and checks the `Origin` header against the server's own origin, since cookies are sent cross-site. It also caps message size. (Superseded for token clients by [Live-update authentication](../../design-decisions/live-update-authentication.md).)
 
 ## Accounts and sharing (plain HTTP, online only)
 
