@@ -8,7 +8,7 @@ import { PROTOCOL_HEADER, PROTOCOL_VERSION } from './version.ts';
 // The platform `fetch`, `WebSocket` and `setTimeout` all fit.
 
 interface RequestInit {
-  method: 'GET' | 'POST';
+  method: 'GET' | 'POST' | 'DELETE';
   headers: Record<string, string>;
   body?: string;
   credentials?: 'include';

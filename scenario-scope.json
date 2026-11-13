@@ -1,6 +1,15 @@
 {
   "account/sign-up.md": ["Sign up"],
-  "account/login.md": ["Log in", "Log in with email", "Wrong password", "Revoke a lost device", "Log out"],
+  "account/login.md": [
+    "Log in",
+    "Log in with email",
+    "Wrong password",
+    "Revoke a lost device",
+    "Log out",
+    "Log out with unsynced changes",
+    "Discard unsynced changes",
+    "Log in again to keep unsynced changes"
+  ],
   "tasks/create-task.md": ["Create a task with a title", "Title is required", "Title is too long", "Surrounding whitespace is stripped", "Duplicate titles are allowed"],
   "tasks/edit-task.md": ["Rename a task", "Edit notes"],
   "tasks/complete-task.md": ["Complete a task", "Mark a task incomplete again"],

@@ -87,9 +87,6 @@ Findings from plan 2's final review, deferred. The plan 3 blocker is under "Next
 - **An existing but invisible ID answers `forbidden`**: `createList`, `createTask` or `createLink` with an ID that already exists where the user can't see it. The [error contract](design-decisions/error-contract.md) says they learn nothing, but UUIDv7 IDs make probing impractical. Options:
   - **Answer `not-found`**, or a generic conflict code.
   - **Leave it as is.**
-- **Sign-up key allowlist:** sign-up refuses Better Auth client keys such as `callbackURL` and `rememberMe`. Options:
-  - **Extend the allowlist** if plan 3's web client sends them.
-  - **Keep it**, and have the client not send them.
 - **Spec wording in [Sharing](features/app/sharing.md), "Grants only add access":** its Given (bob is an editor of House, then alice shares Paint fence with him as a viewer) can't be set up through the API, because the server refuses a lesser grant as `already-shared`. Options:
   - **Reword the Given** so the task grant comes first.
   - **Allow lesser grants.**
@@ -97,9 +94,6 @@ Findings from plan 2's final review, deferred. The plan 3 blocker is under "Next
   - **Reject** operations whose HLC is beyond now plus a margin.
   - **Clamp** such HLCs to now plus the margin.
   - **Leave it.**
-- **Replica edits after a wipe** (when the session is revoked) throw `store-not-initialized` instead of returning a result. Options:
-  - **Plan 3's UI handles the error.**
-  - **The Replica returns a result** saying it's signed out.
 - **Rate limiting:** `@fastify/rate-limit` is registered with `global: false`, but no route opts in, so it does nothing. Sign-up and sign-in rely only on Better Auth's limiter, which is on only when `NODE_ENV=production` and untested. Sync, invitation and session routes are unlimited. Options (possibly combined):
   - **Opt routes in** to `@fastify/rate-limit`.
   - **Remove the plugin** and rely on Better Auth and the reverse proxy.

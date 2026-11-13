@@ -5,6 +5,9 @@
       "path": "apps/server"
     },
     {
+      "path": "packages/app-core"
+    },
+    {
       "path": "packages/device-store"
     },
     {
