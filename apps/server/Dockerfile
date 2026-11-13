@@ -14,17 +14,20 @@ RUN pnpm install --frozen-lockfile
 # workspace packages, so compile them to JavaScript. The runtime selects that build with the
 # `tdl-compiled` export condition (NODE_OPTIONS below).
 RUN pnpm --filter @tdl/domain --filter @tdl/sync run build
+RUN pnpm --filter @tdl/client build
 RUN pnpm --filter @tdl/server deploy --prod /deploy
 
 FROM node:26-slim
 ENV NODE_ENV=production \
     NODE_OPTIONS=--conditions=tdl-compiled \
-    PORT=3000
+    PORT=3000 \
+    WEB_ROOT=/app/web
 WORKDIR /app
 COPY --from=build /deploy/package.json ./
 COPY --from=build /deploy/node_modules ./node_modules
 COPY --from=build /deploy/drizzle ./drizzle
 COPY --from=build /deploy/src ./src
+COPY --from=build /repo/apps/client/dist/spa ./web
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --start-interval=2s --retries=3 \

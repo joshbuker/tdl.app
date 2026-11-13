@@ -1,4 +1,7 @@
 import type { ZodTypeProvider } from '@fastify/type-provider-zod';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { z } from 'zod';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { loadConfig } from '../src/config.ts';
@@ -81,6 +84,77 @@ describe('server skeleton', () => {
   });
 });
 
+describe('serving the web app', () => {
+  const html = { accept: 'text/html' };
+  let webRoot: string;
+  let server: Awaited<ReturnType<typeof testApp>>;
+  beforeAll(async () => {
+    webRoot = mkdtempSync(join(tmpdir(), 'tdl-web-'));
+    mkdirSync(join(webRoot, 'assets'));
+    writeFileSync(join(webRoot, 'index.html'), '<div id="q-app"></div>');
+    writeFileSync(join(webRoot, 'assets', 'app.js'), 'console.log(1);');
+    server = await testApp({ webRoot });
+  });
+  afterAll(async () => {
+    await server.close();
+    rmSync(webRoot, { recursive: true, force: true });
+  });
+
+  test('GET / answers the index', async () => {
+    const response = await server.app.inject({ url: '/', headers: html });
+    expect(response.statusCode).toBe(200);
+    expect(response.headers['content-type']).toMatch(/text\/html/);
+    expect(response.body).toContain('<div id="q-app">');
+  });
+
+  test('a route of the app answers the index', async () => {
+    const response = await server.app.inject({ url: '/lists/123', headers: html });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toContain('<div id="q-app">');
+  });
+
+  test('a file answers itself', async () => {
+    const response = await server.app.inject({ url: '/assets/app.js' });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBe('console.log(1);');
+  });
+
+  test('an unknown API path answers 404 JSON, even to a browser', async () => {
+    const response = await server.app.inject({ url: '/api/nope', headers: html });
+    expect(response.statusCode).toBe(404);
+    expect(response.json()).toEqual({ code: 'not-found' });
+  });
+
+  test('a path that is not for HTML answers 404 JSON', async () => {
+    const response = await server.app.inject({ url: '/lists/123', headers: { accept: 'application/json' } });
+    expect(response.statusCode).toBe(404);
+    expect(response.json()).toEqual({ code: 'not-found' });
+  });
+
+  test('a missing file with an extension answers 404 JSON', async () => {
+    const response = await server.app.inject({ url: '/assets/gone.js', headers: { accept: '*/*' } });
+    expect(response.statusCode).toBe(404);
+    expect(response.json()).toEqual({ code: 'not-found' });
+  });
+
+  test('the CSP lets the SQLite worker and Wasm run from the same origin', async () => {
+    const csp = (await server.app.inject({ url: '/', headers: html })).headers['content-security-policy'] as string;
+    expect(csp).toContain("script-src 'self' 'wasm-unsafe-eval'");
+    expect(csp).toContain("worker-src 'self'");
+    expect(csp).toContain("connect-src 'self'");
+    expect(csp).toContain("default-src 'self'");
+  });
+
+  test('a server without a web root serves no pages', async () => {
+    const bare = await testApp();
+    try {
+      expect((await bare.app.inject({ url: '/', headers: html })).statusCode).toBe(404);
+    } finally {
+      await bare.close();
+    }
+  });
+});
+
 describe('loadConfig', () => {
   test('names the missing variables', () => {
     expect(() => loadConfig({})).toThrow(/DATABASE_URL.*AUTH_SECRET|AUTH_SECRET.*DATABASE_URL/);
@@ -101,6 +175,12 @@ describe('loadConfig', () => {
   test('reads APP_ORIGINS as a comma-separated list', () => {
     const config = loadConfig({ DATABASE_URL: 'postgres://x', ORIGIN: 'https://tdl.app', AUTH_SECRET: 'x'.repeat(32), APP_ORIGINS: 'https://localhost, app://desktop ,' });
     expect(config.appOrigins).toEqual(['https://localhost', 'app://desktop']);
+  });
+
+  test('reads WEB_ROOT, which is optional', () => {
+    const env = { DATABASE_URL: 'postgres://x', ORIGIN: 'https://tdl.app', AUTH_SECRET: 'x'.repeat(32) };
+    expect(loadConfig(env).webRoot).toBeUndefined();
+    expect(loadConfig({ ...env, WEB_ROOT: '/app/web' }).webRoot).toBe('/app/web');
   });
 
   test('rejects a short auth secret', () => {

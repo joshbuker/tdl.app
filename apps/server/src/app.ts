@@ -1,6 +1,7 @@
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
+import fastifyStatic from '@fastify/static';
 import swagger from '@fastify/swagger';
 import websocket from '@fastify/websocket';
 import {
@@ -59,7 +60,18 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
     openapi: { info: { title: 'TDL App API', version: '0.0.0' } },
     transform: jsonSchemaTransform,
   });
-  await app.register(helmet);
+  // The web app runs SQLite Wasm in a worker served from the same origin, which needs Wasm
+  // compilation and workers from 'self'. Everything else keeps helmet's defaults.
+  // (Directives given here replace helmet's default of the same name; the rest stay.)
+  await app.register(helmet, {
+    contentSecurityPolicy: {
+      directives: {
+        'script-src': ["'self'", "'wasm-unsafe-eval'"],
+        'worker-src': ["'self'"],
+        'connect-src': ["'self'"],
+      },
+    },
+  });
   await app.register(websocket, { options: { maxPayload: MAX_WS_PAYLOAD } });
   // The web app is same-origin and sends cookies. The native apps' windows (see `appOrigins`) are
   // cross-origin and send bearer tokens, which they get from `set-auth-token`.
@@ -78,7 +90,19 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
     }),
   });
 
-  app.setNotFoundHandler((_request, reply) => sendError(reply, 404, 'not-found'));
+  if (config.webRoot !== undefined) {
+    // The files, with the app's own routes below as the not-found fallback.
+    await app.register(fastifyStatic, { root: config.webRoot, wildcard: false, index: ['index.html'] });
+  }
+  const serveIndex = config.webRoot !== undefined;
+  app.setNotFoundHandler((request, reply) => {
+    // A browser navigating to a route of the app gets the app. The API, health check and files
+    // (anything with an extension) that don't exist stay 404 JSON.
+    const path = request.url.split('?')[0] ?? '';
+    const isApp = serveIndex && request.method === 'GET' && request.headers.accept?.includes('text/html') === true
+      && path !== '/health' && path !== '/api' && !path.startsWith('/api/') && !/\.[^/]+$/.test(path);
+    return isApp ? reply.sendFile('index.html') : sendError(reply, 404, 'not-found');
+  });
   app.setErrorHandler((error: unknown, request, reply) => {
     const details = typeof error === 'object' && error !== null ? (error as Record<string, unknown>) : {};
     const status = typeof details.statusCode === 'number' ? details.statusCode : 500;

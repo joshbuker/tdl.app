@@ -1,6 +1,6 @@
 # Self-hosting
 
-How to run your own TDL App server: the server and its Postgres database, as two containers started with Docker Compose. Why self-hosting is supported, and what it covers, is in [Self-hosting](design-decisions/self-hosting.md).
+How to run your own TDL App server: the server (which also serves the web app) and its Postgres database, as two containers started with Docker Compose. Why self-hosting is supported, and what it covers, is in [Self-hosting](design-decisions/self-hosting.md).
 
 ## Requirements
 
@@ -28,6 +28,7 @@ TRUST_PROXY=true
 | `TRUST_PROXY` | No (default `false`) | `true` when the server is behind a reverse proxy, so it takes the client's address from the proxy's `X-Forwarded-For` header. Rate limits on signing up and signing in use that address. Set it only if nothing but the proxy can reach the server's port, and the proxy replaces any `X-Forwarded-For` the client sent with the client's own address. The server uses the first address in the header, so a proxy that appends to it lets clients pick their own address and get around the rate limits. |
 | `APP_ORIGINS` | No (default `https://localhost,capacitor://localhost`) | The origins the native apps' windows run at, separated by commas. Requests from them may reach the API, and open the live-update socket, but only with a session token, never a cookie. The default covers the Android and iOS apps. Change it only to support another app. |
 | `DATABASE_URL` | No | Only to use a Postgres server of your own instead of the `db` container, e.g. `postgres://tdl:<password>@db.internal:5432/tdl`. |
+| `WEB_ROOT` | No (set in the image) | The folder holding the built web app. The image sets it to `/app/web`. Without it, the server serves only the API. |
 | `TDL_PORT` | No (default `3000`) | The port the server listens on, on `127.0.0.1` of the host. |
 
 ## Starting the server
@@ -36,7 +37,7 @@ TRUST_PROXY=true
 docker compose up -d
 ```
 
-The first run builds the server image, which takes a few minutes. The server waits for the database to be healthy, then applies any database migrations before it starts listening, so a new install and an upgrade start the same way.
+The first run builds the server image, which includes the web app, so it takes a few minutes. Once it's running, open `ORIGIN` in a browser to use the web app. The server waits for the database to be healthy, then applies any database migrations before it starts listening, so a new install and an upgrade start the same way.
 
 Check that it's running:
 
