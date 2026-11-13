@@ -212,7 +212,7 @@ export class AppController {
       return;
     }
     if (status === 'logged-out' && !state.sessionEnded) {
-      this.setState({ ...state, sessionEnded: true });
+      this.endSession(state);
       return;
     }
     this.notify();
@@ -227,7 +227,7 @@ export class AppController {
       if (this.current !== state) return;
       if (me.userId !== state.me.userId) {
         // The session is another user's (e.g. they logged in elsewhere in this browser).
-        this.setState({ ...state, sessionEnded: true });
+        this.endSession(state);
         return;
       }
       const { keyValue } = await this.openStorage();
@@ -239,10 +239,20 @@ export class AppController {
         await this.wipe();
         this.setState({ kind: 'logged-out' });
       } else if (error instanceof ApiError && error.status === 401) {
-        this.setState({ ...state, sessionEnded: true });
+        this.endSession(state);
       }
       // Offline, or the server failing: keep working on the device.
     }
+  }
+
+  /**
+   * Marks the session ended and stops live updates, so nothing is sent under a session that may by
+   * now be another user's. The replica stays open for edits; `logInAgain` goes live again.
+   */
+  private endSession(state: Extract<AppState, { kind: 'ready' }>): void {
+    this.stopLive?.();
+    this.stopLive = null;
+    this.setState({ ...state, sessionEnded: true });
   }
 
   /** Closes the replica and deletes the device's data and session token. */

@@ -341,5 +341,36 @@ describe('AppController', () => {
     expect(platform.token).toBe('new-token');
     expect(platform.transports.at(-1)).toMatchObject({ token: 'new-token' });
   });
+
+  test('once the session ends in place, edits stay on the device until logInAgain syncs them', async () => {
+    const alice = meOf('alice');
+    const platform = new TestPlatform();
+    platform.token = 'old-token';
+    platform.mode = 'ok';
+    const server = new FakeFetch().on('GET /api/me', { status: 200, body: alice });
+    const controller = new AppController({ baseUrl: BASE_URL, platform, fetch: server.fetch });
+    await controller.start();
+    const { replica } = ready(controller);
+
+    // A live edit is pushed; the server says the session has ended.
+    platform.mode = 'session-expired';
+    await replica.createList('House');
+    await vi.waitFor(() => {
+      expect(ready(controller).sessionEnded).toBe(true);
+    });
+    const pushes = platform.pushes;
+
+    // Nothing more is sent: on the web, the cookie may by now be another user's.
+    platform.mode = 'ok';
+    await replica.createList('Shed');
+    for (let tick = 0; tick < 20; tick += 1) await Promise.resolve();
+    expect(platform.pushes).toBe(pushes);
+    expect(await pendingCount(platform)).toBe(4);
+
+    server.on('POST /api/auth/sign-in/username', { status: 200, body: {}, headers: { 'set-auth-token': 'new-token' } });
+    await controller.logInAgain('alice', 'secret');
+    expect(ready(controller).replica.pending()).toEqual([]);
+    expect(await pendingCount(platform)).toBe(0);
+  });
 });
 

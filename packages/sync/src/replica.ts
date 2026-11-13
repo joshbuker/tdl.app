@@ -513,7 +513,9 @@ export class Replica {
     this.outbox.push(...ops);
     this.recompute();
     for (const op of ops) await this.store.putPending(op);
-    if (this.live > 0) this.syncInBackground();
+    // Once the session has ended, nothing is sent until the app logs in again: the session the
+    // transport would use may by then be another user's.
+    if (this.live > 0 && this.currentStatus !== 'logged-out') this.syncInBackground();
   }
 
   private async dropPending(ids: Id[]): Promise<void> {

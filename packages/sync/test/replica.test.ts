@@ -518,6 +518,23 @@ describe('Replica', () => {
     expect(replica.pending()).toHaveLength(1);
   });
 
+  test('while live, a local edit made after the session ended is not pushed', async () => {
+    const server = world();
+    const { replica, net } = await device(server);
+    const stop = replica.startLive();
+    net.use(failing(new SessionError('session-expired')));
+    await replica.sync();
+    expect(replica.status()).toBe('logged-out');
+
+    net.use(server.transport(alice));
+    await replica.setTaskField('fence', 'title', 'Paint the fence');
+    for (let tick = 0; tick < 20; tick += 1) await Promise.resolve();
+
+    expect(replica.pending()).toHaveLength(1);
+    expect(replica.status()).toBe('logged-out');
+    stop();
+  });
+
   describe('unknown feed entries', () => {
     test('are stored, and the entries around them still apply', async () => {
       const server = world();
