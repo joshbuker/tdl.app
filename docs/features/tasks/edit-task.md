@@ -16,7 +16,7 @@ The task detail view is where most editing happens, so it needs to show the task
 
 - Changes are saved without a separate Save step.
 - Moving a task to another list needs edit access to both lists, and only the task's owner can move it to a list with a different owner (see [Sharing](../app/sharing.md)).
-- Notes are markdown (CommonMark), shown formatted, with clickable links. They are stored as text.
+- Notes are markdown (CommonMark), shown formatted, with clickable links. They are stored as text, at most 100,000 characters.
 - Every change to a task can be undone (see [Undo](undo.md)).
 - Linked tasks are shown, and choosing one opens it in place.
 - A task with prerequisites shows its progress: how many of the tasks it waits on, directly or through others, are done, and how many are next up. So a final task (e.g. "Kitchen remodel done") works as a project's progress view. Only tasks the user can see are counted (see [Sharing](../app/sharing.md)).

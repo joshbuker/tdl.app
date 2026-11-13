@@ -23,6 +23,12 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
      - **Electron:** the window is Chromium, so a WebSocket opened there can't send headers either. A WebSocket opened in Electron's Node process can (Node's built-in WebSocket and `ws` both take headers), and SQLite already runs there (see [Electron desktop app](design-decisions/electron-desktop.md)). Electron's `session.webRequest.onBeforeSendHeaders` fires on WebSocket handshakes and could add the header, but Chromium may withhold `Authorization` from it. Untested.
      - **The web app on tdl.app talking to a self-hosted server**, if [Choose a server](features/account/choose-server.md) applies on the web: cookies are third-party there too, and Safari and Firefox block them by default (Chrome keeps them, after dropping its plan to phase them out in 2025). Not decided yet whether the web app offers that choice.
 
+     Guidance and practice (researched 2026-11-13):
+     - **OWASP ASVS 5.0, section 4.4** (Level 2): check `Origin` against an allow-list on the handshake (4.4.2); if normal session management can't be used, use dedicated tokens that meet the session requirements (4.4.3), obtained or checked through the already-authenticated HTTPS session (4.4.4). The ticket option is what 4.4.4 describes.
+     - **OWASP WebSocket Security Cheat Sheet:** for browser clients with tokens, "prefer sending the token in the first message"; "avoid tokens in URL query strings"; accept nothing else until authenticated, and close on failure or timeout; with cookies, use `SameSite` and validate `Origin`; close a session's sockets on logout and when it expires, and re-check sessions on long-lived connections (every 30 minutes is common). It doesn't mention tickets or `Sec-WebSocket-Protocol`.
+     - **Linux Foundation and OpenSSF:** no published guidance found. Kubernetes (a Linux Foundation project, via the CNCF) accepts the bearer token in `Sec-WebSocket-Protocol` (`base64url.bearer.authorization.k8s.io.<token>`).
+     - **What others do:** Slack hands out a temporary socket URL from an authenticated API call (a ticket). Discord, Home Assistant and Mattermost authenticate in the first message; Mattermost also accepts its cookie or an `Authorization` header. Supabase Realtime puts its API key in the URL and refreshes the user's token with a message. Google's Firestore web SDK uses WebChannel, Google's HTTP streaming transport, with long-polling as a fallback, rather than WebSocket. Airtable, Google Docs, Linear and Figma don't document their browser transport.
+
      Options (several can be combined, e.g. one for Electron and another for mobile):
      - **Cookies in webviews:** Android signs in with the session cookie, set `SameSite=None; Secure`, with third-party cookies turned on natively. No server change apart from an allow-list of app origins. Reverses the bearer-token decision for Android, and doesn't work on iOS with self-hosted servers. Forum reports of webviews not sending cookies on the WebSocket upgrade, and of cookies lost between launches.
      - **One-use ticket in the URL:** the app asks `POST /sync/ws-ticket` (bearer-authenticated) for a random ticket, single use and valid for about 30 s, bound to its session, then opens `/sync/ws?ticket=…`. The common recommendation in WebSocket guides. Works on every platform. Costs: a new endpoint, a ticket store (in memory is enough while the server is one process), an extra request on every reconnect, and the ticket is in the URL, which nginx logs by default, though it's useless once used or expired. Better Auth's one-time token plugin (single use, 3 minutes by default) could issue them, but its client endpoint hands back a session, more than this needs.
@@ -38,7 +44,7 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
      - **CORS:** the server allows only its own origin, so the Capacitor apps' `fetch` calls to push and pull are refused too, unless they go through `CapacitorHttp`. The app origins need allowing, with the `Authorization` header.
      - `createHttpTransport` passes headers to the `WebSocket` constructor, which throws in a browser.
    - **An oversized push blocks a device's sync for good.** Titles, notes and link reasons have no maximum length (`packages/domain/src/fields.ts`), and the Replica batches pushes by count only (500 operations). A body over the server's 1 MiB limit is answered 413, the HTTP transport throws a plain error, and `syncOnce` rethrows it, aborting both push and pull. The sync status stays `ok`, and every later sync fails the same way. Decided:
-     - **Maximum field lengths**, which also stop abuse. The limits are still to choose.
+     - **Maximum field lengths**, which also stop abuse: task and list titles 500 characters (Todoist's limit for task names), notes and link reasons 100,000 (at most 400 KB in UTF-8, so one operation always fits). Specs updated; `packages/domain/src/fields.ts` doesn't enforce them yet.
      - **Batching pushes by size** as well as count, so no batch passes the server's limit.
 
      Still open, for anything that's refused anyway (e.g. a device on an older version):
@@ -92,10 +98,8 @@ Findings from plan 2's final review, deferred. The plan 3 blocker is under "Next
 - **Unindexed scans on `operations`**, run under the global lock on every `moveTask`, grant and revoke: the history query filters `record_id` without `record_type`, so the `(record_type, record_id)` index isn't used, and `linksTouching` filters `meta->>'kind'` with no index. Options:
   - **Add an index** on `operations(record_id)`, and expression indexes on the two ends of `createLink`.
   - **Filter by type and ID pairs**, so the existing index applies.
-- **Missing Inbox after a crash during sign-up**, between Better Auth's commit and the Inbox's creation: `GET /me` then answers `defaultListId: null`. Decided: a missing default list is created (a rare edge case). Where, options:
-  - **Repair on `/me`:** the server creates it under the feed lock, so two devices asking at once get one Inbox.
-  - **Repair at server start:** create any missing Inboxes.
-  - **Plan 3's app creates it** when `/me` has none. Two devices could each create one.
+- **Missing Inbox after a crash during sign-up**, between Better Auth's commit and the Inbox's creation: `GET /me` then answers `defaultListId: null`. Decided: a missing default list is created (a rare edge case), by **repairing on `/me`**: the server reuses sign-up's Inbox creation under the feed lock, so two devices asking at once get one Inbox. Chosen by Claude with low confidence (the user had no preference). Rejected: repairing at server start (a crash after start isn't covered), and having the app create it (two devices could each make one).
+  - **Constraint for v2 (end-to-end encryption):** the server can't write an encrypted title, so Inbox creation, at sign-up and in this repair, moves to the device. Two devices could then each create one. Options then: an Inbox ID derived from the user ID so both devices write the same record; or the server creates the list without content and the device names it.
 - **An existing but invisible ID answers `forbidden`**: `createList`, `createTask` or `createLink` with an ID that already exists where the user can't see it. The [error contract](design-decisions/error-contract.md) says they learn nothing, but UUIDv7 IDs make probing impractical. Options:
   - **Answer `not-found`**, or a generic conflict code.
   - **Leave it as is.**
@@ -112,9 +116,6 @@ Findings from plan 2's final review, deferred. The plan 3 blocker is under "Next
 - **Replica edits after a wipe** (when the session is revoked) throw `store-not-initialized` instead of returning a result. Options:
   - **Plan 3's UI handles the error.**
   - **The Replica returns a result** saying it's signed out.
-- **Revoked devices and unsynced changes.** [Login](features/account/login.md) now warns before logging out with unsynced changes, offering to log in again or discard them. A revoked device still deletes its data, unsynced changes included, without asking, since revoking is for lost or stolen devices. Options:
-  - **Keep wiping without asking** on revocation.
-  - **Offer to log in again first**, so the owner can save the changes. A thief who knows the password could too, and the data stays on the device until someone chooses.
 - **Rate limiting:** `@fastify/rate-limit` is registered with `global: false`, but no route opts in, so it does nothing. Sign-up and sign-in rely only on Better Auth's limiter, which is on only when `NODE_ENV=production` and untested. Sync, invitation and session routes are unlimited. Options (possibly combined):
   - **Opt routes in** to `@fastify/rate-limit`.
   - **Remove the plugin** and rely on Better Auth and the reverse proxy.

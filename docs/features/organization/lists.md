@@ -16,7 +16,7 @@ Lists were in every attempt as the folder-style grouping, with Inbox as the catc
 
 - Every task belongs to exactly one list.
 - Each user has a default list, where new tasks go when no list is given. A list called "Inbox" is created at sign-up and is the default to start with. The user can make any list they own the default, and the Inbox preset shows whichever list is the default.
-- List titles are required, and don't have to be unique (see [IDs, not titles](../../design-decisions/ids-not-titles.md)). A list can be renamed. A list shared with the user shows its owner's name.
+- List titles are required, at most 500 characters, and don't have to be unique (see [IDs, not titles](../../design-decisions/ids-not-titles.md)). A list can be renamed. A list shared with the user shows its owner's name.
 - A shared list's title, color and icon are the same for everyone with access, and the owner and editors can change them (see [Sharing](../app/sharing.md)).
 - A list has a color. If none is chosen, a random one is assigned. Text on a colored background is black or white, whichever contrasts better.
 - Colors are hex codes (`#abc` or `#aabbcc`).

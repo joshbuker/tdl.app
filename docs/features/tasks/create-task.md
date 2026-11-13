@@ -16,7 +16,7 @@ Titles don't have to be unique. #1 and #2 enforced unique titles, but legitimate
 
 ## Rules
 
-- A title is required. Leading and trailing whitespace is stripped.
+- A title is required, and is at most 500 characters. Leading and trailing whitespace is stripped.
 - If no list is given, the task goes into the user's default list.
 - While the title is typed, matching existing tasks are shown, and choosing one opens it instead of creating a new task. Completed tasks are included after incomplete ones, marked as completed. Trashed tasks are not included.
 - Titles do not have to be unique.
@@ -59,6 +59,11 @@ Titles don't have to be unique. #1 and #2 enforced unique titles, but legitimate
 
 - When the user tries to create a task with a blank title
 - Then no task is created and the user is told a title is required
+
+### Title is too long
+
+- When the user tries to create a task with a title of 501 characters
+- Then no task is created and the user is told a title can be at most 500 characters
 
 ### Surrounding whitespace is stripped
 
