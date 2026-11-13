@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { checkScenarios } from '../src/check.ts';
+import { checkScenarios, countRequiredScenarios } from '../src/check.ts';
 import type { AcceptanceResult } from '../src/report.ts';
 import type { Spec } from '../src/specs.ts';
 
@@ -69,5 +69,18 @@ describe('checkScenarios', () => {
     const scope = { 'dependencies/link-tasks.md': ['Add a prerequisite', 'Reject a cycle'] };
     const results = [result('Add a prerequisite'), result('Reject a cycle')];
     expect(checkScenarios([linkTasks], scope, results)).toEqual([]);
+  });
+});
+
+describe('countRequiredScenarios', () => {
+  test('counts every scenario of an Implemented spec and each in-scope scenario once', () => {
+    const implemented: Spec = { ...linkTasks, path: 'a.md', title: 'A', status: 'Implemented' };
+    const scope = { 'dependencies/link-tasks.md': ['Reject a cycle'], 'a.md': ['Add a prerequisite'] };
+    expect(countRequiredScenarios([linkTasks, implemented], scope)).toBe(3);
+  });
+
+  test('ignores scope entries that match no spec scenario', () => {
+    const scope = { 'dependencies/link-tasks.md': ['Nope'], 'missing.md': ['Add a prerequisite'] };
+    expect(countRequiredScenarios([linkTasks], scope)).toBe(0);
   });
 });

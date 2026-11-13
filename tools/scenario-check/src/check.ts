@@ -17,27 +17,8 @@ export function checkScenarios(
   results: AcceptanceResult[],
 ): Problem[] {
   const problems: Problem[] = [];
-  const byPath = new Map(specs.map((s) => [s.path, s]));
   const byTitle = new Map(specs.map((s) => [s.title, s]));
-
-  const required = new Map<Spec, Set<string>>();
-  for (const spec of specs) {
-    if (spec.status === 'Implemented') required.set(spec, new Set(spec.scenarios));
-  }
-  for (const [path, scenarios] of Object.entries(scope)) {
-    const spec = byPath.get(path);
-    for (const scenario of scenarios) {
-      if (spec === undefined) {
-        problems.push({ kind: 'unknown-scope', feature: path, scenario });
-      } else if (!spec.scenarios.includes(scenario)) {
-        problems.push({ kind: 'unknown-scope', feature: spec.title, scenario });
-      } else {
-        const set = required.get(spec) ?? new Set<string>();
-        set.add(scenario);
-        required.set(spec, set);
-      }
-    }
-  }
+  const required = requiredScenarios(specs, scope, problems);
 
   const seen = new Set<string>();
   const key = (feature: string, scenario: string) => `${feature}\u0000${scenario}`;
@@ -65,4 +46,42 @@ export function checkScenarios(
     }
   }
   return problems;
+}
+
+/** The number of scenarios that must have an acceptance test: the ones `checkScenarios` checks. */
+export function countRequiredScenarios(specs: Spec[], scope: Record<string, string[]>): number {
+  let count = 0;
+  for (const scenarios of requiredScenarios(specs, scope, []).values()) count += scenarios.size;
+  return count;
+}
+
+/**
+ * The scenarios each spec must have a test for: all of an Implemented spec's, plus those `scope`
+ * lists. Adds an `unknown-scope` problem for each scope entry that matches no spec scenario.
+ */
+function requiredScenarios(
+  specs: Spec[],
+  scope: Record<string, string[]>,
+  problems: Problem[],
+): Map<Spec, Set<string>> {
+  const byPath = new Map(specs.map((s) => [s.path, s]));
+  const required = new Map<Spec, Set<string>>();
+  for (const spec of specs) {
+    if (spec.status === 'Implemented') required.set(spec, new Set(spec.scenarios));
+  }
+  for (const [path, scenarios] of Object.entries(scope)) {
+    const spec = byPath.get(path);
+    for (const scenario of scenarios) {
+      if (spec === undefined) {
+        problems.push({ kind: 'unknown-scope', feature: path, scenario });
+      } else if (!spec.scenarios.includes(scenario)) {
+        problems.push({ kind: 'unknown-scope', feature: spec.title, scenario });
+      } else {
+        const set = required.get(spec) ?? new Set<string>();
+        set.add(scenario);
+        required.set(spec, set);
+      }
+    }
+  }
+  return required;
 }

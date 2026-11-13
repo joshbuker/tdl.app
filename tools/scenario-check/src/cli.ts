@@ -2,7 +2,7 @@
 // after `pnpm test` has written reports/vitest.json (and `pnpm test:e2e` reports/playwright.json).
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { checkScenarios } from './check.ts';
+import { checkScenarios, countRequiredScenarios } from './check.ts';
 import { readPlaywrightReport, readVitestReport } from './report.ts';
 import { parseSpec } from './specs.ts';
 
@@ -30,4 +30,5 @@ const problems = checkScenarios(specs, scope, results);
 for (const problem of problems) {
   console.log(`${problem.kind}: ${problem.feature} › ${problem.scenario}`);
 }
-process.exit(problems.length > 0 ? 1 : 0);
+if (problems.length > 0) process.exit(1);
+console.log(`Checked ${String(countRequiredScenarios(specs, scope))} scenarios: none missing or skipped.`);
