@@ -17,6 +17,7 @@ Attempt #1 ended because it was "web only" and "couldn't compile down to mobile/
 - Web, Android, iOS and desktop (Windows, macOS, Linux) are all supported at launch.
 - The web app is not an installable PWA. Native mobile and desktop packages cover installed use.
 - Same features on every platform, except where a platform can't support one (e.g. scheduled notifications on web).
+- On the web, the app is used in one tab at a time. Another tab says the app is open in another tab, and continues once that tab is closed.
 
 ## Scenarios
 
@@ -34,3 +35,10 @@ Attempt #1 ended because it was "web only" and "couldn't compile down to mobile/
 
 - Given "alice" uses the Android app and the web app
 - Then both offer the same features, except those a platform can't support, such as scheduled notifications on the web
+
+### Open in a second tab
+
+- Given "alice" has the web app open in a tab
+- When she opens it in a second tab
+- Then the second tab says it's open in another tab
+- And once she closes the first tab, the second shows her tasks
