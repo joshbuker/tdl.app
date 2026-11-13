@@ -22,9 +22,7 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
      - **Maximum field lengths**, which also stop abuse: task and list titles 500 characters (Todoist's limit for task names), notes and link reasons 100,000 (at most 400 KB in UTF-8, so one operation always fits). Specs updated; `packages/domain/src/fields.ts` doesn't enforce them yet.
      - **Batching pushes by size** as well as count, so no batch passes the server's limit.
 
-     Version mismatches are now covered by [Version compatibility](features/app/version-compatibility.md) and [Protocol versions](design-decisions/protocol-versions.md): changes stay queued, and the app shows an "update to sync" status. Plan 3 needs the version exchange, an outdated status, and lenient parsing of pulled pages (today one unknown record type or kind of change stops sync). Still open, for other refusals that retrying can't fix (e.g. a body still over the limit):
-     - **Treating the refusal as rejecting that batch**, so the device moves on. Never for a version refusal, which would lose changes.
-     - **Showing the failure as a sync status**, so the user knows sync is stuck.
+     Version mismatches are now covered by [Version compatibility](features/app/version-compatibility.md) and [Protocol versions](design-decisions/protocol-versions.md): changes stay queued, and the app shows an "update to sync" status. Plan 3 needs the version exchange, an outdated status, and lenient parsing of pulled pages (today one unknown record type or kind of change stops sync). A refused sync shows a "sync stuck" indicator with the reason (see [Offline use](features/app/offline.md)), and changes stay on the device. Whether changes behind a non-version refusal wait or move to the "couldn't sync" view is an open question in that spec.
 
 ## Deferred past the thin slice
 
