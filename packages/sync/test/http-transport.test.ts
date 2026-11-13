@@ -241,6 +241,15 @@ describe('createHttpTransport subscribe', () => {
     expect(fetch.calls).toHaveLength(1);
   });
 
+  test('a 1013 close (try again later) reconnects after backing off', () => {
+    const { timers, heard, socket } = live({ token: 't' });
+    socket().emit('close', { code: 1013 });
+    expect(timers.delays()).toEqual([1000]);
+    timers.fire();
+    expect(FakeSocket.opened).toHaveLength(2);
+    expect(heard).toEqual([]);
+  });
+
   test('unsubscribing closes the socket and cancels any reconnect', () => {
     const { timers, unsubscribe, socket } = live();
     const first = socket();

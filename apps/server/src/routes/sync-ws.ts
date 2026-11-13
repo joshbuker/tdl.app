@@ -12,7 +12,7 @@ import { feed, revokedSessions, session } from '../db/schema.ts';
 import { sendError } from '../errors.ts';
 import type { RequireProtocol } from '../protocol.ts';
 import type { CheckSession, RequireSession, SessionInfo } from '../session-guard.ts';
-import { SESSION_REVOKED_CLOSE, WS_AUTH_FAILED_CLOSE, type SessionSockets } from '../session-sockets.ts';
+import { SESSION_REVOKED_CLOSE, WS_AUTH_FAILED_CLOSE, WS_TRY_AGAIN_LATER_CLOSE, type SessionSockets } from '../session-sockets.ts';
 import type { Notifier } from '../sync/notifier.ts';
 
 /** How long a socket opened without a cookie has to send its auth message. */
@@ -78,7 +78,7 @@ export function registerSyncWsRoutes(app: FastifyInstance, deps: SyncWsDeps, req
   /** Waits for a socket opened without a cookie to send a valid token, sending it nothing until then. */
   const awaitToken = (socket: WebSocket, address: string): void => {
     if (!waiting.add(address)) {
-      socket.close(WS_AUTH_FAILED_CLOSE);
+      socket.close(WS_TRY_AGAIN_LATER_CLOSE);
       return;
     }
     let state: 'waiting' | 'checking' | 'live' | 'ended' = 'waiting';
@@ -94,7 +94,9 @@ export function registerSyncWsRoutes(app: FastifyInstance, deps: SyncWsDeps, req
       settle('ended');
       socket.close(code);
     };
-    const timeout = setTimeout(fail, WS_AUTH_TIMEOUT_MS);
+    const timeout = setTimeout(() => {
+      fail(WS_TRY_AGAIN_LATER_CLOSE);
+    }, WS_AUTH_TIMEOUT_MS);
     timeout.unref();
     socket.on('close', () => {
       if (state !== 'live') settle('ended');

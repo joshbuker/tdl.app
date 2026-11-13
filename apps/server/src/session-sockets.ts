@@ -4,6 +4,8 @@ import type { Id } from '@tdl/domain';
 export const SESSION_REVOKED_CLOSE = 4401;
 /** The close code for a socket whose authentication failed, or whose session ended other than by revoking. */
 export const WS_AUTH_FAILED_CLOSE = 4403;
+/** The close code for a passing refusal (too many sockets waiting, or too slow to authenticate): the device reconnects later. */
+export const WS_TRY_AGAIN_LATER_CLOSE = 1013;
 
 /** Anything that can be closed with a websocket close code. */
 export interface Closable {

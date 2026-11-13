@@ -201,14 +201,14 @@ describe('live updates', () => {
     expect(await socket.closed).toBe(4403);
   });
 
-  test('a socket that sends no auth message within 5 s is closed with 4403', async () => {
+  test('a socket that sends no auth message within 5 s is closed with 1013, to try again later', async () => {
     fakeTimers();
     try {
       const socket = connect({ origin: APP_ORIGIN });
       await socket.opened;
       await vi.advanceTimersByTimeAsync(4900);
       await vi.advanceTimersByTimeAsync(100);
-      expect(await socket.closed).toBe(4403);
+      expect(await socket.closed).toBe(1013);
     } finally {
       vi.useRealTimers();
     }
@@ -218,10 +218,10 @@ describe('live updates', () => {
     expect(await refusedUpgrade({ origin: EVIL_ORIGIN })).toEqual({ status: 403, body: { code: 'forbidden' } });
   });
 
-  test('the 11th unauthenticated socket from one address is closed with 4403', async () => {
+  test('the 11th unauthenticated socket from one address is closed with 1013, to try again later', async () => {
     const waiting = Array.from({ length: 10 }, () => connect({ origin: APP_ORIGIN }));
     await Promise.all(waiting.map((socket) => socket.opened));
-    expect(await connect({ origin: APP_ORIGIN }).closed).toBe(4403);
+    expect(await connect({ origin: APP_ORIGIN }).closed).toBe(1013);
     // Authenticating frees their places.
     for (const socket of waiting) socket.send({ type: 'auth', token: alice });
     for (const socket of waiting) expect(await socket.next()).toMatchObject({ type: 'feed' });
