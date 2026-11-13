@@ -27,7 +27,9 @@ export function createPendingSave<T>(
       pending = { value };
       clearTimeout(timer);
       timer = setTimeout(() => {
-        void flush();
+        flush().catch((error: unknown) => {
+          console.error(error);
+        });
       }, delayMs);
     },
     flush,

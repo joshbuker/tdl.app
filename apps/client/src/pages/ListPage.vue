@@ -36,13 +36,17 @@
         </q-item>
       </q-list>
     </template>
-    <div v-else role="alert">{{ $t('errors.not-found') }}</div>
+    <div v-else-if="content === 'not-found'" role="alert">{{ $t('errors.not-found') }}</div>
+    <div v-else class="flex flex-center q-pa-lg">
+      <q-spinner size="lg" color="primary" role="progressbar" :aria-label="$t('page.loading')" />
+    </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useApp } from '@/composables/useApp.ts';
+import { useApp, useDevice } from '@/composables/useApp.ts';
+import { pageContent } from '@/display/sync-display.ts';
 import { taskRows } from '@/display/task-display.ts';
 import { errorKey } from '@/forms/account-forms.ts';
 
@@ -50,10 +54,13 @@ const props = defineProps<{ listId: string }>();
 const { state } = useApp();
 
 const replica = computed(() => (state.value.kind === 'ready' ? state.value.replica : null));
-// `state` is triggered in place when the replica changes, so this reads it directly: going
-// through `replica`, which stays the same object, wouldn't pass the change on.
-const device = computed(() => (state.value.kind === 'ready' ? state.value.replica.state() : null));
+const device = useDevice();
 const list = computed(() => device.value?.lists.get(props.listId) ?? null);
+const content = computed(() =>
+  state.value.kind === 'ready' && device.value !== null
+    ? pageContent(list.value !== null, device.value, state.value.me.defaultListId)
+    : 'loading',
+);
 const tasks = computed(() => (device.value === null ? [] : taskRows(device.value, props.listId)));
 
 const newTask = ref('');

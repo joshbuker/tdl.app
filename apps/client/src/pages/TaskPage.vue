@@ -46,7 +46,10 @@
         @pick="addPrerequisite"
       />
     </div>
-    <div v-else role="alert">{{ $t('errors.not-found') }}</div>
+    <div v-else-if="content === 'not-found'" role="alert">{{ $t('errors.not-found') }}</div>
+    <div v-else class="flex flex-center q-pa-lg">
+      <q-spinner size="lg" color="primary" role="progressbar" :aria-label="$t('page.loading')" />
+    </div>
   </q-page>
 </template>
 
@@ -57,7 +60,8 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router';
 import AddLinkDialog from '@/components/AddLinkDialog.vue';
 import TaskHistory from '@/components/TaskHistory.vue';
 import TaskLinks from '@/components/TaskLinks.vue';
-import { useApp } from '@/composables/useApp.ts';
+import { useApp, useDevice } from '@/composables/useApp.ts';
+import { pageContent } from '@/display/sync-display.ts';
 import { historyRows, taskLinks, taskOptions, type TaskOption } from '@/display/task-display.ts';
 import { errorKey } from '@/forms/account-forms.ts';
 import { createPendingSave } from '@/forms/pending-save.ts';
@@ -66,10 +70,13 @@ const props = defineProps<{ taskId: string }>();
 const { state } = useApp();
 
 const ready = computed(() => (state.value.kind === 'ready' ? state.value : null));
-// `state` is triggered in place when the replica changes, so these read it directly: going
-// through `ready`, which stays the same object, wouldn't pass the change on.
-const device = computed(() => (state.value.kind === 'ready' ? state.value.replica.state() : null));
+const device = useDevice();
 const task = computed(() => device.value?.tasks.get(props.taskId) ?? null);
+const content = computed(() =>
+  state.value.kind === 'ready' && device.value !== null
+    ? pageContent(task.value !== null, device.value, state.value.me.defaultListId)
+    : 'loading',
+);
 const links = computed(() =>
   device.value === null
     ? { prerequisites: [], postrequisites: [] }
@@ -137,7 +144,9 @@ async function savePending(): Promise<void> {
 onBeforeRouteUpdate(savePending);
 onBeforeRouteLeave(savePending);
 onBeforeUnmount(() => {
-  void savePending();
+  savePending().catch((error: unknown) => {
+    console.error(error);
+  });
 });
 
 async function setCompleted(done: boolean): Promise<void> {

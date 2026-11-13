@@ -37,4 +37,14 @@ describe('createPendingSave', () => {
     await createPendingSave(save, 1000).flush();
     expect(save).not.toHaveBeenCalled();
   });
+
+  test('a save that fails is logged, not left unhandled', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const failure = new Error('store-failed');
+    const pending = createPendingSave(() => Promise.reject(failure), 1000);
+    pending.schedule('a');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(error).toHaveBeenCalledExactlyOnceWith(failure);
+    error.mockRestore();
+  });
 });

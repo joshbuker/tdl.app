@@ -81,6 +81,8 @@ export class Replica {
 
   private readonly listeners = new Set<() => void>();
 
+  /** How many live subscriptions are running: while any is, local edits are pushed as they happen. */
+  private live = 0;
   private running: Promise<void> | null = null;
   /** Counts sync requests, so a run can tell whether another came in while it ran. */
   private requests = 0;
@@ -254,6 +256,10 @@ export class Replica {
     this.requests += 1;
     if (this.running !== null) return this.running;
     const run = async (): Promise<void> => {
+      // Starts on the next microtask, so `running` is set first: a sync asked for during this one
+      // (e.g. by a transport that reports the feed grew while the push is still being answered)
+      // is coalesced instead of starting another.
+      await Promise.resolve();
       try {
         let handled: number;
         do {
@@ -268,12 +274,27 @@ export class Replica {
     return this.running;
   }
 
-  /** Syncs whenever the transport says the feed grew. Returns a function that stops it. */
+  /**
+   * Syncs whenever the transport says the feed grew, and after each local edit. Returns a function
+   * that stops it.
+   */
   startLive(): () => void {
-    return this.transport.subscribe(() => {
-      // Network and session failures already set `status`; anything else goes to onError.
-      this.sync().catch(this.onError);
+    this.live += 1;
+    const unsubscribe = this.transport.subscribe(() => {
+      this.syncInBackground();
     });
+    let stopped = false;
+    return () => {
+      if (stopped) return;
+      stopped = true;
+      this.live -= 1;
+      unsubscribe();
+    };
+  }
+
+  private syncInBackground(): void {
+    // Network and session failures already set `status`; anything else goes to onError.
+    this.sync().catch(this.onError);
   }
 
   private async syncOnce(): Promise<void> {
@@ -492,6 +513,7 @@ export class Replica {
     this.outbox.push(...ops);
     this.recompute();
     for (const op of ops) await this.store.putPending(op);
+    if (this.live > 0) this.syncInBackground();
   }
 
   private async dropPending(ids: Id[]): Promise<void> {

@@ -1,8 +1,8 @@
 import type { AppState } from '@tdl/app-core';
 import { describe, expect, test } from 'vitest';
-import { shallowRef } from 'vue';
+import { nextTick, shallowRef, triggerRef } from 'vue';
 import type { AppViewState } from '../composables/useApp.ts';
-import { createAuthGuard, redirectFor } from './guards.ts';
+import { createAuthGuard, followState, redirectFor } from './guards.ts';
 
 const ready = { kind: 'ready', me: { defaultListId: 'inbox-id' } } as unknown as AppState;
 const page = { meta: {} };
@@ -54,5 +54,64 @@ describe('createAuthGuard', () => {
   test('lets the page open once the app is ready', async () => {
     const state = shallowRef<AppViewState>(ready);
     await expect(createAuthGuard(state)(page)).resolves.toBe(true);
+  });
+
+  test('waits while the app is open in another tab, then decides', async () => {
+    const state = shallowRef<AppViewState>({ kind: 'other-tab' });
+    let decided: string | true | undefined;
+    const navigation = createAuthGuard(state)(homePage).then((result) => {
+      decided = result;
+    });
+    await Promise.resolve();
+    expect(decided).toBeUndefined();
+
+    state.value = ready;
+    await navigation;
+    expect(decided).toBe('/lists/inbox-id');
+  });
+});
+
+describe('followState', () => {
+  test('logging out in place goes to the login page', async () => {
+    const state = shallowRef<AppViewState>(ready);
+    const went: string[] = [];
+    followState(
+      state,
+      () => page,
+      (path) => went.push(path),
+    );
+    state.value = { kind: 'logged-out' };
+    await nextTick();
+    expect(went).toEqual(['/login']);
+  });
+
+  test('changes that keep the page open move nothing', async () => {
+    const state = shallowRef<AppViewState>({ kind: 'logged-out' });
+    const went: string[] = [];
+    followState(
+      state,
+      () => loginPage,
+      (path) => went.push(path),
+    );
+    state.value = ready;
+    await nextTick();
+    triggerRef(state);
+    await nextTick();
+    expect(went).toEqual([]);
+  });
+
+  test('leaves starting up to the navigation guard', async () => {
+    const state = shallowRef<AppViewState>({ kind: 'starting' });
+    const went: string[] = [];
+    followState(
+      state,
+      () => page,
+      (path) => went.push(path),
+    );
+    state.value = { kind: 'logged-out' };
+    await nextTick();
+    state.value = { kind: 'other-tab' };
+    await nextTick();
+    expect(went).toEqual([]);
   });
 });

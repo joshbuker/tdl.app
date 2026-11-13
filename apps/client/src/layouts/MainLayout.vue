@@ -12,10 +12,10 @@
           @click="drawerOpen = !drawerOpen"
         />
         <q-toolbar-title>{{ $t('app.name') }}</q-toolbar-title>
+        <SyncStatus class="q-mr-md" />
         <q-btn-dropdown v-if="ready !== null" flat no-caps :label="ready.me.username">
           <q-list>
-            <!-- Logging out is wired in Task 16. -->
-            <q-item v-close-popup clickable>
+            <q-item v-close-popup clickable role="menuitem" @click="startLogOut">
               <q-item-section>{{ $t('layout.logOut') }}</q-item-section>
             </q-item>
           </q-list>
@@ -44,25 +44,41 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <SessionEndedDialog :model-value="showSessionEnded(state, warning)" @log-out="startLogOut" />
+    <LogOutDialog :warning="warning" @close="warning = null" @discard="discard" />
   </q-layout>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useApp } from '@/composables/useApp.ts';
+import LogOutDialog from '@/components/LogOutDialog.vue';
+import SessionEndedDialog from '@/components/SessionEndedDialog.vue';
+import SyncStatus from '@/components/SyncStatus.vue';
+import { useApp, useDevice } from '@/composables/useApp.ts';
 import { listRows } from '@/display/task-display.ts';
 import { errorKey } from '@/forms/account-forms.ts';
+import { logOut, showSessionEnded, type UnsyncedWarning } from '@/forms/log-out.ts';
 
-const { state } = useApp();
+const { state, controller } = useApp();
 const router = useRouter();
 
-// `state` is triggered in place when the replica changes, so the computeds below read it directly:
-// one returning the same state object wouldn't pass the change on.
 const ready = computed(() => (state.value.kind === 'ready' ? state.value : null));
-const lists = computed(() =>
-  state.value.kind === 'ready' ? listRows(state.value.replica.state()) : [],
-);
+const device = useDevice();
+const lists = computed(() => (device.value === null ? [] : listRows(device.value)));
+
+// Logging out: with unsynced changes, a warning shows first (see forms/log-out.ts). Once logged
+// out, the app moves to the login page (followState, in boot/app.ts).
+const warning = ref<UnsyncedWarning | null>(null);
+
+async function startLogOut(): Promise<void> {
+  warning.value = await logOut(controller);
+}
+
+async function discard(): Promise<void> {
+  warning.value = await logOut(controller, 'discard');
+}
 
 const drawerOpen = ref(false);
 const newList = ref('');

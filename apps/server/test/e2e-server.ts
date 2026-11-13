@@ -5,7 +5,7 @@ import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { eq, inArray } from 'drizzle-orm';
 import { buildApp } from '../src/app.ts';
 import { createDb, runMigrations, type Db } from '../src/db/client.ts';
-import { session, user } from '../src/db/schema.ts';
+import { operations, session, user } from '../src/db/schema.ts';
 import { testConfig } from './test-config.ts';
 
 export { createDb, type Db };
@@ -75,4 +75,14 @@ export async function expireSessions(db: Db, username: string): Promise<void> {
     .update(session)
     .set({ expiresAt: new Date(Date.now() - 60_000) })
     .where(inArray(session.userId, users));
+}
+
+/** The content changes the server holds for one record, in the order it received them. */
+export async function contentChangesOf(db: Db, recordId: string): Promise<unknown[]> {
+  const rows = await db
+    .select({ content: operations.content })
+    .from(operations)
+    .where(eq(operations.recordId, recordId))
+    .orderBy(operations.seq);
+  return rows.map((row) => row.content).filter((content) => content !== null);
 }

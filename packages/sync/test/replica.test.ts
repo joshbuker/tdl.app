@@ -492,6 +492,32 @@ describe('Replica', () => {
     stop();
   });
 
+  test('while live, a local edit is pushed as it happens', async () => {
+    const server = world();
+    const { replica } = await device(server);
+    const stop = replica.startLive();
+
+    await replica.setTaskField('fence', 'title', 'Paint the fence');
+
+    await vi.waitFor(() => {
+      expect(replica.pending()).toEqual([]);
+    });
+    expect(server.entries.length).toBeGreaterThan(world().entries.length);
+    stop();
+  });
+
+  test('once live updates stop, local edits wait for the next sync', async () => {
+    const server = world();
+    const { replica } = await device(server);
+    replica.startLive()();
+
+    await replica.setTaskField('fence', 'title', 'Paint the fence');
+    // Long enough for a sync over the fake transport, which answers at once.
+    for (let tick = 0; tick < 20; tick += 1) await Promise.resolve();
+
+    expect(replica.pending()).toHaveLength(1);
+  });
+
   describe('unknown feed entries', () => {
     test('are stored, and the entries around them still apply', async () => {
       const server = world();

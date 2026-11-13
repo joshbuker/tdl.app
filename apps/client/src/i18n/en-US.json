@@ -9,6 +9,19 @@
   "app": {
     "name": "TDL App"
   },
+  "couldntStart": {
+    "message": "TDL App keeps your tasks on this device, and couldn't open its storage. The browser may be blocking it (for example in a private window), or the disk may be full.",
+    "reason": "Reason: {reason}",
+    "reload": "Reload",
+    "title": "TDL App couldn't start"
+  },
+  "couldntSync": {
+    "discard": "Discard",
+    "discardTitle": "Discard the change to {title}",
+    "empty": "Nothing here: every change has synced.",
+    "message": "The server refused these changes. They stay on this device until you discard them.",
+    "title": "Couldn't sync"
+  },
   "errors": {
     "already-shared": "This is already shared with them.",
     "bad-request": "The app sent a request the server couldn't read.",
@@ -64,6 +77,13 @@
     "newTask": "New task",
     "nextUp": "Next up"
   },
+  "logOut": {
+    "discard": "Discard and log out",
+    "logInAgain": "Log in again",
+    "message": "1 change hasn't synced yet. Logging out deletes it. | {count} changes haven't synced yet. Logging out deletes them.",
+    "stay": "Stay logged in",
+    "title": "Unsynced changes"
+  },
   "login": {
     "identifier": "Username or email",
     "password": "Password",
@@ -77,6 +97,15 @@
   },
   "otherTab": {
     "message": "TDL App is open in another tab. Close that tab to use it here."
+  },
+  "page": {
+    "loading": "Loading"
+  },
+  "sessionEnded": {
+    "logOut": "Log out",
+    "message": "Your session has ended. Changes you make are kept on this device, and sync once you log in again.",
+    "submit": "Log in",
+    "title": "Log in again"
   },
   "signUp": {
     "acceptTerms": "I accept the terms of service",
@@ -97,6 +126,12 @@
     "revoked": "This session was ended from another device.",
     "server-outdated": "The server is out of date. Changes stay on this device for now.",
     "stuck": "Syncing has stopped. Your changes are kept on this device."
+  },
+  "syncStatus": {
+    "label": "Sync status",
+    "pending": "1 change waiting | {count} changes waiting",
+    "rejected": "1 change couldn't sync | {count} changes couldn't sync",
+    "reload": "Reload"
   },
   "task": {
     "addPrerequisite": "Add prerequisite",

@@ -294,7 +294,7 @@ Implements `docs/design-decisions/live-update-authentication.md`.
 ### Task 12: The web platform
 
 **Files:**
-- Create: `apps/client/src/platform/web/db.worker.ts`, `apps/client/src/platform/web/web-driver.ts`, `apps/client/src/platform/web/tab-lock.ts`, `apps/client/src/platform/web/web-platform.ts`, `apps/client/src/boot/app.ts`, `apps/client/src/composables/useApp.ts`, `apps/client/src/composables/useReplica.ts`
+- Create: `apps/client/src/platform/web/db.worker.ts`, `apps/client/src/platform/web/web-driver.ts`, `apps/client/src/platform/web/tab-lock.ts`, `apps/client/src/platform/web/web-platform.ts`, `apps/client/src/boot/app.ts`, `apps/client/src/composables/useApp.ts`
 - Modify: `apps/client/quasar.config.ts` (boot file; `optimizeDeps.exclude: ['@sqlite.org/sqlite-wasm']`; dev proxy for `/api` to `http://127.0.0.1:3000` with `ws: true`), `docs/features/app/platforms.md`, `scenario-scope.json`
 
 **Interfaces:**
@@ -303,7 +303,7 @@ Implements `docs/design-decisions/live-update-authentication.md`.
   - `createWebDriver(): Promise<SqlDriver>`: starts `db.worker.ts` (`new Worker(new URL('./db.worker.ts', import.meta.url), { type: 'module' })`), which uses the `oo1` API with `installOpfsSAHPoolVfs({ name: 'tdl-app' })` and the database `/tdl-app.sqlite3`. Messages are `{ id, kind: 'exec' | 'batch', … }`, answered `{ id, ok: true, result } | { id, ok: false, message }`. No COOP or COEP headers are needed.
   - `acquireTabLock(onWaiting: () => void): Promise<void>`: `navigator.locks.request('tdl-app-database', …)` held for the page's life. If the lock isn't free at once (`ifAvailable`), it calls `onWaiting` and then waits for it.
   - `webPlatform`: `auth: 'cookie'`, `openStore` via `createWebDriver` and `openDeviceStore`, token methods as no-ops, `transport` via `createHttpTransport` with `baseUrl: location.origin`.
-  - `useApp(): { state: ShallowRef<AppState | { kind: 'other-tab' }>; controller: AppController }` and `useReplica(replica): ShallowRef<DeviceState>`, refreshed from `onChange`.
+  - `useApp(): { state: ShallowRef<AppState | { kind: 'other-tab' }>; controller: AppController }` and `useDevice(): ComputedRef<DeviceState | null>`, the open replica's state, refreshed when the controller triggers `state` (added in Task 16; Task 12's `useReplica` hid changes, because the replica stays the same object).
 - Spec change first (in `platforms.md`, as a rule and a scenario, before code): **"On the web, the app is used in one tab at a time. Another tab says the app is open in another tab, and continues once that tab is closed."** Scenario `### Open in a second tab`: Given "alice" has the web app open in a tab, When she opens it in a second tab, Then the second tab says it's open in another tab, And once she closes the first tab, the second shows her tasks. Add it to `scenario-scope.json` (its test is in Task 16).
 
 - [ ] **Step 1: Update `platforms.md`** as above, and commit `Specify one tab at a time on the web`.
@@ -360,7 +360,7 @@ Implements `docs/design-decisions/live-update-authentication.md`.
 - Modify: routes, `en-US.json`
 
 **Interfaces:**
-- Consumes: `useApp`, `useReplica` (Task 12); `Replica` edit methods; `buildGraph`, `nextUpTaskIds`, `redundantLinkIds` and `findLoops` from `@tdl/domain`, for display only.
+- Consumes: `useApp`, `useDevice` (Tasks 12 and 16); `Replica` edit methods; `buildGraph`, `nextUpTaskIds`, `redundantLinkIds` and `findLoops` from `@tdl/domain`, for display only.
 - Produces:
   - `/` redirects to the default list. The layout lists the user's lists (with "New list"), and shows the username with a logout menu item (wired in Task 16).
   - `/lists/:listId`: the list's tasks, incomplete first, with a "Next up" badge on next-up tasks, a completed state, and a quick-add input (title only; Enter adds and clears it, showing `errors.<code>` on failure).
