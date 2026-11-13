@@ -22,7 +22,7 @@ The user logs in with a username and password, and can log out.
 - Each device has its own session, which lasts until it logs out or is revoked, and expires after 90 days without syncing. Settings list every logged-in device with when it last synced, and the user can revoke any of them (see [Server-side sessions](../../design-decisions/server-side-sessions.md)).
 - A revoked device deletes its local data, including changes that haven't synced, as soon as it next reaches the server, in case it was lost or stolen. A session that expires, or that ends for any other reason, keeps the device's data and unsynced changes, and asks the user to log in again.
 - Logging out ends the session on the server. A logged-out session can't be reused.
-- Logging out clears local data even if the server can't be reached. If there are changes that haven't synced yet, the user is warned first, and can cancel to let them sync.
+- Logging out clears local data even if the server can't be reached. If there are changes that haven't synced yet, the user is warned first and chooses: log in again so they sync (or, if still logged in, stay so they sync), or discard them and log out.
 - Pages other than login require being logged in.
 - When a session expires while the app is open, a login dialog appears over the current page instead of going to the login page. Changes made meanwhile keep being saved on the device, and sync once the user logs back in.
 
@@ -76,3 +76,21 @@ The user logs in with a username and password, and can log out.
 - Given a logged-in user
 - When they log out
 - Then they are on the login page and the old session no longer works
+
+### Log out with unsynced changes
+
+- Given "alice"'s session has expired, and she edited "Paint fence" since it last synced
+- When she logs out
+- Then she is warned that the change to "Paint fence" hasn't synced, and offered to log in again or discard it
+
+### Discard unsynced changes
+
+- Given "alice" is warned about unsynced changes while logging out
+- When she chooses to discard them
+- Then she is logged out, and her device's data is deleted
+
+### Log in again to keep unsynced changes
+
+- Given "alice" is warned about unsynced changes while logging out, after her session expired
+- When she chooses to log in again, and does
+- Then her changes sync, and she is still logged in
