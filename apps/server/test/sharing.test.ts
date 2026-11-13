@@ -1,5 +1,5 @@
 import { newId, type Id } from '@tdl/domain';
-import { createClock, type FeedEntry, type JsonValue, type Operation, type PullPage, type PushResult, type RecordRef } from '@tdl/sync';
+import { createClock, type FeedEntry, type JsonValue, type Operation, type PushResult, type RecordRef } from '@tdl/sync';
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { auth, signUp } from './auth-helpers.ts';
@@ -54,7 +54,7 @@ describe('sharing', () => {
     for (;;) {
       const response = await server.app.inject({ url: `/api/sync/pull?after=${String(cursor)}`, headers: auth(token) });
       expect(response.statusCode).toBe(200);
-      const page = response.json<PullPage>();
+      const page = response.json<{ entries: FeedEntry[]; cursor: number; more: boolean }>();
       entries.push(...page.entries);
       cursor = page.cursor;
       if (!page.more) break;

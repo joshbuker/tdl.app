@@ -1,5 +1,5 @@
 import type { FieldError, Id } from '@tdl/domain';
-import type { FeedEntry, Operation, PushResult, RecordRef } from './operations.ts';
+import type { FeedEntry, JsonValue, Operation, PushResult, RecordRef } from './operations.ts';
 
 /** A confirmed operation, as it came from the feed. */
 export type FeedOp = Extract<FeedEntry, { kind: 'op' }>['op'];
@@ -21,6 +21,8 @@ export interface StoredReplica {
   /** In the order they were made. */
   pending: Operation[];
   rejected: RejectedOp[];
+  /** Feed entries this version didn't understand, as they came (each has an integer `id`), kept until an app that knows them applies them. */
+  unknown: JsonValue[];
 }
 
 /** Durable storage for one device's replica. Platforms implement it over their own storage. */
@@ -33,6 +35,10 @@ export interface ReplicaStore {
   appendConfirmed(ops: FeedOp[], cursor: number): Promise<void>;
   /** Drops the record's confirmed operations (see `forgetOps`), and sets the cursor. */
   forget(record: RecordRef, cursor: number): Promise<void>;
+  /** Adds feed entries not already stored (by their `id`), and sets the cursor. */
+  putUnknown(entries: JsonValue[], cursor: number): Promise<void>;
+  /** Removes stored unknown entries by feed entry ID. */
+  removeUnknown(ids: number[]): Promise<void>;
   /** Appends a pending operation. */
   putPending(op: Operation): Promise<void>;
   removePending(id: Id): Promise<void>;
@@ -64,11 +70,14 @@ export function forgetOps<T extends Operation>(ops: readonly T[], record: Record
   );
 }
 
+const entryId = (entry: JsonValue): JsonValue | undefined => (typeof entry === 'object' && entry !== null && !Array.isArray(entry) ? entry.id : undefined);
+
 const copy = (data: StoredReplica): StoredReplica => ({
   ...data,
   confirmed: [...data.confirmed],
   pending: [...data.pending],
   rejected: [...data.rejected],
+  unknown: [...data.unknown],
 });
 
 /** A ReplicaStore in memory, for tests and headless use. */
@@ -85,7 +94,7 @@ export class MemoryStore implements ReplicaStore {
   }
 
   init(userId: Id, deviceId: string): Promise<void> {
-    this.data = { userId, deviceId, cursor: 0, confirmed: [], pending: [], rejected: [] };
+    this.data = { userId, deviceId, cursor: 0, confirmed: [], pending: [], rejected: [], unknown: [] };
     return Promise.resolve();
   }
 
@@ -106,6 +115,26 @@ export class MemoryStore implements ReplicaStore {
     const data = this.stored;
     data.confirmed = forgetOps(data.confirmed, record);
     data.cursor = cursor;
+    return Promise.resolve();
+  }
+
+  putUnknown(entries: JsonValue[], cursor: number): Promise<void> {
+    const data = this.stored;
+    const known = new Set(data.unknown.map(entryId));
+    for (const entry of entries) {
+      if (!known.has(entryId(entry))) {
+        known.add(entryId(entry));
+        data.unknown.push(entry);
+      }
+    }
+    data.cursor = cursor;
+    return Promise.resolve();
+  }
+
+  removeUnknown(ids: number[]): Promise<void> {
+    const data = this.stored;
+    const drop = new Set<JsonValue | undefined>(ids);
+    data.unknown = data.unknown.filter((entry) => !drop.has(entryId(entry)));
     return Promise.resolve();
   }
 

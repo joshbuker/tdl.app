@@ -1,5 +1,5 @@
 import type { ZodTypeProvider } from '@fastify/type-provider-zod';
-import { pullPageSchema, type FeedEntry, type Operation, type RecordRef } from '@tdl/sync';
+import { feedEntrySchema, pullPageSchema, type FeedEntry, type Operation, type RecordRef } from '@tdl/sync';
 import { and, asc, eq, gt } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
@@ -7,6 +7,9 @@ import type { Db } from '../db/client.ts';
 import type { RequireProtocol } from '../protocol.ts';
 import { feed, operations, session } from '../db/schema.ts';
 import { sessionOf, type RequireSession } from '../session-guard.ts';
+
+/** What the server sends: every entry is one this version knows. */
+const serverPullPageSchema = pullPageSchema.extend({ entries: z.array(feedEntrySchema) });
 
 const pullQuerySchema = z.object({
   after: z.coerce.number().int().min(0),
@@ -22,7 +25,7 @@ export function registerSyncPullRoutes(
 ): void {
   app.withTypeProvider<ZodTypeProvider>().get(
     '/sync/pull',
-    { onRequest: requireProtocol.header, preHandler: requireSession, schema: { querystring: pullQuerySchema, response: { 200: pullPageSchema } } },
+    { onRequest: requireProtocol.header, preHandler: requireSession, schema: { querystring: pullQuerySchema, response: { 200: serverPullPageSchema } } },
     async (request) => {
       const { userId, sessionId } = sessionOf(request);
       const { after, limit } = request.query;

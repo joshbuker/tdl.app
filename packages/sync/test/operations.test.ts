@@ -3,6 +3,7 @@ import {
   errorBodySchema,
   feedNotificationSchema,
   operationSchema,
+  parseFeedEntry,
   pullPageSchema,
   pushRequestSchema,
   pushResponseSchema,
@@ -99,9 +100,46 @@ describe('responses', () => {
     expect(pullPageSchema.safeParse({ entries, cursor: 2, more: false }).success).toBe(true);
   });
 
+  test('pull pages keep entries as they came, for parseFeedEntry', () => {
+    const entries = [{ id: 1, kind: 'bogus' }, 'junk'];
+    expect(pullPageSchema.safeParse({ entries, cursor: 1, more: false }).success).toBe(true);
+  });
+
   test('notifications and error bodies parse', () => {
     expect(feedNotificationSchema.safeParse({ type: 'feed', id: 4 }).success).toBe(true);
     expect(errorBodySchema.safeParse({ code: 'x' }).success).toBe(true);
     expect(errorBodySchema.safeParse({ code: 'x', errors: [{ field: 'f', code: 'taken' }] }).success).toBe(true);
+  });
+});
+
+describe('parseFeedEntry', () => {
+  const known = { id: 1, kind: 'op', op: { ...createTask, seq: 1, authorId: id } };
+
+  test('a valid entry parses as itself', () => {
+    expect(parseFeedEntry(known)).toEqual(known);
+    const forget = { id: 2, kind: 'forget', record: { type: 'list', id } };
+    expect(parseFeedEntry(forget)).toEqual(forget);
+  });
+
+  test('an unknown record type is an unknown entry', () => {
+    const raw = { id: 3, kind: 'op', op: { ...known.op, record: { type: 'tag', id: otherId } } };
+    expect(parseFeedEntry(raw)).toEqual({ kind: 'unknown', id: 3, raw });
+  });
+
+  test('an unknown kind of change is an unknown entry', () => {
+    const raw = { id: 4, kind: 'op', op: { ...known.op, meta: { kind: 'createTag' } } };
+    expect(parseFeedEntry(raw)).toEqual({ kind: 'unknown', id: 4, raw });
+  });
+
+  test('an unknown entry kind is an unknown entry', () => {
+    const raw = { id: 5, kind: 'rename', record: { type: 'list', id } };
+    expect(parseFeedEntry(raw)).toEqual({ kind: 'unknown', id: 5, raw });
+  });
+
+  test('an entry without an integer id is null', () => {
+    expect(parseFeedEntry({ kind: 'op' })).toBeNull();
+    expect(parseFeedEntry({ id: 'x', kind: 'op' })).toBeNull();
+    expect(parseFeedEntry('junk')).toBeNull();
+    expect(parseFeedEntry(null)).toBeNull();
   });
 });

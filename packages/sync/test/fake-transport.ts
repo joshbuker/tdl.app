@@ -1,5 +1,5 @@
 import type { Id } from '@tdl/domain';
-import type { FeedEntry, Operation, PullPage, PushResult, RecordRef } from '../src/operations.ts';
+import type { FeedEntry, JsonValue, Operation, PullPage, PushResult, RecordRef, UnknownEntry } from '../src/operations.ts';
 import type { AuthoredOperation } from '../src/state.ts';
 import { NetworkError, type Transport } from '../src/transport.ts';
 import { PROTOCOL_VERSION } from '../src/version.ts';
@@ -12,18 +12,20 @@ type Rejection = Omit<Extract<PushResult, { status: 'rejected' }>, 'id' | 'statu
  * through `reject`.
  */
 export interface FakeServer {
-  readonly entries: FeedEntry[];
+  readonly entries: (FeedEntry | UnknownEntry)[];
   /** The size of every push call, in order. */
   readonly pushSizes: number[];
   reject: ((op: Operation) => Rejection | undefined) | undefined;
   /** Adds operations straight to the feed, as if another device had pushed them. */
   seed(...ops: AuthoredOperation[]): void;
   forget(record: RecordRef): void;
+  /** Adds an entry as a newer server might send, which this version's schemas don't know. `raw.id` is set to the next feed ID. */
+  seedUnknown(raw: { [key: string]: JsonValue }): void;
   transport(userId: Id): Transport;
 }
 
 export function createFakeServer(): FakeServer {
-  const entries: FeedEntry[] = [];
+  const entries: (FeedEntry | UnknownEntry)[] = [];
   const results = new Map<Id, PushResult>();
   const listeners = new Set<(id: number) => void>();
   let seq = 0;
@@ -48,6 +50,11 @@ export function createFakeServer(): FakeServer {
     },
     forget(record) {
       entries.push({ id: lastId() + 1, kind: 'forget', record });
+      notify();
+    },
+    seedUnknown(raw) {
+      const id = lastId() + 1;
+      entries.push({ kind: 'unknown', id, raw: { ...raw, id } });
       notify();
     },
     transport(userId) {

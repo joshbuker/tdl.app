@@ -32,7 +32,7 @@
     "Rejected offline changes are kept",
     "Refused sync shows why"
   ],
-  "app/version-compatibility.md": ["Outdated app keeps working", "Updating syncs queued changes", "Server too old"],
+  "app/version-compatibility.md": ["Outdated app keeps working", "Updating syncs queued changes", "Server too old", "Unknown data is kept"],
   "app/sharing.md": [
     "Share a list",
     "Share a single task",

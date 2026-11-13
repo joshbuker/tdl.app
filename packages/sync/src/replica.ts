@@ -16,7 +16,7 @@ import {
   type Validated,
 } from '@tdl/domain';
 import { createClock, type Clock } from './hlc.ts';
-import type { ContentChange, MetaChange, Operation, PullPage, PushResult, RecordRef } from './operations.ts';
+import { parseFeedEntry, type ContentChange, type FeedEntry, type JsonValue, type MetaChange, type Operation, type PullPage, type PushResult, type RecordRef, type UnknownEntry } from './operations.ts';
 import { accessData, historyOf, materialize, type DeviceState, type HistoryEntry } from './state.ts';
 import { forgetOps, type FeedOp, type RejectedOp, type ReplicaStore } from './store.ts';
 import { NetworkError, RefusedError, SessionError, VersionError, type Transport } from './transport.ts';
@@ -74,6 +74,8 @@ export class Replica {
   private confirmed = new Map<Id, FeedOp>();
   private outbox: Operation[] = [];
   private refused: RejectedOp[] = [];
+  /** Feed entries this version doesn't understand, by feed entry ID. */
+  private unknown = new Map<number, JsonValue>();
   private cursor = 0;
   private current: DeviceState = materialize([]);
   private currentStatus: ReplicaStatus = 'ok';
@@ -105,6 +107,7 @@ export class Replica {
       for (const op of [...stored.confirmed, ...stored.pending, ...stored.rejected.map((r) => r.op)]) {
         replica.receive(op.hlc);
       }
+      await replica.reparseUnknown(stored.unknown, stored.cursor);
       replica.recompute();
     } else {
       await options.store.init(options.userId, options.deviceId);
@@ -355,11 +358,39 @@ export class Replica {
     }
   }
 
-  private async applyPage(page: PullPage): Promise<void> {
+  /**
+   * Stored unknown entries the current schemas now accept are applied like newly pulled ones and
+   * removed from the store; the rest stay. The store keeps them until the apply is stored.
+   */
+  private async reparseUnknown(stored: JsonValue[], cursor: number): Promise<void> {
+    const nowKnown: FeedEntry[] = [];
+    for (const raw of stored) {
+      const entry = parseFeedEntry(raw);
+      if (entry === null) continue;
+      if (entry.kind === 'unknown') this.unknown.set(entry.id, raw);
+      else nowKnown.push(entry);
+    }
+    if (nowKnown.length === 0) return;
+    nowKnown.sort((a, b) => a.id - b.id);
+    await this.applyEntries(nowKnown, cursor);
+    await this.store.removeUnknown(nowKnown.map((entry) => entry.id));
+  }
+
+  private applyPage(page: PullPage): Promise<void> {
+    return this.applyEntries(page.entries, page.cursor);
+  }
+
+  private async applyEntries(entries: (FeedEntry | UnknownEntry)[], pageCursor: number): Promise<void> {
     let fresh: FeedOp[] = [];
+    let freshUnknown: JsonValue[] = [];
+    // The cursor the store holds: unknown entries are stored before it passes them.
+    let stored = this.cursor;
     let cursor = this.cursor;
-    for (const entry of page.entries) {
-      if (entry.kind === 'op') {
+    for (const entry of entries) {
+      if (entry.kind === 'unknown') {
+        this.unknown.set(entry.id, entry.raw);
+        freshUnknown.push(entry.raw);
+      } else if (entry.kind === 'op') {
         this.receive(entry.op.hlc);
         if (!this.confirmed.has(entry.op.id)) {
           this.confirmed.set(entry.op.id, entry.op);
@@ -367,15 +398,19 @@ export class Replica {
         }
       } else {
         // Store the operations before the forget first, so the store applies them in feed order.
+        if (freshUnknown.length > 0) await this.store.putUnknown(freshUnknown, stored);
+        freshUnknown = [];
         if (fresh.length > 0) await this.store.appendConfirmed(fresh, cursor);
         fresh = [];
         const kept = forgetOps([...this.confirmed.values()], entry.record);
         this.confirmed = new Map(kept.map((op) => [op.id, op]));
-        await this.store.forget(entry.record, Math.max(cursor, entry.id));
+        stored = Math.max(cursor, entry.id);
+        await this.store.forget(entry.record, stored);
       }
       cursor = Math.max(cursor, entry.id);
     }
-    this.cursor = Math.max(cursor, page.cursor);
+    this.cursor = Math.max(cursor, pageCursor);
+    if (freshUnknown.length > 0) await this.store.putUnknown(freshUnknown, stored);
     await this.store.appendConfirmed(fresh, this.cursor);
     this.recompute();
   }
@@ -385,6 +420,7 @@ export class Replica {
     this.confirmed = new Map();
     this.outbox = [];
     this.refused = [];
+    this.unknown = new Map();
     this.cursor = 0;
     this.setStatus('revoked');
     this.recompute();

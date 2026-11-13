@@ -97,12 +97,39 @@ export const feedEntrySchema = z.discriminatedUnion('kind', [
 ]);
 export type FeedEntry = z.infer<typeof feedEntrySchema>;
 
+/** An entry this version's schemas refuse (a newer record type, kind of change or entry kind). `raw` is kept as it came. */
+export interface UnknownEntry {
+  kind: 'unknown';
+  id: number;
+  raw: JsonValue;
+}
+
+/** Entries are parsed one by one with `parseFeedEntry`, so one entry this version doesn't know doesn't fail the page. */
 export const pullPageSchema = z.object({
-  entries: z.array(feedEntrySchema),
+  entries: z.array(z.unknown()),
   cursor: z.number().int(),
   more: z.boolean(),
 });
-export type PullPage = z.infer<typeof pullPageSchema>;
+
+/** A pulled page, after `parseFeedEntry` has sorted its entries. */
+export interface PullPage {
+  entries: (FeedEntry | UnknownEntry)[];
+  cursor: number;
+  more: boolean;
+}
+
+/**
+ * A valid entry; or, for something with an integer `id` that the schema refuses, an unknown
+ * entry; or null for anything without an integer `id`, which is a malformed page.
+ */
+export function parseFeedEntry(raw: unknown): FeedEntry | UnknownEntry | null {
+  const entry = feedEntrySchema.safeParse(raw);
+  if (entry.success) return entry.data;
+  const json = jsonValueSchema.safeParse(raw);
+  if (!json.success || typeof json.data !== 'object' || json.data === null || Array.isArray(json.data)) return null;
+  const { id } = json.data;
+  return typeof id === 'number' && Number.isInteger(id) ? { kind: 'unknown', id, raw: json.data } : null;
+}
 
 export const feedNotificationSchema = z.object({ type: z.literal('feed'), id: z.number().int() });
 export type FeedNotification = z.infer<typeof feedNotificationSchema>;

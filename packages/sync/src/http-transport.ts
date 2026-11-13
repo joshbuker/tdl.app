@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import { errorBodySchema, feedNotificationSchema, pullPageSchema, pushResponseSchema, type Operation } from './operations.ts';
+import { errorBodySchema, feedNotificationSchema, parseFeedEntry, pullPageSchema, pushResponseSchema, type Operation, type PullPage } from './operations.ts';
 import { NetworkError, RefusedError, SessionError, VersionError, type Transport } from './transport.ts';
 import { PROTOCOL_HEADER, PROTOCOL_VERSION } from './version.ts';
 
@@ -76,7 +76,14 @@ export function createHttpTransport(options: HttpTransportOptions): Transport {
     },
     async pull(after, limit) {
       if (revoked) throw new SessionError('session-revoked');
-      return requests.send('GET', `/api/sync/pull?after=${String(after)}&limit=${String(limit)}`, pullPageSchema);
+      const page = await requests.send('GET', `/api/sync/pull?after=${String(after)}&limit=${String(limit)}`, pullPageSchema);
+      const entries: PullPage['entries'] = [];
+      for (const raw of page.entries) {
+        const entry = parseFeedEntry(raw);
+        if (entry === null) throw new Error('invalid-feed-entry');
+        entries.push(entry);
+      }
+      return { ...page, entries };
     },
     subscribe(onFeed) {
       return subscribeToFeed(options, onFeed, () => {

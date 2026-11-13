@@ -75,6 +75,8 @@ function crashingStore(): { store: ReplicaStore; inner: MemoryStore; crashAt(met
     forget: write('forget', (r: Parameters<ReplicaStore['forget']>[0], c: number) => inner.forget(r, c)),
     putPending: write('putPending', (op: Parameters<ReplicaStore['putPending']>[0]) => inner.putPending(op)),
     removePending: write('removePending', (id: string) => inner.removePending(id)),
+    putUnknown: write('putUnknown', (e: Parameters<ReplicaStore['putUnknown']>[0], c: number) => inner.putUnknown(e, c)),
+    removeUnknown: write('removeUnknown', (ids: number[]) => inner.removeUnknown(ids)),
     putRejected: write('putRejected', (r: Parameters<ReplicaStore['putRejected']>[0]) => inner.putRejected(r)),
     removeRejected: write('removeRejected', (id: string) => inner.removeRejected(id)),
     wipe: write('wipe', () => inner.wipe()),
@@ -488,6 +490,49 @@ describe('Replica', () => {
       expect(titles(replica)).toContain('Milk');
     });
     stop();
+  });
+
+  describe('unknown feed entries', () => {
+    test('are stored, and the entries around them still apply', async () => {
+      const server = world();
+      server.seed(createTask('milk', 'inbox', at(20, 'b'), bob));
+      server.seedUnknown({ kind: 'op', op: { record: { type: 'tag', id: 'urgent' } } });
+      server.seed(setField('task', 'milk', 'title', 'Milk', at(21, 'b'), bob));
+      const { replica, store } = await device(server);
+
+      expect(titles(replica)).toContain('Milk');
+      expect(replica.status()).toBe('ok');
+      const stored = await store.load();
+      expect(stored?.unknown).toHaveLength(1);
+      expect(stored?.cursor).toBe(server.entries.length);
+    });
+
+    test('are applied once the app knows them, and then dropped', async () => {
+      const server = world();
+      const { store } = await device(server, { transport: offline() });
+      const id = '0190a1b2-c3d4-7e5f-8a6b-7c8d9e0f1a2b';
+      const entry = {
+        id: 100,
+        kind: 'op',
+        op: {
+          id,
+          hlc: '000001700000000:000000:node-a',
+          record: { type: 'list', id: '0190a1b2-c3d4-7e5f-8a6b-7c8d9e0f1a2c' },
+          meta: { kind: 'createList' },
+          content: null,
+          seq: 100,
+          authorId: id,
+        },
+      };
+      const stillUnknown = { id: 101, kind: 'op', op: { record: { type: 'tag', id } } };
+      await store.putUnknown([entry, stillUnknown], 101);
+
+      const { replica } = await device(server, { store, transport: offline() });
+
+      expect(replica.state().lists.has('0190a1b2-c3d4-7e5f-8a6b-7c8d9e0f1a2c')).toBe(true);
+      expect((await store.load())?.unknown).toEqual([stillUnknown]);
+      expect((await store.load())?.cursor).toBe(101);
+    });
   });
 });
 

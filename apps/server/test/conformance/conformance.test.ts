@@ -1,7 +1,7 @@
 // Sync conformance: devices that edit, share and sync at random through lossy, repeating, delayed
 // transports still converge, on the state the server's feed describes.
 import type { Id } from '@tdl/domain';
-import { forgetOps, materialize, pullPageSchema, seededRandom, type DeviceState, type FeedOp, type Replica, type Transport } from '@tdl/sync';
+import { forgetOps, materialize, feedEntrySchema, pullPageSchema, seededRandom, type DeviceState, type FeedOp, type Replica, type Transport } from '@tdl/sync';
 import { and, eq, isNotNull } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { operations } from '../../src/db/schema.ts';
@@ -39,7 +39,8 @@ describe('Sync conformance', () => {
     for (;;) {
       const reply = await server.request('GET', `/api/sync/pull?after=${String(after)}&limit=1000`, { token: user.token });
       const page = pullPageSchema.parse(reply.body);
-      for (const entry of page.entries) {
+      for (const raw of page.entries) {
+        const entry = feedEntrySchema.parse(raw);
         if (entry.kind === 'op') confirmed.set(entry.op.id, entry.op);
         else confirmed = new Map(forgetOps([...confirmed.values()], entry.record).map((op) => [op.id, op]));
       }

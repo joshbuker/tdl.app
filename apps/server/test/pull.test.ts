@@ -1,5 +1,5 @@
 import { newId, type Id } from '@tdl/domain';
-import { createClock, type FeedEntry, type JsonValue, type Operation, type PullPage, type PushResult, type RecordRef } from '@tdl/sync';
+import { createClock, type FeedEntry, type JsonValue, type Operation, type PushResult, type RecordRef } from '@tdl/sync';
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { writeServerOps } from '../src/sync/apply.ts';
@@ -58,7 +58,7 @@ describe('pull', () => {
     const query = limit === undefined ? `after=${String(after)}` : `after=${String(after)}&limit=${String(limit)}`;
     const response = await server.app.inject({ url: `/api/sync/pull?${query}`, headers: auth(token) });
     expect(response.statusCode).toBe(200);
-    return response.json<PullPage>();
+    return response.json<{ entries: FeedEntry[]; cursor: number; more: boolean }>();
   };
   /** Everything in the user's feed after `after`, and the new cursor. */
   const pullAll = async (token: string, after: number) => {
