@@ -18,6 +18,7 @@ Attempt #1 ended because it was "web only" and "couldn't compile down to mobile/
 - The web app is not an installable PWA. Native mobile and desktop packages cover installed use.
 - Same features on every platform, except where a platform can't support one (e.g. scheduled notifications on web).
 - On the web, the app is used in one tab at a time. Another tab says the app is open in another tab, and continues once that tab is closed.
+- If the app can't open its storage on the device (for example, the browser blocks it or the disk is full), it shows a page saying it couldn't start, with the reason and a button to reload. It doesn't run without its storage.
 
 ## Scenarios
 
@@ -42,3 +43,10 @@ Attempt #1 ended because it was "web only" and "couldn't compile down to mobile/
 - When she opens it in a second tab
 - Then the second tab says it's open in another tab
 - And once she closes the first tab, the second shows her tasks
+
+### Storage can't be opened
+
+- Given the browser won't let the app open its storage
+- When "alice" opens the web app
+- Then it says the app couldn't start, and why
+- And it offers a button to reload
