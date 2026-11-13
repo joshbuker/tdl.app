@@ -25,6 +25,7 @@ Breaking changes require updating rather than the server translating old formats
 - Updating the app migrates its local data, including queued changes, to the new version before it next syncs.
 - The web app is loaded from the server, so it matches the server's version once reloaded. An open tab that finds the server has a newer major version offers to reload, and its queued changes survive the reload.
 - [Choose a server](../account/choose-server.md) refuses a server with a different major version, with the same message.
+- The public API follows the same versions, and programs must update at a major change too (see [API access](api-access.md)).
 
 ## Scenarios
 
@@ -66,7 +67,6 @@ Breaking changes require updating rather than the server translating old formats
   - **The app hides features the server's minor version lacks**, using the version the server answers with.
   - **The server stores fields it doesn't know untouched**, as apps do. It can't validate them, but from v2 it can't read content anyway.
   - **Treat it like a major mismatch:** the user is told the server needs updating.
-- **The public API's support period.** [API access](api-access.md) promises that the previous major API version keeps working for a stated period, but apps now must update on a major change. Options:
-  - **Keep the period for the API only:** the server translates the previous major version for API clients.
-  - **The API follows the apps:** programs must update at a major change too.
-- **Migrating server-held data at a major change (v2).** With end-to-end encryption, only devices can rewrite content, so data on the server stays in the old format until a device migrates it. Options include: the first updated device with access rewrites and re-uploads each record; or each record is migrated lazily the next time it's edited.
+- **Migrating server-held data at a major change (v2, deferred).** With end-to-end encryption, only devices can rewrite content, so data on the server stays in the old format until a device migrates it. Options:
+  - **The first updated device with access** rewrites and re-uploads each record.
+  - **Lazily:** each record is migrated the next time it's edited.

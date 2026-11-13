@@ -20,7 +20,7 @@ Users and other programs can read and change their data through a documented pub
 - Users create personal access tokens in their settings, each with a name, read-only or read-write access, and an optional expiry. Tokens can be revoked at any time, and the user can see when each was last used.
 - A token, including its key, is shown in full only once, when it is created. Revoking a token takes effect at once: the server refuses it, so its key can't fetch anything more.
 - Other apps can also ask the user for access with OAuth, getting the same kind of scoped, revocable access without a token being copied by hand.
-- The API is versioned. Breaking changes only come with a new major version, and the previous one keeps working for a stated period.
+- The API is versioned with the sync protocol, like the apps (see [Version compatibility](version-compatibility.md)). Breaking changes only come with a new major version, and programs must update to it: the server refuses an older major version with an error saying so.
 - The API is documented in OpenAPI, generated from the tests so it can't drift from what the server does. The client library's documentation shows how to read and write data, decrypted from v2.
 - Requests are rate limited per token, and clients are told their remaining allowance.
 - Errors use the same contract as the apps (see [Error contract](../../design-decisions/error-contract.md)).
@@ -62,11 +62,11 @@ Users and other programs can read and change their data through a documented pub
 - When she revokes its access
 - Then the app's requests are refused
 
-### Previous major version keeps working
+### Older major version is refused
 
-- Given a program uses version 1 of the API, and version 2 has been released with breaking changes
-- When it makes a request within version 1's stated period
-- Then the request works as before
+- Given a program uses version 1 of the API, and the server has been updated to version 2
+- When it makes a request
+- Then it is refused with an error saying the program must update to version 2
 
 ### Remaining allowance
 
