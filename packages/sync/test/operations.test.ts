@@ -136,6 +136,12 @@ describe('parseFeedEntry', () => {
     expect(parseFeedEntry(raw)).toEqual({ kind: 'unknown', id: 5, raw });
   });
 
+  test('a known kind with a malformed value is null, not unknown', () => {
+    expect(parseFeedEntry({ ...known, op: { ...known.op, hlc: 'bad' } })).toBeNull();
+    expect(parseFeedEntry({ ...known, op: { ...known.op, id: 'not-a-uuid' } })).toBeNull();
+    expect(parseFeedEntry({ id: 2, kind: 'forget', record: { type: 'list', id: 'x' } })).toBeNull();
+  });
+
   test('an entry without an integer id is null', () => {
     expect(parseFeedEntry({ kind: 'op' })).toBeNull();
     expect(parseFeedEntry({ id: 'x', kind: 'op' })).toBeNull();

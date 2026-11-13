@@ -74,8 +74,6 @@ export class Replica {
   private confirmed = new Map<Id, FeedOp>();
   private outbox: Operation[] = [];
   private refused: RejectedOp[] = [];
-  /** Feed entries this version doesn't understand, by feed entry ID. */
-  private unknown = new Map<number, JsonValue>();
   private cursor = 0;
   private current: DeviceState = materialize([]);
   private currentStatus: ReplicaStatus = 'ok';
@@ -367,8 +365,7 @@ export class Replica {
     for (const raw of stored) {
       const entry = parseFeedEntry(raw);
       if (entry === null) continue;
-      if (entry.kind === 'unknown') this.unknown.set(entry.id, raw);
-      else nowKnown.push(entry);
+      if (entry.kind !== 'unknown') nowKnown.push(entry);
     }
     if (nowKnown.length === 0) return;
     nowKnown.sort((a, b) => a.id - b.id);
@@ -388,7 +385,6 @@ export class Replica {
     let cursor = this.cursor;
     for (const entry of entries) {
       if (entry.kind === 'unknown') {
-        this.unknown.set(entry.id, entry.raw);
         freshUnknown.push(entry.raw);
       } else if (entry.kind === 'op') {
         this.receive(entry.op.hlc);
@@ -420,7 +416,6 @@ export class Replica {
     this.confirmed = new Map();
     this.outbox = [];
     this.refused = [];
-    this.unknown = new Map();
     this.cursor = 0;
     this.setStatus('revoked');
     this.recompute();

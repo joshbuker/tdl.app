@@ -104,6 +104,12 @@ describe('createHttpTransport', () => {
     expect(error).toMatchObject({ status: 400, code: 'bad-request' });
   });
 
+  test('a pulled entry of a known kind with a malformed value fails the page', async () => {
+    const entry = { id: 1, kind: 'op', op: { id: '018f0000-0000-7000-8000-000000000002', hlc: 'bad', record: { type: 'list', id: '018f0000-0000-7000-8000-000000000003' }, meta: { kind: 'createList' }, content: null, seq: 1, authorId: '018f0000-0000-7000-8000-000000000004' } };
+    const fetch = stubFetch(200, { entries: [entry], cursor: 1, more: false });
+    await expect(createHttpTransport({ baseUrl, fetch }).pull(0, 500)).rejects.toThrow();
+  });
+
   test('a malformed body throws', async () => {
     await expect(createHttpTransport({ baseUrl, fetch: stubFetch(200, { results: [{ status: 'maybe' }] }) }).push([])).rejects.toThrow();
     await expect(createHttpTransport({ baseUrl, fetch: stubFetch(200, { entries: 'none' }) }).pull(0, 500)).rejects.toThrow();

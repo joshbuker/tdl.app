@@ -118,17 +118,36 @@ export interface PullPage {
   more: boolean;
 }
 
+const KNOWN_RECORD_TYPES: readonly unknown[] = recordRefSchema.shape.type.options;
+const KNOWN_META_KINDS: readonly unknown[] = metaChangeSchema.options.map((option) => option.shape.kind.value);
+
+const isObject = (value: unknown): value is { [key: string]: unknown } =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+/** Whether a refused entry is refused for something a newer version adds: an entry kind, record type or kind of change. */
+function mentionsNewerThing(entry: { [key: string]: unknown }): boolean {
+  const refType = (record: unknown): boolean => isObject(record) && typeof record.type === 'string' && !KNOWN_RECORD_TYPES.includes(record.type);
+  if (entry.kind === 'forget') return refType(entry.record);
+  if (entry.kind !== 'op') return true;
+  const op = entry.op;
+  if (!isObject(op)) return false;
+  const meta = op.meta;
+  return refType(op.record) || (isObject(meta) && typeof meta.kind === 'string' && !KNOWN_META_KINDS.includes(meta.kind));
+}
+
 /**
- * A valid entry; or, for something with an integer `id` that the schema refuses, an unknown
- * entry; or null for anything without an integer `id`, which is a malformed page.
+ * A valid entry; or an unknown entry, for something with an integer `id` that the schema
+ * refuses because of an entry kind, record type or kind of change it doesn't know; or null for
+ * anything else (no integer `id`, or a known shape with malformed values), a malformed page.
  */
 export function parseFeedEntry(raw: unknown): FeedEntry | UnknownEntry | null {
   const entry = feedEntrySchema.safeParse(raw);
   if (entry.success) return entry.data;
   const json = jsonValueSchema.safeParse(raw);
-  if (!json.success || typeof json.data !== 'object' || json.data === null || Array.isArray(json.data)) return null;
+  if (!json.success || !isObject(json.data)) return null;
   const { id } = json.data;
-  return typeof id === 'number' && Number.isInteger(id) ? { kind: 'unknown', id, raw: json.data } : null;
+  if (typeof id !== 'number' || !Number.isInteger(id) || !mentionsNewerThing(json.data)) return null;
+  return { kind: 'unknown', id, raw: json.data };
 }
 
 export const feedNotificationSchema = z.object({ type: z.literal('feed'), id: z.number().int() });
