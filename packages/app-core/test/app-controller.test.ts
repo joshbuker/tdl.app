@@ -277,6 +277,24 @@ describe('AppController', () => {
     expect(await platform.store.load()).toBeNull();
   });
 
+  test("logOut('discard') wipes even when sign-out fails with a server error", async () => {
+    const platform = await storedPlatform(meOf('alice'));
+    const server = new FakeFetch().on('POST /api/auth/sign-out', { status: 500, body: { code: 'internal-error' } });
+    server.online = false;
+    const controller = new AppController({ baseUrl: BASE_URL, platform, fetch: server.fetch });
+    await controller.start();
+    await ready(controller).replica.createList('House');
+    server.online = true;
+
+    expect(await controller.logOut('discard')).toEqual({ kind: 'done' });
+
+    expect(server.callsTo('POST /api/auth/sign-out')).toHaveLength(1);
+    expect(controller.state()).toEqual({ kind: 'logged-out' });
+    expect(await platform.store.load()).toBeNull();
+    expect(await platform.keyValue.get('me')).toBeNull();
+    expect(platform.token).toBeNull();
+  });
+
   test('logInAgain as another user is refused and changes nothing', async () => {
     const alice = meOf('alice');
     const platform = await storedPlatform(alice);

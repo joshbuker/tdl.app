@@ -129,7 +129,7 @@ export class AppController {
   }
 
   /**
-   * Logs out: ends the session on the server if it can, and deletes the device's data. With
+   * Logs out: ends the session on the server if it can, and deletes the device's data either way. With
    * unsynced changes and no `choice`, changes nothing and reports them, so the user can choose.
    */
   async logOut(choice?: 'discard'): Promise<LogOutResult> {
@@ -140,9 +140,8 @@ export class AppController {
     }
     try {
       await this.api().logOut();
-    } catch (error) {
-      // The data goes even if the server can't be reached, or the session already ended.
-      if (!(error instanceof NetworkError) && !(error instanceof ApiError && error.status === 401)) throw error;
+    } catch {
+      // The data goes whatever sign-out answers: the server may be unreachable or failing, or the session already ended.
     }
     await this.wipe();
     this.setState({ kind: 'logged-out' });
