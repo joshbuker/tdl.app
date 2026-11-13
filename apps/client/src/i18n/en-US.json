@@ -1,4 +1,7 @@
 {
+  "app": {
+    "name": "TDL App"
+  },
   "errors": {
     "already-shared": "This is already shared with them.",
     "bad-request": "The app sent a request the server couldn't read.",
@@ -10,6 +13,7 @@
     "internal-error": "Something went wrong on the server. Try again later.",
     "invalid": "This isn't valid.",
     "invalid-credentials": "Wrong username or password.",
+    "network": "Can't reach the server. Check your connection and try again.",
     "not-editable": "You can't edit one of these tasks.",
     "not-found": "This doesn't exist, or you can't see it.",
     "protocol-mismatch": "This app doesn't match the server's version.",
@@ -27,8 +31,30 @@
     "uppercase": "Use lowercase letters only.",
     "whitespace": "Spaces aren't allowed."
   },
+  "login": {
+    "identifier": "Username or email",
+    "password": "Password",
+    "submit": "Log in",
+    "title": "Log in",
+    "toSignUp": "Create an account"
+  },
+  "notFound": {
+    "home": "Go to my tasks",
+    "message": "This page doesn't exist."
+  },
   "otherTab": {
     "message": "TDL App is open in another tab. Close that tab to use it here."
+  },
+  "signUp": {
+    "acceptTerms": "I accept the terms of service",
+    "email": "Email",
+    "familyName": "Family name",
+    "givenName": "Given name",
+    "password": "Password",
+    "submit": "Sign up",
+    "title": "Sign up",
+    "toLogin": "I already have an account",
+    "username": "Username"
   },
   "status": {
     "app-outdated": "This app is out of date. Update it to keep syncing.",

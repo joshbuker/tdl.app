@@ -6,11 +6,12 @@ The author develops on more than one machine, including NixOS, and doesn't want 
 
 ## Decision
 
-The repository has a `shell.nix` that provides everything needed to develop: Node 26 and pnpm, from the nixos-unstable channel (fetched from `channels.nixos.org`, so it doesn't depend on which nixpkgs a machine's system uses). Running `nix-shell` in the repository gives the tools without installing them globally. In an interactive shell it switches to zsh.
+The repository has a `shell.nix` that provides everything needed to develop: Node 26, pnpm and Playwright's browsers, from the nixos-unstable channel (fetched from `channels.nixos.org`, so it doesn't depend on which nixpkgs a machine's system uses). Running `nix-shell` in the repository gives the tools without installing them globally. In an interactive shell it switches to zsh.
 
 - pnpm keeps its package store inside the repository (`store-dir` in the repository's `.npmrc`, git-ignored), so installs don't touch the rest of the machine.
 - Nothing is installed globally. Tools the project needs are either in `shell.nix` or project dependencies run through pnpm.
 - CI uses the Node version from `.node-version`, which matches `shell.nix`.
+- Playwright runs nixpkgs' browsers (`playwright-driver.browsers`, through `PLAYWRIGHT_BROWSERS_PATH`), because the browsers Playwright downloads don't run on NixOS. So `@playwright/test` is pinned to nixpkgs' `playwright-driver` version (see `PINS.md`). CI downloads Playwright's own browsers instead.
 
 ## Alternatives considered
 

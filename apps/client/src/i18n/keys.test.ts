@@ -40,7 +40,8 @@ const replicaStatuses = Object.keys({
 const pushRejectionCodes = pushResultSchema.options[1].shape.code.options;
 
 // `ApiError.code` is a plain string: these are the codes the server's routes send
-// (apps/server/src), plus app-core's own `unknown` (no error body) and `different-user`.
+// (apps/server/src), plus app-core's own `unknown` (no error body) and `different-user`, and the
+// client's `network` (the server can't be reached).
 const apiErrorCodes = [
   'bad-request',
   'different-user',
@@ -49,6 +50,7 @@ const apiErrorCodes = [
   'internal-error',
   'invalid',
   'invalid-credentials',
+  'network',
   'not-found',
   'protocol-mismatch',
   'rate-limited',

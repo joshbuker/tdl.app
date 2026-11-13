@@ -4,6 +4,7 @@ import { inject } from 'vitest';
 import { buildApp } from '../src/app.ts';
 import type { Config } from '../src/config.ts';
 import { createDb, runMigrations, type Db } from '../src/db/client.ts';
+import { testConfig } from './test-config.ts';
 
 export interface TestDb {
   db: Db;
@@ -35,14 +36,7 @@ export async function testDb(): Promise<TestDb> {
   return { db: handle.db, url: url.toString(), close: handle.close };
 }
 
-export const testConfig = (databaseUrl: string): Config => ({
-  databaseUrl,
-  port: 0,
-  origin: 'http://localhost:3000',
-  authSecret: 'test-secret-test-secret-test-secret-0123',
-  trustProxy: false,
-  appOrigins: ['https://localhost', 'capacitor://localhost'],
-});
+export { testConfig };
 
 export async function testApp(overrides: Partial<Config> = {}) {
   const database = await testDb();

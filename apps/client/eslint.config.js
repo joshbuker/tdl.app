@@ -97,6 +97,14 @@ export default defineConfigWithVueTs(
   },
 
   {
+    files: ['e2e/**/*.ts'],
+    rules: {
+      // Playwright reads a fixture's dependencies from its destructured first parameter, even when empty.
+      'no-empty-pattern': 'off',
+    },
+  },
+
+  {
     files: ['src-pwa/sw/**/*.ts'],
     languageOptions: {
       globals: {
