@@ -46,3 +46,23 @@ describe('validateField', () => {
     expect(validateField('list', 'notes', 'x').ok).toBe(false);
   });
 });
+
+describe('validateField limits', () => {
+  const tooLong = (field: string) => ({ ok: false, errors: [{ field, code: 'too-long' }] });
+
+  test('titles', () => {
+    for (const type of ['task', 'list'] as const) {
+      expect(validateField(type, 'title', 'x'.repeat(501))).toEqual(tooLong('title'));
+      expect(validateField(type, 'title', 'x'.repeat(500)).ok).toBe(true);
+      expect(validateField(type, 'title', '😀'.repeat(500)).ok).toBe(true);
+      expect(validateField(type, 'title', '  ' + 'x'.repeat(500) + '  ').ok).toBe(true);
+    }
+  });
+
+  test('notes and link reasons', () => {
+    expect(validateField('task', 'notes', 'n'.repeat(100_001))).toEqual(tooLong('notes'));
+    expect(validateField('task', 'notes', 'n'.repeat(100_000)).ok).toBe(true);
+    expect(validateField('link', 'reason', 'n'.repeat(100_001))).toEqual(tooLong('reason'));
+    expect(validateField('link', 'reason', 'n'.repeat(100_000)).ok).toBe(true);
+  });
+});

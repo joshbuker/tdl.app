@@ -37,6 +37,20 @@ describe('Create a task', () => {
     expect(titles(await server.device(alice))).toEqual([]);
   });
 
+  test('Title is too long', async () => {
+    const alice = await server.signUp('alice');
+    const phone = await server.device(alice);
+
+    // When the user tries to create a task with a title of 501 characters
+    const result = await phone.createTask(alice.defaultListId, 'x'.repeat(501));
+
+    // Then no task is created and the user is told a title can be at most 500 characters
+    expect(result).toEqual({ ok: false, errors: [{ field: 'title', code: 'too-long' }] });
+    expect(phone.pending()).toEqual([]);
+    await settle(phone);
+    expect(titles(await server.device(alice))).toEqual([]);
+  });
+
   test('Surrounding whitespace is stripped', async () => {
     const alice = await server.signUp('alice');
     const phone = await server.device(alice);

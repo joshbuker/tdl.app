@@ -1,5 +1,5 @@
 import type { LinkKind } from './model.ts';
-import { normalizeTitle, type FieldError, type Validated } from './validation.ts';
+import { MAX_TEXT_LENGTH, MAX_TITLE_LENGTH, exceedsLength, normalizeTitle, type FieldError, type Validated } from './validation.ts';
 
 const ISO_UTC = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d+)?Z$/;
 
@@ -24,11 +24,13 @@ const ok = (value: unknown): Validated<unknown> => ({ ok: true, value });
 function title(field: string, value: unknown): Validated<unknown> {
   if (typeof value !== 'string') return fail(field, 'required');
   const normalized = normalizeTitle(value);
-  return normalized === '' ? fail(field, 'required') : ok(normalized);
+  if (normalized === '') return fail(field, 'required');
+  return exceedsLength(normalized, MAX_TITLE_LENGTH) ? fail(field, 'too-long') : ok(normalized);
 }
 
 function text(field: string, value: unknown): Validated<unknown> {
-  return typeof value === 'string' ? ok(value) : fail(field, 'invalid');
+  if (typeof value !== 'string') return fail(field, 'invalid');
+  return exceedsLength(value, MAX_TEXT_LENGTH) ? fail(field, 'too-long') : ok(value);
 }
 
 /** Validates and normalizes one field value for a record type. Returns the normalized value or field errors. */
