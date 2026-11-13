@@ -566,3 +566,59 @@ describe('push batching', () => {
     expect(server.pushSizes).toEqual([500, 500, 200]);
   });
 });
+
+describe('onChange', () => {
+  test('runs once after createTask, not once per operation', async () => {
+    const { replica } = await device(world());
+    const listener = vi.fn();
+    replica.onChange(listener);
+    await replica.createTask('inbox', 'Buy milk', 'Two litres');
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  test('runs once per pulled page', async () => {
+    const server = world();
+    const { replica } = await device(server);
+    const listener = vi.fn();
+    replica.onChange(listener);
+    // 600 operations: pages of 500 and 100.
+    server.seed(...Array.from({ length: 600 }, (_, i) => setField('task', 'paint', 'notes', `n${String(i)}`, at(100 + i), alice)));
+    await replica.sync();
+    expect(listener).toHaveBeenCalledTimes(2);
+  });
+
+  test('runs once when the status turns offline', async () => {
+    const { replica, net } = await device(world());
+    const listener = vi.fn();
+    replica.onChange(listener);
+    net.use(offline());
+    await replica.sync();
+    expect(replica.status()).toBe('offline');
+    expect(listener).toHaveBeenCalledTimes(1);
+    await replica.sync();
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  test('stops running after unsubscribing', async () => {
+    const { replica } = await device(world());
+    const listener = vi.fn();
+    const unsubscribe = replica.onChange(listener);
+    unsubscribe();
+    await replica.createTask('inbox', 'Buy milk');
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  test('a throwing listener reaches onError and the next listener still runs', async () => {
+    const onError = vi.fn();
+    const { replica } = await device(world(), { onError });
+    const boom = new Error('boom');
+    const next = vi.fn();
+    replica.onChange(() => {
+      throw boom;
+    });
+    replica.onChange(next);
+    await replica.createTask('inbox', 'Buy milk');
+    expect(onError).toHaveBeenCalledWith(boom);
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+});

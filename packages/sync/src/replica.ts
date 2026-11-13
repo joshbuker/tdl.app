@@ -79,6 +79,8 @@ export class Replica {
   private currentStatus: ReplicaStatus = 'ok';
   private currentReason: string | null = null;
 
+  private readonly listeners = new Set<() => void>();
+
   private running: Promise<void> | null = null;
   /** Counts sync requests, so a run can tell whether another came in while it ran. */
   private requests = 0;
@@ -138,6 +140,22 @@ export class Replica {
   /** While `stuck`, the code the server refused the sync with; otherwise null. */
   statusReason(): string | null {
     return this.currentReason;
+  }
+
+  /**
+   * Calls `listener` after the state, the status or the rejected list changes: once per local edit,
+   * per push batch, per pulled page, and per status change. Returns a function that unsubscribes.
+   * A listener that throws goes to `onError` and doesn't stop the others.
+   */
+  onChange(listener: () => void): () => void {
+    // Wrapped, so subscribing the same function twice gives two independent subscriptions.
+    const entry = (): void => {
+      listener();
+    };
+    this.listeners.add(entry);
+    return () => {
+      this.listeners.delete(entry);
+    };
   }
 
   // Local edits
@@ -222,6 +240,7 @@ export class Replica {
   async discardRejected(opId: Id): Promise<void> {
     this.refused = this.refused.filter((r) => r.op.id !== opId);
     await this.store.removeRejected(opId);
+    this.notify();
   }
 
   // Sync
@@ -417,8 +436,9 @@ export class Replica {
     this.outbox = [];
     this.refused = [];
     this.cursor = 0;
-    this.setStatus('revoked');
-    this.recompute();
+    this.currentStatus = 'revoked';
+    this.currentReason = null;
+    this.recompute(); // Notifies once, for the status and the state.
   }
 
   // Helpers
@@ -436,8 +456,20 @@ export class Replica {
   }
 
   private setStatus(status: ReplicaStatus, reason: string | null = null): void {
+    const changed = this.currentStatus !== status || this.currentReason !== reason;
     this.currentStatus = status;
     this.currentReason = reason;
+    if (changed) this.notify();
+  }
+
+  private notify(): void {
+    for (const listener of [...this.listeners]) {
+      try {
+        listener();
+      } catch (error) {
+        this.onError(error);
+      }
+    }
   }
 
   private canEditLink(linkId: Id): boolean {
@@ -478,5 +510,6 @@ export class Replica {
 
   private recompute(): void {
     this.current = materialize(this.merged());
+    this.notify();
   }
 }
