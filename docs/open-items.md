@@ -22,7 +22,11 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
      - **Maximum field lengths**, which also stop abuse: task and list titles 500 characters (Todoist's limit for task names), notes and link reasons 100,000 (at most 400 KB in UTF-8, so one operation always fits). Specs updated; `packages/domain/src/fields.ts` doesn't enforce them yet.
      - **Batching pushes by size** as well as count, so no batch passes the server's limit.
 
-     Version mismatches are now covered by [Version compatibility](features/app/version-compatibility.md) and [Protocol versions](design-decisions/protocol-versions.md): changes stay queued, and the app shows an "update to sync" status. Plan 3 needs the version exchange, an outdated status, and lenient parsing of pulled pages (today one unknown record type or kind of change stops sync). A refused sync shows a "sync stuck" indicator with the reason (see [Offline use](features/app/offline.md)), and changes stay on the device. Whether changes behind a non-version refusal wait or move to the "couldn't sync" view is an open question in that spec.
+     Version mismatches are now covered by [Version compatibility](features/app/version-compatibility.md) and [Protocol versions](design-decisions/protocol-versions.md): changes stay queued, and the app shows an "update to sync" status. Plan 3 needs the version exchange, an outdated status, and lenient parsing of pulled pages (today one unknown record type or kind of change stops sync). A refused sync shows a "sync stuck" indicator with the reason, and every change stays queued in order (see [Offline use](features/app/offline.md)). So that only temporary causes can refuse a whole push, plan 3 also:
+     - **Checks each operation's shape on its own** on the server: today `/sync/push` validates the whole body against `pushRequestSchema`, so one malformed operation refuses all 500 with a 422. It should become a per-operation `invalid` rejection, which goes to the "couldn't sync" view like any other.
+     - **Batches pushes by size**, so no push hits the 413 limit.
+
+     Rejected: moving the operations of a refused push to the "couldn't sync" view so later ones sync. With the above, no known cause refuses a push for good, and splitting the queue would leave dependent changes to tidy by hand. If an unforeseen cause appears, a possible escape hatch is letting the user move the blocking change aside from the stuck indicator.
 
 ## Deferred past the thin slice
 

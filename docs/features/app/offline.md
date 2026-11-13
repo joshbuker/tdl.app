@@ -20,7 +20,8 @@ Everything works without a connection. Changes made offline sync when the device
 - Graph rules (no cycles, no redundant links) are checked on the device when a link is added, online or offline.
 - While online, changes are synced as they happen, and the server pushes changes from other devices and collaborators to open apps within a few seconds, without a refresh.
 - The user can see whether there are changes waiting to sync.
-- When the server refuses a sync as a whole (rather than individual changes), and retrying won't help, the app shows that sync is stuck, with the reason (e.g. the app needs updating, see [Version compatibility](version-compatibility.md)). Changes stay on the device.
+- Each change is accepted or rejected on its own, so one rejected change never holds back the others.
+- When the server refuses a sync as a whole (rather than individual changes), and retrying won't help, the app shows that sync is stuck, with the reason (e.g. the app needs updating, see [Version compatibility](version-compatibility.md)). Every change stays queued, in order, and syncs once the cause is fixed.
 - A device can stay offline for any length of time. Its unsynced changes are always kept and synced, and the server keeps the full change history so any device can catch up.
 - Conflicting edits are resolved automatically when there is a clear answer, and the user is asked when there isn't:
   - Edits to different fields of the same task are both kept.
@@ -101,8 +102,3 @@ Everything works without a connection. Changes made offline sync when the device
 - When both devices sync
 - Then "Buy milk" is completed, and its history shows both completions, flagged as a double completion
 
-## Open questions
-
-- **Changes queued behind a refused sync.** A refusal that isn't about versions (e.g. a request still over the server's size limit) leaves every later change waiting behind it. Options:
-  - **Keep everything queued** until the cause is fixed, and only show the stuck indicator.
-  - **Move the refused changes to the "couldn't sync" view**, with the reason, so later changes sync. Nothing is lost, and the user can copy or discard them as with other rejected changes.
