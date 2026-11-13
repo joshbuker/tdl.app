@@ -43,7 +43,9 @@ const rethrow = (error: unknown): void => {
   void Promise.reject(error instanceof Error ? error : new Error(String(error)));
 };
 
-const PUSH_BATCH = 500;
+const PUSH_MAX_OPS = 500;
+/** Kept under the server's 1 MiB body limit, counting every character as three bytes (an upper bound on UTF-8). */
+export const PUSH_MAX_ESTIMATED_BYTES = 768 * 1024;
 const PULL_LIMIT = 500;
 
 const forbidden = (field: string): { ok: false; errors: FieldError[] } => ({ ok: false, errors: [{ field, code: 'forbidden' }] });
@@ -266,13 +268,26 @@ export class Replica {
     // Operations added while pushing (including folded links) go out in a later batch.
     const sent = new Set<Id>();
     for (;;) {
-      const batch = this.outbox.filter((op) => !sent.has(op.id)).slice(0, PUSH_BATCH);
+      const batch = this.nextBatch(sent);
       if (batch.length === 0) return;
       for (const op of batch) sent.add(op.id);
       const results = await this.transport.push(batch);
       for (const result of results) await this.applyResult(result);
       this.recompute();
     }
+  }
+
+  /** Unsent operations in outbox order, within the size and count limits; always at least one if any are unsent. */
+  private nextBatch(sent: Set<Id>): Operation[] {
+    const batch: Operation[] = [];
+    let bytes = 0;
+    for (const op of this.outbox) {
+      if (sent.has(op.id)) continue;
+      bytes += JSON.stringify(op).length * 3;
+      if (batch.length > 0 && (bytes > PUSH_MAX_ESTIMATED_BYTES || batch.length >= PUSH_MAX_OPS)) break;
+      batch.push(op);
+    }
+    return batch;
   }
 
   private async applyResult(result: PushResult): Promise<void> {

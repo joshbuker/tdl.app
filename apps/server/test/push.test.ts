@@ -1,5 +1,5 @@
 import { newId, type Id } from '@tdl/domain';
-import { createClock, type JsonValue, type Operation, type PushResult } from '@tdl/sync';
+import { createClock, createHttpTransport, MemoryStore, Replica, type FetchLike, type JsonValue, type Operation, type PushResult } from '@tdl/sync';
 import { sql, type SQL } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { writeServerOps } from '../src/sync/apply.ts';
@@ -128,6 +128,47 @@ describe('push', () => {
     ]);
     expect([await count('operations'), await count('feed')]).toEqual(before);
     expect((await rows(sql`select id from tasks where id = ${task}`))).toEqual([]);
+  });
+
+  test('an operation that fails its shape is rejected on its own; the others in the push are still decided', async () => {
+    const task = newId();
+    const good = createTask(task, inbox);
+    const broken = { ...set('task', task, 'title', 'x'), hlc: 'nonsense' };
+    const results = await push(alice, [good, broken, set('task', task, 'title', 'Fine')]);
+    expect(results.map((r) => r.status)).toEqual(['accepted', 'rejected', 'accepted']);
+    expect(results[1]).toMatchObject({ id: broken.id, code: 'invalid' });
+    expect(results[1]).toHaveProperty('errors', expect.arrayContaining([{ field: 'hlc', code: 'invalid' }]));
+  });
+
+  test('a push element without an operation ID makes the whole request invalid', async () => {
+    const response = await server.app.inject({ method: 'POST', url: '/api/sync/push', headers: auth(alice), payload: { ops: [{ foo: 1 }] } });
+    expect(response.statusCode).toBe(422);
+    expect(response.json()).toMatchObject({ code: 'invalid' });
+  });
+
+  test('20 large notes through the HTTP transport are all accepted', async () => {
+    const fetchViaApp: FetchLike = async (url, init) => {
+      const response = await server.app.inject({
+        method: init.method,
+        url: url.replace('http://test', ''),
+        headers: init.headers,
+        ...(init.body === undefined ? {} : { payload: init.body }),
+      });
+      return { status: response.statusCode, json: () => Promise.resolve(response.json()) };
+    };
+    const replica = await Replica.open({
+      store: new MemoryStore(),
+      transport: createHttpTransport({ baseUrl: 'http://test', token: alice, fetch: fetchViaApp }),
+      userId: aliceId,
+      deviceId: newId(),
+    });
+    await replica.sync();
+    const notes = 'é'.repeat(100_000);
+    for (let i = 0; i < 20; i++) expect((await replica.createTask(inbox, `Large ${String(i)}`, notes)).ok).toBe(true);
+    await replica.sync();
+    expect(replica.status()).toBe('ok');
+    expect(replica.pending()).toEqual([]);
+    expect(replica.rejected()).toEqual([]);
   });
 
   test('a blank title is invalid', async () => {

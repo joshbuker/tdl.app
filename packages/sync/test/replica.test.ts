@@ -436,3 +436,34 @@ describe('Replica', () => {
     stop();
   });
 });
+
+describe('push batching', () => {
+  test('large operations are pushed in batches that stay within the size bound', async () => {
+    const server = world();
+    const base = server.transport(alice);
+    const sizes: number[] = [];
+    const transport: Transport = {
+      ...base,
+      push(ops) {
+        sizes.push(JSON.stringify({ ops }).length * 3);
+        return base.push(ops);
+      },
+    };
+    const { replica } = await device(server, { transport });
+    const notes = 'é'.repeat(100_000);
+    for (let i = 0; i < 20; i++) await replica.createTask('inbox', `Large ${String(i)}`, notes);
+    await replica.sync();
+    expect(sizes.length).toBeGreaterThan(1);
+    for (const size of sizes) expect(size).toBeLessThanOrEqual(768 * 1024);
+    expect(replica.pending()).toEqual([]);
+  });
+
+  test('1,200 tiny operations go in batches of 500, 500 and 200', async () => {
+    const server = world();
+    const { replica } = await device(server);
+    for (let i = 0; i < 600; i++) await replica.createTask('inbox', `T${String(i)}`);
+    server.pushSizes.length = 0;
+    await replica.sync();
+    expect(server.pushSizes).toEqual([500, 500, 200]);
+  });
+});

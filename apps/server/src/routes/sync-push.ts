@@ -1,6 +1,6 @@
 import type { ZodTypeProvider } from '@fastify/type-provider-zod';
 import { validateField, type FieldError } from '@tdl/domain';
-import { pushRequestSchema, pushResponseSchema, type Operation, type PushResult } from '@tdl/sync';
+import { operationSchema, pushRequestSchema, pushResponseSchema, type Operation, type PushResult } from '@tdl/sync';
 import { and, eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import type { Db } from '../db/client.ts';
@@ -27,12 +27,31 @@ export function registerSyncPushRoutes(app: FastifyInstance, deps: PushDeps, req
     { preHandler: requireSession, schema: { body: pushRequestSchema, response: { 200: pushResponseSchema } } },
     async (request) => {
       const session = sessionOf(request);
+      // Shape failures are reported in place, before anything is applied, so the request stays all-or-nothing on malformed ones.
+      const parsed = request.body.ops.map(parseOperation);
       const results: PushResult[] = [];
       // In order, each in its own transaction: a rejected operation never aborts the others.
-      for (const op of request.body.ops) results.push(await pushOne(deps, op, session));
+      for (const item of parsed) results.push('result' in item ? item.result : await pushOne(deps, item.op, session));
       return { results };
     },
   );
+}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+/** An operation, or the rejection of one that fails its shape. An element with no usable ID can't be reported, so it fails the request. */
+function parseOperation(raw: unknown): { op: Operation } | { result: PushResult } {
+  const parsed = operationSchema.safeParse(raw);
+  if (parsed.success) return { op: parsed.data };
+  const id = typeof raw === 'object' && raw !== null ? (raw as { id?: unknown }).id : undefined;
+  if (typeof id !== 'string' || !UUID.test(id)) throw invalidRequest();
+  const errors = parsed.error.issues.map((issue): FieldError => ({ field: issue.path.join('.'), code: 'invalid' }));
+  return { result: { id, status: 'rejected', code: 'invalid', errors } };
+}
+
+/** Handled by the app's error handler like any other schema failure: 422 `invalid`. */
+function invalidRequest(): Error {
+  return Object.assign(new Error('invalid push element'), { validation: [{ instancePath: '/ops' }] });
 }
 
 async function pushOne({ db, feedTransaction, now }: PushDeps, op: Operation, session: SessionInfo): Promise<PushResult> {

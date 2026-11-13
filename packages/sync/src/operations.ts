@@ -52,7 +52,8 @@ const exactlyOneMessage = { message: 'exactly one of meta and content must be se
 export const operationSchema = operationShape.refine(exactlyOne, exactlyOneMessage);
 export type Operation = z.infer<typeof operationSchema>;
 
-export const pushRequestSchema = z.object({ ops: z.array(operationSchema).max(500) });
+/** Elements are parsed one by one with `operationSchema`, so one malformed operation doesn't fail the others. */
+export const pushRequestSchema = z.object({ ops: z.array(z.unknown()).max(500) });
 export type PushRequest = z.infer<typeof pushRequestSchema>;
 
 const fieldErrorSchema: z.ZodType<FieldError> = z.object({
