@@ -27,6 +27,9 @@
     "uppercase": "Use lowercase letters only.",
     "whitespace": "Spaces aren't allowed."
   },
+  "otherTab": {
+    "message": "TDL App is open in another tab. Close that tab to use it here."
+  },
   "status": {
     "app-outdated": "This app is out of date. Update it to keep syncing.",
     "logged-out": "Logged out",

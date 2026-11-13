@@ -11,7 +11,7 @@ export default defineConfig((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: ['i18n'],
+    boot: ['i18n', 'app'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.css'],
@@ -55,7 +55,14 @@ export default defineConfig((ctx) => {
       // minify: false,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      extendViteConf() {
+        return {
+          // SQLite Wasm finds its .wasm file next to its own module, which pre-bundling would move.
+          optimizeDeps: { exclude: ['@sqlite.org/sqlite-wasm'] },
+          // The database worker is an ES module.
+          worker: { format: 'es' as const },
+        };
+      },
       // viteVuePluginOptions: {},
 
       // to write components with JSX/TSX:
@@ -98,6 +105,10 @@ export default defineConfig((ctx) => {
       // vueDevtools: true,
       // https: true,
       open: true, // opens browser window automatically
+      // The API server (apps/server), on the dev server's origin so the session cookie is sent.
+      proxy: {
+        '/api': { target: 'http://127.0.0.1:3000', ws: true },
+      },
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework
