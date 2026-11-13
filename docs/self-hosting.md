@@ -24,8 +24,9 @@ TRUST_PROXY=true
 | --- | --- | --- |
 | `POSTGRES_PASSWORD` | Yes | The database password. Compose sets it when it first creates the database. Use letters and digits only (`openssl rand -hex 32`), since it's also put in the database URL. |
 | `AUTH_SECRET` | Yes | At least 32 characters. Signs sessions; changing it signs everyone out. |
-| `ORIGIN` | Yes | The public URL people use to reach the server, exactly as the browser shows it, with no trailing slash. Sign-in, cookies and live updates are tied to it: with an `https://` origin, session cookies are only sent over HTTPS, and the live-update socket refuses connections from web pages on any other origin. |
+| `ORIGIN` | Yes | The public URL people use to reach the server, exactly as the browser shows it, with no trailing slash. Sign-in, cookies and live updates are tied to it: with an `https://` origin, session cookies are only sent over HTTPS, and the live-update socket refuses cookie connections from web pages on any other origin. |
 | `TRUST_PROXY` | No (default `false`) | `true` when the server is behind a reverse proxy, so it takes the client's address from the proxy's `X-Forwarded-For` header. Rate limits on signing up and signing in use that address. Set it only if nothing but the proxy can reach the server's port, and the proxy replaces any `X-Forwarded-For` the client sent with the client's own address. The server uses the first address in the header, so a proxy that appends to it lets clients pick their own address and get around the rate limits. |
+| `APP_ORIGINS` | No (default `https://localhost,capacitor://localhost`) | The origins the native apps' windows run at, separated by commas. Requests from them may reach the API, and open the live-update socket, but only with a session token, never a cookie. The default covers the Android and iOS apps. Change it only to support another app. |
 | `DATABASE_URL` | No | Only to use a Postgres server of your own instead of the `db` container, e.g. `postgres://tdl:<password>@db.internal:5432/tdl`. |
 | `TDL_PORT` | No (default `3000`) | The port the server listens on, on `127.0.0.1` of the host. |
 
@@ -52,7 +53,7 @@ The server's port is published on `127.0.0.1` only, so nothing outside the machi
 Put a reverse proxy in front of the server that serves HTTPS for your domain and forwards everything to `http://127.0.0.1:3000`. HTTPS is needed: session cookies are marked `Secure`, so browsers won't send them over plain HTTP. The proxy must:
 
 - **Forward websockets.** Apps get live updates over a websocket at `/api/sync/ws`, so the proxy must pass on the `Upgrade` and `Connection` headers. Without them, live updates don't work.
-- **Keep `Host` and `Origin` as the browser sent them.** The server checks a browser's `Origin` against `ORIGIN` and refuses the websocket if they differ, so the proxy must not rewrite it.
+- **Keep `Host` and `Origin` as the browser sent them.** The server checks a browser's `Origin` against `ORIGIN` (and `APP_ORIGINS`) and refuses the websocket if it doesn't match, so the proxy must not rewrite it.
 - **Set `X-Forwarded-For` and `X-Forwarded-Proto`**, and set `TRUST_PROXY=true` in `.env`. `X-Forwarded-For` must be overwritten with the client's address, not appended to: the server trusts its first address, which a client could otherwise choose.
 - **Not time out idle websockets quickly.** The live-update socket can be quiet for a long time, and a short timeout closes it needlessly.
 

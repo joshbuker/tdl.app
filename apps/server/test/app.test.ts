@@ -58,6 +58,23 @@ describe('server skeleton', () => {
     expect(response.json()).toEqual({ code: 'bad-request' });
   });
 
+  test('CORS allows our origin and the app origins, without credentials, and exposes the protocol and token headers', async () => {
+    for (const origin of ['http://localhost:3000', 'https://localhost', 'capacitor://localhost']) {
+      const preflight = await server.app.inject({
+        method: 'OPTIONS',
+        url: '/api/sync/pull',
+        headers: { origin, 'access-control-request-method': 'GET', 'access-control-request-headers': 'authorization,tdl-protocol' },
+      });
+      expect(preflight.headers['access-control-allow-origin']).toBe(origin);
+      expect(preflight.headers['access-control-allow-credentials']).toBeUndefined();
+      expect(preflight.headers['access-control-allow-headers']).toBe('content-type, authorization, tdl-protocol');
+    }
+    const response = await server.app.inject({ url: '/health', headers: { origin: 'https://localhost' } });
+    expect(response.headers['access-control-expose-headers']).toBe('tdl-protocol, set-auth-token');
+    const foreign = await server.app.inject({ url: '/health', headers: { origin: 'https://evil.example' } });
+    expect(foreign.headers['access-control-allow-origin']).toBeUndefined();
+  });
+
   test('migrations create the schema', async () => {
     const result = await server.db.execute<{ n: number }>("select count(*)::int as n from information_schema.tables where table_name = 'operations'");
     expect(result.rows[0]).toEqual({ n: 1 });
@@ -77,7 +94,13 @@ describe('loadConfig', () => {
       origin: 'https://tdl.app',
       authSecret: 'x'.repeat(32),
       trustProxy: false,
+      appOrigins: ['https://localhost', 'capacitor://localhost'],
     });
+  });
+
+  test('reads APP_ORIGINS as a comma-separated list', () => {
+    const config = loadConfig({ DATABASE_URL: 'postgres://x', ORIGIN: 'https://tdl.app', AUTH_SECRET: 'x'.repeat(32), APP_ORIGINS: 'https://localhost, app://desktop ,' });
+    expect(config.appOrigins).toEqual(['https://localhost', 'app://desktop']);
   });
 
   test('rejects a short auth secret', () => {

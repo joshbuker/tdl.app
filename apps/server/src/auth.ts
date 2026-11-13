@@ -10,6 +10,8 @@ import type { Config } from './config.ts';
 import type { Db } from './db/client.ts';
 import * as schema from './db/schema.ts';
 import { sendError } from './errors.ts';
+import { WS_AUTH_FAILED_CLOSE, type SessionSockets } from './session-sockets.ts';
+import { presentedToken } from './session-token.ts';
 import { writeServerOps } from './sync/apply.ts';
 import type { FeedTransaction } from './sync/feed-transaction.ts';
 
@@ -27,6 +29,7 @@ const MAX_USERNAME = 69;
 export const CLIENT_IP_HEADER = 'x-tdl-client-ip';
 
 const SIGN_UP_PATH = '/sign-up/email';
+const SIGN_OUT_PATH = '/sign-out';
 const SIGN_IN_PATHS = new Set(['/sign-in/email', '/sign-in/username']);
 
 // The only keys a sign-up body may have. Better Auth and its plugins would store others as given
@@ -36,7 +39,7 @@ const SIGN_UP_KEYS = new Set(['email', 'password', 'name', 'username', 'givenNam
 
 // The Better Auth endpoints exposed over HTTP. Everything else (e.g. update-user, which would bypass
 // our validation, or revoke-session, which would skip the tombstone) answers 404.
-const EXPOSED = new Set([`POST ${SIGN_UP_PATH}`, 'POST /sign-in/email', 'POST /sign-in/username', 'POST /sign-out']);
+const EXPOSED = new Set([`POST ${SIGN_UP_PATH}`, 'POST /sign-in/email', 'POST /sign-in/username', `POST ${SIGN_OUT_PATH}`]);
 
 export interface AuthDeps {
   db: Db;
@@ -176,6 +179,14 @@ export function authHeaders(request: FastifyRequest): Headers {
   return headers;
 }
 
+/** The ID of the session whose token the headers present, if it exists. */
+async function sessionIdOf(db: Db, headers: Headers): Promise<string | null> {
+  const token = presentedToken(headers);
+  if (token === null) return null;
+  const [row] = await db.select({ id: schema.session.id }).from(schema.session).where(eq(schema.session.token, token));
+  return row?.id ?? null;
+}
+
 /** Turns a Better Auth error response into an error-contract body. */
 function translateError(path: string, status: number, body: unknown): { status: number; code: string; errors?: FieldError[] } {
   const raw = typeof body === 'object' && body !== null ? (body as { code?: unknown; errors?: unknown }) : {};
@@ -191,8 +202,16 @@ function translateError(path: string, status: number, body: unknown): { status: 
   return { status, code: code === '' ? 'bad-request' : code.toLowerCase().replaceAll('_', '-') };
 }
 
-/** The catch-all `/api/auth/*` bridge: Fastify request → Better Auth handler → Fastify reply. */
-export function registerAuthRoutes(app: FastifyInstance, auth: Auth, config: Config): void {
+export interface AuthRouteDeps {
+  db: Db;
+  sockets: SessionSockets;
+}
+
+/**
+ * The catch-all `/api/auth/*` bridge: Fastify request → Better Auth handler → Fastify reply.
+ * A successful sign-out also closes the session's live-update sockets.
+ */
+export function registerAuthRoutes(app: FastifyInstance, auth: Auth, config: Config, { db, sockets }: AuthRouteDeps): void {
   app.route({
     method: ['GET', 'POST'],
     url: '/api/auth/*',
@@ -203,13 +222,17 @@ export function registerAuthRoutes(app: FastifyInstance, auth: Auth, config: Con
       const path = url.pathname.slice('/api/auth'.length);
       if (!EXPOSED.has(`${request.method} ${path}`)) return sendError(reply, 404, 'not-found');
 
+      const headers = authHeaders(request);
+      // Looked up first: Better Auth deletes the session when signing out.
+      const signingOut = path === SIGN_OUT_PATH ? await sessionIdOf(db, headers) : null;
       const response = await auth.handler(
         new Request(url, {
           method: request.method,
-          headers: authHeaders(request),
+          headers,
           ...(request.body === undefined ? {} : { body: JSON.stringify(request.body) }),
         }),
       );
+      if (signingOut !== null && response.status >= 200 && response.status < 300) sockets.close(signingOut, WS_AUTH_FAILED_CLOSE);
 
       void reply.status(response.status);
       response.headers.forEach((value, key) => {

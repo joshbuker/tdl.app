@@ -121,13 +121,18 @@ class FakeSocket {
   static opened: FakeSocket[] = [];
   readonly listeners = new Map<string, ((event: never) => void)[]>();
   closedByClient = false;
+  readonly sent: string[] = [];
   readonly url: string;
-  readonly init: { headers: Record<string, string> } | undefined;
+  readonly constructedWith: unknown[];
 
-  constructor(url: string, init?: { headers: Record<string, string> }) {
-    this.url = url;
-    this.init = init;
+  constructor(...args: [string, ...unknown[]]) {
+    this.url = args[0];
+    this.constructedWith = args;
     FakeSocket.opened.push(this);
+  }
+
+  send(data: string): void {
+    this.sent.push(data);
   }
 
   addEventListener(type: string, listener: (event: never) => void): void {
@@ -175,10 +180,9 @@ describe('createHttpTransport subscribe', () => {
     return { transport, timers, fetch, heard, unsubscribe, socket };
   };
 
-  test('opens /api/sync/ws with the protocol version and bearer token and passes each feed ID on', () => {
+  test('opens /api/sync/ws with the protocol version and passes each feed ID on', () => {
     const { heard, socket } = live({ token: 'secret' });
     expect(socket().url).toBe('wss://tdl.example/api/sync/ws?protocol=1.0');
-    expect(socket().init).toEqual({ headers: { authorization: 'Bearer secret' } });
     socket().emit('message', { data: JSON.stringify({ type: 'feed', id: 4 }) });
     socket().emit('message', { data: 'not json' });
     socket().emit('message', { data: JSON.stringify({ type: 'other' }) });
@@ -186,9 +190,19 @@ describe('createHttpTransport subscribe', () => {
     expect(heard).toEqual([4, 9]);
   });
 
-  test('without a token it relies on cookies', () => {
+  test('with a token, the socket is opened with the URL only and the first message sent authenticates it', () => {
+    const { socket } = live({ token: 't' });
+    expect(socket().constructedWith).toEqual(['wss://tdl.example/api/sync/ws?protocol=1.0']);
+    expect(socket().sent).toEqual([]);
+    socket().emit('open');
+    expect(socket().sent).toEqual([JSON.stringify({ type: 'auth', token: 't' })]);
+  });
+
+  test('without a token it relies on cookies and sends nothing', () => {
     const { socket } = live();
-    expect(socket().init).toBeUndefined();
+    expect(socket().constructedWith).toEqual(['wss://tdl.example/api/sync/ws?protocol=1.0']);
+    socket().emit('open');
+    expect(socket().sent).toEqual([]);
   });
 
   test('reconnects after a drop, backing off from 1 s to at most 30 s, and resets once connected', () => {
@@ -215,6 +229,16 @@ describe('createHttpTransport subscribe', () => {
     expect(heard).toEqual([4, 4]);
     await expect(transport.pull(4, 500)).rejects.toMatchObject({ name: 'SessionError', code: 'session-revoked' });
     expect(fetch.calls).toEqual([]);
+  });
+
+  test('a 4403 close stops reconnecting and wakes the subscriber, whose sync learns why', async () => {
+    const { transport, timers, fetch, heard, socket } = live({ token: 't' });
+    socket().emit('message', { data: JSON.stringify({ type: 'feed', id: 4 }) });
+    socket().emit('close', { code: 4403 });
+    expect(timers.delays()).toEqual([]);
+    expect(heard).toEqual([4, 4]);
+    await transport.pull(4, 500);
+    expect(fetch.calls).toHaveLength(1);
   });
 
   test('unsubscribing closes the socket and cancels any reconnect', () => {

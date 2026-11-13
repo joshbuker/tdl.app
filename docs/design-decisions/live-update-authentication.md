@@ -17,7 +17,7 @@ OWASP's WebSocket Security Cheat Sheet says that for browser clients using token
 
 ## Alternatives considered
 
-- **One-use ticket in the URL** (`/sync/ws?ticket=…`, fetched from a new endpoint): matches ASVS 4.4.4 and Slack's approach, but puts a credential in the URL, which OWASP advises against and nginx logs by default. Sending the ticket in the first message instead adds an endpoint and a request per reconnect, for no gain over the session token the client already sends on every push and pull.
+- **One-use ticket in the URL** (`/api/sync/ws?ticket=…`, fetched from a new endpoint): matches ASVS 4.4.4 and Slack's approach, but puts a credential in the URL, which OWASP advises against and nginx logs by default. Sending the ticket in the first message instead adds an endpoint and a request per reconnect, for no gain over the session token the client already sends on every push and pull.
 - **Token in the `Sec-WebSocket-Protocol` header** (as Kubernetes does): no endpoint or extra request, but misuses the header, isn't covered by OWASP, and puts the long-lived token in a header some proxies log.
 - **Streamed HTTP response (server-sent events read with `fetch`)** instead of a websocket, close to what Google's Firestore does: `fetch` can send the `Authorization` header. Would rewrite the built socket route, conflicts with Capacitor's native HTTP mode (which doesn't stream), and has a six-connection limit per server over HTTP/1.1. Kept in reserve in case some networks block websockets.
 - **Cookies in the webviews:** reverses the bearer-token decision for native apps, and can't work on iOS with self-hosted servers.

@@ -1,12 +1,11 @@
-import { createHash } from 'node:crypto';
 import type { Id } from '@tdl/domain';
-import { getSessionCookie } from 'better-auth/cookies';
 import { eq } from 'drizzle-orm';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { authHeaders, type Auth } from './auth.ts';
 import type { Db } from './db/client.ts';
 import { revokedSessions } from './db/schema.ts';
 import { sendError } from './errors.ts';
+import { hashToken, presentedToken } from './session-token.ts';
 
 export interface SessionInfo {
   userId: Id;
@@ -21,61 +20,48 @@ declare module 'fastify' {
   }
 }
 
-export const hashToken = (token: string): string => createHash('sha256').update(token).digest('hex');
-
-function decode(value: string): string {
-  try {
-    return decodeURIComponent(value);
-  } catch {
-    return value;
-  }
-}
-
-/**
- * The raw session token a request presents: the bearer value, else the session cookie. Both may be
- * signed as `token.signature`; the raw token is the part before the first `.`.
- */
-export function presentedToken(headers: Headers): string | null {
-  const authorization = headers.get('authorization');
-  let value: string | null = null;
-  if (authorization !== null && authorization.slice(0, 7).toLowerCase() === 'bearer ') value = authorization.slice(7).trim();
-  value ??= getSessionCookie(headers);
-  if (value === null || value === '') return null;
-  const token = decode(value).split('.')[0] ?? '';
-  return token === '' ? null : token;
-}
-
 /** The session the request belongs to, read with Better Auth (no cookie cache). The caller is the authenticated user. */
 export function sessionOf(request: FastifyRequest): SessionInfo {
   if (request.sessionInfo === undefined) throw new Error('route is missing the requireSession preHandler');
   return request.sessionInfo;
 }
 
-/**
- * Builds the `requireSession` preHandler. With no valid session it answers 401 `session-revoked`
- * if the presented token was revoked (it has a tombstone), otherwise 401 `session-expired`.
- */
-export function createSessionGuard(auth: Auth, db: Db) {
-  return async function requireSession(request: FastifyRequest, reply: FastifyReply): Promise<SessionInfo | undefined> {
-    const headers = authHeaders(request);
-    const result = await auth.api.getSession({ headers, query: { disableCookieCache: true }, returnHeaders: true });
-    // A refreshed session (see `updateAge`) comes with a new cookie expiry.
-    const cookies = result.headers.getSetCookie();
-    if (cookies.length > 0) void reply.header('set-cookie', cookies);
+export type SessionCheckResult = { ok: true; info: SessionInfo; cookies: string[] } | { ok: false; code: 'session-revoked' | 'session-expired' };
 
+/**
+ * Builds the session check: the session that request headers present, read with Better Auth (no
+ * cookie cache). With no valid session, the code is `session-revoked` if the presented token was
+ * revoked (it has a tombstone), otherwise `session-expired`.
+ */
+export function createSessionCheck(auth: Auth, db: Db) {
+  return async function checkSession(headers: Headers): Promise<SessionCheckResult> {
+    const result = await auth.api.getSession({ headers, query: { disableCookieCache: true }, returnHeaders: true });
     const session = result.response?.session;
     if (session === undefined) {
       const token = presentedToken(headers);
       const revoked =
         token !== null &&
         (await db.select({ tokenHash: revokedSessions.tokenHash }).from(revokedSessions).where(eq(revokedSessions.tokenHash, hashToken(token)))).length > 0;
-      await sendError(reply, 401, revoked ? 'session-revoked' : 'session-expired');
+      return { ok: false, code: revoked ? 'session-revoked' : 'session-expired' };
+    }
+    // A refreshed session (see `updateAge`) comes with a new cookie expiry.
+    return { ok: true, info: { userId: session.userId, sessionId: session.id, tokenHash: hashToken(session.token) }, cookies: result.headers.getSetCookie() };
+  };
+}
+
+export type CheckSession = ReturnType<typeof createSessionCheck>;
+
+/** Builds the `requireSession` preHandler, which answers 401 with the check's code when there's no valid session. */
+export function createSessionGuard(checkSession: CheckSession) {
+  return async function requireSession(request: FastifyRequest, reply: FastifyReply): Promise<SessionInfo | undefined> {
+    const result = await checkSession(authHeaders(request));
+    if (!result.ok) {
+      await sendError(reply, 401, result.code);
       return undefined;
     }
-
-    const info: SessionInfo = { userId: session.userId, sessionId: session.id, tokenHash: hashToken(session.token) };
-    request.sessionInfo = info;
-    return info;
+    if (result.cookies.length > 0) void reply.header('set-cookie', result.cookies);
+    request.sessionInfo = result.info;
+    return result.info;
   };
 }
 

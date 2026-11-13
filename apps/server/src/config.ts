@@ -8,6 +8,7 @@ const envSchema = z.object({
   ORIGIN: z.url(),
   AUTH_SECRET: z.string().min(32),
   TRUST_PROXY: booleanString.default(false),
+  APP_ORIGINS: z.string().default('https://localhost,capacitor://localhost'),
 });
 
 export interface Config {
@@ -17,6 +18,11 @@ export interface Config {
   origin: string;
   authSecret: string;
   trustProxy: boolean;
+  /**
+   * The origins the native apps' windows run at (Capacitor's, Electron's). They may open the
+   * live-update socket with a token, and make cross-origin API requests, but never use cookies.
+   */
+  appOrigins: string[];
 }
 
 /** Parses the environment. Throws an error naming every missing or invalid variable. */
@@ -26,6 +32,15 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
     const names = [...new Set(parsed.error.issues.map((issue) => String(issue.path[0])))];
     throw new Error(`Invalid configuration: ${names.join(', ')}`);
   }
-  const { DATABASE_URL, PORT, ORIGIN, AUTH_SECRET, TRUST_PROXY } = parsed.data;
-  return { databaseUrl: DATABASE_URL, port: PORT, origin: ORIGIN, authSecret: AUTH_SECRET, trustProxy: TRUST_PROXY };
+  const { DATABASE_URL, PORT, ORIGIN, AUTH_SECRET, TRUST_PROXY, APP_ORIGINS } = parsed.data;
+  return {
+    databaseUrl: DATABASE_URL,
+    port: PORT,
+    origin: ORIGIN,
+    authSecret: AUTH_SECRET,
+    trustProxy: TRUST_PROXY,
+    appOrigins: APP_ORIGINS.split(',')
+      .map((origin) => origin.trim())
+      .filter((origin) => origin !== ''),
+  };
 }

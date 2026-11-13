@@ -25,7 +25,7 @@ import { registerSyncPullRoutes } from './routes/sync-pull.ts';
 import { registerSyncPushRoutes } from './routes/sync-push.ts';
 import { registerSyncWsRoutes } from './routes/sync-ws.ts';
 import { createProtocolCheck } from './protocol.ts';
-import { createSessionGuard } from './session-guard.ts';
+import { createSessionCheck, createSessionGuard } from './session-guard.ts';
 import { createSessionSockets, type SessionSockets } from './session-sockets.ts';
 import { createFeedTransaction } from './sync/feed-transaction.ts';
 import { createNotifier, type Notifier } from './sync/notifier.ts';
@@ -41,7 +41,7 @@ export interface AppDeps {
   protocolVersion?: string;
 }
 
-// Notifications are small; nothing a device sends is read.
+// Notifications are small, and a device sends only its auth message.
 const MAX_WS_PAYLOAD = 1024;
 
 export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyInstance> {
@@ -61,7 +61,14 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
   });
   await app.register(helmet);
   await app.register(websocket, { options: { maxPayload: MAX_WS_PAYLOAD } });
-  await app.register(cors, { origin: config.origin, credentials: true, exposedHeaders: [PROTOCOL_HEADER] });
+  // The web app is same-origin and sends cookies. The native apps' windows (see `appOrigins`) are
+  // cross-origin and send bearer tokens, which they get from `set-auth-token`.
+  await app.register(cors, {
+    origin: [config.origin, ...config.appOrigins],
+    credentials: false,
+    allowedHeaders: ['content-type', 'authorization', PROTOCOL_HEADER],
+    exposedHeaders: [PROTOCOL_HEADER, 'set-auth-token'],
+  });
   await app.register(rateLimit, {
     global: false,
     errorResponseBuilder: (_request, context) => ({
@@ -103,15 +110,21 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
   const sockets = deps.sessionSockets ?? createSessionSockets();
   const feedTransaction = createFeedTransaction(db, notifier);
   const auth = createAuth(config, { db, feedTransaction, now });
-  const requireSession = createSessionGuard(auth, db);
-  registerAuthRoutes(app, auth, config);
+  const checkSession = createSessionCheck(auth, db);
+  const requireSession = createSessionGuard(checkSession);
+  registerAuthRoutes(app, auth, config, { db, sockets });
   await app.register(
     (api, _options, done) => {
       registerMeRoutes(api, db, requireSession);
       registerSessionRoutes(api, { db, auth, sockets }, requireSession);
       registerSyncPushRoutes(api, { db, feedTransaction, now }, requireProtocol, requireSession);
       registerSyncPullRoutes(api, db, requireProtocol, requireSession, now);
-      registerSyncWsRoutes(api, { db, notifier, sockets, origin: config.origin }, requireProtocol, requireSession);
+      registerSyncWsRoutes(
+        api,
+        { db, notifier, sockets, origin: config.origin, appOrigins: config.appOrigins, checkSession, now },
+        requireProtocol,
+        requireSession,
+      );
       registerInvitationRoutes(api, { db, feedTransaction, now }, requireSession);
       registerGrantRoutes(api, feedTransaction, requireSession, now);
       done();

@@ -6,11 +6,9 @@ import { authHeaders, type Auth } from '../auth.ts';
 import type { Db } from '../db/client.ts';
 import { revokedSessions, session } from '../db/schema.ts';
 import { sendError } from '../errors.ts';
-import { hashToken, sessionOf, type RequireSession } from '../session-guard.ts';
-import type { SessionSockets } from '../session-sockets.ts';
-
-/** The close code telling a device its session was revoked. */
-export const SESSION_REVOKED_CLOSE = 4401;
+import { sessionOf, type RequireSession } from '../session-guard.ts';
+import { SESSION_REVOKED_CLOSE, type SessionSockets } from '../session-sockets.ts';
+import { hashToken } from '../session-token.ts';
 
 const sessionViewSchema = z.object({
   id: z.uuid(),

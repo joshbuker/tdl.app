@@ -23,11 +23,12 @@ export interface SocketLike {
   addEventListener(type: 'open', listener: () => void): void;
   addEventListener(type: 'message', listener: (event: { data: unknown }) => void): void;
   addEventListener(type: 'close', listener: (event: { code: number }) => void): void;
+  send(data: string): void;
   close(): void;
 }
 
-/** `init.headers` is sent by Node's and Electron's WebSocket; browsers send cookies instead. */
-export type WebSocketLike = new (url: string, init?: { headers: Record<string, string> }) => SocketLike;
+/** Browsers can't give a WebSocket headers: a token is sent in the first message instead. */
+export type WebSocketLike = new (url: string) => SocketLike;
 
 /** Runs `fn` after `ms` milliseconds; returns a function that cancels it. */
 export type Schedule = (fn: () => void, ms: number) => () => void;
@@ -49,6 +50,8 @@ const MIN_BACKOFF = 1000;
 const MAX_BACKOFF = 30_000;
 /** The close code the server sends when this device's session is revoked. */
 const SESSION_REVOKED_CLOSE = 4401;
+/** The close code the server sends when authenticating the socket failed, or the session ended. */
+const AUTH_FAILED_CLOSE = 4403;
 
 interface Platform {
   fetch: FetchLike;
@@ -144,8 +147,11 @@ function sessionError(body: unknown): SessionError {
 
 /**
  * Keeps a websocket to `/api/sync/ws` open, passing each feed ID to `onFeed`. Reconnects after a drop,
- * backing off from 1 s, doubling up to 30 s. A 4401 close means the session was revoked: it stops,
- * calls `onRevoked`, and wakes `onFeed` so the device syncs and learns it.
+ * backing off from 1 s, doubling up to 30 s. With a token, the socket opens without credentials
+ * and sends `{ type: 'auth', token }` first; without one, the browser sends the session cookie.
+ * A 4401 close means the session was revoked: it stops, calls `onRevoked`, and wakes `onFeed` so
+ * the device syncs and learns it. A 4403 close (authentication failed, or the session ended) also
+ * stops and wakes `onFeed`, so the device's next sync learns why.
  */
 function subscribeToFeed(options: HttpTransportOptions, onFeed: (id: number) => void, onRevoked: () => void): () => void {
   const { baseUrl, token, WebSocket = platform.WebSocket, schedule = platformSchedule, protocolVersion = PROTOCOL_VERSION } = options;
@@ -158,10 +164,11 @@ function subscribeToFeed(options: HttpTransportOptions, onFeed: (id: number) => 
 
   const connect = (): void => {
     cancelRetry = null;
-    const current = token === undefined ? new WebSocket(url) : new WebSocket(url, { headers: { authorization: `Bearer ${token}` } });
+    const current = new WebSocket(url);
     socket = current;
     current.addEventListener('open', () => {
       backoff = MIN_BACKOFF;
+      if (token !== undefined) current.send(JSON.stringify({ type: 'auth', token }));
     });
     current.addEventListener('message', (event: { data: unknown }) => {
       const id = feedId(event.data);
@@ -171,9 +178,9 @@ function subscribeToFeed(options: HttpTransportOptions, onFeed: (id: number) => 
     });
     current.addEventListener('close', (event: { code: number }) => {
       if (stopped || socket !== current) return;
-      if (event.code === SESSION_REVOKED_CLOSE) {
+      if (event.code === SESSION_REVOKED_CLOSE || event.code === AUTH_FAILED_CLOSE) {
         stopped = true;
-        onRevoked();
+        if (event.code === SESSION_REVOKED_CLOSE) onRevoked();
         onFeed(lastId);
         return;
       }

@@ -1,5 +1,10 @@
 import type { Id } from '@tdl/domain';
 
+/** The close code telling a device its session was revoked. */
+export const SESSION_REVOKED_CLOSE = 4401;
+/** The close code for a socket whose authentication failed, or whose session ended other than by revoking. */
+export const WS_AUTH_FAILED_CLOSE = 4403;
+
 /** Anything that can be closed with a websocket close code. */
 export interface Closable {
   close(code: number): void;
