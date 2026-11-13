@@ -22,8 +22,8 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
      - **Maximum field lengths**, which also stop abuse: task and list titles 500 characters (Todoist's limit for task names), notes and link reasons 100,000 (at most 400 KB in UTF-8, so one operation always fits). Specs updated; `packages/domain/src/fields.ts` doesn't enforce them yet.
      - **Batching pushes by size** as well as count, so no batch passes the server's limit.
 
-     Still open, for anything that's refused anyway (e.g. a device on an older version):
-     - **Treating a non-retryable 4xx on push as rejecting that batch**, so the device moves on.
+     Version mismatches are now covered by [Version compatibility](features/app/version-compatibility.md) and [Protocol versions](design-decisions/protocol-versions.md): changes stay queued, and the app shows an "update to sync" status. Plan 3 needs the version exchange, an outdated status, and lenient parsing of pulled pages (today one unknown record type or kind of change stops sync). Still open, for other refusals that retrying can't fix (e.g. a body still over the limit):
+     - **Treating the refusal as rejecting that batch**, so the device moves on. Never for a version refusal, which would lose changes.
      - **Showing the failure as a sync status**, so the user knows sync is stuck.
 
 ## Deferred past the thin slice
