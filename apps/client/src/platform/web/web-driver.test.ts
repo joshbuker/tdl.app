@@ -3,7 +3,7 @@ import { openDeviceStore, type SqlDriver } from '@tdl/device-store';
 import { afterEach, describe, expect, test } from 'vitest';
 import { describeReplicaStore } from '../../../../../packages/device-store/test/store-contract.ts';
 import { handleSqlRequest, type SqlRequest } from './sql-protocol.ts';
-import { portDriver } from './web-driver.ts';
+import { portDriver, type SqlPort } from './web-driver.ts';
 
 // The real SQLite Wasm (its Node build), in memory, behind a MessageChannel: everything the
 // browser's worker does except opening the OPFS database.
@@ -104,6 +104,35 @@ describe('web driver', () => {
     const next = driver.exec('SELECT count(*) FROM t', [], 'get');
     await expect(failing).rejects.toThrow(/no such table: missing/);
     expect(await next).toEqual({ rows: [[2]] });
+  });
+
+  test('an unreadable message fails waiting and later queries', async () => {
+    const channel = new MessageChannel();
+    channels.push(channel);
+    channel.port2.start();
+    const driver = portDriver(channel.port2);
+    const waiting = driver.exec('SELECT 1', [], 'values');
+    channel.port2.dispatchEvent(new Event('messageerror'));
+    await expect(waiting).rejects.toThrow('database-worker-messageerror');
+    await expect(driver.exec('SELECT 1', [], 'values')).rejects.toThrow(
+      'database-worker-messageerror',
+    );
+  });
+
+  test('a worker that fails fails waiting and later queries', async () => {
+    const posted: SqlRequest[] = [];
+    const worker = Object.assign(new EventTarget(), {
+      postMessage: (message: SqlRequest) => {
+        posted.push(message);
+      },
+    });
+    // A plain EventTarget types its listeners as taking any Event.
+    const driver = portDriver(worker as unknown as SqlPort);
+    const waiting = driver.batch([{ sql: 'SELECT 1', params: [], method: 'values' }]);
+    worker.dispatchEvent(new Event('error'));
+    await expect(waiting).rejects.toThrow('database-worker-error');
+    await expect(driver.exec('SELECT 1', [], 'values')).rejects.toThrow('database-worker-error');
+    expect(posted).toHaveLength(1);
   });
 
   test('a store opened over it keeps key-value pairs', async () => {

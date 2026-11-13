@@ -5,6 +5,8 @@ import type { SqlQuery, SqlRequest, SqlResponse } from './sql-protocol.ts';
 export interface SqlPort {
   postMessage(message: SqlRequest): void;
   addEventListener(type: 'message', listener: (event: MessageEvent<SqlResponse>) => void): void;
+  /** `error`: the worker failed (e.g. its script didn't load). `messageerror`: an answer couldn't be read. */
+  addEventListener(type: 'error' | 'messageerror', listener: (event: Event) => void): void;
 }
 
 /** A SqlDriver over SQLite Wasm, in a worker that keeps the database in the origin private file system. */
@@ -13,9 +15,13 @@ export function createWebDriver(): Promise<SqlDriver> {
   return Promise.resolve(portDriver(worker));
 }
 
-/** A SqlDriver that sends each query to `port`, and matches each answer to its query by ID. */
+/**
+ * A SqlDriver that sends each query to `port`, and matches each answer to its query by ID. Once the
+ * port fails, every waiting query and every later one fails with the same error.
+ */
 export function portDriver(port: SqlPort): SqlDriver {
   let nextId = 1;
+  let broken: Error | null = null;
   const waiting = new Map<
     number,
     { resolve: (result: unknown) => void; reject: (error: Error) => void }
@@ -29,9 +35,18 @@ export function portDriver(port: SqlPort): SqlDriver {
     else entry.reject(new Error(data.message));
   });
 
+  const fail = (event: Event): void => {
+    broken ??= new Error(`database-worker-${event.type}`);
+    for (const entry of waiting.values()) entry.reject(broken);
+    waiting.clear();
+  };
+  port.addEventListener('error', fail);
+  port.addEventListener('messageerror', fail);
+
   const send = <T>(
     request: { kind: 'exec'; query: SqlQuery } | { kind: 'batch'; queries: SqlQuery[] },
   ): Promise<T> => {
+    if (broken !== null) return Promise.reject(broken);
     const id = nextId++;
     return new Promise<T>((resolve, reject) => {
       waiting.set(id, { resolve: resolve as (result: unknown) => void, reject });
