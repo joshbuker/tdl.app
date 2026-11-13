@@ -1,0 +1,25 @@
+{
+  "name": "@tdl/device-store",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    ".": {
+      "tdl-compiled": "./dist/index.js",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b tsconfig.build.json",
+    "drizzle-kit": "drizzle-kit",
+    "bundle-migrations": "node scripts/bundle-migrations.ts"
+  },
+  "dependencies": {
+    "@tdl/sync": "workspace:*",
+    "drizzle-orm": "1.0.0-rc.5"
+  },
+  "devDependencies": {
+    "drizzle-kit": "1.0.0-rc.5"
+  }
+}

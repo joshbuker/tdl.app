@@ -5,6 +5,9 @@
       "path": "apps/server"
     },
     {
+      "path": "packages/device-store"
+    },
+    {
       "path": "packages/domain"
     },
     {
