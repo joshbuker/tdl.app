@@ -81,8 +81,9 @@ Findings from plan 2's final review, deferred. The plan 3 blocker is under "Next
 - **Unindexed scans on `operations`**, run under the global lock on every `moveTask`, grant and revoke: the history query filters `record_id` without `record_type`, so the `(record_type, record_id)` index isn't used, and `linksTouching` filters `meta->>'kind'` with no index. Options:
   - **Add an index** on `operations(record_id)`, and expression indexes on the two ends of `createLink`.
   - **Filter by type and ID pairs**, so the existing index applies.
-- **Missing Inbox after a crash during sign-up**, between Better Auth's commit and the Inbox's creation: `GET /api/me` then answers `defaultListId: null`. Decided: a missing default list is created (a rare edge case), by **repairing on `/api/me`**: the server reuses sign-up's Inbox creation under the feed lock, so two devices asking at once get one Inbox. Chosen by Claude with low confidence (the user had no preference). Rejected: repairing at server start (a crash after start isn't covered), and having the app create it (two devices could each make one).
-  - **Constraint for v2 (end-to-end encryption):** the server can't write an encrypted title, so Inbox creation, at sign-up and in this repair, moves to the device. Two devices could then each create one. Options then: an Inbox ID derived from the user ID so both devices write the same record; or the server creates the list without content and the device names it.
+- **End-to-end encryption (v2) and the Inbox:** the server can't write an encrypted title, so Inbox creation, at sign-up and when `GET /api/me` repairs a missing one, moves to the device. Two devices could then each create one. Options:
+  - **Derive the Inbox ID from the user ID**, so both devices write the same record.
+  - **Create the list on the server without content**, and let the device name it.
 - **An existing but invisible ID answers `forbidden`**: `createList`, `createTask` or `createLink` with an ID that already exists where the user can't see it. The [error contract](design-decisions/error-contract.md) says they learn nothing, but UUIDv7 IDs make probing impractical. Options:
   - **Answer `not-found`**, or a generic conflict code.
   - **Leave it as is.**

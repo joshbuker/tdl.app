@@ -1,5 +1,5 @@
 import { drizzleAdapter } from '@better-auth/drizzle-adapter/relations-v2';
-import { newId, validateAccountInput, type AccountInput, type FieldError } from '@tdl/domain';
+import { newId, validateAccountInput, type AccountInput, type FieldError, type Id } from '@tdl/domain';
 import { betterAuth } from 'better-auth';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
 import { fromNodeHeaders } from 'better-auth/node';
@@ -47,6 +47,26 @@ export interface AuthDeps {
   now: () => number;
 }
 
+/**
+ * Returns the user's default list, first creating an Inbox through server-made operations and
+ * making it the default if there is none. The check is inside the feed transaction, which holds
+ * the global feed-write lock, so concurrent calls make one Inbox between them.
+ */
+export async function ensureInbox(deps: AuthDeps, userId: Id): Promise<Id> {
+  return deps.feedTransaction(async (tx) => {
+    const [row] = await tx.select({ defaultListId: schema.user.defaultListId }).from(schema.user).where(eq(schema.user.id, userId));
+    if (row === undefined) throw new Error('user missing');
+    if (row.defaultListId !== null) return row.defaultListId;
+    const listId = newId();
+    await writeServerOps(tx, userId, [
+      { id: newId(), record: { type: 'list', id: listId }, meta: { kind: 'createList' }, content: null },
+      { id: newId(), record: { type: 'list', id: listId }, meta: null, content: { field: 'title', value: 'Inbox' } },
+    ], deps.now);
+    await tx.update(schema.user).set({ defaultListId: listId }).where(eq(schema.user.id, userId));
+    return listId;
+  });
+}
+
 export function createAuth(config: Config, deps: AuthDeps) {
   const { db } = deps;
 
@@ -92,17 +112,10 @@ export function createAuth(config: Config, deps: AuthDeps) {
     return { ok: true, value: result.value };
   }
 
-  /** Creates the new user's Inbox through server-made operations, and makes it their default list. */
-  async function createInbox(userId: string): Promise<void> {
-    const listId = newId();
+  /** Creates the new user's Inbox. */
+  async function createInbox(userId: Id): Promise<void> {
     try {
-      await deps.feedTransaction(async (tx) => {
-        await writeServerOps(tx, userId, [
-          { id: newId(), record: { type: 'list', id: listId }, meta: { kind: 'createList' }, content: null },
-          { id: newId(), record: { type: 'list', id: listId }, meta: null, content: { field: 'title', value: 'Inbox' } },
-        ], deps.now);
-        await tx.update(schema.user).set({ defaultListId: listId }).where(eq(schema.user.id, userId));
-      });
+      await ensureInbox(deps, userId);
     } catch (error) {
       // Better Auth runs this after its sign-up transaction commits. Without an Inbox the account is
       // unusable, so undo the sign-up (sessions and accounts cascade) and let the request fail.

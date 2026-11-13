@@ -115,7 +115,7 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
   registerAuthRoutes(app, auth, config, { db, sockets });
   await app.register(
     (api, _options, done) => {
-      registerMeRoutes(api, db, requireSession);
+      registerMeRoutes(api, { db, feedTransaction, now }, requireSession);
       registerSessionRoutes(api, { db, auth, sockets }, requireSession);
       registerSyncPushRoutes(api, { db, feedTransaction, now }, requireProtocol, requireSession);
       registerSyncPullRoutes(api, db, requireProtocol, requireSession, now);
