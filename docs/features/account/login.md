@@ -24,6 +24,7 @@ The user logs in with a username and password, and can log out.
 - Logging out ends the session on the server. A logged-out session can't be reused.
 - Logging out clears local data even if the server can't be reached. If there are changes that haven't synced yet, the user is warned first and chooses: log in again so they sync (or, if still logged in, stay so they sync), or discard them and log out.
 - Pages other than login require being logged in.
+- A logged-in user who opens the login or sign-up page is taken to their tasks.
 - When a session expires while the app is open, a login dialog appears over the current page instead of going to the login page. Changes made meanwhile keep being saved on the device, and sync once the user logs back in.
 
 ## Scenarios
@@ -57,6 +58,12 @@ The user logs in with a username and password, and can log out.
 - Given the user is not logged in
 - When they open any page
 - Then they are taken to the login page
+
+### Already logged in
+
+- Given "alice" is logged in
+- When she opens the login page or the sign-up page
+- Then she is taken to her tasks
 
 ### Session expires in place
 
