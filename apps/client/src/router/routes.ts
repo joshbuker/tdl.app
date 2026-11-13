@@ -6,7 +6,10 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('@/layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('@/pages/IndexPage.vue') },
+      // The guard sends the home page to the user's default list.
+      { path: '', component: () => import('@/pages/IndexPage.vue'), meta: { home: true } },
+      { path: 'lists/:listId', component: () => import('@/pages/ListPage.vue'), props: true },
+      { path: 'tasks/:taskId', component: () => import('@/pages/TaskPage.vue'), props: true },
       { path: 'login', component: () => import('@/pages/LoginPage.vue'), meta: { public: true } },
       { path: 'signup', component: () => import('@/pages/SignUpPage.vue'), meta: { public: true } },
     ],

@@ -3,6 +3,9 @@ import { createDb, expireSessions, type Db } from '@tdl/server/testing';
 
 export { expect };
 
+/** Where the home page `/` takes a logged-in user: their default list. */
+export const defaultListUrl = /\/lists\/[0-9a-f-]+$/;
+
 function fromSetup(name: string): string {
   const value = process.env[name];
   if (value === undefined) throw new Error(`${name} is not set: is e2e/global-setup.ts running?`);
@@ -10,7 +13,7 @@ function fromSetup(name: string): string {
 }
 
 interface Fixtures {
-  /** Signs up `username` through the sign-up page, ending logged in on `/`. */
+  /** Signs up `username` through the sign-up page, ending logged in on their default list. */
   signUp: (page: Page, username: string) => Promise<void>;
   /** Moves the expiry of every session of `username` into the past. */
   expireSession: (username: string) => Promise<void>;
@@ -38,7 +41,7 @@ export const test = base.extend<Fixtures, { db: Db }>({
       await page.getByLabel('Family name').fill('Tester');
       await page.getByRole('checkbox', { name: 'I accept the terms of service' }).click();
       await page.getByRole('button', { name: 'Sign up' }).click();
-      await expect(page).toHaveURL('/');
+      await expect(page).toHaveURL(defaultListUrl);
     });
   },
   expireSession: async ({ db }, use) => {

@@ -1,20 +1,20 @@
-import { expect, test } from './fixtures.ts';
+import { defaultListUrl, expect, test } from './fixtures.ts';
 
 // The login and sign-up pages, beyond the spec's scenarios.
 
-test('signing up ends logged in on the home page', async ({ page, signUp }) => {
+test('signing up ends logged in on the default list', async ({ page, signUp }) => {
   await signUp(page, 'pages-signup');
   await expect(page.getByRole('textbox', { name: 'Username or email' })).toBeHidden();
 });
 
-test('logging in ends on the home page', async ({ page, browser, signUp }) => {
+test('logging in ends on the default list', async ({ page, browser, signUp }) => {
   await signUp(page, 'pages-login');
   const fresh = await browser.newPage();
   await fresh.goto('/login');
   await fresh.getByLabel('Username or email').fill('pages-login');
   await fresh.getByLabel('Password').fill('correct horse battery staple');
   await fresh.getByRole('button', { name: 'Log in' }).click();
-  await expect(fresh).toHaveURL('/');
+  await expect(fresh).toHaveURL(defaultListUrl);
   await fresh.close();
 });
 

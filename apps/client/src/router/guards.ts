@@ -1,14 +1,19 @@
 import { watch, type ShallowRef } from 'vue';
 import type { AppViewState } from '../composables/useApp.ts';
 
-/** The part of a route the guard reads: `meta.public` marks the pages open without logging in. */
+/**
+ * The part of a route the guard reads: `meta.public` marks the pages open without logging in, and
+ * `meta.home` the home page, which shows the user's default list.
+ */
 export interface GuardedRoute {
   meta: Record<PropertyKey, unknown>;
 }
 
 /** Where a navigation must go instead, or null to let it through. Pages other than login require being logged in. */
 export function redirectFor(state: AppViewState, to: GuardedRoute): string | null {
-  return state.kind === 'logged-out' && to.meta.public !== true ? '/login' : null;
+  if (state.kind === 'logged-out' && to.meta.public !== true) return '/login';
+  if (state.kind === 'ready' && to.meta.home === true) return `/lists/${state.me.defaultListId}`;
+  return null;
 }
 
 /**

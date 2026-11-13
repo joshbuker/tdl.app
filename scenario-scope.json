@@ -12,7 +12,7 @@
     "Log in again to keep unsynced changes"
   ],
   "tasks/create-task.md": ["Create a task with a title", "Title is required", "Title is too long", "Surrounding whitespace is stripped", "Duplicate titles are allowed"],
-  "tasks/edit-task.md": ["Rename a task", "Edit notes"],
+  "tasks/edit-task.md": ["Rename a task", "Edit notes", "Navigate to a linked task"],
   "tasks/complete-task.md": ["Complete a task", "Mark a task incomplete again"],
   "organization/lists.md": ["Create a list"],
   "dependencies/link-tasks.md": [

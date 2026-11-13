@@ -4,9 +4,10 @@ import { shallowRef } from 'vue';
 import type { AppViewState } from '../composables/useApp.ts';
 import { createAuthGuard, redirectFor } from './guards.ts';
 
-const ready = { kind: 'ready' } as unknown as AppState;
+const ready = { kind: 'ready', me: { defaultListId: 'inbox-id' } } as unknown as AppState;
 const page = { meta: {} };
 const loginPage = { meta: { public: true } };
+const homePage = { meta: { home: true } };
 
 describe('redirectFor', () => {
   test('logged out, a page other than login goes to the login page', () => {
@@ -19,6 +20,14 @@ describe('redirectFor', () => {
 
   test('logged in, any page opens', () => {
     expect(redirectFor(ready, page)).toBeNull();
+  });
+
+  test('logged in, the home page goes to the default list', () => {
+    expect(redirectFor(ready, homePage)).toBe('/lists/inbox-id');
+  });
+
+  test('logged out, the home page goes to the login page', () => {
+    expect(redirectFor({ kind: 'logged-out' }, homePage)).toBe('/login');
   });
 
   test('open in another tab, nothing redirects', () => {

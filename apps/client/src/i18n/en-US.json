@@ -1,4 +1,11 @@
 {
+  "addLink": {
+    "add": "Add",
+    "cancel": "Cancel",
+    "noOptions": "No matching tasks",
+    "task": "Task",
+    "title": "Add prerequisite"
+  },
   "app": {
     "name": "TDL App"
   },
@@ -30,6 +37,32 @@
     "unknown-field": "This field isn't allowed.",
     "uppercase": "Use lowercase letters only.",
     "whitespace": "Spaces aren't allowed."
+  },
+  "history": {
+    "byOther": "Someone else",
+    "byYou": "You",
+    "completed": "Completed it",
+    "createLink": "Added a link",
+    "createTask": "Created the task",
+    "linkChanged": "Changed a link",
+    "madeBy": "{who} · {when}",
+    "moveTask": "Moved it to another list",
+    "notes": "Edited the notes",
+    "other": "Changed it",
+    "removeLink": "Removed a link",
+    "title": "Renamed it to “{title}”",
+    "uncompleted": "Marked it incomplete"
+  },
+  "layout": {
+    "lists": "Lists",
+    "logOut": "Log out",
+    "menu": "Menu",
+    "newList": "New list"
+  },
+  "list": {
+    "complete": "Complete {title}",
+    "newTask": "New task",
+    "nextUp": "Next up"
   },
   "login": {
     "identifier": "Username or email",
@@ -64,5 +97,18 @@
     "revoked": "This session was ended from another device.",
     "server-outdated": "The server is out of date. Changes stay on this device for now.",
     "stuck": "Syncing has stopped. Your changes are kept on this device."
+  },
+  "task": {
+    "addPrerequisite": "Add prerequisite",
+    "completed": "Completed",
+    "history": "History",
+    "inLoop": "In a loop",
+    "noLinks": "None",
+    "notes": "Notes",
+    "postrequisites": "Postrequisites",
+    "prerequisites": "Prerequisites",
+    "redundant": "Redundant",
+    "removeLink": "Remove the link to {title}",
+    "title": "Title"
   }
 }
