@@ -19,11 +19,10 @@
         v-model="notes"
         type="textarea"
         autogrow
-        :debounce="1000"
         :label="$t('task.notes')"
         :error="notesError !== null"
         :error-message="notesError === null ? undefined : $t(notesError)"
-        @update:model-value="saveNotes"
+        @update:model-value="scheduleNotes"
       />
       <div v-if="error !== null" role="alert" class="text-negative">{{ $t(error) }}</div>
 
@@ -53,13 +52,15 @@
 
 <script setup lang="ts">
 import type { Validated } from '@tdl/domain';
-import { computed, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router';
 import AddLinkDialog from '@/components/AddLinkDialog.vue';
 import TaskHistory from '@/components/TaskHistory.vue';
 import TaskLinks from '@/components/TaskLinks.vue';
 import { useApp } from '@/composables/useApp.ts';
 import { historyRows, taskLinks, taskOptions, type TaskOption } from '@/display/task-display.ts';
 import { errorKey } from '@/forms/account-forms.ts';
+import { createPendingSave } from '@/forms/pending-save.ts';
 
 const props = defineProps<{ taskId: string }>();
 const { state } = useApp();
@@ -114,12 +115,30 @@ async function saveTitle(): Promise<void> {
   );
 }
 
-async function saveNotes(): Promise<void> {
-  if (ready.value === null || notes.value === task.value?.notes) return;
-  notesError.value = failure(
-    await ready.value.replica.setTaskField(props.taskId, 'notes', notes.value),
-  );
+// Notes save once typing pauses for a second. The task is fixed when the user types, so a save
+// still pending when they switch tasks goes to the task they typed in.
+const pendingNotes = createPendingSave(
+  async ({ taskId, value }: { taskId: string; value: string }) => {
+    if (ready.value === null || value === device.value?.tasks.get(taskId)?.notes) return;
+    notesError.value = failure(await ready.value.replica.setTaskField(taskId, 'notes', value));
+  },
+  1000,
+);
+
+function scheduleNotes(value: string | number | null): void {
+  pendingNotes.schedule({ taskId: props.taskId, value: String(value ?? '') });
 }
+
+/** Saves edits not saved yet, before the page shows another task or goes away. */
+async function savePending(): Promise<void> {
+  await pendingNotes.flush();
+  await saveTitle();
+}
+onBeforeRouteUpdate(savePending);
+onBeforeRouteLeave(savePending);
+onBeforeUnmount(() => {
+  void savePending();
+});
 
 async function setCompleted(done: boolean): Promise<void> {
   if (ready.value === null) return;
