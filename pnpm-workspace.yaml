@@ -3,6 +3,15 @@ packages:
   - apps/*
   - tools/*
 allowBuilds:
+  '@parcel/watcher': true
+  core-js: true
   cpu-features: false
+  electron-winstaller: true
+  esbuild: true
+  lightningcss: true
   protobufjs: false
+  rolldown: true
   ssh2: false
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - quasar@2.35.4

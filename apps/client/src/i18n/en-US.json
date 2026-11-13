@@ -1,0 +1,39 @@
+{
+  "errors": {
+    "already-shared": "This is already shared with them.",
+    "bad-request": "The app sent a request the server couldn't read.",
+    "cycle": "That link would make a loop.",
+    "different-user": "That's a different account. Log out first to switch accounts.",
+    "duplicate-link": "These tasks are already linked.",
+    "exists": "These tasks are already linked.",
+    "forbidden": "You aren't allowed to do that.",
+    "internal-error": "Something went wrong on the server. Try again later.",
+    "invalid": "This isn't valid.",
+    "invalid-credentials": "Wrong username or password.",
+    "not-editable": "You can't edit one of these tasks.",
+    "not-found": "This doesn't exist, or you can't see it.",
+    "protocol-mismatch": "This app doesn't match the server's version.",
+    "rate-limited": "Too many attempts. Wait a moment and try again.",
+    "redundant": "These tasks are already linked through other tasks.",
+    "required": "This is required.",
+    "self": "A task can't depend on itself.",
+    "session-expired": "Your session has expired. Log in again.",
+    "session-revoked": "You were logged out from another device.",
+    "taken": "This is already taken.",
+    "too-long": "This is too long.",
+    "too-short": "This is too short.",
+    "unknown": "Something went wrong.",
+    "unknown-field": "This field isn't allowed.",
+    "uppercase": "Use lowercase letters only.",
+    "whitespace": "Spaces aren't allowed."
+  },
+  "status": {
+    "app-outdated": "This app is out of date. Update it to keep syncing.",
+    "logged-out": "Logged out",
+    "offline": "Offline",
+    "ok": "Synced",
+    "revoked": "This session was ended from another device.",
+    "server-outdated": "The server is out of date. Changes stay on this device for now.",
+    "stuck": "Syncing has stopped. Your changes are kept on this device."
+  }
+}

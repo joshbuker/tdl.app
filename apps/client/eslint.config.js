@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import globals from 'globals';
 import pluginVue from 'eslint-plugin-vue';
+import pluginVueI18n from '@intlify/eslint-plugin-vue-i18n';
 import pluginQuasar from '@quasar/app-vite/eslint';
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
 import prettierSkipFormatting from '@vue/eslint-config-prettier/skip-formatting';
@@ -69,6 +70,29 @@ export default defineConfigWithVueTs(
 
       // allow debugger during development only
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    },
+  },
+
+  // https://eslint-plugin-vue-i18n.intlify.dev
+  pluginVueI18n.configs.recommended,
+  {
+    files: ['**/*.json'],
+    extends: [vueTsConfigs.disableTypeChecked],
+  },
+  {
+    rules: {
+      '@intlify/vue-i18n/no-missing-keys': 'error',
+      // Keys built from codes (errors.<code>, status.<status>) are checked by src/i18n/keys.test.ts.
+      '@intlify/vue-i18n/no-unused-keys': [
+        'error',
+        { extensions: ['.ts', '.vue'], ignores: ['/^errors\\./', '/^status\\./'] },
+      ],
+    },
+    settings: {
+      'vue-i18n': {
+        localeDir: './src/i18n/*.json',
+        messageSyntaxVersion: '^11.0.0',
+      },
     },
   },
 

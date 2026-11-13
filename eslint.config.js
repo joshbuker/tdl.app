@@ -3,7 +3,7 @@ import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig(
-  { ignores: ['**/node_modules', '**/dist', 'reports', 'coverage', '.pnpm-store', 'historical-versions'] },
+  { ignores: ['**/node_modules', '**/dist', 'reports', 'coverage', '.pnpm-store', 'historical-versions', 'apps/client'] },
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
   {
