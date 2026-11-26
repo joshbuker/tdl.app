@@ -13,3 +13,4 @@ export * from './view.ts';
 export * from './fields.ts';
 export * from './account.ts';
 export * from './access/visibility.ts';
+export * from './access/sharing.ts';

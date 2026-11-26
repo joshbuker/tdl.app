@@ -11,8 +11,19 @@ const routes: RouteRecordRaw[] = [
       { path: 'lists/:listId', component: () => import('@/pages/ListPage.vue'), props: true },
       { path: 'tasks/:taskId', component: () => import('@/pages/TaskPage.vue'), props: true },
       { path: 'couldnt-sync', component: () => import('@/pages/CouldntSyncPage.vue') },
-      { path: 'login', component: () => import('@/pages/LoginPage.vue'), meta: { public: true } },
-      { path: 'signup', component: () => import('@/pages/SignUpPage.vue'), meta: { public: true } },
+      { path: 'invitations', component: () => import('@/pages/InvitationsPage.vue') },
+      { path: 'settings/devices', component: () => import('@/pages/DevicesPage.vue') },
+      // Only for logged-out users: the guard takes a logged-in user to their tasks.
+      {
+        path: 'login',
+        component: () => import('@/pages/LoginPage.vue'),
+        meta: { public: true, guest: true },
+      },
+      {
+        path: 'signup',
+        component: () => import('@/pages/SignUpPage.vue'),
+        meta: { public: true, guest: true },
+      },
     ],
   },
 

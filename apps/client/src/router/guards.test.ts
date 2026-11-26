@@ -6,7 +6,8 @@ import { createAuthGuard, followState, redirectFor } from './guards.ts';
 
 const ready = { kind: 'ready', me: { defaultListId: 'inbox-id' } } as unknown as AppState;
 const page = { meta: {} };
-const loginPage = { meta: { public: true } };
+const loginPage = { meta: { public: true, guest: true } };
+const publicPage = { meta: { public: true } };
 const homePage = { meta: { home: true } };
 
 describe('redirectFor', () => {
@@ -20,6 +21,14 @@ describe('redirectFor', () => {
 
   test('logged in, any page opens', () => {
     expect(redirectFor(ready, page)).toBeNull();
+  });
+
+  test('logged in, the login and sign-up pages go to the default list', () => {
+    expect(redirectFor(ready, loginPage)).toBe('/lists/inbox-id');
+  });
+
+  test('logged in, a public page that is not only for guests opens', () => {
+    expect(redirectFor(ready, publicPage)).toBeNull();
   });
 
   test('logged in, the home page goes to the default list', () => {
@@ -85,12 +94,25 @@ describe('followState', () => {
     expect(went).toEqual(['/login']);
   });
 
-  test('changes that keep the page open move nothing', async () => {
+  test('logging in on the login page goes to the default list', async () => {
     const state = shallowRef<AppViewState>({ kind: 'logged-out' });
     const went: string[] = [];
     followState(
       state,
       () => loginPage,
+      (path) => went.push(path),
+    );
+    state.value = ready;
+    await nextTick();
+    expect(went).toEqual(['/lists/inbox-id']);
+  });
+
+  test('changes that keep the page open move nothing', async () => {
+    const state = shallowRef<AppViewState>({ kind: 'logged-out' });
+    const went: string[] = [];
+    followState(
+      state,
+      () => publicPage,
       (path) => went.push(path),
     );
     state.value = ready;

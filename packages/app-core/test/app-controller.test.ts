@@ -228,6 +228,18 @@ describe('AppController', () => {
     expect(await platform.keyValue.get('me')).toEqual(bob);
   });
 
+  test("server() calls the server's API with the current session", async () => {
+    const platform = await storedPlatform(meOf('alice'));
+    const server = new FakeFetch().on('GET /api/sessions', { status: 200, body: [] });
+    server.online = false;
+    const controller = new AppController({ baseUrl: BASE_URL, platform, fetch: server.fetch });
+    await controller.start();
+    server.online = true;
+
+    await expect(controller.server().sessions()).resolves.toEqual([]);
+    expect(server.callsTo('GET /api/sessions')[0]?.init.headers).toMatchObject({ authorization: 'Bearer old-token' });
+  });
+
   test('logOut() with pending operations returns unsynced and keeps the data', async () => {
     const platform = await storedPlatform(meOf('alice'));
     const server = new FakeFetch().on('POST /api/auth/sign-out', { status: 200, body: { success: true } });

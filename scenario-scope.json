@@ -5,6 +5,7 @@
     "Log in with email",
     "Wrong password",
     "Not logged in",
+    "Already logged in",
     "Session expires in place",
     "Revoke a lost device",
     "Log out",

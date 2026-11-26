@@ -1,9 +1,18 @@
 <template>
   <q-page padding>
     <div v-if="task !== null" class="q-gutter-md">
+      <q-btn
+        v-if="canShare"
+        flat
+        no-caps
+        icon="share"
+        :label="$t('task.share')"
+        @click="sharing = true"
+      />
       <q-form @submit="saveTitle">
         <q-input
           v-model="title"
+          :readonly="!editable"
           :label="$t('task.title')"
           :error="titleError !== null"
           :error-message="titleError === null ? undefined : $t(titleError)"
@@ -12,11 +21,13 @@
       </q-form>
       <q-checkbox
         :model-value="task.completedAt !== null"
+        :disable="!editable"
         :label="$t('task.completed')"
         @update:model-value="setCompleted"
       />
       <q-input
         v-model="notes"
+        :readonly="!editable"
         type="textarea"
         autogrow
         :label="$t('task.notes')"
@@ -29,12 +40,20 @@
       <TaskLinks
         :heading="$t('task.prerequisites')"
         :links="links.prerequisites"
+        :editable="editable"
         @remove="removeLink"
       />
-      <q-btn outline color="primary" :label="$t('task.addPrerequisite')" @click="openAddLink" />
+      <q-btn
+        v-if="editable"
+        outline
+        color="primary"
+        :label="$t('task.addPrerequisite')"
+        @click="openAddLink"
+      />
       <TaskLinks
         :heading="$t('task.postrequisites')"
         :links="links.postrequisites"
+        :editable="editable"
         @remove="removeLink"
       />
       <TaskHistory :rows="history" />
@@ -45,6 +64,7 @@
         :error="addLinkError"
         @pick="addPrerequisite"
       />
+      <ShareDialog v-model="sharing" :target="{ kind: 'task', id: taskId }" @left="goHome" />
     </div>
     <div v-else-if="content === 'not-found'" role="alert">{{ $t('errors.not-found') }}</div>
     <div v-else class="flex flex-center q-pa-lg">
@@ -56,11 +76,13 @@
 <script setup lang="ts">
 import type { Validated } from '@tdl/domain';
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
-import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router';
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router';
 import AddLinkDialog from '@/components/AddLinkDialog.vue';
+import ShareDialog from '@/components/ShareDialog.vue';
 import TaskHistory from '@/components/TaskHistory.vue';
 import TaskLinks from '@/components/TaskLinks.vue';
 import { useApp, useDevice } from '@/composables/useApp.ts';
+import { canEditTask, hasShareActions, shareView } from '@/display/sharing-display.ts';
 import { pageContent } from '@/display/sync-display.ts';
 import { historyRows, taskLinks, taskOptions, type TaskOption } from '@/display/task-display.ts';
 import { errorKey } from '@/forms/account-forms.ts';
@@ -77,6 +99,29 @@ const content = computed(() =>
     ? pageContent(task.value !== null, device.value, state.value.me.defaultListId)
     : 'loading',
 );
+// What the user's role lets them do here.
+const editable = computed(
+  () =>
+    ready.value !== null &&
+    device.value !== null &&
+    canEditTask(device.value, ready.value.me.userId, props.taskId),
+);
+const canShare = computed(
+  () =>
+    ready.value !== null &&
+    device.value !== null &&
+    hasShareActions(
+      shareView(device.value, ready.value.me.userId, { kind: 'task', id: props.taskId }),
+    ),
+);
+const sharing = ref(false);
+const router = useRouter();
+
+/** After leaving the task, it is gone from the device: go to the user's own tasks. */
+async function goHome(): Promise<void> {
+  await router.push('/');
+}
+
 const links = computed(() =>
   device.value === null
     ? { prerequisites: [], postrequisites: [] }

@@ -1,8 +1,18 @@
 <template>
   <q-page padding>
     <template v-if="list !== null">
-      <h1 class="text-h5">{{ list.title }}</h1>
-      <q-form @submit="addTask">
+      <div class="row items-center q-gutter-sm">
+        <h1 class="text-h5">{{ list.title }}</h1>
+        <q-btn
+          v-if="controls.share"
+          flat
+          no-caps
+          icon="share"
+          :label="$t('list.share')"
+          @click="sharing = true"
+        />
+      </div>
+      <q-form v-if="controls.addTasks" @submit="addTask">
         <q-input
           v-model="newTask"
           :label="$t('list.newTask')"
@@ -13,7 +23,7 @@
       <div v-if="error !== null" role="alert" class="text-negative">{{ $t(error) }}</div>
       <q-list separator>
         <q-item v-for="task in tasks" :key="task.id">
-          <q-item-section side>
+          <q-item-section v-if="editable.has(task.id)" side>
             <q-checkbox
               :model-value="task.completed"
               :aria-label="$t('list.complete', { title: task.title })"
@@ -35,6 +45,7 @@
           </q-item-section>
         </q-item>
       </q-list>
+      <ShareDialog v-model="sharing" :target="{ kind: 'list', id: listId }" @left="goHome" />
     </template>
     <div v-else-if="content === 'not-found'" role="alert">{{ $t('errors.not-found') }}</div>
     <div v-else class="flex flex-center q-pa-lg">
@@ -45,7 +56,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import ShareDialog from '@/components/ShareDialog.vue';
 import { useApp, useDevice } from '@/composables/useApp.ts';
+import { canEditTask, listControls } from '@/display/sharing-display.ts';
 import { pageContent } from '@/display/sync-display.ts';
 import { taskRows } from '@/display/task-display.ts';
 import { errorKey } from '@/forms/account-forms.ts';
@@ -62,6 +76,29 @@ const content = computed(() =>
     : 'loading',
 );
 const tasks = computed(() => (device.value === null ? [] : taskRows(device.value, props.listId)));
+
+// What the user's role lets them do here.
+const controls = computed(() =>
+  state.value.kind === 'ready' && device.value !== null
+    ? listControls(device.value, state.value.me.userId, props.listId)
+    : { addTasks: false, share: false },
+);
+const editable = computed(() => {
+  const current = device.value;
+  if (state.value.kind !== 'ready' || current === null) return new Set<string>();
+  const { userId } = state.value.me;
+  return new Set(
+    tasks.value.filter((task) => canEditTask(current, userId, task.id)).map((t) => t.id),
+  );
+});
+
+const router = useRouter();
+const sharing = ref(false);
+
+/** After leaving the list, it is gone from the device: go to the user's own tasks. */
+async function goHome(): Promise<void> {
+  await router.push('/');
+}
 
 const newTask = ref('');
 const newTaskError = ref<string | null>(null);

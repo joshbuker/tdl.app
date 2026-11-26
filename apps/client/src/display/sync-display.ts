@@ -1,3 +1,4 @@
+import { rejectedTaskContent } from '@tdl/app-core';
 import type { Id } from '@tdl/domain';
 import type { DeviceState, RejectedOp, Replica, ReplicaStatus } from '@tdl/sync';
 import { errorKey } from '../forms/account-forms.ts';
@@ -47,22 +48,29 @@ export function syncStatusView(
 
 export interface RejectedRow {
   opId: Id;
-  /** The title of the record the change was to, or its ID when the device doesn't have it. */
+  /**
+   * The title of the record the change was to: as it is on the device, else as it was last known,
+   * else its ID.
+   */
   title: string;
   /** Why it was refused: the first field error's key, or the rejection's. */
   errorKey: string;
+  /** Whether it can be copied into the user's lists as a new task. */
+  copyable: boolean;
 }
 
 /** The changes the server refused, in the order they were refused. */
 export function rejectedRows(state: DeviceState, rejected: readonly RejectedOp[]): RejectedRow[] {
-  return rejected.map(({ op, code, errors }) => {
+  return rejected.map((refused) => {
+    const { op, code, errors } = refused;
     const { type, id } = op.record;
     const record =
       type === 'task' ? state.tasks.get(id) : type === 'list' ? state.lists.get(id) : undefined;
     return {
       opId: op.id,
-      title: record?.title ?? id,
+      title: record?.title ?? refused.title ?? id,
       errorKey: errorKey(errors?.[0]?.code ?? code),
+      copyable: rejectedTaskContent(refused) !== null,
     };
   });
 }

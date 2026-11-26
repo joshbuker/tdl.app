@@ -93,9 +93,29 @@ describe('rejectedRows', () => {
       { op: op('c', { type: 'link', id: 'link-1' }), code: 'some-new-code' as never, at: hlc },
     ];
     expect(rejectedRows(state, rejected)).toEqual([
-      { opId: 'a', title: 'Paint fence', errorKey: 'errors.forbidden' },
-      { opId: 'b', title: 'House', errorKey: 'errors.not-found' },
-      { opId: 'c', title: 'link-1', errorKey: 'errors.unknown' },
+      { opId: 'a', title: 'Paint fence', errorKey: 'errors.forbidden', copyable: true },
+      { opId: 'b', title: 'House', errorKey: 'errors.not-found', copyable: false },
+      { opId: 'c', title: 'link-1', errorKey: 'errors.unknown', copyable: false },
+    ]);
+  });
+
+  test('a record no longer on the device is named by its title last known', () => {
+    const rejected: RejectedOp[] = [
+      {
+        op: { ...op('a', { type: 'task', id: 'task-1' }), content: { field: 'notes', value: 'x' } },
+        code: 'not-found',
+        at: hlc,
+        title: 'Paint fence',
+      },
+      {
+        op: { ...op('b', { type: 'task', id: 'task-2' }), content: { field: 'notes', value: 'x' } },
+        code: 'not-found',
+        at: hlc,
+      },
+    ];
+    expect(rejectedRows(stateWith([]), rejected)).toEqual([
+      { opId: 'a', title: 'Paint fence', errorKey: 'errors.not-found', copyable: true },
+      { opId: 'b', title: 'task-2', errorKey: 'errors.not-found', copyable: false },
     ]);
   });
 

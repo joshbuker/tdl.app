@@ -82,10 +82,14 @@ export default defineConfigWithVueTs(
   {
     rules: {
       '@intlify/vue-i18n/no-missing-keys': 'error',
-      // Keys built from codes (errors.<code>, status.<status>) are checked by src/i18n/keys.test.ts.
+      // Keys built from codes (errors.<code>, status.<status>, share.roles.<role>) are checked by
+      // src/i18n/keys.test.ts.
       '@intlify/vue-i18n/no-unused-keys': [
         'error',
-        { extensions: ['.ts', '.vue'], ignores: ['/^errors\\./', '/^status\\./'] },
+        {
+          extensions: ['.ts', '.vue'],
+          ignores: ['/^errors\\./', '/^status\\./', '/^share\\.roles\\./'],
+        },
       ],
     },
     settings: {

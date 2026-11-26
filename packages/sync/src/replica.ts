@@ -361,10 +361,19 @@ export class Replica {
     } else {
       const rejected: RejectedOp = { op, code: result.code, at: new Date(this.now()).toISOString() };
       if (result.errors !== undefined) rejected.errors = result.errors;
+      const title = this.titleOf(op.record);
+      if (title !== undefined) rejected.title = title;
       this.refused.push(rejected);
       await this.store.putRejected(rejected);
       await this.dropPending([op.id]);
     }
+  }
+
+  /** The title of a list or task on the device, if it has one. */
+  private titleOf({ type, id }: RecordRef): string | undefined {
+    if (type === 'task') return this.current.tasks.get(id)?.title;
+    if (type === 'list') return this.current.lists.get(id)?.title;
+    return undefined;
   }
 
   /**

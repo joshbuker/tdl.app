@@ -16,11 +16,22 @@
     "title": "TDL App couldn't start"
   },
   "couldntSync": {
+    "copy": "Copy to my tasks",
+    "copyTitle": "Copy the change to {title} into my tasks",
     "discard": "Discard",
     "discardTitle": "Discard the change to {title}",
     "empty": "Nothing here: every change has synced.",
-    "message": "The server refused these changes. They stay on this device until you discard them.",
+    "message": "The server refused these changes. They stay on this device until you copy them into your own tasks as a new task, or discard them.",
     "title": "Couldn't sync"
+  },
+  "devices": {
+    "current": "This device",
+    "lastSynced": "Last synced {when}",
+    "neverSynced": "Not synced yet",
+    "revoke": "Revoke",
+    "revokeDevice": "Revoke {device}",
+    "title": "Devices",
+    "unknownDevice": "Unknown device"
   },
   "errors": {
     "already-shared": "This is already shared with them.",
@@ -66,7 +77,20 @@
     "title": "Renamed it to “{title}”",
     "uncompleted": "Marked it incomplete"
   },
+  "invitations": {
+    "accept": "Accept",
+    "acceptFrom": "Accept the invitation from {inviter}",
+    "decline": "Decline",
+    "declineFrom": "Decline the invitation from {inviter}",
+    "empty": "No invitations.",
+    "list": "{inviter} invited you to a list",
+    "role": "As {role}",
+    "task": "{inviter} invited you to a task",
+    "title": "Invitations"
+  },
   "layout": {
+    "devices": "Devices",
+    "invitations": "Invitations",
     "lists": "Lists",
     "logOut": "Log out",
     "menu": "Menu",
@@ -75,7 +99,8 @@
   "list": {
     "complete": "Complete {title}",
     "newTask": "New task",
-    "nextUp": "Next up"
+    "nextUp": "Next up",
+    "share": "Share"
   },
   "logOut": {
     "discard": "Discard and log out",
@@ -106,6 +131,27 @@
     "message": "Your session has ended. Changes you make are kept on this device, and sync once you log in again.",
     "submit": "Log in",
     "title": "Log in again"
+  },
+  "share": {
+    "close": "Close",
+    "collaborators": "People with access",
+    "invite": "Invite",
+    "invited": "Invitation sent to {username}.",
+    "leave": "Leave",
+    "nobody": "Nobody else has access.",
+    "remove": "Remove",
+    "removeRole": "Remove the {role}",
+    "role": "Role",
+    "roles": {
+      "commenter": "Commenter",
+      "editor": "Editor",
+      "owner": "Owner",
+      "viewer": "Viewer"
+    },
+    "someone": "Someone else",
+    "title": "Share",
+    "username": "Username",
+    "you": "You"
   },
   "signUp": {
     "acceptTerms": "I accept the terms of service",
@@ -144,6 +190,7 @@
     "prerequisites": "Prerequisites",
     "redundant": "Redundant",
     "removeLink": "Remove the link to {title}",
+    "share": "Share",
     "title": "Title"
   }
 }

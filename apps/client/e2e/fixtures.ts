@@ -29,6 +29,46 @@ export async function openNewTask(page: Page, title: string): Promise<string> {
   return page.url().split('/').at(-1) ?? '';
 }
 
+/** Creates a list from the drawer, ending on it. */
+export async function createList(page: Page, title: string): Promise<void> {
+  const newList = page.getByRole('textbox', { name: 'New list' });
+  await newList.fill(title);
+  await newList.press('Enter');
+  await expect(page.getByRole('heading', { name: title })).toBeVisible();
+}
+
+/** Adds a task to the list on the page. */
+export async function addTask(page: Page, title: string): Promise<void> {
+  const newTask = page.getByRole('textbox', { name: 'New task' });
+  await newTask.fill(title);
+  await newTask.press('Enter');
+  await expect(page.getByRole('link', { name: title, exact: true })).toBeVisible();
+}
+
+/** Invites `username` with `role` from the sharing dialog of the list or task on the page. */
+export async function invite(
+  page: Page,
+  username: string,
+  role: 'Editor' | 'Commenter' | 'Viewer',
+): Promise<void> {
+  await page.getByRole('button', { name: 'Share' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Share' });
+  await dialog.getByRole('textbox', { name: 'Username' }).fill(username);
+  await dialog.getByRole('radio', { name: role }).click();
+  await dialog.getByRole('button', { name: 'Invite' }).click();
+  await expect(dialog.getByRole('status')).toHaveText(`Invitation sent to ${username}.`);
+  await dialog.getByRole('button', { name: 'Close' }).click();
+  await expect(dialog).toBeHidden();
+}
+
+/** Accepts the invitation from `inviter`, ending on what it shares. */
+export async function acceptInvitation(page: Page, inviter: string): Promise<void> {
+  await page.getByRole('link', { name: 'Invitations' }).click();
+  await expect(page).toHaveURL('/invitations');
+  await page.getByRole('button', { name: `Accept the invitation from ${inviter}` }).click();
+  await expect(page).toHaveURL(/\/(lists|tasks)\/[0-9a-f-]+$/);
+}
+
 function fromSetup(name: string): string {
   const value = process.env[name];
   if (value === undefined) throw new Error(`${name} is not set: is e2e/global-setup.ts running?`);

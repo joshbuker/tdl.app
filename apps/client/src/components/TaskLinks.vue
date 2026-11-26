@@ -14,7 +14,7 @@
         <q-item-section v-if="link.redundant" side>
           <q-badge color="warning" text-color="dark" :label="$t('task.redundant')" />
         </q-item-section>
-        <q-item-section side>
+        <q-item-section v-if="editable" side>
           <q-btn
             flat
             round
@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import type { LinkRow } from '@/display/task-display.ts';
 
-defineProps<{ heading: string; links: LinkRow[] }>();
+/** `editable`: the user may change the task's links, so each has a remove button. */
+defineProps<{ heading: string; links: LinkRow[]; editable: boolean }>();
 const emit = defineEmits<{ remove: [linkId: string] }>();
 </script>

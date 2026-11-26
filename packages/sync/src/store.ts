@@ -10,6 +10,8 @@ export interface RejectedOp {
   code: Extract<PushResult, { status: 'rejected' }>['code'];
   errors?: FieldError[];
   at: string;
+  /** The title of the record the change was to, as the device last knew it, so it can still be named once access to it is gone. */
+  title?: string;
 }
 
 export interface StoredReplica {

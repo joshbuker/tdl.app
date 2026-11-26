@@ -148,6 +148,11 @@ export class AppController {
     return { kind: 'done' };
   }
 
+  /** The server's API (sharing, invitations, sessions) with the current session. */
+  server(): ServerApi {
+    return this.api();
+  }
+
   /** Stops live updates and the replica's change relay, e.g. when the app is torn down. */
   close(): void {
     this.stopLive?.();

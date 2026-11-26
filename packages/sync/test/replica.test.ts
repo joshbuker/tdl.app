@@ -218,6 +218,18 @@ describe('Replica', () => {
       expect(replica.state().tasks.get('paint')?.title).toBe('Buy paint');
     });
 
+    test("a rejected edit keeps its record's title as last known, in the store too", async () => {
+      const server = world();
+      const { replica, store } = await device(server);
+      server.reject = () => ({ code: 'not-found' });
+
+      await replica.setTaskField('paint', 'notes', 'Blue');
+      await replica.sync();
+
+      expect(replica.rejected()[0]?.title).toBe('Buy paint');
+      expect((await store.load())?.rejected[0]?.title).toBe('Buy paint');
+    });
+
     test('discardRejected removes it', async () => {
       const server = world();
       const { replica, store } = await device(server);

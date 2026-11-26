@@ -1,4 +1,4 @@
-import type { FieldError, LinkRejection } from '@tdl/domain';
+import type { FieldError, LinkRejection, Role } from '@tdl/domain';
 import { pushResultSchema, type ReplicaStatus } from '@tdl/sync';
 import { describe, expect, test } from 'vitest';
 
@@ -37,6 +37,13 @@ const replicaStatuses = Object.keys({
   'server-outdated': true,
 } satisfies Record<ReplicaStatus, true>);
 
+const roles = Object.keys({
+  owner: true,
+  editor: true,
+  commenter: true,
+  viewer: true,
+} satisfies Record<Role, true>);
+
 const pushRejectionCodes = pushResultSchema.options[1].shape.code.options;
 
 // `ApiError.code` is a plain string: these are the codes the server's routes send
@@ -61,6 +68,7 @@ const apiErrorCodes = [
 
 const errors: Record<string, string> = enUS.errors;
 const status: Record<string, string> = enUS.status;
+const roleNames: Record<string, string> = enUS.share.roles;
 
 describe('translation keys', () => {
   test.each([
@@ -72,6 +80,10 @@ describe('translation keys', () => {
     ]),
   ])('errors.%s exists', (code) => {
     expect(errors[code]).toBeTypeOf('string');
+  });
+
+  test.each(roles)('share.roles.%s exists', (role) => {
+    expect(roleNames[role]).toBeTypeOf('string');
   });
 
   test.each(replicaStatuses)('status.%s exists', (replicaStatus) => {
