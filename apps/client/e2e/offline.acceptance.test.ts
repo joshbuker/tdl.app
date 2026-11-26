@@ -25,10 +25,9 @@ test.describe('Offline use', () => {
     const status = bob.getByRole('status', { name: 'Sync status' });
 
     // Given "bob" edited "Paint fence" offline (and the notes of "Fix roof")
-    // The task page is opened online first: the web app has no offline cache of its pages yet.
+    await bobContext.setOffline(true);
     await bob.getByRole('link', { name: 'Fix roof', exact: true }).click();
     await expect(bob.getByRole('textbox', { name: 'Title' })).toHaveValue('Fix roof');
-    await bobContext.setOffline(true);
     await bob.getByRole('textbox', { name: 'Notes' }).fill('Use slate');
     await bob.goBack();
     await bob.getByRole('link', { name: 'Paint fence', exact: true }).click();
