@@ -2,7 +2,7 @@
   "mcpServers": {
     "quasar": {
       "command": "npx",
-      "args": ["-y", "--fetch-retries=0", "@quasar/mcp@latest", "--project", "apps/client"]
+      "args": ["-y", "--fetch-retries=0", "@quasar/mcp@1.1.0", "--project", "apps/client"]
     }
   }
 }
