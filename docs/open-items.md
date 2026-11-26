@@ -56,7 +56,7 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
   - **Feed IDs that never repeat across restores**, e.g. starting each server start above the highest ID ever issued, kept outside the database. Devices still need to detect the gap to re-send lost changes.
   - **Document it only:** after a restore, every device signs out, clears its local data and signs in again. Changes made after the backup are lost.
 
-- **Research UI/UX design before polishing the app.** The slice uses plain Quasar components, enough to drive the scenarios. Before the work that makes TDL App look good and flow well, do a research pass on how to design its UI and UX: current, well-regarded approaches and sources, including design systems, navigation, layout and interaction patterns for task apps. Then record what to follow in `design-decisions/`.
+- **Research UI/UX design before polishing the app.** The slice uses plain Quasar components, enough to drive the scenarios. Before the work that makes TDL App look good and flow well, do a research pass on how to design its UI and UX: current, well-regarded approaches and sources, including design systems, navigation, layout and interaction patterns for task apps. Then record what to follow in `design-decisions/`. A first pass (2026-11-26) is in [UI and UX research](ui-ux-research.md): findings with sources, candidate decisions to settle, and what's still to research.
 
 ## Current state and history: constraints for later
 
