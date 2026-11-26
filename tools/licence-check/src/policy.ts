@@ -1,6 +1,6 @@
 export interface Policy {
   allowed: string[];
-  /** Package name → why its reported licence is in fact compatible. */
+  /** Package name → why it's acceptable: its reported licence is in fact compatible, or its code never ships. */
   exceptions: Record<string, string>;
 }
 

@@ -18,7 +18,10 @@
     "Unlicense",
     "BlueOak-1.0.0",
     "Python-2.0",
-    "CC-BY-4.0"
+    "CC-BY-4.0",
+    "Zlib"
   ],
-  "exceptions": {}
+  "exceptions": {
+    "potrace": "GPL-2.0, not compatible with AGPLv3, but build-only: Icon Genie (a dev dependency of apps/client) uses it to make the app's icon images. None of its code ships in the app. See docs/design-decisions/app-icon.md."
+  }
 }

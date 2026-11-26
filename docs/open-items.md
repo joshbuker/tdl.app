@@ -108,6 +108,7 @@ Findings from plan 3's reviews, deferred. Fix each when its area is next touched
 - **A change from the plan:** the per-address cap and the 5-second auth timeout close live-update sockets with 1013 (try again later), not the plan's 4403, so devices retry instead of losing live updates until restart.
 - **Saving as the tab closes is best effort.** The task page saves typing when the tab is hidden, closed or reloaded, but the browser may end the page before the device's storage finishes writing.
 - **Cold-start offline:** reloading the web app without a connection fails, because nothing caches its files. Once loaded, every page opens offline. Fixing it needs a service worker, which no spec asks for yet ([Platforms](features/app/platforms.md) rules out an installable web app).
+- **Revisit the app icon.** The light bulb from #3 is used as it was: an opaque black square with a faint checkerboard baked in. Find or make a source with real transparency, at 1024 px or more, then rerun `pnpm icons` (see [App icon](design-decisions/app-icon.md)).
 - **Reconnecting:** after being offline, the live-update socket's backoff reconnects within 30 s. There's no nudge from the browser's `online` event.
 - **Gaps in the sharing UI**, which need server APIs the plan didn't include:
   - Collaborators show as "You" or "Someone else", because the device only knows user IDs. With two anonymous collaborators, "Remove" is ambiguous.

@@ -12,7 +12,8 @@
     "dev": "quasar dev",
     "build": "quasar build",
     "typecheck": "vue-tsc --noEmit",
-    "postinstall": "quasar prepare --silent"
+    "postinstall": "quasar prepare --silent",
+    "icons": "icongenie generate --mode spa --icon icongenie/icon.png --skip-trim"
   },
   "dependencies": {
     "@quasar/extras": "^2.1.0",
@@ -33,6 +34,7 @@
     "@intlify/unplugin-vue-i18n": "^11.0.0",
     "@playwright/test": "1.64.1",
     "@quasar/app-vite": "^3.10.4",
+    "@quasar/icongenie": "^7.0.1",
     "@tdl/server": "workspace:*",
     "@types/node": "^26.6.6",
     "@vue/eslint-config-prettier": "^10.2.0",
