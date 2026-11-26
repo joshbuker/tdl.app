@@ -1,11 +1,12 @@
 // Checks every installed dependency's licence against licence-policy.json.
-// Run from the repository root, after `pnpm install`.
+// Run from the repository root, after `pnpm install`. `--recursive` covers every workspace package,
+// not just the root one.
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { findViolations, type Policy } from './policy.ts';
 
 const policy = JSON.parse(readFileSync('licence-policy.json', 'utf8')) as Policy;
-const output = execFileSync('pnpm', ['licenses', 'list', '--json'], { encoding: 'utf8' });
+const output = execFileSync('pnpm', ['licenses', 'list', '--json', '--recursive'], { encoding: 'utf8' });
 const byLicence = JSON.parse(output) as Record<string, { name: string; versions: string[] }[]>;
 
 const violations = findViolations(byLicence, policy);
