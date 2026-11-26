@@ -16,11 +16,7 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
 
 1. [Foundation and domain](superpowers/plans/2026-11-10-thin-slice-1-foundation-and-domain.md): done and merged into `main` (reviewed, CI green). Deferred review findings are listed below under "Follow-ups from plan 1".
 2. [Sync and server](superpowers/plans/2026-11-11-thin-slice-2-sync-and-server.md), from the [sync protocol design](superpowers/specs/2026-11-11-sync-protocol-design.md): done and merged into `main` (PR #1: reviewed, CI green, including the container image smoke test). It includes the container image, Compose file and [self-hosting guide](self-hosting.md). Deferred review findings are listed below under "Follow-ups from plan 2".
-3. [Web app](superpowers/plans/2026-11-13-thin-slice-3-web-app.md): in progress on branch `thin-slice-3-web-app` (pushed up to Task 16; CI green as of Task 14). Tasks 1 to 17 are done and reviewed. Task 18 ran on this machine on 2026-11-26 instead of the homelab, which is down for a few weeks: the Compose stack with `ORIGIN=http://localhost:3000`, and the browser demo checklist scripted with Playwright (two accounts sharing a list, notes edits arriving in about 1.3 s, a prerequisite chain with next up, a rejected loop, removing a collaborator, revoking a session, and logging in again after a session expired). Every step passed. Next: the final whole-branch review, then merging. The homelab deployment check is deferred until the VM is back (see the item below). Reconnecting after being offline works through the live-update socket's backoff (up to 30 s); there's no nudge from the browser's `online` event yet. Gaps found in Task 17, not yet built: collaborators show as "You" or "Someone else" because the device only knows user IDs; the sharing panel has no activity list, so sharing.md's "alice sees that he left" has no UI; the invitations count refreshes on navigation, not live; and the web app has no offline cache of its pages, so a page not opened since loading can't open offline. The ledger in `.superpowers/sdd/` has the full list. The UI shows `errors.unknown` for error codes it has no text for, since the server passes Better Auth's codes through. Two notes from this run, recorded here in case the ledger isn't at hand:
-   - **Fix before merging: logging in while another account is open.** `AppController.logIn` and `signUp` don't close the open replica first. On a cookie platform, a live update in that window could push the old user's queued changes under the new user's session. The UI only logs in from the logged-out state, so it can't happen yet. Fix: close the replica, or refuse, at the start of both.
-   - **A change from the plan:** the per-address cap and the 5-second auth timeout close live-update sockets with 1013 (try again later), not the plan's 4403, so devices retry instead of losing live updates until restart.
-
-   The task-by-task ledger, with deferred review findings and rulings, is in the git-ignored `.superpowers/sdd/2026-11-13-thin-slice-3-web-app/progress.md` on the machine that ran it. It includes the sync and server groundwork below, the device storage and app core that Android and Electron reuse, and the homelab deployment for the browser demo.
+3. [Web app](superpowers/plans/2026-11-13-thin-slice-3-web-app.md): tasks 1 to 18 are done and reviewed on branch `thin-slice-3-web-app`. Task 18 ran on this machine on 2026-11-26 instead of the homelab, which is down for a few weeks: the Compose stack with `ORIGIN=http://localhost:3000`, and the browser demo checklist scripted with Playwright (two accounts sharing a list, notes edits arriving in about 1.3 s, a prerequisite chain with next up, a rejected loop, removing a collaborator, revoking a session, and logging in again after a session expired). Every step passed. Next: the fixes the whole-branch review asked for, then merging. The plan includes the device storage and app core that Android and Electron reuse. Deferred review findings are listed below under "Follow-ups from plan 3".
    - **Deferred: the homelab deployment check.** What running locally can't show, to check once the homelab is back:
      - HTTPS: the `Secure` session cookie and the `wss://` live-update socket.
      - The reverse proxy passes websocket upgrades on and keeps `Origin` and `Host` as the browser sent them.
@@ -36,15 +32,6 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
 
    Decided for plans 3 and 4:
    - **Live updates:** built, as decided in [Live-update authentication](design-decisions/live-update-authentication.md): cookie for the browser web app, session token in the first message for everything else, an `Origin` allow-list scoped by credential (`APP_ORIGINS`), and CORS for the Capacitor apps. Electron's window origin is still to confirm when the Electron app is built.
-   - **An oversized push blocks a device's sync for good.** Titles, notes and link reasons have no maximum length (`packages/domain/src/fields.ts`), and the Replica batches pushes by count only (500 operations). A body over the server's 1 MiB limit is answered 413, the HTTP transport throws a plain error, and `syncOnce` rethrows it, aborting both push and pull. The sync status stays `ok`, and every later sync fails the same way. Decided:
-     - **Maximum field lengths**, which also stop abuse: task and list titles 500 characters (Todoist's limit for task names), notes and link reasons 100,000 (at most 400 KB in UTF-8, so one operation always fits). Specs updated.
-     - **Batching pushes by size** as well as count, so no batch passes the server's limit.
-
-     Version mismatches are now covered by [Version compatibility](features/app/version-compatibility.md) and [Protocol versions](design-decisions/protocol-versions.md): changes stay queued, and the app shows an "update to sync" status. Plan 3 needs the version exchange, an outdated status, and lenient parsing of pulled pages (today one unknown record type or kind of change stops sync). A refused sync shows a "sync stuck" indicator with the reason, and every change stays queued in order (see [Offline use](features/app/offline.md)). So that only temporary causes can refuse a whole push, plan 3 also:
-     - **Checks each operation's shape on its own** on the server: today `/api/sync/push` validates the whole body against `pushRequestSchema`, so one malformed operation refuses all 500 with a 422. It should become a per-operation `invalid` rejection, which goes to the "couldn't sync" view like any other.
-     - **Batches pushes by size**, so no push hits the 413 limit.
-
-     Rejected: moving the operations of a refused push to the "couldn't sync" view so later ones sync. With the above, no known cause refuses a push for good, and splitting the queue would leave dependent changes to tidy by hand. If an unforeseen cause appears, a possible escape hatch is letting the user move the blocking change aside from the stuck indicator.
 
 ## Deferred past the thin slice
 
@@ -84,7 +71,7 @@ Minor findings from plan 1's final review, deferred. Fix each when its area is n
 
 ## Follow-ups from plan 2
 
-Findings from plan 2's final review, deferred. The plan 3 blocker is under "Next steps".
+Findings from plan 2's final review, deferred.
 
 - **Push must stay push-before-pull.** A constraint on any refactor of `Replica.syncOnce`: if sync pulled first, an operation whose reply was lost could be forgotten by the pull and then re-added by the retry's `accepted`, leaving a confirmed operation for a record the device no longer has.
 - **Global feed-write lock.** Every write on the server takes one lock, so writes run one at a time. Fine for the slice. Options if write load grows:
@@ -113,6 +100,67 @@ Findings from plan 2's final review, deferred. The plan 3 blocker is under "Next
 - **Duplicate grants:** two pending invitations for the same person and target, both accepted, make two grants, because accepting doesn't re-check `already-shared` and `grants` has no unique constraint on user and target. Removing the collaborator then takes two deletes. Options:
   - **A unique constraint, and a re-check on accept.**
   - **No duplicate invitations:** refuse or reuse one at creation.
+
+## Follow-ups from plan 3
+
+Findings from plan 3's reviews, deferred. Fix each when its area is next touched.
+
+- **A change from the plan:** the per-address cap and the 5-second auth timeout close live-update sockets with 1013 (try again later), not the plan's 4403, so devices retry instead of losing live updates until restart.
+- **Saving as the tab closes is best effort.** The task page saves typing when the tab is hidden, closed or reloaded, but the browser may end the page before the device's storage finishes writing.
+- **Cold-start offline:** reloading the web app without a connection fails, because nothing caches its files. Once loaded, every page opens offline. Fixing it needs a service worker, which no spec asks for yet ([Platforms](features/app/platforms.md) rules out an installable web app).
+- **Reconnecting:** after being offline, the live-update socket's backoff reconnects within 30 s. There's no nudge from the browser's `online` event.
+- **Gaps in the sharing UI**, which need server APIs the plan didn't include:
+  - Collaborators show as "You" or "Someone else", because the device only knows user IDs. With two anonymous collaborators, "Remove" is ambiguous.
+  - The sharing panel has no activity list, so the "alice sees that he left" step of [Sharing](features/app/sharing.md) has no UI.
+  - The invitations count refreshes on navigation, not live, and is fetched on every navigation (twice on `/invitations`).
+- **Error texts:** the UI shows `errors.unknown` for codes it has no text for, since the server passes Better Auth's codes through. The client's `apiErrorCodes` is a hand-kept list; export a typed union of codes instead.
+- **Sync protocol:**
+  - A 426 reply without a `TDL-Protocol` header shows as "server outdated". Consider `stuck` with `protocol-mismatch`.
+  - Until older majors are supported, a server on the previous major that refuses the app also shows as "server outdated".
+  - The "Unknown data is kept" acceptance test only checks that unknown entries are kept. Close it with an injected materializer at the first minor protocol bump.
+  - Before the first minor protocol bump, settle `reparseUnknown`'s order against forget entries, whether kept entries that re-parse to null stay, and how `MemoryStore` handles their IDs.
+- **Server:**
+  - `sync-push.ts` repeats the UUID regex; export `uuidSchema` from `@tdl/sync`.
+  - The OpenAPI document shows push items as `{}`. It matters once API access is built.
+  - A refinement failure in a pushed operation gives `field: ''`. The UI shows only the code.
+  - CORS origins aren't normalised, while the websocket's are. Normalise them in `loadConfig`.
+  - The websocket's 30-minute recheck repeats the tombstone query; share one `isRevoked`.
+  - The `/health` exclusion in the web app fallback is dead code. The fallback doesn't answer HEAD, dotted paths get a JSON 404, and no test checks its CSP header.
+  - Hashed web app files are served without long cache headers.
+- **Device storage:**
+  - `putPending` and `putRejected` treat a duplicate differently in the SQLite store and `MemoryStore`. Define the behaviour in the `ReplicaStore` docs and the contract tests.
+  - `forget` reads every confirmed operation.
+  - Rows are ordered by the implicit `rowid`. Nothing runs `VACUUM`; add an explicit sequence column if anything ever does.
+- **Replica and app core:**
+  - Each edit while live syncs twice.
+  - A background sync can race a wipe.
+  - After the other-user guard, `logOut` signs out the cookie session, which is the other user's. Rare on the web, where one tab holds the app; revisit with plan 4.
+  - Logging out gives no feedback if the store fails during the wipe (`MainLayout`).
+- **Task page:**
+  - The fields follow the task by value, so a change from elsewhere replaces text being typed. The pending save puts the typed text back, so nothing is lost, but it flickers.
+  - History is rebuilt on every change notification.
+  - An invalid title (e.g. blank) is dropped without a word when leaving the page.
+- **Couldn't-sync page:**
+  - A too-long title is shown as copyable, and the copy then fails.
+  - Copying a change with `completedAt` gives an incomplete task.
+  - A task created offline and refused shows one row per operation, and its notes need a separate copy. The most visible of these.
+  - "Remove" in the sharing panel has no busy guard, so a double click sends it twice.
+- **Performance:** the list page works out the editable tasks in O(tasks × grants).
+- **Tests and tooling:**
+  - The mixed-push test doesn't check that the refused operation stored nothing, or that the third one applied.
+  - No test checks that `discardRejected` and `wipe` notify listeners. The replica writes some fields twice, and notifies when nothing changed.
+  - One app-core test passes only because of microtask order, and a negative `Replica` test waits an arbitrary time. Both risk flakiness.
+  - No end-to-end test removes a link or checks history.
+  - **Flaky end-to-end tests around the share dialog:** in a full run, a click in the Share dialog (the role radio or Invite) sometimes waits 30 s for the element to become stable and times out. It happens on the plan 3 branch before the review fixes too, in about one run in two. Seen in "Rejected offline changes are kept", "Remove a collaborator" and "leaving a shared list removes it". A single test run alone passes.
+  - The client's root config files aren't linted.
+  - Better Auth logs a WARN in the end-to-end output, and the `no_lists` constraint logs noise in server tests.
+  - A stale local `reports/playwright.json` satisfies `check:scenarios`. CI checks out fresh, so it's unaffected.
+  - `startE2eServer` leaks the app if `listen` throws, and picking a free port can race.
+- **For plan 4 (Android and Electron):**
+  - Test CORS `exposedHeaders` with the first token platform: native apps must read `set-auth-token` cross-origin.
+  - Better Auth's `trustedOrigins` for sign-out from Capacitor (see "Next steps").
+  - On token platforms, the token is saved before `me()` succeeds.
+  - `web-driver.test.ts` imports the store contract by relative path. Add a `./testing` export when the Capacitor and Electron drivers need it.
 
 ## Ideas for later
 
