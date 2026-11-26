@@ -51,6 +51,17 @@ export class RefusedError extends Error {
   }
 }
 
+/**
+ * A reply the app can't read: a body that isn't JSON, fails its schema, or holds a malformed
+ * feed entry (e.g. a server bug, or a proxy answering in its place). Sync is stuck until it changes.
+ */
+export class InvalidReplyError extends Error {
+  constructor(cause?: unknown) {
+    super('invalid-reply', cause === undefined ? undefined : { cause });
+    this.name = 'InvalidReplyError';
+  }
+}
+
 /** The server could not be reached, or its reply was lost. */
 export class NetworkError extends Error {
   constructor(cause?: unknown) {

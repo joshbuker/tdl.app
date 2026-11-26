@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { createHttpTransport, type FetchLike } from '../src/http-transport.ts';
-import { NetworkError, RefusedError, SessionError, VersionError } from '../src/transport.ts';
+import { InvalidReplyError, NetworkError, RefusedError, SessionError, VersionError } from '../src/transport.ts';
 import type { Operation } from '../src/operations.ts';
 
 interface Call {
@@ -107,12 +107,18 @@ describe('createHttpTransport', () => {
   test('a pulled entry of a known kind with a malformed value fails the page', async () => {
     const entry = { id: 1, kind: 'op', op: { id: '018f0000-0000-7000-8000-000000000002', hlc: 'bad', record: { type: 'list', id: '018f0000-0000-7000-8000-000000000003' }, meta: { kind: 'createList' }, content: null, seq: 1, authorId: '018f0000-0000-7000-8000-000000000004' } };
     const fetch = stubFetch(200, { entries: [entry], cursor: 1, more: false });
-    await expect(createHttpTransport({ baseUrl, fetch }).pull(0, 500)).rejects.toThrow();
+    await expect(createHttpTransport({ baseUrl, fetch }).pull(0, 500)).rejects.toBeInstanceOf(InvalidReplyError);
   });
 
-  test('a malformed body throws', async () => {
-    await expect(createHttpTransport({ baseUrl, fetch: stubFetch(200, { results: [{ status: 'maybe' }] }) }).push([])).rejects.toThrow();
-    await expect(createHttpTransport({ baseUrl, fetch: stubFetch(200, { entries: 'none' }) }).pull(0, 500)).rejects.toThrow();
+  test('a malformed body throws InvalidReplyError', async () => {
+    await expect(createHttpTransport({ baseUrl, fetch: stubFetch(200, { results: [{ status: 'maybe' }] }) }).push([])).rejects.toBeInstanceOf(InvalidReplyError);
+    await expect(createHttpTransport({ baseUrl, fetch: stubFetch(200, { entries: 'none' }) }).pull(0, 500)).rejects.toBeInstanceOf(InvalidReplyError);
+  });
+
+  test('a body that is not JSON throws InvalidReplyError', async () => {
+    const fetch: FetchLike = () =>
+      Promise.resolve({ status: 200, headers: { get: () => null }, json: () => Promise.reject(new SyntaxError('Unexpected token <')) });
+    await expect(createHttpTransport({ baseUrl, fetch }).pull(0, 500)).rejects.toBeInstanceOf(InvalidReplyError);
   });
 });
 

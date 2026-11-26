@@ -2,7 +2,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { compareHlc } from '../src/hlc.ts';
 import { Replica } from '../src/replica.ts';
 import { MemoryStore, type ReplicaStore } from '../src/store.ts';
-import { RefusedError, SessionError, VersionError, type Transport } from '../src/transport.ts';
+import { InvalidReplyError, RefusedError, SessionError, VersionError, type Transport } from '../src/transport.ts';
 import {
   createFakeServer,
   failing,
@@ -376,6 +376,22 @@ describe('Replica', () => {
       expect((await store.load())?.pending).toHaveLength(2);
       expect(titles(replica)).toContain('Buy milk');
     });
+
+    test('a new transport (e.g. after logging in again) replaces the old one, and the next sync sends the outbox', async () => {
+      const server = world();
+      const { replica, net } = await device(server);
+      await replica.createTask('inbox', 'Buy milk');
+      net.use(failing(new SessionError('session-expired')));
+      await replica.sync();
+      expect(replica.status()).toBe('logged-out');
+
+      replica.useTransport(server.transport(alice));
+      expect(replica.status()).toBe('ok');
+      await replica.sync();
+
+      expect(replica.status()).toBe('ok');
+      expect(replica.pending()).toEqual([]);
+    });
   });
 
   describe('refused syncs', () => {
@@ -391,6 +407,31 @@ describe('Replica', () => {
       expect(replica.pending()).toHaveLength(2);
       expect((await store.load())?.pending).toHaveLength(2);
       expect(titles(replica)).toContain('Buy milk');
+    });
+
+    test("a reply the app can't read is stuck with invalid-reply, and keeps the outbox", async () => {
+      const { replica, net } = await device(world());
+      await replica.createTask('inbox', 'Buy milk');
+      net.use(failing(new InvalidReplyError(new Error('bad entry'))));
+
+      await replica.sync();
+
+      expect(replica.status()).toBe('stuck');
+      expect(replica.statusReason()).toBe('invalid-reply');
+      expect(replica.pending()).toHaveLength(2);
+    });
+
+    test('any other failure is stuck with unknown, and still throws', async () => {
+      const { replica, net } = await device(world());
+      await replica.createTask('inbox', 'Buy milk');
+      const boom = new Error('boom');
+      net.use(failing(boom));
+
+      await expect(replica.sync()).rejects.toBe(boom);
+
+      expect(replica.status()).toBe('stuck');
+      expect(replica.statusReason()).toBe('unknown');
+      expect(replica.pending()).toHaveLength(2);
     });
 
     test('a later successful sync returns to ok', async () => {

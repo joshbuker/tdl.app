@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 import { errorBodySchema, feedNotificationSchema, parseFeedEntry, pullPageSchema, pushResponseSchema, type Operation, type PullPage } from './operations.ts';
-import { NetworkError, RefusedError, SessionError, VersionError, type Transport } from './transport.ts';
+import { InvalidReplyError, NetworkError, RefusedError, SessionError, VersionError, type Transport } from './transport.ts';
 import { PROTOCOL_HEADER, PROTOCOL_VERSION } from './version.ts';
 
 // This package uses no platform globals in its types (it runs in browsers, Capacitor and
@@ -83,7 +83,7 @@ export function createHttpTransport(options: HttpTransportOptions): Transport {
       const entries: PullPage['entries'] = [];
       for (const raw of page.entries) {
         const entry = parseFeedEntry(raw);
-        if (entry === null) throw new Error('invalid-feed-entry');
+        if (entry === null) throw new InvalidReplyError(raw);
         entries.push(entry);
       }
       return { ...page, entries };
@@ -125,7 +125,15 @@ function createRequester({ baseUrl, token, fetch = platform.fetch, protocolVersi
       // Rate limits and server or proxy failures are passing: try again later, like being offline.
       if (response.status === 429 || response.status >= 500) throw new NetworkError(response.status);
       if (response.status < 200 || response.status >= 300) throw new RefusedError(response.status, await errorCode(response));
-      return schema.parse(await response.json());
+      let reply: unknown;
+      try {
+        reply = await response.json();
+      } catch (error) {
+        throw new InvalidReplyError(error);
+      }
+      const parsed = schema.safeParse(reply);
+      if (!parsed.success) throw new InvalidReplyError(parsed.error);
+      return parsed.data;
     },
   };
 }

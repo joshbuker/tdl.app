@@ -19,11 +19,12 @@ import { createClock, type Clock } from './hlc.ts';
 import { parseFeedEntry, type ContentChange, type FeedEntry, type JsonValue, type MetaChange, type Operation, type PullPage, type PushResult, type RecordRef, type UnknownEntry } from './operations.ts';
 import { accessData, historyOf, materialize, type DeviceState, type HistoryEntry } from './state.ts';
 import { forgetOps, type FeedOp, type RejectedOp, type ReplicaStore } from './store.ts';
-import { NetworkError, RefusedError, SessionError, VersionError, type Transport } from './transport.ts';
+import { InvalidReplyError, NetworkError, RefusedError, SessionError, VersionError, type Transport } from './transport.ts';
 import { compareProtocol } from './version.ts';
 
 /**
- * `stuck`: the server refused the sync for another reason, given by `statusReason`. `app-outdated`
+ * `stuck`: the server refused the sync for another reason, given by `statusReason`; `invalid-reply`
+ * when its reply couldn't be read, and `unknown` for any other failure (e.g. of the store). `app-outdated`
  * and `server-outdated`: the protocol versions are incompatible. Neither drops pending changes.
  */
 export type ReplicaStatus = 'ok' | 'offline' | 'logged-out' | 'revoked' | 'stuck' | 'app-outdated' | 'server-outdated';
@@ -63,7 +64,7 @@ const done: Validated<void> = { ok: true, value: undefined };
  */
 export class Replica {
   private readonly store: ReplicaStore;
-  private readonly transport: Transport;
+  private transport: Transport;
   private readonly userId: Id;
   private readonly now: () => number;
   private readonly newId: () => Id;
@@ -249,7 +250,7 @@ export class Replica {
 
   /**
    * Pushes the outbox, then pulls the feed until it is caught up. A call made while another is
-   * running is coalesced into one more run after it. Network and session failures set `status`
+   * running is coalesced into one more run after it. Network, session, version, refused and unreadable-reply failures set `status`
    * rather than throwing.
    */
   sync(): Promise<void> {
@@ -292,8 +293,18 @@ export class Replica {
     };
   }
 
+  /**
+   * Syncs through `transport` from now on, e.g. with the new session after logging in again. The
+   * status starts again from `ok`; the next sync sets it. Live updates already started keep the
+   * old transport: stop them first, and start them again after.
+   */
+  useTransport(transport: Transport): void {
+    this.transport = transport;
+    this.setStatus('ok');
+  }
+
   private syncInBackground(): void {
-    // Network and session failures already set `status`; anything else goes to onError.
+    // Classified failures already set `status`; anything else has set `stuck` and goes to onError.
     this.sync().catch(this.onError);
   }
 
@@ -315,7 +326,11 @@ export class Replica {
         await this.wipe();
       } else if (error instanceof SessionError) {
         this.setStatus('logged-out');
+      } else if (error instanceof InvalidReplyError) {
+        this.setStatus('stuck', 'invalid-reply');
       } else {
+        // A failing store, or a bug: sync has stopped, so the status says so, and the error goes on.
+        this.setStatus('stuck', 'unknown');
         throw error;
       }
     }
