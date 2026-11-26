@@ -1,6 +1,6 @@
 # Version pins
 
-Dependencies pinned below their latest version, why, and what would lift each pin (see [Version pins](docs/design-decisions/version-pins.md)).
+Dependencies pinned to an exact version or held below their latest, why, and what would lift each pin (see [Version pins](docs/design-decisions/version-pins.md)).
 
 | Dependency | Pinned to | Latest | Why | Lift when |
 | --- | --- | --- | --- | --- |
