@@ -1,6 +1,6 @@
 # Thin slice, plan 3: web app — Implementation Plan
 
-**Status:** Done: tasks 1 to 18, the final whole-branch review and its fixes. Task 18 ran locally (2026-11-26); the homelab deployment check waits for the VM (see `docs/open-items.md`). Next: merging into `main`.
+**Status:** Done: tasks 1 to 18, the final whole-branch review and its fixes. Task 18 ran locally (2026-11-26); the homelab deployment check waits for the VM (see `docs/open-items.md`). Merged into `main` on 2026-11-26. Next: plan 4 (Android and Electron).
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
