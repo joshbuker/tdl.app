@@ -69,7 +69,8 @@ export function startApp(
     await controller.start();
   })().catch((error: unknown) => {
     console.error(error);
-    // The app doesn't run without its storage, so it stops here.
+    // Sync failures don't reach here (the app core shows them in the sync status): this is the
+    // device's storage or a bug, and the app can't run without its data, so it stops here.
     stop();
     state.value = {
       kind: 'failed',

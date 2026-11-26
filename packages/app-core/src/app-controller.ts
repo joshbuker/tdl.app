@@ -1,5 +1,5 @@
 import { newId, type AccountInput } from '@tdl/domain';
-import { NetworkError, Replica, type FetchLike, type ReplicaStore } from '@tdl/sync';
+import { NetworkError, Replica, type FetchLike, type ReplicaStore, type Transport } from '@tdl/sync';
 import type { KeyValue, Platform } from './platform.ts';
 import { ApiError, meSchema, ServerApi, type Me } from './server-api.ts';
 
@@ -16,7 +16,17 @@ export interface AppControllerOptions {
   baseUrl: string;
   platform: Platform;
   fetch?: FetchLike;
+  /**
+   * Receives errors that don't stop the app: a sync failing for an unexpected reason (the sync
+   * status says it's stuck), or the device's data failing to wipe. Defaults to rethrowing them as
+   * an unhandled rejection, so they are not hidden.
+   */
+  onError?: (error: unknown) => void;
 }
+
+const rethrow = (error: unknown): void => {
+  void Promise.reject(error instanceof Error ? error : new Error(String(error)));
+};
 
 /** The KeyValue key of the cached `GET /api/me`, so the app can start offline. */
 const ME_KEY = 'me';
@@ -29,6 +39,7 @@ export class AppController {
   private readonly baseUrl: string;
   private readonly platform: Platform;
   private readonly fetch: FetchLike | undefined;
+  private readonly onError: (error: unknown) => void;
 
   private current: AppState = { kind: 'starting' };
   private readonly listeners = new Set<() => void>();
@@ -43,6 +54,7 @@ export class AppController {
     this.baseUrl = options.baseUrl;
     this.platform = options.platform;
     this.fetch = options.fetch;
+    this.onError = options.onError ?? rethrow;
   }
 
   state(): AppState {
@@ -95,15 +107,21 @@ export class AppController {
     }
   }
 
-  /** Logs in, and opens the user's replica, replacing one stored for another user. */
+  /**
+   * Logs in, and opens the user's replica, replacing one stored for another user. Only while
+   * logged out: otherwise it throws `not-logged-out` before asking the server, since the new
+   * session would replace the one the open replica syncs with.
+   */
   async logIn(identifier: string, password: string): Promise<void> {
+    this.requireLoggedOut();
     const { token } = await this.api(null).logIn(identifier, password);
     await this.useToken(token);
     await this.enter(await this.api().me());
   }
 
-  /** Creates an account and logs in to it. */
+  /** Creates an account and logs in to it. Only while logged out, as `logIn`. */
   async signUp(input: AccountInput & { acceptTerms: boolean }): Promise<void> {
+    this.requireLoggedOut();
     const { token } = await this.api(null).signUp(input);
     await this.useToken(token);
     await this.enter(await this.api().me());
@@ -119,13 +137,19 @@ export class AppController {
     const { token } = await this.api(null).logIn(identifier, password);
     const api = this.api(token);
     const me = await api.me();
-    if (me.userId !== state.me.userId) {
+    if (me.userId !== state.me.userId || this.current !== state) {
       // End the session just made, so it isn't left behind. Failing to is harmless.
       await api.logOut().catch(() => undefined);
-      throw new ApiError(403, 'different-user');
+      if (me.userId !== state.me.userId) throw new ApiError(403, 'different-user');
+      return; // Logged out meanwhile.
     }
     await this.useToken(token);
-    await this.enter(me);
+    // The same user's replica stays open, so edits made meanwhile stay in it; it syncs with the new session.
+    state.replica.useTransport(this.transport());
+    const { keyValue } = await this.openStorage();
+    await keyValue.set(ME_KEY, { ...me });
+    this.setState({ ...state, me, sessionEnded: false });
+    await this.goLive();
   }
 
   /**
@@ -171,12 +195,16 @@ export class AppController {
     await this.goLive();
   }
 
-  /** Starts live updates and syncs, unless the session has ended (nothing is sent under a session that isn't the user's). */
+  /**
+   * Starts live updates and syncs, unless the session has ended (nothing is sent under a session
+   * that isn't the user's). A sync failing for an unexpected reason doesn't stop the app: the
+   * replica's status says sync is stuck, and the error goes to `onError`.
+   */
   private async goLive(): Promise<void> {
     const state = this.current;
     if (state.kind !== 'ready' || state.sessionEnded) return;
     this.stopLive = state.replica.startLive();
-    await state.replica.sync();
+    await state.replica.sync().catch(this.onError);
   }
 
   /**
@@ -189,12 +217,13 @@ export class AppController {
     const stored = await replicaStore.load();
     if (stored !== null && stored.userId !== me.userId) await keyValue.clear();
     const deviceId = stored?.userId === me.userId ? stored.deviceId : newId();
-    const transport = this.platform.transport({
-      baseUrl: this.baseUrl,
-      ...(this.token === null ? {} : { token: this.token }),
-      ...(this.fetch === undefined ? {} : { fetch: this.fetch }),
+    const replica = await Replica.open({
+      store: replicaStore,
+      transport: this.transport(),
+      userId: me.userId,
+      deviceId,
+      onError: this.onError,
     });
-    const replica = await Replica.open({ store: replicaStore, transport, userId: me.userId, deviceId });
 
     this.close();
     this.stopRelay = replica.onChange(() => {
@@ -211,9 +240,11 @@ export class AppController {
     if (status === 'revoked') {
       // The replica has wiped its store; drop it, so nothing edits a wiped store.
       this.close();
-      void this.wipe().then(() => {
-        if (this.current === state) this.setState({ kind: 'logged-out' });
-      });
+      void this.wipe()
+        .catch(this.onError)
+        .finally(() => {
+          if (this.current === state) this.setState({ kind: 'logged-out' });
+        });
       return;
     }
     if (status === 'logged-out' && !state.sessionEnded) {
@@ -267,6 +298,19 @@ export class AppController {
     await replicaStore.wipe();
     await keyValue.clear();
     await this.useToken(null);
+  }
+
+  private requireLoggedOut(): void {
+    if (this.current.kind !== 'logged-out') throw new Error('not-logged-out');
+  }
+
+  /** A sync transport with the current session. */
+  private transport(): Transport {
+    return this.platform.transport({
+      baseUrl: this.baseUrl,
+      ...(this.token === null ? {} : { token: this.token }),
+      ...(this.fetch === undefined ? {} : { fetch: this.fetch }),
+    });
   }
 
   private async useToken(token: string | null): Promise<void> {

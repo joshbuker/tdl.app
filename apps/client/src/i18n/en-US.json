@@ -10,7 +10,7 @@
     "name": "TDL App"
   },
   "couldntStart": {
-    "message": "TDL App keeps your tasks on this device, and couldn't open its storage. The browser may be blocking it (for example in a private window), or the disk may be full.",
+    "message": "Something stopped TDL App from opening your tasks on this device. Often it's the storage: the browser may be blocking it (for example in a private window), or the disk may be full.",
     "reason": "Reason: {reason}",
     "reload": "Reload",
     "title": "TDL App couldn't start"
@@ -44,6 +44,7 @@
     "internal-error": "Something went wrong on the server. Try again later.",
     "invalid": "This isn't valid.",
     "invalid-credentials": "Wrong username or password.",
+    "invalid-reply": "The server sent a reply this app can't read.",
     "network": "Can't reach the server. Check your connection and try again.",
     "not-editable": "You can't edit one of these tasks.",
     "not-found": "This doesn't exist, or you can't see it.",

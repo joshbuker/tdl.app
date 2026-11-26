@@ -69,6 +69,13 @@ describe('syncStatusView', () => {
     expect(syncStatusView(replicaWith('stuck', 'some-new-code')).reasonKey).toBe('errors.unknown');
   });
 
+  test("stuck on a reply the app can't read, or on an unexpected failure, says so", () => {
+    expect(syncStatusView(replicaWith('stuck', 'invalid-reply')).reasonKey).toBe(
+      'errors.invalid-reply',
+    );
+    expect(syncStatusView(replicaWith('stuck', 'unknown')).reasonKey).toBe('errors.unknown');
+  });
+
   test('an outdated app offers to reload, to update it', () => {
     expect(syncStatusView(replicaWith('app-outdated'))).toMatchObject({
       textKey: 'status.app-outdated',

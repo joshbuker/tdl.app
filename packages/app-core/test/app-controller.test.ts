@@ -6,7 +6,7 @@ import { MemoryKeyValue, type Platform } from '../src/platform.ts';
 import type { Me } from '../src/server-api.ts';
 import { BASE_URL, FakeFetch } from './fake-fetch.ts';
 
-type Mode = 'offline' | 'ok' | 'session-expired' | 'session-revoked';
+type Mode = 'offline' | 'ok' | 'session-expired' | 'session-revoked' | 'broken';
 
 /** A token platform in memory, whose transports answer according to `mode`. */
 class TestPlatform implements Platform {
@@ -37,6 +37,7 @@ class TestPlatform implements Platform {
     const fail = (): Error | null => {
       if (this.mode === 'offline') return new NetworkError();
       if (this.mode === 'ok') return null;
+      if (this.mode === 'broken') return new Error('broken');
       return new SessionError(this.mode);
     };
     return {
@@ -188,6 +189,74 @@ describe('AppController', () => {
     expect(states.at(-1)).toBe('logged-out');
   });
 
+  test('logIn and signUp refuse unless logged out, before asking the server', async () => {
+    const platform = await storedPlatform(meOf('alice'));
+    const server = new FakeFetch();
+    server.online = false;
+    const controller = new AppController({ baseUrl: BASE_URL, platform, fetch: server.fetch });
+
+    // While starting, and once a replica is open.
+    const whileStarting = controller.logIn('bob', 'secret').catch((e: unknown) => e);
+    await controller.start();
+    const before = ready(controller);
+    const loggingIn = await controller.logIn('bob', 'secret').catch((e: unknown) => e);
+    const signingUp = await controller
+      .signUp({ username: 'bob', email: 'bob@example.com', password: 'secret-secret', givenName: 'Bob', familyName: '', acceptTerms: true })
+      .catch((e: unknown) => e);
+
+    for (const error of [await whileStarting, loggingIn, signingUp]) expect(error).toMatchObject({ message: 'not-logged-out' });
+    expect(server.callsTo('POST /api/auth/sign-in/username')).toEqual([]);
+    expect(server.callsTo('POST /api/auth/sign-up/email')).toEqual([]);
+    expect(controller.state()).toBe(before);
+    expect(platform.token).toBe('old-token');
+  });
+
+  test('an unexpected sync failure at start leaves the app ready, with sync stuck', async () => {
+    const alice = meOf('alice');
+    const platform = await storedPlatform(alice);
+    platform.mode = 'broken';
+    const server = new FakeFetch().on('GET /api/me', { status: 200, body: alice });
+    const errors: unknown[] = [];
+    const controller = new AppController({
+      baseUrl: BASE_URL,
+      platform,
+      fetch: server.fetch,
+      onError: (error) => errors.push(error),
+    });
+
+    await controller.start();
+
+    const { replica } = ready(controller);
+    expect(replica.status()).toBe('stuck');
+    expect(replica.statusReason()).toBe('unknown');
+    expect(errors).toMatchObject([{ message: 'broken' }]);
+  });
+
+  test('a failing wipe after revocation still logs out, and reports the error', async () => {
+    const platform = await storedPlatform(meOf('alice'));
+    const server = new FakeFetch();
+    server.online = false;
+    const errors: unknown[] = [];
+    const controller = new AppController({ baseUrl: BASE_URL, platform, fetch: server.fetch, onError: (error) => errors.push(error) });
+    await controller.start();
+    const { replica } = ready(controller);
+
+    platform.mode = 'session-revoked';
+    const wipe = platform.store.wipe.bind(platform.store);
+    let wipes = 0;
+    platform.store.wipe = () => {
+      wipes += 1;
+      // The replica's own wipe succeeds; the controller's fails.
+      return wipes === 1 ? wipe() : Promise.reject(new Error('disk-gone'));
+    };
+    await replica.sync();
+
+    await vi.waitFor(() => {
+      expect(controller.state()).toEqual({ kind: 'logged-out' });
+    });
+    expect(errors).toMatchObject([{ message: 'disk-gone' }]);
+  });
+
   test('relays the replica changes', async () => {
     const platform = await storedPlatform(meOf('alice'));
     const server = new FakeFetch();
@@ -332,7 +401,7 @@ describe('AppController', () => {
     expect(server.callsTo('POST /api/auth/sign-out')[0]?.init.headers).toMatchObject({ authorization: 'Bearer bob-token' });
   });
 
-  test('logInAgain as the same user reopens the replica and syncs the queued changes', async () => {
+  test('logInAgain as the same user keeps the replica, with the new session, and syncs the queued changes', async () => {
     const alice = meOf('alice');
     const platform = await storedPlatform(alice);
     const server = new FakeFetch().on('GET /api/me', { status: 401, body: { code: 'session-expired' } });
@@ -352,6 +421,49 @@ describe('AppController', () => {
     expect(state.replica.status()).toBe('ok');
     expect(platform.token).toBe('new-token');
     expect(platform.transports.at(-1)).toMatchObject({ token: 'new-token' });
+  });
+
+  test('edits made while logging in again are kept in the open replica', async () => {
+    const alice = meOf('alice');
+    const platform = await storedPlatform(alice);
+    const server = new FakeFetch().on('GET /api/me', { status: 401, body: { code: 'session-expired' } });
+    const made: string[] = [];
+    let editing = false;
+    const edit = async (): Promise<void> => {
+      if (!editing) return;
+      const title = `Shed ${String(made.length)}`;
+      made.push(title);
+      await ready(controller).replica.createList(title);
+    };
+    const controller = new AppController({
+      baseUrl: BASE_URL,
+      platform,
+      fetch: async (url, init) => {
+        if (url.endsWith('/api/auth/sign-in/username')) await edit();
+        return server.fetch(url, init);
+      },
+    });
+    await controller.start();
+
+    // Edits land while signing in, and just after anything reads the store, as a save on the page might.
+    const load = platform.store.load.bind(platform.store);
+    platform.store.load = async () => {
+      const stored = await load();
+      await edit();
+      return stored;
+    };
+    server
+      .on('POST /api/auth/sign-in/username', { status: 200, body: {}, headers: { 'set-auth-token': 'new-token' } })
+      .on('GET /api/me', { status: 200, body: alice });
+    platform.mode = 'ok';
+    editing = true;
+    await controller.logInAgain('alice', 'secret');
+    editing = false;
+
+    const { replica } = ready(controller);
+    expect(made.length).toBeGreaterThan(0);
+    expect([...replica.state().lists.values()].map((list) => list.title)).toEqual(expect.arrayContaining(made));
+    expect(replica.pending()).toEqual([]);
   });
 
   test('once the session ends in place, edits stay on the device until logInAgain syncs them', async () => {
