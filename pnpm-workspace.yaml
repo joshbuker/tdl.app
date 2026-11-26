@@ -2,6 +2,12 @@ packages:
   - packages/*
   - apps/*
   - tools/*
+# The package store stays inside the repository (see docs/design-decisions/nix-dev-shell.md).
+storeDir: .pnpm-store
+# New versions are installed only once they're 7 days old, since most malicious releases are caught
+# within days (see docs/design-decisions/dependency-safety.md). An urgent fix can be let through by
+# name with minimumReleaseAgeExclude.
+minimumReleaseAge: 10080
 allowBuilds:
   '@parcel/watcher': true
   core-js: true

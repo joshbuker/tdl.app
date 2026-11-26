@@ -47,7 +47,7 @@ When evaluating libraries, tools or services:
   - **Maintenance and stability:** first and latest release dates, how often it releases, whether it's past 1.0, open issues and whether they get answers, archived or deprecated status, support for the versions we use, and how many people maintain it. A mature library can be quiet without being unmaintained; unanswered issues and stale support for current platforms are the warning signs.
   - **Security:** known vulnerabilities (GitHub advisories, OSV), install scripts and native code, how many dependencies it pulls in, and signs of a sketchy package: very new with few users, a name close to a popular package, a recent change of owner, or code that's minified or obfuscated for no reason. For anything that handles secrets, authentication or encryption, read how it does it.
 - Avoid options that are barely used (roughly under 1,000 weekly downloads, or under a year old), unmaintained, or sketchy, even when they otherwise fit. If nothing better exists, say so and name the risk.
-- Show every candidate side by side in one table before recommending. Anything named as the choice or as an alternative, in conversation or in the docs, comes from that table.
+- Show every candidate side by side in one table before recommending. Anything named as the choice or as an alternative, in conversation or in the docs, comes from that table. For npm packages, `pnpm stats:packages <package>...` prints it, with warnings (see `docs/design-decisions/dependency-safety.md`).
 
 ## Historical versions
 

@@ -20,6 +20,11 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check:licences
+      # Known vulnerabilities (see docs/design-decisions/dependency-safety.md): high or critical
+      # ones in what ships fail the build; everything else, development tools included, is reported.
+      - run: pnpm audit --prod --audit-level high
+      - run: pnpm audit
+        continue-on-error: true
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test

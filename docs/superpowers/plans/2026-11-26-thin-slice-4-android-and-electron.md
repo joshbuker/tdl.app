@@ -30,7 +30,8 @@
 - **IDs and names:** Android `appId` `app.tdl`, app name `TDL App`. Desktop scheme `tdl`, host `app`: the window's origin is `tdl://app`. The Capacitor database is named `tdl-app`; the desktop one is `tdl-app.sqlite3` in `app.getPath('userData')`.
 - **Server address:** `import.meta.env.TDL_SERVER_URL` in native builds (from `TDL_SERVER_URL` at build time, default `https://tdl.app`); the web build keeps `location.origin`.
 - **`APP_ORIGINS` default:** `https://localhost,capacitor://localhost,tdl://app`. Origins are compared as exact strings after trimming and removing a trailing `/`: `new URL(x).origin` is `"null"` for `capacitor:` and `tdl:` URLs, so it must not be used to normalise them.
-- **Pins:** npm `electron` at exactly nixpkgs' version (`45.3.4`), because `shell.nix` runs nixpkgs' Electron in its place (Electron's own download doesn't run on NixOS). Record it in `PINS.md`.
+- **New dependencies** follow `docs/design-decisions/dependency-safety.md`: pnpm installs only versions at least 7 days old, so ranges resolve to the newest such version (e.g. Capacitor 8.6.2 until 8.6.3 is a week old), and anything added beyond what this plan names is compared with `pnpm stats:packages` first.
+- **Pins:** npm `electron` at exactly nixpkgs' version (`45.3.4`, released 2026-11-17, so old enough to install), because `shell.nix` runs nixpkgs' Electron in its place (Electron's own download doesn't run on NixOS). Record it in `PINS.md`.
 - **Android build files:** release builds allow HTTPS only. Cleartext is allowed for `localhost` only, in the debug build's network security config. `android:allowBackup="false"`.
 
 ## Review Focus

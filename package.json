@@ -13,7 +13,8 @@
     "test": "vitest run --reporter=default --reporter=json --outputFile.json=reports/vitest.json",
     "check:scenarios": "node tools/scenario-check/src/cli.ts",
     "check:licences": "node tools/licence-check/src/cli.ts",
-    "test:e2e": "pnpm --filter @tdl/client build && pnpm --filter @tdl/client exec playwright test"
+    "test:e2e": "pnpm --filter @tdl/client build && pnpm --filter @tdl/client exec playwright test",
+    "stats:packages": "node tools/package-stats/src/cli.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
