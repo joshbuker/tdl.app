@@ -40,7 +40,14 @@ When resolving open questions with the user, ask in small batches of multiple-ch
 When evaluating libraries, tools or services:
 
 - Research the current state fresh: look for the latest and best-regarded options, rather than anchoring on names already mentioned. Consider categories beyond the obvious one (e.g. graph and document databases, not just SQL).
-- Check each candidate's current licence and maintenance status. Rule out anything that fails the licence rules in `docs/design-decisions/licence-and-pricing.md`.
+- Find candidates in more than one place. Use at least two differently worded web searches, the package registry's own search (e.g. `npm search`), and the alternatives that official docs or curated lists name. One search's results are never the whole field.
+- Check every candidate the same way:
+  - **Licence:** rule out anything that fails the licence rules in `docs/design-decisions/licence-and-pricing.md`.
+  - **Adoption:** weekly downloads, dependent packages, GitHub stars and contributors.
+  - **Maintenance and stability:** first and latest release dates, how often it releases, whether it's past 1.0, open issues and whether they get answers, archived or deprecated status, support for the versions we use, and how many people maintain it. A mature library can be quiet without being unmaintained; unanswered issues and stale support for current platforms are the warning signs.
+  - **Security:** known vulnerabilities (GitHub advisories, OSV), install scripts and native code, how many dependencies it pulls in, and signs of a sketchy package: very new with few users, a name close to a popular package, a recent change of owner, or code that's minified or obfuscated for no reason. For anything that handles secrets, authentication or encryption, read how it does it.
+- Avoid options that are barely used (roughly under 1,000 weekly downloads, or under a year old), unmaintained, or sketchy, even when they otherwise fit. If nothing better exists, say so and name the risk.
+- Show every candidate side by side in one table before recommending. Anything named as the choice or as an alternative, in conversation or in the docs, comes from that table.
 
 ## Historical versions
 

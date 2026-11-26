@@ -37,7 +37,7 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
    - **Server address:** a build-time `TDL_SERVER_URL` for the apps. [Choose a server](features/account/choose-server.md) stays a later feature.
    - **Testing Android while the homelab is down:** the Android emulator, reaching the laptop's server through `adb reverse` at `http://localhost:3000`. A real phone joins the deferred homelab check.
    - **Desktop origin:** the window loads the app from a private `tdl://app` scheme, so it has a real origin instead of `null`.
-   - **Session tokens:** OS-protected storage: the Android Keystore through `@aparajita/capacitor-secure-storage` (MIT; chosen over the month-old `@cap-kit/secure-storage`), and Electron's `safeStorage` on desktop.
+   - **Session tokens:** OS-protected storage: the Android Keystore through `@aparajita/capacitor-secure-storage` (MIT, about 559,000 downloads a week, AES-GCM with a Keystore key; chosen over `capacitor-secure-storage-plugin`, which is as popular but encrypts with RSA and PKCS#1 v1.5 padding and is still 0.x), and Electron's `safeStorage` on desktop.
 
 ## Deferred past the thin slice
 
