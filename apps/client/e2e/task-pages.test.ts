@@ -1,4 +1,4 @@
-import { expect, test } from './fixtures.ts';
+import { expect, openNewTask, test } from './fixtures.ts';
 
 // The list and task pages, beyond the spec's scenarios.
 
@@ -84,4 +84,32 @@ test('edits made just before leaving the task are saved', async ({ page, signUp 
   await title.fill('A renamed');
   await page.goBack();
   await expect(page.getByRole('link', { name: 'A renamed', exact: true })).toBeVisible();
+});
+
+test('pages not opened since the app loaded open offline', async ({ context, page, signUp }) => {
+  await signUp(page, 'pages-offline');
+  await page.getByRole('textbox', { name: 'New task' }).fill('Paint fence');
+  await page.getByRole('textbox', { name: 'New task' }).press('Enter');
+
+  await context.setOffline(true);
+  await page.getByRole('link', { name: 'Paint fence', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Title' })).toHaveValue('Paint fence');
+  await page.getByRole('button', { name: 'pages-offline' }).click();
+  await page.getByRole('menuitem', { name: 'Devices' }).click();
+  await expect(page.getByRole('heading', { name: 'Devices' })).toBeVisible();
+});
+
+test('a title and notes typed just before a reload are kept', async ({ page, signUp }) => {
+  await signUp(page, 'pages-reload');
+  await openNewTask(page, 'Paint fence');
+  const title = page.getByRole('textbox', { name: 'Title' });
+  const notes = page.getByRole('textbox', { name: 'Notes' });
+
+  // Neither field is left, and the reload comes well within the pause that saves them.
+  await notes.fill('Use oil paint');
+  await title.fill('Paint the fence');
+  await page.reload();
+
+  await expect(title).toHaveValue('Paint the fence');
+  await expect(notes).toHaveValue('Use oil paint');
 });

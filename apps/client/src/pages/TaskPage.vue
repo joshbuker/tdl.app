@@ -16,6 +16,7 @@
           :label="$t('task.title')"
           :error="titleError !== null"
           :error-message="titleError === null ? undefined : $t(titleError)"
+          @update:model-value="scheduleTitle"
           @blur="saveTitle"
         />
       </q-form>
@@ -82,6 +83,7 @@ import ShareDialog from '@/components/ShareDialog.vue';
 import TaskHistory from '@/components/TaskHistory.vue';
 import TaskLinks from '@/components/TaskLinks.vue';
 import { useApp, useDevice } from '@/composables/useApp.ts';
+import { useSaveWhenHidden } from '@/composables/useSaveWhenHidden.ts';
 import { canEditTask, hasShareActions, shareView } from '@/display/sharing-display.ts';
 import { pageContent } from '@/display/sync-display.ts';
 import { historyRows, taskLinks, taskOptions, type TaskOption } from '@/display/task-display.ts';
@@ -160,15 +162,25 @@ function failure(result: Validated<unknown>): string | null {
   return result.ok ? null : errorKey(result.errors[0]?.code ?? 'unknown');
 }
 
-async function saveTitle(): Promise<void> {
-  if (ready.value === null || title.value === task.value?.title) return;
-  titleError.value = failure(
-    await ready.value.replica.setTaskField(props.taskId, 'title', title.value),
-  );
+// The title and notes save once typing pauses for a second, and the title also on Enter or
+// leaving the field. The task is fixed when the user types, so a save still pending when they
+// switch tasks goes to the task they typed in.
+const pendingTitle = createPendingSave(
+  async ({ taskId, value }: { taskId: string; value: string }) => {
+    if (ready.value === null || value === device.value?.tasks.get(taskId)?.title) return;
+    titleError.value = failure(await ready.value.replica.setTaskField(taskId, 'title', value));
+  },
+  1000,
+);
+
+function scheduleTitle(value: string | number | null): void {
+  pendingTitle.schedule({ taskId: props.taskId, value: String(value ?? '') });
 }
 
-// Notes save once typing pauses for a second. The task is fixed when the user types, so a save
-// still pending when they switch tasks goes to the task they typed in.
+async function saveTitle(): Promise<void> {
+  await pendingTitle.flush();
+}
+
 const pendingNotes = createPendingSave(
   async ({ taskId, value }: { taskId: string; value: string }) => {
     if (ready.value === null || value === device.value?.tasks.get(taskId)?.notes) return;
@@ -181,13 +193,16 @@ function scheduleNotes(value: string | number | null): void {
   pendingNotes.schedule({ taskId: props.taskId, value: String(value ?? '') });
 }
 
-/** Saves edits not saved yet, before the page shows another task or goes away. */
+/**
+ * Saves edits not saved yet, before the page shows another task or goes away, or the tab is
+ * hidden, closed or reloaded.
+ */
 async function savePending(): Promise<void> {
-  await pendingNotes.flush();
-  await saveTitle();
+  await Promise.all([pendingNotes.flush(), pendingTitle.flush()]);
 }
 onBeforeRouteUpdate(savePending);
 onBeforeRouteLeave(savePending);
+useSaveWhenHidden(savePending);
 onBeforeUnmount(() => {
   savePending().catch((error: unknown) => {
     console.error(error);

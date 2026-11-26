@@ -18,6 +18,11 @@ function entryId(entry: JsonValue): number {
 /** The ReplicaStore every device uses, over its own SQLite database. */
 export class SqliteReplicaStore implements ReplicaStore {
   private readonly db: SqliteRemoteDatabase;
+  /**
+   * Whether the replica row is known to exist, so writes skip checking it. Every write to the
+   * database goes through this object, so `init` and `wipe` keep it right.
+   */
+  private initialized = false;
 
   constructor(db: SqliteRemoteDatabase) {
     this.db = db;
@@ -30,8 +35,10 @@ export class SqliteReplicaStore implements ReplicaStore {
   }
 
   private async requireInitialized(): Promise<void> {
+    if (this.initialized) return;
     const row = await this.db.select({ userId: replica.userId }).from(replica).get();
     if (row === undefined) throw new Error('store-not-initialized');
+    this.initialized = true;
   }
 
   private setCursor(cursor: number): Query {
@@ -60,7 +67,9 @@ export class SqliteReplicaStore implements ReplicaStore {
   }
 
   async init(userId: string, deviceId: string): Promise<void> {
+    this.initialized = false;
     await this.batch([...this.clearReplica(), this.db.insert(replica).values({ userId, deviceId, cursor: 0 })]);
+    this.initialized = true;
   }
 
   async appendConfirmed(ops: FeedOp[], cursor: number): Promise<void> {
@@ -120,6 +129,7 @@ export class SqliteReplicaStore implements ReplicaStore {
 
   /** Deletes the replica and the key-value store. */
   async wipe(): Promise<void> {
+    this.initialized = false;
     await this.batch([...this.clearReplica(), this.db.delete(keyValue)]);
   }
 

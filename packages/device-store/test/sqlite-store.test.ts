@@ -57,6 +57,32 @@ describe('SQLite store', () => {
     expect(await reopened.keyValue.get('session')).toEqual({ expiresAt: '2026-12-01T00:00:00.000Z' });
   });
 
+  test('once the store is known to be initialized, a write is one message to the database', async () => {
+    // On the web each message is a round trip to the worker, and a save made as the tab closes
+    // only lands if it is sent at once.
+    const driver = nodeSqliteDriver();
+    let messages = 0;
+    const counted = {
+      exec: (sql: string, params: unknown[], method: 'run' | 'all' | 'values' | 'get') => {
+        messages += 1;
+        return driver.exec(sql, params, method);
+      },
+      batch: (queries: { sql: string; params: unknown[]; method: 'run' | 'all' | 'values' | 'get' }[]) => {
+        messages += 1;
+        return driver.batch(queries);
+      },
+    };
+    const { replicaStore } = await openDeviceStore(counted);
+    await replicaStore.init('user-1', 'device-1');
+    messages = 0;
+    await replicaStore.putPending(ops.createList('a'));
+    await replicaStore.putPending(ops.createList('b'));
+    expect(messages).toBe(2);
+
+    await replicaStore.wipe();
+    await expect(replicaStore.putPending(ops.createList('c'))).rejects.toThrow('store-not-initialized');
+  });
+
   test('migrate twice applies nothing the second time', async () => {
     const driver = nodeSqliteDriver();
     await migrate(driver);
