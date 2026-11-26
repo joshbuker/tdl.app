@@ -59,14 +59,12 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
 import { useApp } from '@/composables/useApp.ts';
 import { canSubmitAccountForm, formErrors, type FormErrors } from '@/forms/account-forms.ts';
 
 const FIELDS = ['username', 'email', 'password', 'givenName', 'familyName', 'acceptTerms'];
 
 const { state, controller } = useApp();
-const router = useRouter();
 const { t } = useI18n();
 
 const form = reactive({
@@ -91,8 +89,10 @@ async function submit(): Promise<void> {
   busy.value = true;
   errors.value = { form: null, fields: {} };
   try {
+    // Being logged in moves the user to their tasks (followState, in boot/app.ts) before this
+    // returns, which is after the first sync. Navigating here too could take them off a page
+    // they've opened since.
     await controller.signUp({ ...form });
-    await router.push('/');
   } catch (error) {
     errors.value = formErrors(error, FIELDS);
   } finally {

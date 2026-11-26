@@ -154,7 +154,6 @@ Findings from plan 3's reviews, deferred. Fix each when its area is next touched
   - No test checks that `discardRejected` and `wipe` notify listeners. The replica writes some fields twice, and notifies when nothing changed.
   - One app-core test passes only because of microtask order, and a negative `Replica` test waits an arbitrary time. Both risk flakiness.
   - No end-to-end test removes a link or checks history.
-  - **Flaky end-to-end tests around the share dialog:** in a full run, a click in the Share dialog (the role radio or Invite) sometimes waits 30 s for the element to become stable and times out. It happens on the plan 3 branch before the review fixes too, in about one run in two. Seen in "Rejected offline changes are kept", "Remove a collaborator" and "leaving a shared list removes it". A single test run alone passes.
   - The client's root config files aren't linted.
   - Better Auth logs a WARN in the end-to-end output, and the `no_lists` constraint logs noise in server tests.
   - A stale local `reports/playwright.json` satisfies `check:scenarios`. CI checks out fresh, so it's unaffected.

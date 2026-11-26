@@ -1,10 +1,59 @@
-import { defaultListUrl, expect, openNewTask, test } from './fixtures.ts';
+import { type Page } from '@playwright/test';
+import { createList, defaultListUrl, expect, logIn, openNewTask, test } from './fixtures.ts';
 
 // The login and sign-up pages, beyond the spec's scenarios.
 
 test('signing up ends logged in on the default list', async ({ page, signUp }) => {
   await signUp(page, 'pages-signup');
   await expect(page.getByRole('textbox', { name: 'Username or email' })).toBeHidden();
+});
+
+/** Holds the device's first pull back, so its first sync ends a while after it is logged in. */
+async function holdFirstPull(page: Page): Promise<void> {
+  let held = false;
+  await page.route('**/api/sync/pull**', async (route) => {
+    if (!held) {
+      held = true;
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+    }
+    await route.continue();
+  });
+}
+
+/** Opens a new list, then checks that nothing takes the user back once the first sync is over. */
+async function staysOnNewList(page: Page): Promise<void> {
+  await createList(page, 'House');
+  const houseUrl = page.url();
+  await page.waitForTimeout(3000);
+  await expect(page).toHaveURL(houseUrl);
+  await expect(page.getByRole('heading', { name: 'House' })).toBeVisible();
+}
+
+test('moving on after signing up, during the first sync, stays put', async ({ page }) => {
+  await holdFirstPull(page);
+  await page.goto('/signup');
+  await page.getByLabel('Username').fill('pages-slow-signup');
+  await page.getByLabel('Email').fill('pages-slow-signup@example.com');
+  await page.getByLabel('Password').fill('correct horse battery staple');
+  await page.getByLabel('Given name').fill('Slow');
+  await page.getByLabel('Family name').fill('Sync');
+  await page.getByRole('checkbox', { name: 'I accept the terms of service' }).click();
+  await page.getByRole('button', { name: 'Sign up' }).click();
+  await expect(page).toHaveURL(defaultListUrl);
+  await staysOnNewList(page);
+});
+
+test('moving on after logging in, during the first sync, stays put', async ({
+  browser,
+  page,
+  signUp,
+}) => {
+  await signUp(page, 'pages-slow-login');
+  const fresh = await browser.newPage();
+  await holdFirstPull(fresh);
+  await logIn(fresh, 'pages-slow-login');
+  await staysOnNewList(fresh);
+  await fresh.close();
 });
 
 test('logging in ends on the default list', async ({ page, browser, signUp }) => {

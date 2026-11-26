@@ -31,12 +31,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { useApp } from '@/composables/useApp.ts';
 import { canSubmitAccountForm, formErrors, type FormErrors } from '@/forms/account-forms.ts';
 
 const { state, controller } = useApp();
-const router = useRouter();
 
 const identifier = ref('');
 const password = ref('');
@@ -48,8 +46,10 @@ async function submit(): Promise<void> {
   busy.value = true;
   errors.value = { form: null, fields: {} };
   try {
+    // Being logged in moves the user to their tasks (followState, in boot/app.ts) before this
+    // returns, which is after the first sync. Navigating here too could take them off a page
+    // they've opened since.
     await controller.logIn(identifier.value, password.value);
-    await router.push('/');
   } catch (error) {
     errors.value = formErrors(error, []);
   } finally {
