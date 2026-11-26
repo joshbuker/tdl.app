@@ -20,6 +20,8 @@ ORIGIN=https://tasks.example.com
 TRUST_PROXY=true
 ```
 
+To try it on one machine without a proxy, set `ORIGIN=http://localhost:3000` and `TRUST_PROXY=false`, then open that address. Browsers treat `localhost` as secure, so the app works there over plain HTTP. It doesn't work at a LAN address over plain HTTP: the page asks the browser to upgrade its requests to HTTPS.
+
 | Variable | Required | Meaning |
 | --- | --- | --- |
 | `POSTGRES_PASSWORD` | Yes | The database password. Compose sets it when it first creates the database. Use letters and digits only (`openssl rand -hex 32`), since it's also put in the database URL. |
