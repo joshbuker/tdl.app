@@ -5,3 +5,6 @@ coverage
 .pnpm-store
 .superpowers
 *.tsbuildinfo
+
+# Docker Compose settings for a local or self-hosted server; holds secrets.
+.env
