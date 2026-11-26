@@ -24,14 +24,20 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
      - `TRUST_PROXY=true` with a proxy that overwrites `X-Forwarded-For`, so the sign-up and sign-in rate limits see real client addresses.
      - `ORIGIN=https://tdl.app` exactly, with no trailing slash.
      - Live edits still arrive within a second or two over the LAN and through the proxy, and the image builds and runs on the VM.
-4. Android and Electron: **next**. No plan written yet; start by writing it (`docs/superpowers/plans/`). Covers the Capacitor and Electron SQLite drivers, bearer-token platforms, the Capacitor and Electron Quasar modes, and the phone and desktop parts of the demo checklist. Researched 2026-11-13:
+4. [Android and Electron](superpowers/plans/2026-11-26-thin-slice-4-android-and-electron.md): **next**. Plan written 2026-11-26, not started. Covers the Capacitor and Electron SQLite drivers, bearer-token platforms, the Capacitor and Electron Quasar modes, and the phone and desktop parts of the demo checklist. Researched 2026-11-13 (rechecked 2026-11-26: `@capacitor-community/sqlite` 8.1.1, Capacitor 8.6, Electron 45.3.4 in nixpkgs with `node:sqlite` working in it):
    - **Android SQLite:** `@capacitor-community/sqlite` 8.x (MIT, Capacitor 8). `@capgo/capacitor-fast-sql` (MPL-2.0) is the fallback if bridge throughput is a problem. `@capawesome-team/capacitor-sqlite` fails the licence rules (paid), and `jeep-sqlite` is unmaintained since 2024.
    - **Quasar's Capacitor mode** uses Capacitor 8, with `src-capacitor/` as its own pnpm install root. Keep the default `https://localhost` origin.
-   - **Sign-out from the apps:** Better Auth's `trustedOrigins` is only the server's own origin. A bearer-token sign-out from `https://localhost` (Capacitor) may be refused with `INVALID_ORIGIN`. Test it in plan 4.
+   - **Sign-in from the apps:** Better Auth's first-login CSRF check validates `Origin` on sign-in and sign-up even without cookies, so the apps' sign-ins are refused with `INVALID_ORIGIN` until `trustedOrigins` includes `APP_ORIGINS` (plan 4, Task 1). Bearer sign-out sends no cookie and isn't checked.
    - **Electron:** 45 (Node 24, Chromium 156). SQLite through `node:sqlite` in the main process (release candidate stability), with `better-sqlite3` 13 (MIT, Node-API prebuilds) as the drop-in fallback. Quasar's Electron mode defaults to `@electron/packager`.
 
    Decided for plans 3 and 4:
-   - **Live updates:** built, as decided in [Live-update authentication](design-decisions/live-update-authentication.md): cookie for the browser web app, session token in the first message for everything else, an `Origin` allow-list scoped by credential (`APP_ORIGINS`), and CORS for the Capacitor apps. Electron's window origin is still to confirm when the Electron app is built.
+   - **Live updates:** built, as decided in [Live-update authentication](design-decisions/live-update-authentication.md): cookie for the browser web app, session token in the first message for everything else, an `Origin` allow-list scoped by credential (`APP_ORIGINS`), and CORS for the Capacitor apps. Electron's window origin is `tdl://app` (below), added to `APP_ORIGINS` in plan 4.
+
+   Decided for plan 4 (2026-11-26):
+   - **Server address:** a build-time `TDL_SERVER_URL` for the apps. [Choose a server](features/account/choose-server.md) stays a later feature.
+   - **Testing Android while the homelab is down:** the Android emulator, reaching the laptop's server through `adb reverse` at `http://localhost:3000`. A real phone joins the deferred homelab check.
+   - **Desktop origin:** the window loads the app from a private `tdl://app` scheme, so it has a real origin instead of `null`.
+   - **Session tokens:** OS-protected storage: the Android Keystore through `@aparajita/capacitor-secure-storage` (MIT; chosen over the month-old `@cap-kit/secure-storage`), and Electron's `safeStorage` on desktop.
 
 ## Deferred past the thin slice
 
