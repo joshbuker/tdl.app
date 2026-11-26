@@ -65,6 +65,15 @@ describe('copyRejected', () => {
     expect(replica.discarded).toEqual([change.op.id]);
   });
 
+  test('copying a change again while it is being copied (e.g. a double click) creates one task', async () => {
+    const change = content('title', 'Paint the fence');
+    const replica = fakeReplica([change]);
+    const [first, second] = await Promise.all([copyRejected(replica, change.op.id, 'inbox'), copyRejected(replica, change.op.id, 'inbox')]);
+    expect(first).toEqual({ ok: true, value: 'new-task' });
+    expect(second).toEqual(first);
+    expect(replica.created).toHaveLength(1);
+  });
+
   test('keeps the change when the task is refused', async () => {
     const change = content('title', 'Paint the fence');
     const replica = fakeReplica([change], { ok: false, errors: [{ field: 'listId', code: 'forbidden' }] });

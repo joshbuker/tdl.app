@@ -27,11 +27,35 @@ export function rejectedTaskContent(rejected: RejectedOp): CopiedTask | null {
   return { title, notes: text(rejected, 'notes') ?? '' };
 }
 
+/** Copies in progress, by replica and operation ID. */
+const copying = new WeakMap<object, Map<Id, Promise<Validated<Id>>>>();
+
 /**
  * Copies the refused change `opId` into the list as a new task, then drops it from the refused
  * changes. A change that is gone, or has nothing to copy, gives an `invalid` error on `opId`.
+ * Asked again while the copy is in progress (e.g. a double click), it gives the same result
+ * rather than copying twice.
  */
-export async function copyRejected(
+export function copyRejected(
+  replica: Pick<Replica, 'rejected' | 'createTask' | 'discardRejected'>,
+  opId: Id,
+  listId: Id,
+): Promise<Validated<Id>> {
+  let inProgress = copying.get(replica);
+  if (inProgress === undefined) {
+    inProgress = new Map();
+    copying.set(replica, inProgress);
+  }
+  const running = inProgress.get(opId);
+  if (running !== undefined) return running;
+  const copy = copyOnce(replica, opId, listId).finally(() => {
+    inProgress.delete(opId);
+  });
+  inProgress.set(opId, copy);
+  return copy;
+}
+
+async function copyOnce(
   replica: Pick<Replica, 'rejected' | 'createTask' | 'discardRejected'>,
   opId: Id,
   listId: Id,
