@@ -8,6 +8,10 @@
     ".": {
       "tdl-compiled": "./dist/index.js",
       "default": "./src/index.ts"
+    },
+    "./node": {
+      "tdl-compiled": "./dist/node-driver.js",
+      "default": "./src/node-driver.ts"
     }
   },
   "scripts": {

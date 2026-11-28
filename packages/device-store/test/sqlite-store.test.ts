@@ -5,11 +5,12 @@ import { MemoryStore, type RejectedOp } from '@tdl/sync';
 import { afterEach, describe, expect, test } from 'vitest';
 import { openDeviceStore } from '../src/index.ts';
 import { migrate } from '../src/migrate.ts';
-import { nodeSqliteDriver } from './node-driver.ts';
+import { nodeSqliteDriver } from '../src/node-driver.ts';
+import { checkColumns } from './check-columns.ts';
 import { describeReplicaStore, ops } from './store-contract.ts';
 
 describeReplicaStore('MemoryStore', () => Promise.resolve(new MemoryStore()));
-describeReplicaStore('SQLite store', async () => (await openDeviceStore(nodeSqliteDriver())).replicaStore);
+describeReplicaStore('SQLite store', async () => (await openDeviceStore(nodeSqliteDriver(':memory:', { onPrepare: checkColumns }))).replicaStore);
 
 describe('SQLite store', () => {
   const dirs: string[] = [];

@@ -4,7 +4,7 @@
     "noEmit": false,
     "rootDir": "src",
     "outDir": "dist",
-    "types": [],
+    "types": ["node"],
     "tsBuildInfoFile": "dist/tsconfig.build.tsbuildinfo"
   },
   "include": ["src"],

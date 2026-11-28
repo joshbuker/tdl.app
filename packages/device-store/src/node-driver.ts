@@ -1,12 +1,19 @@
-import { DatabaseSync, type SQLInputValue } from 'node:sqlite';
-import type { SqlDriver, SqlMethod } from '../src/driver.ts';
+import { DatabaseSync, type SQLInputValue, type StatementSync } from 'node:sqlite';
+import type { SqlDriver, SqlMethod } from './driver.ts';
 
-/** A SqlDriver over Node's built-in SQLite, for tests. */
-export function nodeSqliteDriver(path = ':memory:'): SqlDriver & { close(): void } {
+/**
+ * A SqlDriver over Node's built-in SQLite, for every Node process (Electron's main process, tests).
+ * `onPrepare` runs on each statement right after it is prepared, inside batches too.
+ */
+export function nodeSqliteDriver(
+  path = ':memory:',
+  options: { onPrepare?: (statement: StatementSync, sql: string) => void } = {},
+): SqlDriver & { close(): void } {
   const db = new DatabaseSync(path);
 
   const run = (sql: string, params: unknown[], method: SqlMethod): { rows: unknown[] } => {
     const statement = db.prepare(sql);
+    options.onPrepare?.(statement, sql);
     const args = params as SQLInputValue[];
     switch (method) {
       case 'run':
@@ -26,7 +33,13 @@ export function nodeSqliteDriver(path = ':memory:'): SqlDriver & { close(): void
   };
 
   return {
-    exec: (sql, params, method) => Promise.resolve(run(sql, params, method)),
+    exec: (sql, params, method) => {
+      try {
+        return Promise.resolve(run(sql, params, method));
+      } catch (error) {
+        return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+      }
+    },
     batch: (queries) => {
       db.exec('BEGIN');
       try {
