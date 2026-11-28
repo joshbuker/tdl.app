@@ -9,6 +9,6 @@ export const webPlatform: Platform = {
   openStore: async () => openDeviceStore(await createWebDriver()),
   loadToken: () => Promise.resolve(null),
   saveToken: () => Promise.resolve(),
-  // The web app is served by its server, so the API is on the page's own origin.
-  transport: (options) => createHttpTransport({ ...options, baseUrl: location.origin }),
+  // The app's boot file gives the controller the page's own origin as its `baseUrl`.
+  transport: (options) => createHttpTransport(options),
 };

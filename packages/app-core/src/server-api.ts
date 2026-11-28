@@ -49,7 +49,10 @@ export interface ServerApiOptions {
   fetch?: FetchLike;
   /** A bearer token (native apps). Without one, the session cookie is sent. */
   token?: string;
-  /** `'include'` sends the session cookie (web); `'omit'` sends none (native apps, whose CORS refuses credentials). Defaults to `'include'` without a token. */
+  /**
+   * `'include'` sends the session cookie (web); `'omit'` sends none (native apps, whose CORS
+   * refuses credentials). Defaults to `'include'` without a token.
+   */
   credentials?: 'include' | 'omit';
 }
 

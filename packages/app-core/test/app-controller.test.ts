@@ -309,6 +309,14 @@ describe('AppController', () => {
     expect(server.calls.map((call) => call.init.credentials)).toEqual(['omit', 'omit']);
     expect(platform.transports.map((options) => options.credentials)).toEqual(['omit']);
 
+    const signUpServer = new FakeFetch()
+      .on('POST /api/auth/sign-up/email', { status: 200, body: {}, headers: { 'set-auth-token': 'tok' } })
+      .on('GET /api/me', { status: 200, body: bob });
+    const signUpController = new AppController({ baseUrl: BASE_URL, platform: new TestPlatform(), fetch: signUpServer.fetch });
+    await signUpController.start();
+    await signUpController.signUp({ username: 'bob', email: 'bob@example.com', password: 'p', givenName: 'Bob', familyName: 'B', acceptTerms: true });
+    expect(signUpServer.calls.map((call) => call.init.credentials)).toEqual(['omit', 'omit']);
+
     const cookieServer = new FakeFetch().on('GET /api/me', { status: 200, body: bob });
     const cookiePlatform = new TestPlatform();
     Object.defineProperty(cookiePlatform, 'auth', { value: 'cookie' });
@@ -351,7 +359,9 @@ describe('AppController', () => {
     ).rejects.toMatchObject({ status: 500 });
 
     expect(saveToken).not.toHaveBeenCalled();
+    expect(platform.token).toBeNull();
     expect(server.callsTo('POST /api/auth/sign-out')[0]?.init.headers).toMatchObject({ authorization: 'Bearer new-token' });
+    expect(controller.state()).toEqual({ kind: 'logged-out' });
   });
 
   test("server() calls the server's API with the current session", async () => {
