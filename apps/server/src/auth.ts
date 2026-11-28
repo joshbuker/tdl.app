@@ -133,6 +133,7 @@ export function createAuth(config: Config, deps: AuthDeps) {
     database: drizzleAdapter(db, { provider: 'pg', schema, transaction: true }),
     advanced: {
       // Better Auth skips its origin check under test by default; keep it on so tests cover what production does.
+      // It also refuses an email sign-in or sign-up that sends sec-fetch-* headers without an Origin (as Node's fetch does).
       disableOriginCheck: false,
       database: { generateId: 'uuid' },
       ipAddress: { ipAddressHeaders: [CLIENT_IP_HEADER] },

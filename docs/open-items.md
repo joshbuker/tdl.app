@@ -22,7 +22,7 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
      - The reverse proxy passes websocket upgrades on and keeps `Origin` and `Host` as the browser sent them.
      - The proxy doesn't drop quiet live-update sockets: the server sends no keepalive pings, so a short idle timeout means reconnects and up to 30 s of lag after each drop.
      - `TRUST_PROXY=true` with a proxy that overwrites `X-Forwarded-For`, so the sign-up and sign-in rate limits see real client addresses.
-     - `ORIGIN=https://tdl.app` exactly, with no trailing slash.
+     - `ORIGIN=https://tdl.app` (the server ignores a trailing slash and capital letters).
      - Live edits still arrive within a second or two over the LAN and through the proxy, and the image builds and runs on the VM.
 4. [Android and Electron](superpowers/plans/2026-11-26-thin-slice-4-android-and-electron.md): **next**. Plan written and re-evaluated 2026-11-26, not started; choose subagent-driven (recommended) or native execution when resuming. Covers the Capacitor and Electron SQLite drivers, bearer-token platforms, the Capacitor and Electron Quasar modes, and the phone and desktop parts of the demo checklist. Researched 2026-11-13 (rechecked 2026-11-26: `@capacitor-community/sqlite` 8.1.1, Capacitor 8.6, Electron 45.3.4 in nixpkgs with `node:sqlite` working in it):
    - **Android SQLite:** `@capacitor-community/sqlite` 8.x (MIT, Capacitor 8). `@capgo/capacitor-fast-sql` (MPL-2.0) is the fallback if bridge throughput is a problem. `@capawesome-team/capacitor-sqlite` fails the licence rules (paid), and `jeep-sqlite` is unmaintained since 2024.

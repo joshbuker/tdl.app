@@ -224,6 +224,7 @@ describe('origins', () => {
   let server: Awaited<ReturnType<typeof testApp>>;
   beforeAll(async () => {
     server = await testApp();
+    await signUp(server.app, 'heidi');
   });
   afterAll(async () => {
     await server.close();
@@ -250,7 +251,6 @@ describe('origins', () => {
   });
 
   test('from another origin, sign-up, email sign-in and username sign-in are refused with 403 invalid-origin', async () => {
-    await signUp(server.app, 'heidi');
     const headers = crossSite('https://evil.example');
     const attempts = [
       post('/sign-up/email', headers, { ...signUpInput('ivan') }),

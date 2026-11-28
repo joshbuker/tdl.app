@@ -69,10 +69,13 @@ export interface DeviceOptions {
 /** JSON requests to one server, sending its protocol version. */
 class Api {
   private readonly url: string;
+  /** The Origin the requests send, as a browser would: the server's own. */
+  private readonly origin: string;
   private readonly protocolVersion: string;
 
-  constructor(url: string, protocolVersion: string) {
+  constructor(url: string, origin: string, protocolVersion: string) {
     this.url = url;
+    this.origin = origin;
     this.protocolVersion = protocolVersion;
   }
 
@@ -81,7 +84,7 @@ class Api {
       method,
       headers: {
         // Real clients are browsers or webviews, which always send an Origin. Better Auth refuses email sign-in and sign-up from a fetch without one.
-        origin: testConfig('').origin,
+        origin: this.origin,
         [PROTOCOL_HEADER]: this.protocolVersion,
         ...(body === undefined ? {} : { 'content-type': 'application/json' }),
         ...(token === undefined ? {} : { authorization: `Bearer ${token}` }),
@@ -104,11 +107,11 @@ export class TestServer {
   private readonly names = new Map<string, number>();
   private readonly clock = createClock('acceptance', () => Date.now());
 
-  constructor(url: string, close: () => Promise<void>, db: Db, protocolVersion: string) {
+  constructor(url: string, origin: string, close: () => Promise<void>, db: Db, protocolVersion: string) {
     this.url = url;
     this.close = close;
     this.db = db;
-    this.api = new Api(url, protocolVersion);
+    this.api = new Api(url, origin, protocolVersion);
   }
 
   request(method: string, path: string, options?: RequestOptions): Promise<Reply & { headers: Headers }> {
@@ -195,7 +198,7 @@ export async function startServer({ protocolVersion = PROTOCOL_VERSION }: { prot
   const config = testConfig(database.url);
   const app = await buildApp(config, { db: database.db, protocolVersion });
   const url = await app.listen({ port: 0, host: '127.0.0.1' });
-  return new TestServer(url, async () => {
+  return new TestServer(url, config.origin, async () => {
     await app.close();
     await database.close();
   }, database.db, protocolVersion);
