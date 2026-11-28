@@ -24,7 +24,7 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
      - `TRUST_PROXY=true` with a proxy that overwrites `X-Forwarded-For`, so the sign-up and sign-in rate limits see real client addresses.
      - `ORIGIN=https://tdl.app` (the server ignores a trailing slash and capital letters).
      - Live edits still arrive within a second or two over the LAN and through the proxy, and the image builds and runs on the VM.
-4. [Android and Electron](superpowers/plans/2026-11-26-thin-slice-4-android-and-electron.md): **next**. Plan written and re-evaluated 2026-11-26, not started; choose subagent-driven (recommended) or native execution when resuming. Covers the Capacitor and Electron SQLite drivers, bearer-token platforms, the Capacitor and Electron Quasar modes, and the phone and desktop parts of the demo checklist. Researched 2026-11-13 (rechecked 2026-11-26: `@capacitor-community/sqlite` 8.1.1, Capacitor 8.6, Electron 45.3.4 in nixpkgs with `node:sqlite` working in it):
+4. [Android and Electron](superpowers/plans/2026-11-26-thin-slice-4-android-and-electron.md): **in progress**, subagent-driven, on branch `thin-slice-4-android-and-electron` (not pushed yet). The plan was checked against the code twice and revised on 2026-11-28. Tasks 1 to 3 are done and reviewed. Resume at Task 4, which downloads several GB of Android SDK through `nix-shell --arg android true`, so start it on a good connection. Parked review findings are in `.superpowers/sdd/` on the machine that ran them (git-ignored); anything later tasks need is already in the plan's text. Covers the Capacitor and Electron SQLite drivers, bearer-token platforms, the Capacitor and Electron Quasar modes, and the phone and desktop parts of the demo checklist. Researched 2026-11-13 (rechecked 2026-11-26: `@capacitor-community/sqlite` 8.1.1, Capacitor 8.6, Electron 45.3.4 in nixpkgs with `node:sqlite` working in it):
    - **Android SQLite:** `@capacitor-community/sqlite` 8.x (MIT, Capacitor 8). `@capgo/capacitor-fast-sql` (MPL-2.0) is the fallback if bridge throughput is a problem. `@capawesome-team/capacitor-sqlite` fails the licence rules (paid), and `jeep-sqlite` is unmaintained since 2024.
    - **Quasar's Capacitor mode** uses Capacitor 8, with `src-capacitor/` as its own pnpm install root. Keep the default `https://localhost` origin.
    - **Sign-in from the apps:** Better Auth's first-login CSRF check validates `Origin` on sign-in and sign-up even without cookies, so `trustedOrigins` includes `APP_ORIGINS`, and the server checks the origin of every sign-up and sign-in itself, since Better Auth's username sign-in has no check (done in plan 4, Task 1). Bearer sign-out sends no cookie and isn't checked.
@@ -168,6 +168,16 @@ Findings from plan 3's reviews, deferred. Fix each when its area is next touched
 - **For plan 4 (Android and Electron):**
   - Test CORS `exposedHeaders` with the first token platform: native apps must read `set-auth-token` cross-origin.
   - `web-driver.test.ts` imports the store contract by relative path. Still deferred: the Capacitor and Electron drivers' tests use fakes, so a `./testing` export isn't needed yet.
+
+## Follow-ups from plan 4
+
+Minor findings from plan 4's task reviews, deferred. Fix each when its area is next touched.
+
+- `normaliseOrigin` lower-cases the whole value, so a path in `ORIGIN` would be lower-cased too, and `ORIGIN` is also Better Auth's `baseURL`. Reject a non-empty path in the config schema.
+- The trusted-origin set (own origin plus `APP_ORIGINS`) is built in three places: CORS, the auth bridge and the websocket. Share one `trustedOrigins(config)` helper.
+- Better Auth refuses an email sign-in or sign-up from a Node client that sends `sec-fetch-*` headers without an `Origin` (Node's `fetch` does). Production always did; tests now show it. Matters once [API access](features/app/api-access.md) is built.
+- `nodeSqliteDriver` repeats its error wrapping in `exec` and `batch`; a small `toError` helper would remove it.
+- An app-core test turns its test platform into a cookie platform with `Object.defineProperty`. A constructor option would be clearer.
 
 ## Ideas for later
 
