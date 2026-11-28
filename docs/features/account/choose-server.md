@@ -21,6 +21,7 @@ Check both apps' current behavior before implementing.
 
 ## Rules
 
+- Only the native apps (Android, iOS, desktop) choose a server. The web app talks only to the server that serves it, so a self-hosted server is used in a browser through its own web app. This keeps the web app's session cookie first-party, and keeps each server's `Origin` allow-list fixed: its own origin plus the apps' origins, which are the same in every install.
 - The first screen asks whether to use the official server (tdl.app) or a self-hosted one.
 - Choosing Official goes straight to logging in or signing up on tdl.app.
 - Choosing Self-hosted asks for the server's address first. The app checks that it is a TDL App server running a compatible version, and says why if it isn't. Then it goes to logging in or signing up on that server.
