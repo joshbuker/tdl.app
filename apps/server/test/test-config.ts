@@ -7,5 +7,5 @@ export const testConfig = (databaseUrl: string): Config => ({
   origin: 'http://localhost:3000',
   authSecret: 'test-secret-test-secret-test-secret-0123',
   trustProxy: false,
-  appOrigins: ['https://localhost', 'capacitor://localhost'],
+  appOrigins: ['https://localhost', 'capacitor://localhost', 'tdl://app'],
 });

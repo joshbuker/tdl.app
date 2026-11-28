@@ -57,6 +57,7 @@ const apiErrorCodes = [
   'internal-error',
   'invalid',
   'invalid-credentials',
+  'invalid-origin',
   'network',
   'not-found',
   'protocol-mismatch',

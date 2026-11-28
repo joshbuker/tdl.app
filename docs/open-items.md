@@ -27,7 +27,7 @@ Build the [thin slice](superpowers/specs/2026-11-10-thin-slice-design.md) from i
 4. [Android and Electron](superpowers/plans/2026-11-26-thin-slice-4-android-and-electron.md): **next**. Plan written and re-evaluated 2026-11-26, not started; choose subagent-driven (recommended) or native execution when resuming. Covers the Capacitor and Electron SQLite drivers, bearer-token platforms, the Capacitor and Electron Quasar modes, and the phone and desktop parts of the demo checklist. Researched 2026-11-13 (rechecked 2026-11-26: `@capacitor-community/sqlite` 8.1.1, Capacitor 8.6, Electron 45.3.4 in nixpkgs with `node:sqlite` working in it):
    - **Android SQLite:** `@capacitor-community/sqlite` 8.x (MIT, Capacitor 8). `@capgo/capacitor-fast-sql` (MPL-2.0) is the fallback if bridge throughput is a problem. `@capawesome-team/capacitor-sqlite` fails the licence rules (paid), and `jeep-sqlite` is unmaintained since 2024.
    - **Quasar's Capacitor mode** uses Capacitor 8, with `src-capacitor/` as its own pnpm install root. Keep the default `https://localhost` origin.
-   - **Sign-in from the apps:** Better Auth's first-login CSRF check validates `Origin` on sign-in and sign-up even without cookies, so the apps' sign-ins are refused with `INVALID_ORIGIN` until `trustedOrigins` includes `APP_ORIGINS` (plan 4, Task 1). Bearer sign-out sends no cookie and isn't checked.
+   - **Sign-in from the apps:** Better Auth's first-login CSRF check validates `Origin` on sign-in and sign-up even without cookies, so `trustedOrigins` includes `APP_ORIGINS`, and the server checks the origin of every sign-up and sign-in itself, since Better Auth's username sign-in has no check (done in plan 4, Task 1). Bearer sign-out sends no cookie and isn't checked.
    - **Electron:** 45 (Node 24, Chromium 156). SQLite through `node:sqlite` in the main process (release candidate stability), with `better-sqlite3` 13 (MIT, Node-API prebuilds) as the drop-in fallback. Quasar's Electron mode defaults to `@electron/packager`.
 
    Decided for plans 3 and 4:
@@ -134,7 +134,6 @@ Findings from plan 3's reviews, deferred. Fix each when its area is next touched
   - `sync-push.ts` repeats the UUID regex; export `uuidSchema` from `@tdl/sync`.
   - The OpenAPI document shows push items as `{}`. It matters once API access is built.
   - A refinement failure in a pushed operation gives `field: ''`. The UI shows only the code.
-  - CORS origins aren't normalised, while the websocket's are. Normalise them in `loadConfig`.
   - The websocket's 30-minute recheck repeats the tombstone query; share one `isRevoked`.
   - The `/health` exclusion in the web app fallback is dead code. The fallback doesn't answer HEAD, dotted paths get a JSON 404, and no test checks its CSP header.
   - Hashed web app files are served without long cache headers.
@@ -168,7 +167,6 @@ Findings from plan 3's reviews, deferred. Fix each when its area is next touched
   - `startE2eServer` leaks the app if `listen` throws, and picking a free port can race.
 - **For plan 4 (Android and Electron):**
   - Test CORS `exposedHeaders` with the first token platform: native apps must read `set-auth-token` cross-origin.
-  - Better Auth's `trustedOrigins` for sign-out from Capacitor (see "Next steps").
   - On token platforms, the token is saved before `me()` succeeds.
   - `web-driver.test.ts` imports the store contract by relative path. Add a `./testing` export when the Capacitor and Electron drivers need it.
 

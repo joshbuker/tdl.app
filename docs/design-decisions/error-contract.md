@@ -8,7 +8,7 @@
 
 - **401** when the request isn't logged in, or its session or token is no longer valid.
 - **404** when the record doesn't exist, or exists but the user can't see it. Both answers are identical.
-- **403** only when the user can see the record but their role doesn't allow the action (e.g. a viewer trying to edit), or their account is read-only (see [Billing](../features/account/billing.md)).
+- **403** only when the user can see the record but their role doesn't allow the action (e.g. a viewer trying to edit), or their account is read-only (see [Billing](../features/account/billing.md)). Also **403** `invalid-origin` when a sign-up or sign-in comes from a browser origin the server doesn't trust (see [Live-update authentication](live-update-authentication.md)).
 - **422** when the input is invalid, with a message per field (see [Strict validation](strict-validation.md)).
 - **429** when rate limited, saying when to retry.
 - **400**, **413** and **415** when the request itself is malformed: a body that isn't valid JSON, a body over the size limit (1 MiB), or an unsupported content type. They keep their status, with the code `bad-request`, as does any other 4xx the server framework raises.

@@ -220,6 +220,75 @@ describe('accounts', () => {
   });
 });
 
+describe('origins', () => {
+  let server: Awaited<ReturnType<typeof testApp>>;
+  beforeAll(async () => {
+    server = await testApp();
+  });
+  afterAll(async () => {
+    await server.close();
+  });
+
+  const crossSite = (origin: string) => ({ origin, 'sec-fetch-site': 'cross-site', 'sec-fetch-mode': 'cors' });
+  const post = (url: string, headers: Record<string, string>, payload: Record<string, unknown>) =>
+    server.app.inject({ method: 'POST', url: `/api/auth${url}`, headers, payload });
+
+  describe.each(['https://localhost', 'capacitor://localhost', 'tdl://app'])('from the app origin %s', (origin) => {
+    const name = origin.replace(/\W/g, '');
+    test('sign-up, email sign-in and username sign-in give a token', async () => {
+      const headers = crossSite(origin);
+      const signedUp = await post('/sign-up/email', headers, { ...signUpInput(name) });
+      expect(signedUp.statusCode).toBe(200);
+      bearerOf(signedUp.headers);
+      const byEmail = await post('/sign-in/email', headers, { email: `${name}@example.com`, password: PASSWORD });
+      expect(byEmail.statusCode).toBe(200);
+      bearerOf(byEmail.headers);
+      const byUsername = await post('/sign-in/username', headers, { username: name, password: PASSWORD });
+      expect(byUsername.statusCode).toBe(200);
+      bearerOf(byUsername.headers);
+    });
+  });
+
+  test('from another origin, sign-up, email sign-in and username sign-in are refused with 403 invalid-origin', async () => {
+    await signUp(server.app, 'heidi');
+    const headers = crossSite('https://evil.example');
+    const attempts = [
+      post('/sign-up/email', headers, { ...signUpInput('ivan') }),
+      post('/sign-in/email', headers, { email: 'heidi@example.com', password: PASSWORD }),
+      post('/sign-in/username', headers, { username: 'heidi', password: PASSWORD }),
+    ];
+    for (const response of await Promise.all(attempts)) {
+      expect(response.statusCode).toBe(403);
+      expect(response.json()).toEqual({ code: 'invalid-origin' });
+      expect(response.headers['set-auth-token']).toBeUndefined();
+    }
+  });
+
+  test('an origin is compared after normalising it', async () => {
+    const response = await post('/sign-in/username', { origin: 'TDL://app/' }, { username: 'heidi', password: PASSWORD });
+    expect(response.statusCode).toBe(200);
+  });
+
+  test('a username sign-in with no Origin header still works', async () => {
+    expect((await logIn(server.app, 'heidi')).statusCode).toBe(200);
+  });
+
+  test('a bearer sign-out from the desktop app ends the session', async () => {
+    const token = bearerOf((await logIn(server.app, 'heidi')).headers);
+    const out = await post('/sign-out', { ...auth(token), ...crossSite('tdl://app') }, {});
+    expect(out.statusCode).toBe(200);
+    expect((await server.app.inject({ url: '/api/me', headers: auth(token) })).statusCode).toBe(401);
+  });
+
+  // Trusting the app origins is safe only because of this: browsers don't send a SameSite=Lax
+  // cookie on cross-site requests, so a page at https://localhost or tdl://app can't use a web session.
+  test('the session cookie from a browser-style sign-up is SameSite=Lax', async () => {
+    const response = await post('/sign-up/email', { origin: 'http://localhost:3000' }, { ...signUpInput('judy') });
+    expect(response.statusCode).toBe(200);
+    expect(String(response.headers['set-cookie'])).toMatch(/SameSite=Lax/i);
+  });
+});
+
 describe('sign-up when the Inbox cannot be created', () => {
   let server: Awaited<ReturnType<typeof testApp>>;
   beforeAll(async () => {

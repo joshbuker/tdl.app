@@ -6,7 +6,7 @@ import { fromNodeHeaders } from 'better-auth/node';
 import { bearer, username } from 'better-auth/plugins';
 import { eq } from 'drizzle-orm';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import type { Config } from './config.ts';
+import { normaliseOrigin, type Config } from './config.ts';
 import type { Db } from './db/client.ts';
 import * as schema from './db/schema.ts';
 import { sendError } from './errors.ts';
@@ -128,7 +128,7 @@ export function createAuth(config: Config, deps: AuthDeps) {
     secret: config.authSecret,
     baseURL: config.origin,
     basePath: '/api/auth',
-    trustedOrigins: [config.origin],
+    trustedOrigins: [config.origin, ...config.appOrigins],
     telemetry: { enabled: false },
     database: drizzleAdapter(db, { provider: 'pg', schema, transaction: true }),
     advanced: {
@@ -225,6 +225,7 @@ export interface AuthRouteDeps {
  * A successful sign-out also closes the session's live-update sockets.
  */
 export function registerAuthRoutes(app: FastifyInstance, auth: Auth, config: Config, { db, sockets }: AuthRouteDeps): void {
+  const trusted = new Set([config.origin, ...config.appOrigins].map(normaliseOrigin));
   app.route({
     method: ['GET', 'POST'],
     url: '/api/auth/*',
@@ -234,6 +235,14 @@ export function registerAuthRoutes(app: FastifyInstance, auth: Auth, config: Con
       const url = new URL(request.url, config.origin);
       const path = url.pathname.slice('/api/auth'.length);
       if (!EXPOSED.has(`${request.method} ${path}`)) return sendError(reply, 404, 'not-found');
+
+      // Better Auth checks the origin of an email sign-in and sign-up, but not of a username
+      // sign-in, so one rule is applied here to every route that makes a session. A request
+      // without an Origin isn't from a browser.
+      const origin = request.headers.origin;
+      if ((path === SIGN_UP_PATH || SIGN_IN_PATHS.has(path)) && origin !== undefined && !trusted.has(normaliseOrigin(origin))) {
+        return sendError(reply, 403, 'invalid-origin');
+      }
 
       const headers = authHeaders(request);
       // Looked up first: Better Auth deletes the session when signing out.

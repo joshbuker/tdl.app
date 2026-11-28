@@ -185,6 +185,13 @@ describe('live updates', () => {
     expect(await socket.next()).toEqual({ type: 'feed', id: expect.any(Number) as number });
   });
 
+  test('a token client from the desktop app origin authenticates by message and gets a feed message', async () => {
+    const socket = connect({ origin: 'tdl://app' });
+    await socket.opened;
+    socket.send({ type: 'auth', token: alice });
+    expect(await socket.next()).toEqual({ type: 'feed', id: expect.any(Number) as number });
+  });
+
   test('the Authorization header is not read on the websocket', async () => {
     const socket = connect({ authorization: `Bearer ${alice}` });
     await socket.opened;

@@ -44,6 +44,7 @@
     "internal-error": "Something went wrong on the server. Try again later.",
     "invalid": "This isn't valid.",
     "invalid-credentials": "Wrong username or password.",
+    "invalid-origin": "This app isn't allowed to sign in to this server.",
     "invalid-reply": "The server sent a reply this app can't read.",
     "network": "Can't reach the server. Check your connection and try again.",
     "not-editable": "You can't edit one of these tasks.",

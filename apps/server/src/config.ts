@@ -9,7 +9,7 @@ const envSchema = z.object({
   AUTH_SECRET: z.string().min(32),
   TRUST_PROXY: booleanString.default(false),
   WEB_ROOT: z.string().min(1).optional(),
-  APP_ORIGINS: z.string().default('https://localhost,capacitor://localhost'),
+  APP_ORIGINS: z.string().default('https://localhost,capacitor://localhost,tdl://app'),
 });
 
 export interface Config {
@@ -28,6 +28,16 @@ export interface Config {
   webRoot?: string;
 }
 
+/**
+ * An origin in one canonical form, so comparing strings works: trimmed, without one trailing `/`,
+ * and lower-cased (the scheme and host are case-insensitive; an origin has no path). Not
+ * `URL.origin`, which gives `"null"` for schemes like `tdl:` and `capacitor:`.
+ */
+export function normaliseOrigin(value: string): string {
+  const trimmed = value.trim();
+  return (trimmed.endsWith('/') ? trimmed.slice(0, -1) : trimmed).toLowerCase();
+}
+
 /** Parses the environment. Throws an error naming every missing or invalid variable. */
 export function loadConfig(env: NodeJS.ProcessEnv): Config {
   const parsed = envSchema.safeParse(env);
@@ -39,11 +49,11 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
   return {
     databaseUrl: DATABASE_URL,
     port: PORT,
-    origin: ORIGIN,
+    origin: normaliseOrigin(ORIGIN),
     authSecret: AUTH_SECRET,
     trustProxy: TRUST_PROXY,
     appOrigins: APP_ORIGINS.split(',')
-      .map((origin) => origin.trim())
+      .map(normaliseOrigin)
       .filter((origin) => origin !== ''),
     ...(WEB_ROOT === undefined ? {} : { webRoot: WEB_ROOT }),
   };

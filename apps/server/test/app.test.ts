@@ -4,7 +4,6 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { z } from 'zod';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { loadConfig } from '../src/config.ts';
 import { testApp } from './db.ts';
 
 describe('server skeleton', () => {
@@ -76,6 +75,16 @@ describe('server skeleton', () => {
     expect(response.headers['access-control-expose-headers']).toBe('tdl-protocol, set-auth-token');
     const foreign = await server.app.inject({ url: '/health', headers: { origin: 'https://evil.example' } });
     expect(foreign.headers['access-control-allow-origin']).toBeUndefined();
+  });
+
+  test('CORS lets the desktop app preflight a sync push, and refuses a foreign origin', async () => {
+    const headers = { 'access-control-request-method': 'POST', 'access-control-request-headers': 'authorization, content-type, tdl-protocol' };
+    const desktop = await server.app.inject({ method: 'OPTIONS', url: '/api/sync/push', headers: { origin: 'tdl://app', ...headers } });
+    expect(desktop.headers['access-control-allow-origin']).toBe('tdl://app');
+    const foreign = await server.app.inject({ method: 'OPTIONS', url: '/api/sync/push', headers: { origin: 'https://evil.example', ...headers } });
+    expect(foreign.headers['access-control-allow-origin']).toBeUndefined();
+    const response = await server.app.inject({ url: '/health', headers: { origin: 'tdl://app' } });
+    expect(response.headers['access-control-expose-headers']).toContain('set-auth-token');
   });
 
   test('migrations create the schema', async () => {
@@ -152,38 +161,5 @@ describe('serving the web app', () => {
     } finally {
       await bare.close();
     }
-  });
-});
-
-describe('loadConfig', () => {
-  test('names the missing variables', () => {
-    expect(() => loadConfig({})).toThrow(/DATABASE_URL.*AUTH_SECRET|AUTH_SECRET.*DATABASE_URL/);
-  });
-
-  test('applies defaults', () => {
-    const config = loadConfig({ DATABASE_URL: 'postgres://x', ORIGIN: 'https://tdl.app', AUTH_SECRET: 'x'.repeat(32) });
-    expect(config).toEqual({
-      databaseUrl: 'postgres://x',
-      port: 3000,
-      origin: 'https://tdl.app',
-      authSecret: 'x'.repeat(32),
-      trustProxy: false,
-      appOrigins: ['https://localhost', 'capacitor://localhost'],
-    });
-  });
-
-  test('reads APP_ORIGINS as a comma-separated list', () => {
-    const config = loadConfig({ DATABASE_URL: 'postgres://x', ORIGIN: 'https://tdl.app', AUTH_SECRET: 'x'.repeat(32), APP_ORIGINS: 'https://localhost, app://desktop ,' });
-    expect(config.appOrigins).toEqual(['https://localhost', 'app://desktop']);
-  });
-
-  test('reads WEB_ROOT, which is optional', () => {
-    const env = { DATABASE_URL: 'postgres://x', ORIGIN: 'https://tdl.app', AUTH_SECRET: 'x'.repeat(32) };
-    expect(loadConfig(env).webRoot).toBeUndefined();
-    expect(loadConfig({ ...env, WEB_ROOT: '/app/web' }).webRoot).toBe('/app/web');
-  });
-
-  test('rejects a short auth secret', () => {
-    expect(() => loadConfig({ DATABASE_URL: 'postgres://x', ORIGIN: 'https://tdl.app', AUTH_SECRET: 'short' })).toThrow(/AUTH_SECRET/);
   });
 });

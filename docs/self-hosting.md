@@ -22,13 +22,15 @@ TRUST_PROXY=true
 
 To try it on one machine without a proxy, set `ORIGIN=http://localhost:3000` and `TRUST_PROXY=false`, then open that address. Browsers treat `localhost` as secure, so the app works there over plain HTTP. It doesn't work at a LAN address over plain HTTP: the page asks the browser to upgrade its requests to HTTPS.
 
+Signing in from `quasar dev` works only if the server's `ORIGIN` is the dev server's address (for example `http://localhost:9000`), because the dev proxy keeps the browser's `Origin` and the server refuses sign-in from other origins.
+
 | Variable | Required | Meaning |
 | --- | --- | --- |
 | `POSTGRES_PASSWORD` | Yes | The database password. Compose sets it when it first creates the database. Use letters and digits only (`openssl rand -hex 32`), since it's also put in the database URL. |
 | `AUTH_SECRET` | Yes | At least 32 characters. Signs sessions; changing it signs everyone out. |
 | `ORIGIN` | Yes | The public URL people use to reach the server, exactly as the browser shows it, with no trailing slash. Sign-in, cookies and live updates are tied to it: with an `https://` origin, session cookies are only sent over HTTPS, and the live-update socket refuses cookie connections from web pages on any other origin. |
 | `TRUST_PROXY` | No (default `false`) | `true` when the server is behind a reverse proxy, so it takes the client's address from the proxy's `X-Forwarded-For` header. Rate limits on signing up and signing in use that address. Set it only if nothing but the proxy can reach the server's port, and the proxy replaces any `X-Forwarded-For` the client sent with the client's own address. The server uses the first address in the header, so a proxy that appends to it lets clients pick their own address and get around the rate limits. |
-| `APP_ORIGINS` | No (default `https://localhost,capacitor://localhost`) | The origins the native apps' windows run at, separated by commas. Requests from them may reach the API, and open the live-update socket, but only with a session token, never a cookie. The default covers the Android and iOS apps. Change it only to support another app. |
+| `APP_ORIGINS` | No (default `https://localhost,capacitor://localhost,tdl://app`) | The origins the native apps' windows run at, separated by commas. Requests from them may reach the API, sign in, and open the live-update socket, but only with a session token, never a cookie. The default covers the Android, iOS and desktop apps. Change it only to support another app. The server refuses sign-up and sign-in from any other browser origin. |
 | `DATABASE_URL` | No | Only to use a Postgres server of your own instead of the `db` container, e.g. `postgres://tdl:<password>@db.internal:5432/tdl`. |
 | `WEB_ROOT` | No (set in the image) | The folder holding the built web app. The image sets it to `/app/web`. Without it, the server serves only the API. |
 | `TDL_PORT` | No (default `3000`) | The port the server listens on, on `127.0.0.1` of the host. |
