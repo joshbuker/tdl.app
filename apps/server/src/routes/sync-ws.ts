@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { CLIENT_IP_HEADER } from '../auth.ts';
 import type { Db } from '../db/client.ts';
 import { feed, revokedSessions, session } from '../db/schema.ts';
+import { normaliseOrigin } from '../config.ts';
 import { sendError } from '../errors.ts';
 import type { RequireProtocol } from '../protocol.ts';
 import type { CheckSession, RequireSession, SessionInfo } from '../session-guard.ts';
@@ -144,11 +145,11 @@ export function registerSyncWsRoutes(app: FastifyInstance, deps: SyncWsDeps, req
  * from our origin, an app origin, or none (native clients). The `Authorization` header isn't read.
  */
 function handshake(deps: SyncWsDeps, requireSession: RequireSession) {
-  const ours = new URL(deps.origin).origin;
-  const allowed = new Set([ours, ...deps.appOrigins]);
+  const ours = normaliseOrigin(new URL(deps.origin).origin);
+  const allowed = new Set([ours, ...deps.appOrigins.map(normaliseOrigin)]);
   return async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     delete request.headers.authorization;
-    const theirs = request.headers.origin;
+    const theirs = request.headers.origin === undefined ? undefined : normaliseOrigin(request.headers.origin);
     if (getSessionCookie(fromNodeHeaders(request.headers)) !== null) {
       if (theirs !== ours) await sendError(reply, 403, 'forbidden');
       else await requireSession(request, reply);

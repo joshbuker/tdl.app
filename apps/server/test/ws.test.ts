@@ -192,6 +192,15 @@ describe('live updates', () => {
     expect(await socket.next()).toEqual({ type: 'feed', id: expect.any(Number) as number });
   });
 
+  test('an Origin is compared after normalising it', async () => {
+    const socket = connect({ origin: 'TDL://app/' });
+    await socket.opened;
+    socket.send({ type: 'auth', token: alice });
+    expect(await socket.next()).toEqual({ type: 'feed', id: expect.any(Number) as number });
+    const { cookie } = await newSession('browser');
+    expect(await connect({ cookie, origin: 'HTTP://LOCALHOST:3000/' }).next()).toEqual({ type: 'feed', id: expect.any(Number) as number });
+  });
+
   test('the Authorization header is not read on the websocket', async () => {
     const socket = connect({ authorization: `Bearer ${alice}` });
     await socket.opened;

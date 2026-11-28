@@ -80,6 +80,8 @@ class Api {
     const response = await fetch(`${this.url}${path}`, {
       method,
       headers: {
+        // Real clients are browsers or webviews, which always send an Origin. Better Auth refuses email sign-in and sign-up from a fetch without one.
+        origin: testConfig('').origin,
         [PROTOCOL_HEADER]: this.protocolVersion,
         ...(body === undefined ? {} : { 'content-type': 'application/json' }),
         ...(token === undefined ? {} : { authorization: `Bearer ${token}` }),

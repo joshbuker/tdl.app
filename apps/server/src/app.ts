@@ -15,7 +15,7 @@ import type { FieldError } from '@tdl/domain';
 import { PROTOCOL_HEADER, PROTOCOL_VERSION } from '@tdl/sync';
 import { z } from 'zod';
 import { createAuth, registerAuthRoutes } from './auth.ts';
-import type { Config } from './config.ts';
+import { normaliseOrigin, type Config } from './config.ts';
 import type { Db } from './db/client.ts';
 import { sendError } from './errors.ts';
 import { registerGrantRoutes } from './routes/grants.ts';
@@ -75,8 +75,12 @@ export async function buildApp(config: Config, deps: AppDeps): Promise<FastifyIn
   await app.register(websocket, { options: { maxPayload: MAX_WS_PAYLOAD } });
   // The web app is same-origin and sends cookies. The native apps' windows (see `appOrigins`) are
   // cross-origin and send bearer tokens, which they get from `set-auth-token`.
+  const corsOrigins = new Set([config.origin, ...config.appOrigins].map(normaliseOrigin));
   await app.register(cors, {
-    origin: [config.origin, ...config.appOrigins],
+    // Compared after normalising; the allowed origin is echoed as the browser sent it.
+    origin: (origin, callback) => {
+      callback(null, origin !== undefined && corsOrigins.has(normaliseOrigin(origin)));
+    },
     credentials: false,
     allowedHeaders: ['content-type', 'authorization', PROTOCOL_HEADER],
     exposedHeaders: [PROTOCOL_HEADER, 'set-auth-token'],

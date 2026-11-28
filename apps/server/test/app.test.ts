@@ -87,6 +87,15 @@ describe('server skeleton', () => {
     expect(response.headers['access-control-expose-headers']).toContain('set-auth-token');
   });
 
+  test('CORS compares the request origin after normalising it', async () => {
+    const preflight = await server.app.inject({
+      method: 'OPTIONS',
+      url: '/api/sync/pull',
+      headers: { origin: 'TDL://app/', 'access-control-request-method': 'GET' },
+    });
+    expect(preflight.headers['access-control-allow-origin']).toBe('TDL://app/');
+  });
+
   test('migrations create the schema', async () => {
     const result = await server.db.execute<{ n: number }>("select count(*)::int as n from information_schema.tables where table_name = 'operations'");
     expect(result.rows[0]).toEqual({ n: 1 });

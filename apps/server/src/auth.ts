@@ -132,6 +132,8 @@ export function createAuth(config: Config, deps: AuthDeps) {
     telemetry: { enabled: false },
     database: drizzleAdapter(db, { provider: 'pg', schema, transaction: true }),
     advanced: {
+      // Better Auth skips its origin check under test by default; keep it on so tests cover what production does.
+      disableOriginCheck: false,
       database: { generateId: 'uuid' },
       ipAddress: { ipAddressHeaders: [CLIENT_IP_HEADER] },
     },
