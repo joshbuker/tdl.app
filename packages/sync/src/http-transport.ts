@@ -11,7 +11,7 @@ interface RequestInit {
   method: 'GET' | 'POST' | 'DELETE';
   headers: Record<string, string>;
   body?: string;
-  credentials?: 'include';
+  credentials?: 'include' | 'omit';
 }
 
 export type FetchLike = (
@@ -38,6 +38,11 @@ export interface HttpTransportOptions {
   baseUrl: string;
   /** A bearer token (native apps). Without one, the session cookie is sent. */
   token?: string;
+  /**
+   * Whether requests send cookies. Defaults to the old rule: `'include'` without a token, nothing
+   * with one. Native apps pass `'omit'`: the server's CORS refuses credentialed requests.
+   */
+  credentials?: 'include' | 'omit';
   fetch?: FetchLike;
   WebSocket?: WebSocketLike;
   /** Defaults to the platform's setTimeout. */
@@ -98,8 +103,9 @@ export function createHttpTransport(options: HttpTransportOptions): Transport {
 }
 
 /** Sends JSON requests with the session's credentials, and parses replies with a schema. */
-function createRequester({ baseUrl, token, fetch = platform.fetch, protocolVersion = PROTOCOL_VERSION }: HttpTransportOptions) {
-  const authorization: Partial<RequestInit> = token === undefined ? { credentials: 'include' } : {};
+function createRequester({ baseUrl, token, credentials, fetch = platform.fetch, protocolVersion = PROTOCOL_VERSION }: HttpTransportOptions) {
+  const mode = credentials ?? (token === undefined ? 'include' : undefined);
+  const authorization: Partial<RequestInit> = mode === undefined ? {} : { credentials: mode };
   const baseHeaders: Record<string, string> = {
     [PROTOCOL_HEADER]: protocolVersion,
     ...(token === undefined ? {} : { authorization: `Bearer ${token}` }),

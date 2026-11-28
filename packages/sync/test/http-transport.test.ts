@@ -74,6 +74,20 @@ describe('createHttpTransport', () => {
     expect(fetch.calls).toEqual([{ url: `${baseUrl}/api/sync/pull?after=2&limit=500`, init: { method: 'GET', headers: { 'tdl-protocol': '1.0' }, credentials: 'include' } }]);
   });
 
+  test("with credentials 'omit', push and pull send no cookies, even without a token", async () => {
+    const fetch = stubFetch(200, { entries: [], cursor: 0, more: false, results: [] });
+    const transport = createHttpTransport({ baseUrl, fetch, credentials: 'omit' });
+    await transport.pull(0, 500);
+    await transport.push([]);
+    expect(fetch.calls.map((call) => call.init.credentials)).toEqual(['omit', 'omit']);
+  });
+
+  test("with credentials 'include', requests send cookies even with a token", async () => {
+    const fetch = stubFetch(200, { entries: [], cursor: 0, more: false });
+    await createHttpTransport({ baseUrl, token: 'secret', fetch, credentials: 'include' }).pull(0, 500);
+    expect(fetch.calls[0]?.init.credentials).toBe('include');
+  });
+
   test('every request carries the protocol version, and the server\'s is remembered', async () => {
     const fetch = stubFetch(200, { entries: [], cursor: 0, more: false }, { 'tdl-protocol': '1.2' });
     const transport = createHttpTransport({ baseUrl, fetch });

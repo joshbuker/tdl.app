@@ -115,16 +115,14 @@ export class AppController {
   async logIn(identifier: string, password: string): Promise<void> {
     this.requireLoggedOut();
     const { token } = await this.api(null).logIn(identifier, password);
-    await this.useToken(token);
-    await this.enter(await this.api().me());
+    await this.enterWith(token);
   }
 
   /** Creates an account and logs in to it. Only while logged out, as `logIn`. */
   async signUp(input: AccountInput & { acceptTerms: boolean }): Promise<void> {
     this.requireLoggedOut();
     const { token } = await this.api(null).signUp(input);
-    await this.useToken(token);
-    await this.enter(await this.api().me());
+    await this.enterWith(token);
   }
 
   /**
@@ -136,7 +134,7 @@ export class AppController {
     if (state.kind !== 'ready' || !state.sessionEnded) throw new Error('session-not-ended');
     const { token } = await this.api(null).logIn(identifier, password);
     const api = this.api(token);
-    const me = await api.me();
+    const me = await this.meOrEndSession(api);
     if (me.userId !== state.me.userId || this.current !== state) {
       // End the session just made, so it isn't left behind. Failing to is harmless.
       await api.logOut().catch(() => undefined);
@@ -186,6 +184,23 @@ export class AppController {
   }
 
   // Helpers
+
+  /** Checks a new session's token with `me()`, and only then saves it and opens the user's replica. */
+  private async enterWith(token: string | null): Promise<void> {
+    const me = await this.meOrEndSession(this.api(token));
+    await this.useToken(token);
+    await this.enter(me);
+  }
+
+  /** `api.me()`; if it fails, ends the session just made (failing to is harmless) and rethrows. */
+  private async meOrEndSession(api: ServerApi): Promise<Me> {
+    try {
+      return await api.me();
+    } catch (error) {
+      await api.logOut().catch(() => undefined);
+      throw error;
+    }
+  }
 
   /** Opens the user's replica, caches their `me`, and syncs. */
   private async enter(me: Me): Promise<void> {
@@ -308,9 +323,15 @@ export class AppController {
   private transport(): Transport {
     return this.platform.transport({
       baseUrl: this.baseUrl,
+      credentials: this.credentials(),
       ...(this.token === null ? {} : { token: this.token }),
       ...(this.fetch === undefined ? {} : { fetch: this.fetch }),
     });
+  }
+
+  /** Token platforms send no cookies; the web sends its session cookie. */
+  private credentials(): 'include' | 'omit' {
+    return this.platform.auth === 'token' ? 'omit' : 'include';
   }
 
   private async useToken(token: string | null): Promise<void> {
@@ -323,6 +344,7 @@ export class AppController {
   private api(token: string | null = this.token): ServerApi {
     return new ServerApi({
       baseUrl: this.baseUrl,
+      credentials: this.credentials(),
       ...(this.platform.auth === 'token' && token !== null ? { token } : {}),
       ...(this.fetch === undefined ? {} : { fetch: this.fetch }),
     });

@@ -144,7 +144,7 @@ Findings from plan 3's reviews, deferred. Fix each when its area is next touched
 - **Replica and app core:**
   - Each edit while live syncs twice.
   - A background sync can race a wipe.
-  - After the other-user guard, `logOut` signs out the cookie session, which is the other user's. Rare on the web, where one tab holds the app; revisit with plan 4.
+  - On the web, after the other-user guard, `logOut` signs out the cookie session, which is the other user's. Rare, since one tab holds the app. On token platforms the token is the app's own, so signing out with it is right.
   - Logging out gives no feedback if the store fails during the wipe (`MainLayout`).
 - **Task page:**
   - The fields follow the task by value, so a change from elsewhere replaces text being typed. The pending save puts the typed text back, so nothing is lost, but it flickers.
@@ -167,8 +167,7 @@ Findings from plan 3's reviews, deferred. Fix each when its area is next touched
   - `startE2eServer` leaks the app if `listen` throws, and picking a free port can race.
 - **For plan 4 (Android and Electron):**
   - Test CORS `exposedHeaders` with the first token platform: native apps must read `set-auth-token` cross-origin.
-  - On token platforms, the token is saved before `me()` succeeds.
-  - `web-driver.test.ts` imports the store contract by relative path. Add a `./testing` export when the Capacitor and Electron drivers need it.
+  - `web-driver.test.ts` imports the store contract by relative path. Still deferred: the Capacitor and Electron drivers' tests use fakes, so a `./testing` export isn't needed yet.
 
 ## Ideas for later
 

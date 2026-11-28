@@ -49,6 +49,8 @@ export interface ServerApiOptions {
   fetch?: FetchLike;
   /** A bearer token (native apps). Without one, the session cookie is sent. */
   token?: string;
+  /** `'include'` sends the session cookie (web); `'omit'` sends none (native apps, whose CORS refuses credentials). Defaults to `'include'` without a token. */
+  credentials?: 'include' | 'omit';
 }
 
 type Method = Parameters<FetchLike>[1]['method'];
@@ -64,11 +66,13 @@ export class ServerApi {
   private readonly baseUrl: string;
   private readonly fetch: FetchLike;
   private readonly token: string | undefined;
+  private readonly credentials: 'include' | 'omit' | undefined;
 
   constructor(options: ServerApiOptions) {
     this.baseUrl = options.baseUrl;
     this.fetch = options.fetch ?? platformFetch;
     this.token = options.token;
+    this.credentials = options.credentials ?? (options.token === undefined ? 'include' : undefined);
   }
 
   /** Creates an account. Sends only the keys sign-up accepts. */
@@ -135,7 +139,7 @@ export class ServerApi {
         method,
         headers,
         ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-        ...(this.token === undefined ? { credentials: 'include' as const } : {}),
+        ...(this.credentials === undefined ? {} : { credentials: this.credentials }),
       });
     } catch (error) {
       throw new NetworkError(error);

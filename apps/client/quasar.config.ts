@@ -51,7 +51,8 @@ export default defineConfig((ctx) => {
 
       // publicPath: '/',
       // define: {},
-      // defineEnv: {}
+      // The server the native builds talk to; the web build ignores it.
+      defineEnv: { TDL_SERVER_URL: process.env.TDL_SERVER_URL ?? 'https://tdl.app' },
       // ignorePublicFolder: true,
       // minify: false,
       // distDir

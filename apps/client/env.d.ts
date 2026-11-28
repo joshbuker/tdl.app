@@ -12,4 +12,7 @@
  *   readonly MY_OTHER_VAR: string;
  * }
  */
-interface ImportMetaEnv {}
+interface ImportMetaEnv {
+  /** The server the native apps talk to (the web app uses its own origin). Set in quasar.config.ts. */
+  readonly TDL_SERVER_URL?: string;
+}

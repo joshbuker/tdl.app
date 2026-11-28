@@ -52,6 +52,19 @@ describe('ServerApi', () => {
     expect(init?.headers).toMatchObject({ [PROTOCOL_HEADER]: PROTOCOL_VERSION });
   });
 
+  test("with credentials 'omit', sign-up, login and other requests send no cookies", async () => {
+    const server = new FakeFetch()
+      .on('POST /api/auth/sign-up/email', { status: 200, body: {} })
+      .on('POST /api/auth/sign-in/username', { status: 200, body: {} })
+      .on('GET /api/me', { status: 200, body: me });
+    const api = new ServerApi({ baseUrl: BASE_URL, fetch: server.fetch, credentials: 'omit' });
+
+    await api.signUp({ username: 'alice', email: 'alice@example.com', password: 'p', givenName: 'Alice', familyName: 'Example', acceptTerms: true });
+    await api.logIn('alice', 'secret');
+    await api.me();
+    expect(server.calls.map((call) => call.init.credentials)).toEqual(['omit', 'omit', 'omit']);
+  });
+
   test('logs in by username or email, and reads the set-auth-token header', async () => {
     const server = new FakeFetch()
       .on('POST /api/auth/sign-in/username', { status: 200, body: {}, headers: { 'set-auth-token': 'by-name' } })

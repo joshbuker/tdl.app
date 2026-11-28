@@ -297,6 +297,63 @@ describe('AppController', () => {
     expect(await platform.keyValue.get('me')).toEqual(bob);
   });
 
+  test('a token platform sends no cookies, and a cookie platform does', async () => {
+    const bob = meOf('bob');
+    const server = new FakeFetch()
+      .on('POST /api/auth/sign-in/username', { status: 200, body: {}, headers: { 'set-auth-token': 'bob-token' } })
+      .on('GET /api/me', { status: 200, body: bob });
+    const platform = new TestPlatform();
+    const controller = new AppController({ baseUrl: BASE_URL, platform, fetch: server.fetch });
+    await controller.start();
+    await controller.logIn('bob', 'secret');
+    expect(server.calls.map((call) => call.init.credentials)).toEqual(['omit', 'omit']);
+    expect(platform.transports.map((options) => options.credentials)).toEqual(['omit']);
+
+    const cookieServer = new FakeFetch().on('GET /api/me', { status: 200, body: bob });
+    const cookiePlatform = new TestPlatform();
+    Object.defineProperty(cookiePlatform, 'auth', { value: 'cookie' });
+    const cookieController = new AppController({ baseUrl: BASE_URL, platform: cookiePlatform, fetch: cookieServer.fetch });
+    await cookieController.start();
+    expect(cookieServer.calls.map((call) => call.init.credentials)).toEqual(['include']);
+    expect(cookiePlatform.transports.map((options) => options.credentials)).toEqual(['include']);
+  });
+
+  test('a login whose me() fails saves no token, and ends the new session', async () => {
+    const platform = new TestPlatform();
+    const server = new FakeFetch()
+      .on('POST /api/auth/sign-in/username', { status: 200, body: {}, headers: { 'set-auth-token': 'new-token' } })
+      .on('GET /api/me', { status: 500, body: { code: 'broken' } })
+      .on('POST /api/auth/sign-out', { status: 200, body: {} });
+    const saveToken = vi.spyOn(platform, 'saveToken');
+    const controller = new AppController({ baseUrl: BASE_URL, platform, fetch: server.fetch });
+    await controller.start();
+
+    await expect(controller.logIn('bob', 'secret')).rejects.toMatchObject({ status: 500 });
+
+    expect(saveToken).not.toHaveBeenCalled();
+    expect(platform.token).toBeNull();
+    expect(server.callsTo('POST /api/auth/sign-out')[0]?.init.headers).toMatchObject({ authorization: 'Bearer new-token' });
+    expect(controller.state()).toEqual({ kind: 'logged-out' });
+  });
+
+  test('a sign-up whose me() fails saves no token, and ends the new session', async () => {
+    const platform = new TestPlatform();
+    const server = new FakeFetch()
+      .on('POST /api/auth/sign-up/email', { status: 200, body: {}, headers: { 'set-auth-token': 'new-token' } })
+      .on('GET /api/me', { status: 500, body: { code: 'broken' } })
+      .on('POST /api/auth/sign-out', { status: 200, body: {} });
+    const saveToken = vi.spyOn(platform, 'saveToken');
+    const controller = new AppController({ baseUrl: BASE_URL, platform, fetch: server.fetch });
+    await controller.start();
+
+    await expect(
+      controller.signUp({ username: 'bob', email: 'bob@example.com', password: 'p', givenName: 'Bob', familyName: 'B', acceptTerms: true }),
+    ).rejects.toMatchObject({ status: 500 });
+
+    expect(saveToken).not.toHaveBeenCalled();
+    expect(server.callsTo('POST /api/auth/sign-out')[0]?.init.headers).toMatchObject({ authorization: 'Bearer new-token' });
+  });
+
   test("server() calls the server's API with the current session", async () => {
     const platform = await storedPlatform(meOf('alice'));
     const server = new FakeFetch().on('GET /api/sessions', { status: 200, body: [] });
